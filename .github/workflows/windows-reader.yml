@@ -1,0 +1,48 @@
+name: Windows reader
+on:
+  push:
+    branches: [main]
+    paths: ['viewer/**', 'lessons/mathematics/algebra-adventure/**', '.github/workflows/windows-reader.yml']
+  pull_request:
+    paths: ['viewer/**', 'lessons/mathematics/algebra-adventure/**', '.github/workflows/windows-reader.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: viewer
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.3'
+          cache: npm
+          cache-dependency-path: viewer/package-lock.json
+      - run: ./setup.ps1
+      - run: ./setup.ps1 doctor
+      - run: node ../lessons/mathematics/algebra-adventure/task.cjs build
+      - run: npm test
+      - run: node ../lessons/mathematics/algebra-adventure/task.cjs test
+      - name: Verify PowerShell syntax and enforce network isolation for integration test
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path scripts/NetworkGuard.ps1), [ref]$tokens, [ref]$errors) | Out-Null
+          if ($errors.Count) { throw ($errors | Out-String) }
+          & ./scripts/NetworkGuard.ps1 -Mode Install -ExecutablePath (Resolve-Path node_modules/electron/dist/electron.exe).Path
+          if ($LASTEXITCODE -ne 0) { throw 'Firewall setup failed' }
+      - name: Real Chromium integration with verified firewall rules
+        run: npm run test:electron
+      - name: Package Windows reader
+        run: npm run package:win
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OfflineBookReader-Windows-x64
+          path: viewer/dist/OfflineBookReader-win32-x64/
+          if-no-files-found: error
+          retention-days: 30

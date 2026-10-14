@@ -74,3 +74,7 @@ Existing projects such as Pattern Atlas have not yet been migrated. Import them 
 ## Licensing
 
 No collection-wide redistribution license has been selected. Public visibility does not itself grant a software license. Preserve third-party license notices and each imported lesson's existing terms; select appropriate licenses before presenting the collection as broadly reusable open source.
+
+## Optional Windows offline reader
+
+[`viewer/`](viewer/README.md) contains the dedicated Chromium/Electron reader, its Windows firewall guard, tests, and packaging scripts. It bundles Algebra Adventure and opens other self-contained HTML books. Run `./viewer/setup.ps1` and `./viewer/setup.ps1 build` on Windows to build it, or download `OfflineBookReader-Windows-x64` from a successful **Windows reader** Actions run. First-run firewall installation requires an explicit administrator action; normal reading does not. This optional application is separate from GitHub Pages and ordinary lesson setup.
