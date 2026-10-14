@@ -1,0 +1,644 @@
+[
+  {
+    "title": "Equals means same value",
+    "tag": "01 / Core episode",
+    "goal": "Read the equals sign as “has the same value as.”",
+    "text": "An equals sign is a promise: the amount on the left is exactly the amount on the right. It does not mean “the answer comes next.”",
+    "start": "5 = 3 + 2",
+    "steps": [
+      [
+        "5 = 5",
+        "Evaluate each side separately. Both have value five."
+      ],
+      [
+        "3 + 2 = 4 + 1",
+        "Both sides have value five, even though they look different."
+      ],
+      [
+        "3 + 2 ≠ 6",
+        "Five is not six. An equation can be false."
+      ]
+    ],
+    "note": "You can read an equation either way: 5 = 3 + 2 is just as true as 3 + 2 = 5.",
+    "ask": "Is 7 = 5 + 2 true? What belongs in 3 + 4 = □ + 5?",
+    "lab": "equality",
+    "check": {
+      "q": "3 + 4 = □ + 5",
+      "answers": [
+        2
+      ],
+      "labels": [
+        "□"
+      ],
+      "hint": "Both sides must have value seven.",
+      "steps": [
+        "Both sides must have value seven."
+      ]
+    },
+    "id": "equality",
+    "bridge": {
+      "problem": "3 + 4 = □ + 5",
+      "picture": "whole",
+      "whole": "7",
+      "parts": [
+        "□",
+        "5"
+      ],
+      "school": [
+        "The left side makes 7. The two parts on the right must also make 7.",
+        "The missing part is 7 − 5 = 2. Put 2 in the box."
+      ],
+      "algebra": [
+        "Later we can name the same missing number x: 3 + 4 = x + 5.",
+        "7 = x + 5. Subtract 5 from BOTH sides: 7 − 5 = x + 5 − 5.",
+        "2 = x. That also means x = 2."
+      ],
+      "connection": "A box and a letter can name the same missing number. Today, focus on the equal values; we will practice the subtract-from-both-sides step in episode 4.",
+      "check": "3 + 4 = 2 + 5: both sides are 7."
+    }
+  },
+  {
+    "title": "Keep it balanced",
+    "tag": "02 / Core episode",
+    "goal": "Change an equation without breaking its promise.",
+    "text": "If two amounts are equal, adding the same number to each keeps them equal. Subtracting the same number from each works too.",
+    "start": "10 = 10",
+    "steps": [
+      [
+        "10 − 2 = 10 − 2",
+        "Take away two from each side."
+      ],
+      [
+        "8 = 8",
+        "Both sides are still equal."
+      ],
+      [
+        "8 + 3 = 8 + 3",
+        "Add three to each side."
+      ],
+      [
+        "11 = 11",
+        "Equal again. The amounts changed, but the equality stayed true."
+      ]
+    ],
+    "note": "Adding five to both sides is one action. Reordering a sum is a different idea. Predict what a move will do before you apply it.",
+    "ask": "Why is adding two to just one side different?",
+    "lab": "balance",
+    "check": {
+      "q": "Start with 6 = 6. Subtract 1 from both sides.",
+      "answers": [
+        5
+      ],
+      "labels": [
+        "Each side"
+      ],
+      "hint": "5 = 5; use the same operation and amount.",
+      "steps": [
+        "5 = 5; use the same operation and amount."
+      ]
+    },
+    "id": "both-sides",
+    "bridge": {
+      "problem": "□ + 2 = 7",
+      "picture": "whole",
+      "whole": "7",
+      "parts": [
+        "□",
+        "2"
+      ],
+      "school": [
+        "The whole is 7. One part is 2 and the other is unknown.",
+        "Remove the known part: 7 − 2 = 5. The box is 5."
+      ],
+      "algebra": [
+        "Name the missing part x: x + 2 = 7.",
+        "Subtract 2 from BOTH sides: x + 2 − 2 = 7 − 2.",
+        "x = 5."
+      ],
+      "connection": "In the bar, removing the known part finds the missing part. In the equation, subtracting 2 from both sides leaves that same missing part. This is a preview; you will control these moves in episode 4.",
+      "check": "5 + 2 = 7. Both sides are equal."
+    }
+  },
+  {
+    "title": "Meet the mystery",
+    "tag": "03 / Core episode",
+    "goal": "Use a letter to stand for a number.",
+    "text": "A letter can hold a place for a number we want to find. In one problem, every x stands for the same number. A new problem may use a different number.",
+    "start": "x = 3 + 2",
+    "steps": [
+      [
+        "x = 5",
+        "Three plus two is five. Now we know the mystery number."
+      ],
+      [
+        "5 = 3 + 2",
+        "Check: put five where x was."
+      ],
+      [
+        "5 = 5",
+        "The two sides match. Five works!"
+      ]
+    ],
+    "note": "x names a number, not an object or the multiplication sign ×. In one problem, every x has the same value.",
+    "ask": "If x = 1, is 2 + x = 3 true? Explain your check.",
+    "lab": "mystery",
+    "check": {
+      "q": "x = 4 + 2. Find x.",
+      "answers": [
+        6
+      ],
+      "labels": [
+        "x"
+      ],
+      "hint": "Replace x with six to check.",
+      "steps": [
+        "Replace x with six to check."
+      ]
+    },
+    "id": "unknown",
+    "bridge": {
+      "problem": "□ = 3 + 2",
+      "picture": "whole",
+      "whole": "□",
+      "parts": [
+        "3",
+        "2"
+      ],
+      "school": [
+        "The unknown whole contains parts 3 and 2.",
+        "Add the parts: 3 + 2 = 5. The box is 5."
+      ],
+      "algebra": [
+        "Use x instead of the box: x = 3 + 2.",
+        "Add the numbers on the right: x = 5."
+      ],
+      "connection": "We changed the name of the missing number, not the problem. Here x is already alone; there is no need to subtract anything from both sides.",
+      "check": "5 = 3 + 2. Both sides are 5."
+    }
+  },
+  {
+    "title": "Undo addition",
+    "tag": "04 / Core episode",
+    "goal": "Leave x on its own by subtracting from both sides.",
+    "text": "In 2 + x = 3, the mystery number has two added to it. To uncover x, undo that addition. Subtract two from both sides.",
+    "start": "2 + x = 3",
+    "steps": [
+      [
+        "2 + x − 2 = 3 − 2",
+        "Subtract two from BOTH sides."
+      ],
+      [
+        "x = 1",
+        "On the left, adding two and subtracting two undo each other. On the right, three minus two is one."
+      ],
+      [
+        "2 + 1 = 3",
+        "Check the answer in the original equation. It works!"
+      ]
+    ],
+    "note": "The equations 2 + x = 3, x + 2 = 3, and 3 = x + 2 all have the same answer. Zero can be an answer too: 2 + x = 2 gives x = 0.",
+    "ask": "Would subtracting one from both sides still keep the equation true? Would x be alone yet?",
+    "lab": "solve",
+    "eq": [
+      1,
+      2,
+      3
+    ],
+    "check": {
+      "q": "2 + x = 2. Find x.",
+      "answers": [
+        0
+      ],
+      "labels": [
+        "x"
+      ],
+      "hint": "Subtract two from both sides. Zero is allowed.",
+      "steps": [
+        "Subtract two from both sides. Zero is allowed."
+      ]
+    },
+    "id": "add",
+    "bridge": {
+      "problem": "2 + □ = 3",
+      "picture": "whole",
+      "whole": "3",
+      "parts": [
+        "2",
+        "□"
+      ],
+      "school": [
+        "The whole is 3. The known part is 2.",
+        "Missing part = whole − known part: 3 − 2 = 1."
+      ],
+      "algebra": [
+        "Name the missing part x: 2 + x = 3.",
+        "Subtract 2 from BOTH sides: 2 + x − 2 = 3 − 2.",
+        "x = 1."
+      ],
+      "connection": "The bar method subtracts the known part from the whole. Algebra writes why the same subtraction works: the added 2 and subtracted 2 cancel on the left.",
+      "check": "2 + 1 = 3. The missing part is 1 in both methods."
+    }
+  },
+  {
+    "title": "Undo subtraction",
+    "tag": "05 / Core episode",
+    "goal": "Undo taking away by adding to both sides.",
+    "text": "A mystery starting amount loses three counters and leaves four. To find the starting amount, put three back. In the equation, add three to BOTH sides.",
+    "start": "x − 3 = 4",
+    "steps": [
+      [
+        "x − 3 + 3 = 4 + 3",
+        "Add three to both sides."
+      ],
+      [
+        "x = 7",
+        "Taking away three and adding three undo each other."
+      ],
+      [
+        "7 − 3 = 4",
+        "Check the original equation. Seven works."
+      ]
+    ],
+    "note": "Choose the opposite of the operation on x. Do not always subtract the visible number.",
+    "ask": "Why would subtracting three again fail to uncover the starting amount?",
+    "lab": "solve",
+    "eq": [
+      1,
+      -3,
+      4
+    ],
+    "check": {
+      "q": "x − 2 = 5. Find x.",
+      "answers": [
+        7
+      ],
+      "labels": [
+        "x"
+      ],
+      "hint": "Add two to both sides; 7 − 2 = 5.",
+      "steps": [
+        "Add two to both sides; 7 − 2 = 5."
+      ]
+    },
+    "id": "subtract",
+    "bridge": {
+      "problem": "□ − 3 = 4",
+      "picture": "whole",
+      "whole": "□",
+      "parts": [
+        "3 taken away",
+        "4 left"
+      ],
+      "school": [
+        "The missing number is the starting whole. Its parts are 3 taken away and 4 left.",
+        "Put the parts together: 3 + 4 = 7. The box is 7."
+      ],
+      "algebra": [
+        "Name the starting whole x: x − 3 = 4.",
+        "Add 3 to BOTH sides: x − 3 + 3 = 4 + 3.",
+        "x = 7."
+      ],
+      "connection": "This time we need the whole, not a missing part. The picture joins the parts; algebra undoes subtraction by adding. Do not automatically subtract the number you see.",
+      "check": "7 − 3 = 4. Seven is the starting amount."
+    }
+  },
+  {
+    "title": "Equal groups",
+    "tag": "06 / Core episode",
+    "goal": "Read 2x as two equal amounts and solve by sharing.",
+    "text": "Two bags hold the same number of counters. Together they hold eight. Use x for the number in EACH bag.",
+    "start": "x + x = 8",
+    "steps": [
+      [
+        "2 × x = 8",
+        "Two copies of x make eight."
+      ],
+      [
+        "2x = 8",
+        "2x is a shorter way to write 2 × x. Pause here: explain what 2x means."
+      ],
+      [
+        "2x ÷ 2 = 8 ÷ 2",
+        "Share both sides into two equal parts."
+      ],
+      [
+        "x = 4",
+        "Each bag holds four counters. Check: 2 × 4 = 8."
+      ]
+    ],
+    "note": "Equal-looking bags need not hold equal amounts. Here the STORY tells us the amounts match. At x = 3, 2x is 6 but x + 2 is 5.",
+    "ask": "What does 3x mean? Solve 3x = 12. Pause before division if the notation is still new.",
+    "lab": "groups",
+    "eq": [
+      2,
+      0,
+      8
+    ],
+    "check": {
+      "q": "3x = 12. Find x.",
+      "answers": [
+        4
+      ],
+      "labels": [
+        "x"
+      ],
+      "hint": "Share twelve into three equal amounts.",
+      "steps": [
+        "Share twelve into three equal amounts."
+      ]
+    },
+    "id": "groups",
+    "bridge": {
+      "problem": "Two equal boxes hold 8 counters altogether.",
+      "picture": "whole",
+      "whole": "8",
+      "parts": [
+        "□",
+        "□"
+      ],
+      "school": [
+        "The story says the two parts are equal. Share 8 into 2 equal parts.",
+        "8 ÷ 2 = 4. Each box holds 4."
+      ],
+      "algebra": [
+        "Let x be the count in EACH box: x + x = 8, or 2x = 8.",
+        "Divide BOTH sides by 2: 2x ÷ 2 = 8 ÷ 2.",
+        "x = 4."
+      ],
+      "connection": "Each equal part is one x. Sharing the whole equally is the picture version of dividing both sides. Two boxes do not always mean equal numbers; this story tells us they match.",
+      "check": "4 + 4 = 8, or 2 × 4 = 8."
+    }
+  },
+  {
+    "title": "Use what you know",
+    "tag": "07 / Core episode",
+    "goal": "Replace a letter with its known value.",
+    "text": "Substitution means putting a known number in place of its letter. Here we know x. That helps us find B.",
+    "start": "x = 3     and     B = 2 + x",
+    "steps": [
+      [
+        "B = 2 + 3",
+        "Replace x with three. Keep everything else the same."
+      ],
+      [
+        "B = 5",
+        "Add two and three."
+      ],
+      [
+        "x = 3, B = 5",
+        "These are two different letters with their own values. Check: five really is two plus three."
+      ]
+    ],
+    "note": "x is known; B is the number to find. Different letters CAN have equal values. B = x + 3 alone allows many pairs: (1,4) and (2,5), for example.",
+    "ask": "With x = 4 and B = x + 3, which number is known? Which must you find?",
+    "lab": "substitute",
+    "check": {
+      "q": "x = 4 and B = x + 3. Find B.",
+      "answers": [
+        7
+      ],
+      "labels": [
+        "B"
+      ],
+      "hint": "x is known; replace it with four.",
+      "steps": [
+        "x is known; replace it with four."
+      ]
+    },
+    "id": "substitute"
+  },
+  {
+    "title": "Undo two steps",
+    "tag": "08 / Core episode",
+    "goal": "Undo the extra amount, then share equal groups.",
+    "text": "Two bags hold equal numbers of counters. Three loose counters sit beside them. Altogether there are eleven. Find the number in each bag.",
+    "start": "2x + 3 = 11",
+    "steps": [
+      [
+        "2x + 3 − 3 = 11 − 3",
+        "Remove three from BOTH sides."
+      ],
+      [
+        "2x = 8",
+        "The two equal bags hold eight altogether."
+      ],
+      [
+        "2x ÷ 2 = 8 ÷ 2",
+        "Divide BOTH sides by two."
+      ],
+      [
+        "x = 4",
+        "Each bag holds four."
+      ],
+      [
+        "2 × 4 + 3 = 11",
+        "Check the original equation, including the extra three."
+      ]
+    ],
+    "note": "A legal move keeps equality true. A useful move also helps uncover x. If you divide first, divide EVERY term: (2x + 4) ÷ 2 = 12 ÷ 2 becomes x + 2 = 6.",
+    "ask": "Solve 2x + 5 = 13. Why remove five before sharing?",
+    "lab": "solve",
+    "eq": [
+      2,
+      3,
+      11
+    ],
+    "check": {
+      "q": "2x + 5 = 13. Find x.",
+      "answers": [
+        4
+      ],
+      "labels": [
+        "x"
+      ],
+      "hint": "Subtract five, then divide by two.",
+      "steps": [
+        "Subtract five, then divide by two."
+      ]
+    },
+    "id": "two-step"
+  },
+  {
+    "title": "Translate “more than”",
+    "tag": "09 / Core episode",
+    "goal": "Turn a comparison into an equation.",
+    "text": "There are five more adults than children. A is the NUMBER of adults; C is the NUMBER of children. Start with C, then add five to find A.",
+    "start": "A = C + 5",
+    "steps": [
+      [
+        "C = 3 → A = 3 + 5 = 8",
+        "One possible pair is three children and eight adults."
+      ],
+      [
+        "C = 4 → A = 4 + 5 = 9",
+        "Another pair is four children and nine adults."
+      ],
+      [
+        "A − C = 5",
+        "Both pairs have five more adults. Without a total, we cannot choose just one pair."
+      ]
+    ],
+    "note": "The larger count has the extra part. “Two more blue beads than red beads” means B = R + 2, not R = B + 2.",
+    "ask": "Which count is larger? Where is the extra part in a bar picture?",
+    "lab": "compare",
+    "check": {
+      "q": "Two more blue beads than red. There are 3 red beads. Find blue.",
+      "answers": [
+        5
+      ],
+      "labels": [
+        "Blue"
+      ],
+      "hint": "B = R + 2, so B = 3 + 2.",
+      "steps": [
+        "B = R + 2, so B = 3 + 2."
+      ]
+    },
+    "id": "compare"
+  },
+  {
+    "title": "Two clues, two quantities",
+    "tag": "10 / Core episode",
+    "goal": "Translate a story into a picture and two equations.",
+    "text": "There are five more adults than children in a room. There are thirteen people altogether. How many adults and how many children?",
+    "start": "A = C + 5     and     A + C = 13",
+    "steps": [
+      [
+        "(C + 5) + C = 13",
+        "A is the adult count; C is the child count. Replace the whole A with C + 5."
+      ],
+      [
+        "2C + 5 = 13",
+        "C + C is two equal groups of C. We write that as 2C."
+      ],
+      [
+        "2C + 5 − 5 = 13 − 5",
+        "Subtract the five extra adults from both sides."
+      ],
+      [
+        "2C = 8",
+        "Two equal groups remain."
+      ],
+      [
+        "C = 4",
+        "Divide both sides by two. There are four children."
+      ],
+      [
+        "A = 4 + 5 = 9",
+        "There are nine adults."
+      ],
+      [
+        "9 + 4 = 13 and 9 − 4 = 5",
+        "Check BOTH clues: thirteen total and five more adults."
+      ]
+    ],
+    "note": "First solve using matching bars and check both clues. Pause if needed. Then replace the WHOLE A with (C + 5). Each matching bar is a C-sized amount; one is children and one is an equal number of adults.",
+    "ask": "Find the counts for four more blue beads than red and sixteen beads altogether. Check the total AND difference.",
+    "lab": "story",
+    "check": {
+      "q": "Four more blue beads than red, sixteen altogether. Find both.",
+      "answers": [
+        6,
+        10
+      ],
+      "labels": [
+        "Red",
+        "Blue"
+      ],
+      "hint": "6 + 10 = 16 and 10 − 6 = 4.",
+      "steps": [
+        "6 + 10 = 16 and 10 − 6 = 4."
+      ]
+    },
+    "id": "story"
+  },
+  {
+    "title": "Choose a method and check",
+    "tag": "11 / Core episode",
+    "goal": "Choose your own operation and explain why it works.",
+    "text": "Look carefully at what has happened to x. Choose an undoing operation, apply it to both sides, then check your answer in the original problem.",
+    "start": "x + 3 = 8",
+    "steps": [
+      [
+        "x + 3 − 3 = 8 − 3",
+        "Undo addition by subtracting three from both sides."
+      ],
+      [
+        "x = 5",
+        "The mystery number is five."
+      ],
+      [
+        "5 + 3 = 8",
+        "Check: this works."
+      ],
+      [
+        "11 + 3 ≠ 8",
+        "Adding three to eight would give eleven, but eleven fails the check."
+      ]
+    ],
+    "note": "Use counters, a drawing, words, or equations to explain. A correct answer with a hint is useful practice; a fresh unprompted explanation gives different evidence.",
+    "ask": "How would your method change for x − 4 = 3 or 2x = 10?",
+    "lab": "solve",
+    "eq": [
+      2,
+      1,
+      9
+    ],
+    "check": {
+      "q": "2x + 1 = 9. Find x.",
+      "answers": [
+        4
+      ],
+      "labels": [
+        "x"
+      ],
+      "hint": "Subtract one, divide by two, check.",
+      "steps": [
+        "Subtract one, divide by two, check."
+      ]
+    },
+    "id": "mixed"
+  },
+  {
+    "title": "Optional: answer detective",
+    "tag": "12 / Optional extension",
+    "goal": "Check the arithmetic AND the meaning of an answer.",
+    "text": "Five more adults than children, twelve people altogether: remove the five extras. Can the remaining seven people split into two equal whole-number counts?",
+    "start": "2C + 5 = 12",
+    "steps": [
+      [
+        "2C = 7",
+        "Subtract five from both sides."
+      ],
+      [
+        "Seven cannot split into two equal whole-number groups",
+        "One counter is left after making two groups of three."
+      ],
+      [
+        "No whole-person solution",
+        "Both clues cannot hold for counts of whole people."
+      ],
+      [
+        "If you know halves: C = 3.5, A = 8.5",
+        "These numbers fit the equations but not whole-person counts."
+      ]
+    ],
+    "note": "This is an optional extension. Fractions can describe juice or length; they cannot count whole people in this story. With four extras and twelve total, C = 4 and A = 8 works.",
+    "ask": "Would twelve people work if there were FOUR more adults than children?",
+    "lab": "detective",
+    "check": {
+      "q": "Four more adults than children and twelve people. Whole-person answer possible?",
+      "answers": [
+        "yes"
+      ],
+      "labels": [
+        "Possible?"
+      ],
+      "hint": "Yes: 4 children and 8 adults.",
+      "steps": [
+        "Yes: 4 children and 8 adults."
+      ]
+    },
+    "id": "detective"
+  }
+]

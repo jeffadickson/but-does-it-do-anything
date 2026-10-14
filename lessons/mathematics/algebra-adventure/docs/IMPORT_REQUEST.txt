@@ -1,0 +1,242 @@
+# Import This Educational Project and Modernize Its Build
+
+Act as a senior software engineer, build systems engineer, and technical educator.
+
+Import this project’s educational lessons and interactive demos into:
+
+https://github.com/jeffadickson/but-does-it-do-anything
+
+Complete the implementation, verification, documentation, and GitHub integration. Do not stop at a plan.
+
+## 1. Inspect the source and destination
+
+Read the destination repository’s AGENTS.md files, CONTRIBUTING.md,
+docs/IMPORT_PROMPT.md, and relevant build and deployment configuration.
+
+Inspect the existing project to identify:
+- Educational goals and intended audience.
+- Runnable examples and interactive features.
+- Language choices, runtimes, and dependencies.
+- Tutorials, references, downloads, tests, and licenses.
+- Which features run in the browser, run locally, require a server,
+  or are simulations.
+
+Preserve the original project repository and deployment unless I
+explicitly request changes to them.
+
+Import the educational material, not an unrelated production application
+in its entirety.
+
+## 2. Fit the collection’s structure
+
+Follow the destination repository’s existing lesson structure and
+conventions.
+
+Register each lesson using lesson.json so the top-level catalog updates
+automatically. Use the existing catalog generator; do not manually edit
+generated homepage files.
+
+Keep independent lessons independently buildable. Someone working on
+one lesson should not need every toolchain used by the collection.
+
+Preserve useful language variants, editable examples, interactive
+controls, downloadable source, tutorials, and tests.
+
+Record the source repository and revision where available. Preserve
+licenses, notices, and attribution. Do not invent permission to
+redistribute third-party material.
+
+## 3. Make the educational explanation convincing
+
+Each lesson should explain:
+- The concrete problem.
+- The straightforward initial solution.
+- What changes or becomes difficult.
+- Why the featured technique helps.
+- Observable evidence of the improvement.
+- Costs, limitations, and when a simpler approach is preferable.
+
+Use realistic examples with meaningful behavior. Avoid examples that
+merely demonstrate syntax or introduce an abstraction without a payoff.
+
+Clearly distinguish:
+- Code actually executing in the browser.
+- Conceptual simulations or animations.
+- Prerecorded or illustrative output.
+- Features requiring local tools, hardware, or a backend.
+
+Preserve and improve relevant references, favoring official documentation
+and primary sources. Verify newly added technical claims.
+
+## 4. Modernize build and dependency management
+
+The objective is a project that is easy to clone, set up, build, test,
+debug, and publish on a new computer, with reproducible dependencies and
+minimal manual configuration.
+
+Apply modernization to the imported lessons and shared infrastructure
+they actually need. Do not redesign unrelated lessons.
+
+Choose tools based on the project. Do not automatically select Make,
+CMake, or a new package manager.
+
+Use these preferences where appropriate:
+- C# / F# / .NET: .NET CLI, MSBuild, NuGet, global.json, and dependency
+  locking where appropriate.
+- Python: uv, pyproject.toml, and uv.lock when third-party dependencies
+  are needed. Preserve simple standard-library tooling when sufficient.
+- Rust: Cargo and Cargo.lock.
+- C / C++: CMake with Ninja, using vcpkg or Conan when appropriate.
+- Java / Kotlin: Gradle or Maven with reproducible dependency management.
+- JavaScript / TypeScript: preserve an appropriate existing package
+  manager and commit its lockfile; prefer pnpm for new projects when
+  it fits.
+- Ruby: Bundler and Gemfile.lock.
+- FPGA / HDL: preserve established synthesis and simulator workflows;
+  pin available tools and document vendor-specific requirements.
+
+Pin compatible toolchain versions. Avoid floating “latest” dependencies.
+Use frozen or locked dependency installation in CI where supported.
+
+## 5. Provide a real setup/bootstrap task
+
+Implement a documented setup command that provisions the tools needed
+for the selected lesson—not merely a command that reports missing tools.
+
+Provide a consistent task interface with operations equivalent to:
+
+- setup: provision required tools and install locked dependencies.
+- doctor: check versions and prerequisites, with actionable diagnostics.
+- build: generate runnable or distributable output.
+- test: execute meaningful automated verification.
+- preview: build and serve the lesson locally.
+- clean: remove generated output safely.
+
+Use Make targets if Make is appropriate and available, or an equivalent
+task runner or native build interface. Do not require users to install
+a task runner manually just to invoke setup.
+
+Provide bootstrap entry points suitable for:
+- Windows PowerShell.
+- macOS and Linux shells.
+
+For example, setup.ps1 and setup.sh may initialize the chosen tooling
+and then invoke the shared setup task. Follow existing repository
+conventions instead of introducing redundant entry points.
+
+The setup process must:
+- Detect the operating system, architecture, and existing tool versions.
+- Install missing redistributable tools automatically where practical.
+- Prefer project-local or user-local installation without administrator
+  privileges.
+- Use official distribution sources and verify downloads using available
+  checksums or signatures.
+- Install the project’s pinned dependencies.
+- Be idempotent: rerunning it should safely converge on a working setup.
+- Avoid replacing unrelated system toolchains or changing global
+  configuration unnecessarily.
+- Explain any required PATH changes or shell restart.
+- Fail clearly when installation is blocked, with exact recovery steps.
+
+Do not silently elevate privileges, accept licenses, install paid vendor
+tools, or start heavyweight services. For prerequisites requiring those
+actions, provide an explicit opt-in path or precise manual instructions.
+
+Separate essential tools from optional capabilities. For example:
+- Viewing a static lesson should not require Docker.
+- Integration tests may require Docker.
+- HDL simulation may require a simulator.
+- Synthesis may require separately licensed vendor software.
+
+Provide a documented way to set up one lesson and, where practical,
+an explicit opt-in way to provision all supported lessons. Default
+setup should not install every toolchain in the repository.
+
+Document any bootstrap prerequisite that cannot reasonably be eliminated.
+
+## 6. Preserve browser hosting compatibility
+
+Keep browser demos compatible with the repository’s GitHub Pages
+deployment and its repository subdirectory.
+
+Use appropriate relative URLs for navigation, assets, workers, runtime
+files, and downloads. Do not assume deployment at the domain root.
+
+Preserve real execution when a demo already runs code in the browser.
+Do not replace it with hardcoded output or a simulation to simplify
+deployment.
+
+Pin browser runtimes and document how they are acquired and rebuilt.
+Do not depend on private ChatGPT Site URLs or temporary artifact links.
+
+GitHub Pages serves static content; it does not run persistent application
+servers, databases, Docker containers, or hardware interfaces. Clearly
+document how features needing those resources are run.
+
+Reuse the existing publication workflow. Do not create competing
+deployment pipelines or change repository visibility or access settings.
+
+## 7. Verify meaningful behavior
+
+Run the applicable checks:
+- Lesson metadata and catalog generation.
+- Build and dependency consistency.
+- Example behavior and important failure paths.
+- Automated tests appropriate to the lesson.
+- Links, assets, downloads, and deployment subdirectory paths.
+- Interactive controls and runtime execution where browser verification
+  is available.
+- Existing lessons affected by shared changes.
+
+Integrate relevant verification into the existing CI workflow.
+
+Exercise setup in a clean environment where practical. Use CI to check
+supported platforms when available. Do not claim Windows or macOS support
+has been tested based only on a Linux run.
+
+Do not add superficial tests that merely repeat the implementation.
+Do not report unexecuted tests or simulated results as verified behavior.
+
+## 8. Document maintenance and provenance
+
+Update the lesson README with:
+- What the lesson teaches and why it matters.
+- Quick-start instructions from a clean checkout.
+- Setup, doctor, build, test, and preview commands.
+- Supported operating systems and toolchain versions.
+- Actual browser execution versus simulation.
+- Optional dependencies and backend or hardware requirements.
+- Troubleshooting and known limitations.
+- How to update dependencies and regenerate published output.
+- Source provenance, licenses, and technical references.
+
+Keep necessary source and build scripts in Git. Exclude secrets, caches,
+machine-specific paths, and disposable build output according to the
+repository’s existing publication strategy.
+
+If the original creation prompt is available and useful, preserve it
+in the lesson’s docs/BUILD_PROMPT.md as historical context. The current
+working project and latest requirements remain authoritative.
+
+## 9. Finish the integration
+
+Make the changes, run verification, and inspect the final diff.
+
+Commit and push the completed work to the destination repository.
+If branch protection requires a pull request, create one with a clear
+description and verification results.
+
+Do not overwrite concurrent work. Preserve unrelated changes.
+
+Report:
+- What was imported and where.
+- What changed in shared infrastructure.
+- The exact setup and preview commands.
+- What was tested and on which platforms.
+- Remaining limitations or manual prerequisites.
+- The commit or pull request.
+- Deployment status and the lesson URL if deployment is confirmed.
+
+Proceed autonomously with routine implementation decisions. Ask only
+when missing information or a consequential choice genuinely blocks
+completion.

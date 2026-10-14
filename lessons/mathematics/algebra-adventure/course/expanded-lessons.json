@@ -1,0 +1,1054 @@
+[
+  {
+    "hands": [
+      "Make one group of five counters. Beside it, make a group of three and a group of two. Count each side separately. You can move counters within a side without changing how many it holds.",
+      "Place a paper equals sign between the sides. Read the whole sentence: “Five has the same value as three plus two.” Point to each amount as you speak.",
+      "Reverse the sides. The same amounts are still present, so 3 + 2 = 5 is also true. The equals sign does not point in only one direction.",
+      "Now place six counters on the right. Compare again. Five and six do not match. Use ≠, which means “does not equal,” or say that the equation 5 = 6 is false."
+    ],
+    "meaning": [
+      [
+        "Two sides, one comparison",
+        "An equation compares the complete amount on the left with the complete amount on the right. Work out each side before deciding whether the statement is true. The equals sign does not mean “do this calculation and write the answer next.”"
+      ],
+      [
+        "Different writing can name one value",
+        "The expressions 5, 3 + 2, and 4 + 1 all have value five. An expression names an amount; an equation says that two amounts match. That is why an addition can appear on either side, or on both sides."
+      ],
+      [
+        "A missing number is part of its side",
+        "In 3 + 4 = □ + 5, the box is not the value of the whole left side. The whole right side must be seven. Five is already there, so the box holds two."
+      ],
+      [
+        "Check a guess on both sides",
+        "Try the box value in the original sentence. With two: 3 + 4 = 2 + 5 gives seven on each side. With seven: the right becomes twelve. A guess is useful when you check it."
+      ]
+    ],
+    "start": "6 + 2 = □ + 5",
+    "worked": [
+      [
+        "Find the whole left side: 6 + 2 = 8",
+        "The right side must also have value eight."
+      ],
+      [
+        "□ + 5 = 8",
+        "Five is already part of the right side."
+      ],
+      [
+        "□ = 3",
+        "Three and five make eight."
+      ],
+      [
+        "6 + 2 = 3 + 5",
+        "Check: eight equals eight. The two expressions look different but match."
+      ]
+    ],
+    "stories": [
+      {
+        "q": "Pip has 4 square tiles and 3 round tiles. A friend has 5 tiles plus some hidden tiles. Their totals match. How many are hidden?",
+        "a": "2 hidden tiles. 4 + 3 = 5 + 2 = 7."
+      },
+      {
+        "q": "Quinn writes 9 = 6 + 3. Reagan says the addition must come first. Who has a true equation? Explain.",
+        "a": "Quinn’s equation is true. Both sides are 9; reversing the sides also gives a true equation."
+      },
+      {
+        "q": "One shelf holds 2 books and 5 books. Another holds 4 books and 4 books. Do their counts match?",
+        "a": "No. The counts are 7 and 8."
+      }
+    ],
+    "faded": [
+      {
+        "q": "Complete both values: 4 + 2 = 3 + 3. Left value: __. Right value: __. True or false?",
+        "a": "6; 6; true."
+      },
+      {
+        "q": "Fill the box and check: 7 = □ + 4. □ = __ because __ + 4 = 7.",
+        "a": "3; 3."
+      },
+      {
+        "q": "Repair 2 + 3 = 4 + 2 by changing the final 2 only. Write the repaired equality.",
+        "a": "2 + 3 = 4 + 1. Both sides are 5."
+      }
+    ],
+    "revisit": [
+      {
+        "q": "Write two different expressions that both have value eight. Put an equals sign between them.",
+        "a": "Example: 3 + 5 = 6 + 2. Both sides equal 8."
+      },
+      {
+        "q": "Explain why the box in 5 + 2 = □ + 4 is not seven. Then find it.",
+        "a": "The right includes another 4. The box is 3, because 3 + 4 = 7."
+      },
+      {
+        "q": "Return tomorrow: explain 10 = 7 + 3 to someone who thinks equals means “the answer comes next.”",
+        "a": "Both sides have value 10. The equals sign compares values; either side may be an expression."
+      }
+    ]
+  },
+  {
+    "hands": [
+      "Put six counters on each of two mats. Say “six equals six.” Predict what will happen if you add two counters to each mat.",
+      "Add the two counters on the left, then on the right. During the first move the counts differ; after both moves they are eight and eight. The complete operation changes both sides.",
+      "Return to six on each mat. Remove one from each. The new counts are five and five. Taking the same amount away preserves the match.",
+      "Experiment: start with six on each mat and remove one from the left only. You now have five and six. Repair the match by removing one from the right."
+    ],
+    "meaning": [
+      [
+        "What stays the same?",
+        "The amounts may change from six to eight, but the relationship “same value” stays true. Preserving equality does not mean freezing the original numbers. It means keeping the two sides matched after the complete action."
+      ],
+      [
+        "Use the same operation and amount",
+        "Adding two on the left and subtracting two on the right are different actions. Subtracting one on the left and two on the right also uses different amounts. Check the resulting values rather than trusting that any two actions will work."
+      ],
+      [
+        "Transformation and reordering differ",
+        "From 2 = 2, adding five to both sides gives 2 + 5 = 2 + 5. Writing 5 + 2 instead of 2 + 5 on one side uses a separate fact about addition: order does not change that sum."
+      ],
+      [
+        "A move can be legal but unhelpful",
+        "Adding one to both sides of x + 2 = 5 gives x + 3 = 6. Equality is preserved, but x is not alone. Later we will choose moves that both preserve equality and help reveal the unknown."
+      ]
+    ],
+    "start": "7 = 7",
+    "worked": [
+      [
+        "7 + 3 = 7 + 3",
+        "Add the same amount, three, to each side."
+      ],
+      [
+        "10 = 10",
+        "Evaluate both sides. The values match."
+      ],
+      [
+        "10 − 4 = 10 − 4",
+        "Now take four away from each side."
+      ],
+      [
+        "6 = 6",
+        "The numbers changed again, but equality was preserved."
+      ]
+    ],
+    "stories": [
+      {
+        "q": "Two teams each have 8 practice pucks. Each receives 3 more. Write an equation for the new totals.",
+        "a": "8 + 3 = 8 + 3, so 11 = 11."
+      },
+      {
+        "q": "Two boxes each hold 9 blocks. Remove 2 from the left box only. What must you do to the right to restore the match?",
+        "a": "Remove 2 from the right too. Both then hold 7."
+      },
+      {
+        "q": "Each shelf holds 10 books. Take 3 from one shelf and 1 from the other. Are the counts still equal?",
+        "a": "No. They become 7 and 9."
+      }
+    ],
+    "faded": [
+      {
+        "q": "9 = 9. Subtract 4 on both sides: 9 − __ = 9 − __. Simplify: __ = __.",
+        "a": "4; 4; 5; 5."
+      },
+      {
+        "q": "5 = 5. Add __ to BOTH sides to reach 8 = 8.",
+        "a": "3."
+      },
+      {
+        "q": "Start with 6 = 6. A one-sided move gives 8 = 6. Write a move that repairs the right side.",
+        "a": "Add 2 to the right. It becomes 8 = 8."
+      }
+    ],
+    "revisit": [
+      {
+        "q": "Create a true equality, then show the same addition on both sides.",
+        "a": "Example: 4 = 4; 4 + 3 = 4 + 3; 7 = 7."
+      },
+      {
+        "q": "Why does adding two to only one side of a true equality break it?",
+        "a": "One value increases by 2 while the other stays unchanged, so the values no longer match."
+      },
+      {
+        "q": "Later check: start with 12 = 12, subtract 5 from BOTH sides, and explain what stayed true.",
+        "a": "7 = 7. Both values changed by the same amount; equality stayed true."
+      }
+    ]
+  },
+  {
+    "hands": [
+      "Place five counters beneath a cup. Tell the learner only that the hidden count equals three plus two. Use a drawn box to name the hidden count.",
+      "Write □ = 3 + 2. Work out the right side. Lift the cup to check that the box stands for five.",
+      "Replace the drawn box with x. The hidden amount has not changed. x is another way to name that same number in this problem.",
+      "Start a new problem with two counters beside a cup and three in total. Ask how many are under the cup. Write 2 + x = 3 and test x = 1."
+    ],
+    "meaning": [
+      [
+        "A letter is a name for a number",
+        "In x = 3 + 2, the letter x stands for a numerical value. It is not a picture of a particular object. We can use the same algebra for counters, beads, distances, or other quantities."
+      ],
+      [
+        "One problem, one value",
+        "Within one fixed problem, every occurrence of x names the same number. Once we find x = 5, we replace every x in that problem with five. A new problem may use x for another number."
+      ],
+      [
+        "Read the whole expression",
+        "The statement x = 3 + 2 says that x equals the value of the whole sum. It does not say x is three or that x is two. Evaluate the complete right side to find five."
+      ],
+      [
+        "x and × are different marks",
+        "A letter x can name an unknown. The multiplication sign × means multiply. We will later use 2x to mean 2 × x, but the letter itself is still a number, not the multiplication action."
+      ]
+    ],
+    "start": "x = 4 + 3",
+    "worked": [
+      [
+        "x = 7",
+        "Evaluate the complete sum: four plus three."
+      ],
+      [
+        "Replace x by 7 in the original",
+        "Checking uses the original sentence, not only the answer you just wrote."
+      ],
+      [
+        "7 = 4 + 3",
+        "The right side is seven too."
+      ],
+      [
+        "7 = 7",
+        "The replacement makes a true equation, so seven works."
+      ]
+    ],
+    "stories": [
+      {
+        "q": "A covered tray contains the same number of tiles as 2 tiles plus 6 tiles. Write an equation using x and find x.",
+        "a": "x = 2 + 6; x = 8."
+      },
+      {
+        "q": "Pip writes x = 5 in one problem and x = 3 in a new problem. Has he broken the rule about x?",
+        "a": "No. Each problem has its own fixed value of x."
+      },
+      {
+        "q": "A card says 2 + x = 3. Try x = 1. What does the whole left side become?",
+        "a": "2 + 1 = 3. It matches the right side."
+      }
+    ],
+    "faded": [
+      {
+        "q": "x = 6 + 2. Evaluate: x = __. Check: __ = 6 + 2.",
+        "a": "8; 8."
+      },
+      {
+        "q": "A box and x name the same hidden number. □ = 4 + 1, so x = __.",
+        "a": "5."
+      },
+      {
+        "q": "Test x = 2 in 3 + x = 5. Replacement: 3 + __ = 5. Is it true?",
+        "a": "2; yes, because 3 + 2 = 5."
+      }
+    ],
+    "revisit": [
+      {
+        "q": "Invent an equation of the form x = a sum. Solve and check it.",
+        "a": "Example: x = 2 + 7; x = 9; check 9 = 2 + 7."
+      },
+      {
+        "q": "Explain what stays fixed if x appears twice in one problem.",
+        "a": "Both occurrences of x represent the same numerical value in that problem."
+      },
+      {
+        "q": "Later check: x = 5 + 4. Find x without a hint, then say how you checked.",
+        "a": "x = 9; substitute nine to get 9 = 5 + 4."
+      }
+    ]
+  },
+  {
+    "hands": [
+      "Put an unknown number of counters under a cup and two visible counters beside it. Say that the entire left side holds three counters.",
+      "Write 2 + x = 3. Point to the visible two, the hidden amount x, and the total on the right. We want the hidden amount by itself.",
+      "Remove the two visible counters from the left. To preserve equality, remove two from the right-side total too. Only one remains on the right.",
+      "Write x = 1, then rebuild the original arrangement. Two visible counters plus one hidden counter make three."
+    ],
+    "meaning": [
+      [
+        "Undo the addition",
+        "Adding two to x made three. Subtracting two reverses that addition. Applying the subtraction to both sides preserves equality and leaves x alone. That is the reason for the step, rather than a rule about moving symbols."
+      ],
+      [
+        "The unknown can appear in different places",
+        "2 + x = 3 and x + 2 = 3 both add two to x. Reversing the whole equation gives 3 = x + 2. All three equations have x = 1. Read the relationship before choosing an operation."
+      ],
+      [
+        "Zero is a number too",
+        "In 2 + x = 2, subtracting two from both sides leaves x = 0. The empty hidden group contains zero counters. Check that 2 + 0 = 2. Do not reject zero merely because nothing is under the cup."
+      ],
+      [
+        "Use the original to check",
+        "If you guess x = 11 in x + 3 = 8, substitution gives 11 + 3 = 14, not 8. Checking catches the mistake. Subtracting three from both sides gives the working answer x = 5."
+      ]
+    ],
+    "start": "9 = x + 4",
+    "worked": [
+      [
+        "9 − 4 = x + 4 − 4",
+        "The sides are reversed, but we still subtract four from BOTH sides."
+      ],
+      [
+        "5 = x",
+        "Four added and four subtracted cancel on the right."
+      ],
+      [
+        "x = 5",
+        "We may reverse the two equal sides."
+      ],
+      [
+        "9 = 5 + 4",
+        "Check the original orientation: nine equals nine."
+      ]
+    ],
+    "stories": [
+      {
+        "q": "Quinn has some pucks and receives 3 more. He now has 8. Write an equation and find the starting count.",
+        "a": "x + 3 = 8; x = 5. Check 5 + 3 = 8."
+      },
+      {
+        "q": "Reagan adds 4 beads to an empty string. It has 4 beads. What was the starting count?",
+        "a": "0; x + 4 = 4 gives x = 0."
+      },
+      {
+        "q": "A box has a mystery count plus 2 loose blocks, 9 in all. Find the mystery count.",
+        "a": "x + 2 = 9; x = 7."
+      }
+    ],
+    "faded": [
+      {
+        "q": "x + 5 = 12. Subtract __ from both sides. x = __.",
+        "a": "5; 7."
+      },
+      {
+        "q": "3 + x = 3. Write 3 + x − __ = 3 − __. Then x = __.",
+        "a": "3; 3; 0."
+      },
+      {
+        "q": "10 = x + 6. After subtracting six: __ = x. Write x = __.",
+        "a": "4; 4."
+      }
+    ],
+    "revisit": [
+      {
+        "q": "Create an addition equation whose solution is x = 0.",
+        "a": "Example: x + 5 = 5. Subtract 5 from both sides; x = 0."
+      },
+      {
+        "q": "Solve 4 + x = 11 and explain the operation, not a symbol-moving rule.",
+        "a": "Subtract 4 from both sides. x = 7; check 4 + 7 = 11."
+      },
+      {
+        "q": "Later check: 8 = x + 3. Solve and check in this orientation.",
+        "a": "x = 5; check 8 = 5 + 3."
+      }
+    ]
+  },
+  {
+    "hands": [
+      "Start with seven counters beneath a cover. Remove three and show that four remain. Ask the learner to reconstruct the starting amount.",
+      "Write x − 3 = 4. x names what was there BEFORE the removal. The visible four is the remainder, not the starting count.",
+      "Restore three counters on the left. Add three to the right-side amount too. The equation becomes x − 3 + 3 = 4 + 3.",
+      "Count seven. Check by starting with seven again and removing three. The original story ends with four as required."
+    ],
+    "meaning": [
+      [
+        "Follow the story’s time order",
+        "First there was x, then three were removed, then four remained. Solving runs this process backward: restore the removed three to find the original amount. It does not mean remove another three from the remainder."
+      ],
+      [
+        "Addition undoes subtraction",
+        "The pair “subtract three, add three” leaves the starting number unchanged. That is why x − 3 + 3 simplifies to x. We add three on the other side too, preserving equality."
+      ],
+      [
+        "Look at the operation on x",
+        "In x + 3 = 4 we would subtract three. In x − 3 = 4 we add three. The visible number is the same, but the operation attached to x differs. Read the sign instead of using one automatic rule."
+      ],
+      [
+        "Check by doing the original removal",
+        "After finding x = 7, calculate 7 − 3. It is four, so the answer fits. Checking by adding again only repeats the solving step; returning to the original subtraction is stronger evidence."
+      ]
+    ],
+    "start": "x − 4 = 6",
+    "worked": [
+      [
+        "x − 4 + 4 = 6 + 4",
+        "Restore four to both sides."
+      ],
+      [
+        "x = 10",
+        "Subtracting four and adding four undo each other."
+      ],
+      [
+        "10 − 4 = 6",
+        "Use ten in the original equation."
+      ],
+      [
+        "6 = 6",
+        "The starting amount ten passes the check."
+      ]
+    ],
+    "stories": [
+      {
+        "q": "Reagan gives away 2 beads and has 5 left. How many did she start with?",
+        "a": "x − 2 = 5; x = 7. Check 7 − 2 = 5."
+      },
+      {
+        "q": "A goalie saves some practice pucks. Four are put away and six remain. How many were there before?",
+        "a": "x − 4 = 6; x = 10."
+      },
+      {
+        "q": "Pip removes 5 blocks from a tray and none remain. Find the original count.",
+        "a": "x − 5 = 0; x = 5."
+      }
+    ],
+    "faded": [
+      {
+        "q": "x − 2 = 7. Add __ to both sides. x = __.",
+        "a": "2; 9."
+      },
+      {
+        "q": "x − 5 = 0. x − 5 + 5 = __ + __. Then x = __.",
+        "a": "0; 5; 5."
+      },
+      {
+        "q": "x − 3 = 8. Candidate x = 11. Complete the check: __ − 3 = __.",
+        "a": "11; 8."
+      }
+    ],
+    "revisit": [
+      {
+        "q": "Create a subtraction equation with solution x = 9. Solve it using both sides.",
+        "a": "Example: x − 4 = 5; add 4 to both sides; x = 9."
+      },
+      {
+        "q": "Explain why taking away more is not the undoing action in x − 2 = 6.",
+        "a": "Two were already removed. Adding two restores the starting count; x = 8."
+      },
+      {
+        "q": "Later check: x − 6 = 4. Find x, then check.",
+        "a": "x = 10. Check 10 − 6 = 4."
+      }
+    ]
+  },
+  {
+    "hands": [
+      "Tell the learner that two bags hold the SAME number of counters, with eight altogether. Equal-looking bags alone would not tell us that their contents match.",
+      "Write x for the number in each bag. The total is x + x, which can also be written 2 × x or 2x. Say “two copies of x.” Pause until this meaning is clear.",
+      "Share eight counters equally between two circles. Both circles get four. Dividing the total by two also divides the two copies of x into one copy each.",
+      "Write 2x ÷ 2 = 8 ÷ 2, then x = 4. Recombine the groups to check that four plus four makes eight."
+    ],
+    "meaning": [
+      [
+        "Why the same letter?",
+        "The problem tells us the two counts are equal. Using x in both places records that fact. If the counts were not known to match, using x for both would add an assumption the story did not give us."
+      ],
+      [
+        "What the coefficient tells us",
+        "The number in front of x tells how many copies of x are added. 3x means x + x + x. It does not tell us x itself. In 3x = 12, three equal copies together make twelve."
+      ],
+      [
+        "Multiplication is not adding a small extra",
+        "At x = 3, 2x means 2 × 3 = 6. The expression x + 2 means 3 + 2 = 5. The two expressions can look similar but describe different actions. Point to groups when explaining the difference."
+      ],
+      [
+        "Share both complete sides",
+        "To solve 3x = 12, divide the three x-groups and the total twelve by three. One group remains on the left and four on the right. Check by multiplying: 3 × 4 = 12."
+      ]
+    ],
+    "start": "3x = 15",
+    "worked": [
+      [
+        "x + x + x = 15",
+        "Read 3x as three copies of the same unknown."
+      ],
+      [
+        "3x ÷ 3 = 15 ÷ 3",
+        "Divide BOTH sides into three equal parts."
+      ],
+      [
+        "x = 5",
+        "One equal group contains five."
+      ],
+      [
+        "3 × 5 = 15",
+        "Check by putting the three groups back together."
+      ]
+    ],
+    "stories": [
+      {
+        "q": "Three bags hold equal numbers of pucks, 12 altogether. Find the number in EACH bag.",
+        "a": "3x = 12; x = 4 pucks per bag."
+      },
+      {
+        "q": "Two shelves hold the same count of books, 10 altogether. Find each count.",
+        "a": "2x = 10; x = 5."
+      },
+      {
+        "q": "Four equal groups total 8 counters. What does 4x mean here, and what is x?",
+        "a": "4x means four copies of the group count. x = 2."
+      }
+    ],
+    "faded": [
+      {
+        "q": "2x = 14. Divide BOTH sides by __. Then x = __.",
+        "a": "2; 7."
+      },
+      {
+        "q": "x + x + x = 18. Rewrite as __x = 18. Then x = __.",
+        "a": "3; 6."
+      },
+      {
+        "q": "At x = 4: 2x = __, but x + 2 = __.",
+        "a": "8; 6."
+      }
+    ],
+    "revisit": [
+      {
+        "q": "Make a story for 3x = 18. Tell what x counts.",
+        "a": "Example: three bags have equal counter counts, eighteen total; x is counters per bag, so x = 6."
+      },
+      {
+        "q": "Why must a story say the amounts are equal before you label every bag x?",
+        "a": "The repeated letter states that the counts match. Appearance alone does not establish equal contents."
+      },
+      {
+        "q": "Later check: 4x = 20. Solve, then check by multiplication.",
+        "a": "x = 5; 4 × 5 = 20."
+      }
+    ]
+  },
+  {
+    "hands": [
+      "Place a card reading x = 3 beside the workspace. Keep it visible: this is information we already know, not a new mystery to solve.",
+      "Write B = 2 + x. Cover only the x with a card showing three. Everything else, including the plus two, stays unchanged.",
+      "Read B = 2 + 3, then calculate B = 5. Check by returning to the two given statements: x is three and B is two more.",
+      "For a NEW example, change the known card to x = 4. Find the new B. Explain that x did not change inside the old example; you started another example."
+    ],
+    "meaning": [
+      [
+        "Separate known and unknown",
+        "In x = 3 and B = x + 2, x is known and B is the number to find. We are not trying to determine two unknowns from one clue. The known value makes substitution possible immediately."
+      ],
+      [
+        "Replace just the letter",
+        "Put the equal number exactly where the letter appears. B = 2 + x becomes B = 2 + 3, not B = 3 and not B = 2 × 3. Keep the operation and the other terms unchanged."
+      ],
+      [
+        "A relationship may allow many pairs",
+        "B = x + 3 by itself does not select one pair. x = 1 with B = 4 works, and x = 2 with B = 5 works too. Extra information, such as a known x, is needed to choose among these pairs."
+      ],
+      [
+        "Names do not force different values",
+        "Two different letters may name the same number. If x = 4 and B = x + 0, then B = 4 as well. The relationship determines whether values match; the spelling of their names does not."
+      ]
+    ],
+    "start": "x = 5; B = x + 4",
+    "worked": [
+      [
+        "Known x is 5",
+        "Leave the known-value card visible while you work."
+      ],
+      [
+        "B = 5 + 4",
+        "Replace x, and only x, with five."
+      ],
+      [
+        "B = 9",
+        "Evaluate the sum."
+      ],
+      [
+        "9 = 5 + 4",
+        "Check the relationship using the known x and the found B."
+      ]
+    ],
+    "stories": [
+      {
+        "q": "Quinn has x = 4 stickers. Reagan has B = x + 3. Find B.",
+        "a": "B = 4 + 3 = 7."
+      },
+      {
+        "q": "A red tray has R = 6 counters. A blue tray has B = R + 2. Find B.",
+        "a": "B = 6 + 2 = 8."
+      },
+      {
+        "q": "Pip knows x = 5 and B = x + 0. Are x and B different just because their names differ?",
+        "a": "No. Both values are 5."
+      }
+    ],
+    "faded": [
+      {
+        "q": "Known x = 2. B = x + 5 → B = __ + 5 → B = __.",
+        "a": "2; 7."
+      },
+      {
+        "q": "Known R = 4. B = R + 1 → B = __ + __ → B = __.",
+        "a": "4; 1; 5."
+      },
+      {
+        "q": "B = x + 2. Give the missing B in each NEW example: x = 1, B = __; x = 3, B = __.",
+        "a": "3; 5."
+      }
+    ],
+    "revisit": [
+      {
+        "q": "Create a known-x substitution example, then find B.",
+        "a": "Example: x = 6 and B = x + 2, so B = 8."
+      },
+      {
+        "q": "Explain why B = x + 4 by itself does not tell one exact B.",
+        "a": "x has not been specified. Different x values give different B values, such as (1,5) and (2,6)."
+      },
+      {
+        "q": "Later check: x = 7 and B = 3 + x. Name the known value and find the unknown.",
+        "a": "x = 7 is known. B = 3 + 7 = 10."
+      }
+    ]
+  },
+  {
+    "hands": [
+      "Show two bags with equal unknown counter counts and three loose counters. Tell the learner the entire collection has eleven counters.",
+      "Write 2x + 3 = 11. Point to two equal groups for 2x and to the loose counters for + 3. The right side is the total of everything.",
+      "Remove three loose counters from the left and three counters from the total on the right. Eight remain for the two equal groups.",
+      "Share those eight into two groups of four. Write x = 4 and rebuild the entire original collection: two fours plus three make eleven."
+    ],
+    "meaning": [
+      [
+        "Read the layers",
+        "The expression 2x + 3 describes two copies of x and then three extras. It is not two copies of x + 3. Naming the layers helps you choose what to undo first."
+      ],
+      [
+        "Remove extras before sharing",
+        "Subtracting three from both sides leaves 2x = 8. Now every remaining counter belongs to the equal groups, so dividing by two directly reveals the group count. This is a useful first method for beginners."
+      ],
+      [
+        "Keep every term if you divide first",
+        "A different legal method may divide the whole side first. For 2x + 4 = 12, dividing by two gives x + 2 = 6. The four must also be divided. Leaving it as four changes the equation incorrectly."
+      ],
+      [
+        "Check all the original parts",
+        "After x = 4, return to 2x + 3 = 11. Two times four is eight, and eight plus three is eleven. Stopping after 2 × 4 = 8 checks only the reduced equation, not the complete original."
+      ]
+    ],
+    "start": "3x + 2 = 14",
+    "worked": [
+      [
+        "3x + 2 − 2 = 14 − 2",
+        "Remove the two extras from BOTH sides."
+      ],
+      [
+        "3x = 12",
+        "Twelve remain in three equal groups."
+      ],
+      [
+        "3x ÷ 3 = 12 ÷ 3",
+        "Share both sides into three equal parts."
+      ],
+      [
+        "x = 4",
+        "One group contains four."
+      ],
+      [
+        "3 × 4 + 2 = 14",
+        "Check both the repeated groups and the extras."
+      ]
+    ],
+    "stories": [
+      {
+        "q": "Two equal bags and 5 loose counters total 13. Find the number in each bag.",
+        "a": "2x + 5 = 13; 2x = 8; x = 4."
+      },
+      {
+        "q": "Three identical-count trays plus 2 loose pucks total 17 pucks. Find each tray count.",
+        "a": "3x + 2 = 17; 3x = 15; x = 5."
+      },
+      {
+        "q": "Two equal stacks plus 4 loose blocks total 10. Find each stack count.",
+        "a": "2x + 4 = 10; 2x = 6; x = 3."
+      }
+    ],
+    "faded": [
+      {
+        "q": "2x + 3 = 15. Subtract __: 2x = __. Divide by __: x = __.",
+        "a": "3; 12; 2; 6."
+      },
+      {
+        "q": "3x + 1 = 10. First 3x = __. Then x = __. Check 3 × __ + 1 = 10.",
+        "a": "9; 3; 3."
+      },
+      {
+        "q": "Divide the WHOLE equation 2x + 4 = 12 by two: x + __ = __. Then x = __.",
+        "a": "2; 6; 4."
+      }
+    ],
+    "revisit": [
+      {
+        "q": "Invent a two-step equation whose solution is x = 3. Show both undoing actions.",
+        "a": "Example: 2x + 4 = 10; subtract 4 to get 2x = 6; divide by 2 to get x = 3."
+      },
+      {
+        "q": "Why is dividing only 2x, but leaving + 4 alone, wrong when dividing 2x + 4 = 12 by two?",
+        "a": "The entire side must be divided. Correctly, x + 2 = 6, not x + 4 = 6."
+      },
+      {
+        "q": "Later check: 2x + 5 = 17. Solve and check the original.",
+        "a": "Subtract 5: 2x = 12. Divide by 2: x = 6. Check 2 × 6 + 5 = 17."
+      }
+    ]
+  },
+  {
+    "hands": [
+      "Draw a bar for a red-bead count R. Draw a second bar with a matching R-sized part and two extra units. Label the second bar blue, B.",
+      "Say “Blue has two more than red.” Trace the red-sized part first and the two extras second. Write B = R + 2.",
+      "Try R = 3 and find B = 5. Now try a NEW pair R = 4 and B = 6. Both have the same difference even though their totals differ.",
+      "Read the reversed relation R = B + 2. It says red is larger, which contradicts the story. Return to the words and repair the relation."
+    ],
+    "meaning": [
+      [
+        "Decide which count is larger",
+        "The wording “five more adults than children” says that the adult count is larger. Begin with the child count and add the extras to reach the adult count. That gives A = C + 5."
+      ],
+      [
+        "Letters stand for counts",
+        "A does not stand for one adult as an object. It names the number of adults. C names the number of children. Write these definitions beside your equations when a story has several quantities."
+      ],
+      [
+        "A comparison is not yet a total",
+        "A = C + 5 gives a difference, not how many people are in the room. C = 3 and A = 8 fit; C = 4 and A = 9 fit too. Both pairs obey the comparison."
+      ],
+      [
+        "Check the language with a small example",
+        "Suppose there are three children. Five more adults means eight adults. The relation A = C + 5 produces eight, while C = A + 5 would not. A simple trial pair can help catch a reversed translation."
+      ]
+    ],
+    "start": "Blue has 3 more beads than red.",
+    "worked": [
+      [
+        "Let B be blue count and R be red count",
+        "Define the numerical quantities before writing the relation."
+      ],
+      [
+        "B = R + 3",
+        "Blue is the larger count, so add three to red."
+      ],
+      [
+        "If R = 4, then B = 4 + 3 = 7",
+        "This is one possible pair, not the only pair without a total."
+      ],
+      [
+        "7 − 4 = 3",
+        "Check the stated difference."
+      ]
+    ],
+    "stories": [
+      {
+        "q": "There are 4 more adults than children. Use A and C to write the comparison.",
+        "a": "A = C + 4."
+      },
+      {
+        "q": "Blue has 2 more beads than red. There are 6 red. Find blue and check the difference.",
+        "a": "B = R + 2; B = 8. Check 8 − 6 = 2."
+      },
+      {
+        "q": "Long sticks outnumber short sticks by 3. Write a relation using L and S. Which count is larger?",
+        "a": "L = S + 3. The long-stick count is larger."
+      }
+    ],
+    "faded": [
+      {
+        "q": "Five more adults than children: A = __ + __.",
+        "a": "C; 5."
+      },
+      {
+        "q": "B = R + 4 and R = 2. Substitute: B = __ + __ = __.",
+        "a": "2; 4; 6."
+      },
+      {
+        "q": "Red has 2 fewer beads than blue. Complete the equivalent “more” relation: B = R + __.",
+        "a": "2."
+      }
+    ],
+    "revisit": [
+      {
+        "q": "Write a “more than” story that fits B = R + 3.",
+        "a": "Example: there are three more blue beads than red beads."
+      },
+      {
+        "q": "Give two possible pairs for A = C + 2. Why are both allowed?",
+        "a": "Examples: C = 1, A = 3 and C = 4, A = 6. Both have difference 2; no total was given."
+      },
+      {
+        "q": "Later check: five more blue than red, R = 4. Find B and explain which count receives the extras.",
+        "a": "B = R + 5 = 9. Add the extras to red to find the larger blue count."
+      }
+    ]
+  },
+  {
+    "hands": [
+      "Read the two clues separately: five more adults than children, thirteen people altogether. Define A and C as the two counts.",
+      "Draw a child bar C and an adult bar made of C plus five extras. The bars together total thirteen. Cover or remove the five extra units, leaving eight for two equal C-sized parts.",
+      "Split eight into two equal parts of four. There are four children and nine adults. Check thirteen in total and a difference of five. Pause here if needed.",
+      "Connect the picture to symbols: A = C + 5 and A + C = 13. Replace the whole A with (C + 5), giving (C + 5) + C = 13. Now solve the familiar two-step equation."
+    ],
+    "meaning": [
+      [
+        "The two clues have different jobs",
+        "The comparison relates the quantities: A = C + 5. The total links their combined amount: A + C = 13. Either clue alone allows many possible pairs here; together they determine the two counts."
+      ],
+      [
+        "Replace an equal expression",
+        "Substitution can replace a letter with an expression, not only with a single numeral. Since A and C + 5 name the same count, replacing A by the entire expression preserves the total statement. Parentheses help keep that replacement together."
+      ],
+      [
+        "Combine copies of one unknown",
+        "(C + 5) + C contains two copies of C and five extras. It becomes 2C + 5. The matching bar in the adult row is an adult amount equal to C; it is not another actual group of children."
+      ],
+      [
+        "Both clues must pass",
+        "The pair five children and eight adults totals thirteen, but its difference is three, not five. A solution must satisfy both original statements. Four and nine work because 4 + 9 = 13 and 9 − 4 = 5."
+      ]
+    ],
+    "start": "Four more blue beads than red; sixteen altogether.",
+    "worked": [
+      [
+        "B = R + 4 and B + R = 16",
+        "One equation records the comparison; one records the total."
+      ],
+      [
+        "(R + 4) + R = 16 → 2R + 4 = 16",
+        "Replace the whole B and combine the two equal R amounts."
+      ],
+      [
+        "2R = 12",
+        "Subtract four from both sides."
+      ],
+      [
+        "R = 6; B = 6 + 4 = 10",
+        "Divide by two, then return to the comparison."
+      ],
+      [
+        "6 + 10 = 16; 10 − 6 = 4",
+        "Check both the total and difference."
+      ]
+    ],
+    "stories": [
+      {
+        "q": "There are 3 more adults than children, 11 people altogether. Find both counts and check both clues.",
+        "a": "4 children, 7 adults. 4 + 7 = 11; 7 − 4 = 3."
+      },
+      {
+        "q": "Blue beads exceed red by 2. There are 14 beads altogether. Find both counts.",
+        "a": "6 red, 8 blue. 6 + 8 = 14; 8 − 6 = 2."
+      },
+      {
+        "q": "There are 4 more long sticks than short sticks and 12 altogether. Find both counts.",
+        "a": "4 short, 8 long. 4 + 8 = 12; 8 − 4 = 4."
+      }
+    ],
+    "faded": [
+      {
+        "q": "A = C + 3; A + C = 11. Replace A: (__ + 3) + C = 11. Then 2C = __, C = __, A = __.",
+        "a": "C; 8; 4; 7."
+      },
+      {
+        "q": "B = R + 2; B + R = 14. 2R + 2 = 14 → 2R = __ → R = __ → B = __.",
+        "a": "12; 6; 8."
+      },
+      {
+        "q": "Check C = 4, A = 9: total __ + __ = __; difference __ − __ = __.",
+        "a": "4 + 9 = 13; 9 − 4 = 5."
+      }
+    ],
+    "revisit": [
+      {
+        "q": "Create a total-and-difference story with smaller count 3 and larger count 7. State BOTH clues.",
+        "a": "Example: 4 more blue beads than red, 10 altogether. Counts are 3 red and 7 blue."
+      },
+      {
+        "q": "Explain why dividing the total 13 by two immediately fails in the five-extra story.",
+        "a": "The five extras belong only to the larger count. Remove them first; the remaining 8 can share equally."
+      },
+      {
+        "q": "Later check: 2 more adults than children, 10 people total. Find both and check.",
+        "a": "4 children and 6 adults. Total 10, difference 2."
+      }
+    ]
+  },
+  {
+    "hands": [
+      "Make four equation cards: x + 4 = 9, x − 4 = 3, 2x = 10, and 2x + 1 = 9. Do not label them by method.",
+      "Before solving, ask what happened to x in each card. Point to the operation that a useful first move would undo.",
+      "Solve one card with counters or a picture and another with symbols. Both routes should keep the relationship true and identify a value.",
+      "Check every answer in its original card. Save one card to revisit at the next session, without showing the old work first."
+    ],
+    "meaning": [
+      [
+        "Choose from meaning, not the last lesson",
+        "Mixed practice asks you to recognize the operation each time. An addition equation needs subtraction; a subtraction equation needs addition. Do not assume that today’s answer always uses the same action as the previous question."
+      ],
+      [
+        "Explain the first move",
+        "Saying “subtract four from both sides because four was added to x” connects the operation to a reason. The explanation may be spoken, drawn, or shown with objects. It need not be a formal paragraph."
+      ],
+      [
+        "Use a failed check as information",
+        "If an answer fails, keep the original equation visible. Find the step that changed the relationship or used the wrong undoing action. Repair that step rather than guessing new numbers without checking."
+      ],
+      [
+        "Revisiting is part of learning",
+        "A correct answer after a hint is worthwhile practice. A fresh explanation without a hint provides different evidence. Returning later helps you see what stayed with you. None of these observations is a speed contest."
+      ]
+    ],
+    "start": "x − 4 = 3",
+    "worked": [
+      [
+        "Choose addition, not subtraction",
+        "Four was taken away from x; restore it."
+      ],
+      [
+        "x − 4 + 4 = 3 + 4",
+        "Apply the same action to both sides."
+      ],
+      [
+        "x = 7",
+        "The starting amount is seven."
+      ],
+      [
+        "7 − 4 = 3",
+        "Return to the original subtraction to verify the answer."
+      ]
+    ],
+    "stories": [
+      {
+        "q": "Quinn receives 4 pucks and now has 9. Find the starting count and name the undoing action.",
+        "a": "x + 4 = 9; subtract 4 from both sides; x = 5."
+      },
+      {
+        "q": "Reagan puts away 4 beads and has 3 left. Find the starting count and name the undoing action.",
+        "a": "x − 4 = 3; add 4 to both sides; x = 7."
+      },
+      {
+        "q": "Two equal bags and 1 loose counter total 9. Find the count per bag and check.",
+        "a": "2x + 1 = 9; subtract 1, then divide by 2. x = 4; check 2 × 4 + 1 = 9."
+      }
+    ],
+    "faded": [
+      {
+        "q": "Choose an action: x + 2 = 8. First __ two from both sides. Then x = __.",
+        "a": "subtract; 6."
+      },
+      {
+        "q": "Choose an action: x − 2 = 8. First __ two to both sides. Then x = __.",
+        "a": "add; 10."
+      },
+      {
+        "q": "2x + 3 = 13. First subtract __; then divide by __. x = __.",
+        "a": "3; 2; 5."
+      }
+    ],
+    "revisit": [
+      {
+        "q": "Write two equations that need different first moves. Explain each move.",
+        "a": "Example: x + 2 = 5 needs subtract 2; x − 2 = 5 needs add 2."
+      },
+      {
+        "q": "Repair this argument: “x + 3 = 8, so x = 11.” Include an original-equation check.",
+        "a": "Subtract 3, giving x = 5. Check 5 + 3 = 8. Eleven fails because 11 + 3 = 14."
+      },
+      {
+        "q": "Later check: solve 3x = 18 and x − 3 = 6. Why are the methods different?",
+        "a": "First divide by 3: x = 6. Second add 3: x = 9. Multiplication and subtraction need different undoing actions."
+      }
+    ]
+  },
+  {
+    "hands": [
+      "Set out twelve counters for people. Put five aside as the extra adults. Seven counters remain for two equal base counts.",
+      "Deal the seven remaining counters into two groups in pairs. Each group gets three and one counter remains. Whole people cannot be cut in half to make the groups equal.",
+      "Try a NEW story with four extra adults and twelve total. Remove four, leaving eight. The remainder divides into two groups of four; the larger count is then eight.",
+      "If halves are already familiar, discuss 3.5 and 8.5 as solutions of the first equations. They fit the arithmetic but cannot be counts of whole people in this room."
+    ],
+    "meaning": [
+      [
+        "Numbers and meanings both matter",
+        "An equation can produce numbers that do not fit the quantity being counted. A whole-person count must be a nonnegative whole number. A length or amount of liquid can instead include a fractional part."
+      ],
+      [
+        "Test the remainder after the extras",
+        "For these two-count stories, subtract the difference from the total. The remainder must be nonnegative and must divide into two equal whole-number parts. An odd remainder leaves one unit over."
+      ],
+      [
+        "Change one clue, start a new problem",
+        "With total twelve and difference five, seven remain, so there is no whole-person solution. With total twelve and difference four, eight remain, so four and eight work. The second story is a new problem, not a repair hidden inside the first."
+      ],
+      [
+        "Optional means optional",
+        "This extension asks you to think about the meaning of a solution. It is not needed to complete the earlier whole-number course. You can explain the impossible grouping with counters without doing decimal arithmetic."
+      ]
+    ],
+    "start": "Five more adults than children; fourteen people total.",
+    "worked": [
+      [
+        "14 − 5 = 9",
+        "Remove the five extra adults from the total."
+      ],
+      [
+        "Nine cannot share into two equal whole-number counts",
+        "Each group can get four, but one person remains."
+      ],
+      [
+        "No whole-person solution",
+        "The two story clues cannot both hold for whole-person counts."
+      ],
+      [
+        "Compare a NEW story: difference 4, total 14",
+        "Ten remain; C = 5 and A = 9. Check 5 + 9 = 14 and 9 − 5 = 4."
+      ]
+    ],
+    "stories": [
+      {
+        "q": "Five more adults than children, 12 people total. Can the counts be whole numbers? Explain with the remainder.",
+        "a": "No. 12 − 5 = 7 is odd."
+      },
+      {
+        "q": "Two more adults than children, 12 people total. Find the counts or explain why impossible.",
+        "a": "5 children and 7 adults. Total 12, difference 2."
+      },
+      {
+        "q": "Three more adults than children, 12 people total. Can the counts be whole numbers?",
+        "a": "No. 12 − 3 = 9 is odd."
+      }
+    ],
+    "faded": [
+      {
+        "q": "Total 13, difference 5. Remainder = __. Smaller = __. Larger = __.",
+        "a": "8; 4; 9."
+      },
+      {
+        "q": "Total 12, difference 5. Remainder = __. Is that even or odd? Whole-person solution?",
+        "a": "7; odd; no."
+      },
+      {
+        "q": "Total 12, difference 4. Remove __; share __ into two; counts are __ and __.",
+        "a": "4; 8; 4; 8."
+      }
+    ],
+    "revisit": [
+      {
+        "q": "Invent a total-and-difference story with NO whole-person solution. Explain the leftover.",
+        "a": "Example: total 10, difference 3. Seven remain, which cannot form two equal whole counts."
+      },
+      {
+        "q": "Invent a nearby story that DOES have whole-person counts. Check both clues.",
+        "a": "Example: total 10, difference 2. Counts 4 and 6; total 10 and difference 2."
+      },
+      {
+        "q": "Later check: total 15, difference 3. Find the counts or explain why impossible.",
+        "a": "6 children and 9 adults. 15 − 3 = 12; 12 ÷ 2 = 6. Checks: 6 + 9 = 15 and 9 − 6 = 3."
+      }
+    ]
+  }
+]

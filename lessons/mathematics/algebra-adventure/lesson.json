@@ -1,0 +1,22 @@
+{
+  "id": "algebra-adventure",
+  "title": "Algebra Adventure: from boxes to equations",
+  "summary": "Discover why changing both sides works. Solve live equations, connect school bar models to algebra, and check two-clue stories in twelve short episodes.",
+  "topic": "mathematics",
+  "level": "Beginner \u00b7 ages 8\u201310 with an adult",
+  "mode": "browser",
+  "languages": [
+    "JavaScript"
+  ],
+  "tags": [
+    "algebra",
+    "equality",
+    "bar models",
+    "offline",
+    "primary mathematics"
+  ],
+  "prerequisites": [
+    "Addition and subtraction with small whole numbers; counters welcome"
+  ],
+  "entrypoint": "index.html"
+}

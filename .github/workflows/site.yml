@@ -19,14 +19,39 @@ jobs:
           python-version: '3.12'
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '22.23.3'
       - run: python -m unittest discover -s tests -v
       - run: node --test lessons/software-design/facade/tests/*.cjs
+      - run: node lessons/mathematics/algebra-adventure/task.cjs build
+      - run: git diff --exit-code -- lessons/mathematics/algebra-adventure/app
       - run: python tools/catalog.py check
       - run: python tools/catalog.py build
       - uses: actions/upload-pages-artifact@v4
         with:
           path: _site
+  algebra:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Provision and test using shell bootstrap
+        if: runner.os != 'Windows'
+        run: sh lessons/mathematics/algebra-adventure/setup.sh test
+      - name: Provision and test using PowerShell bootstrap
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./lessons/mathematics/algebra-adventure/setup.ps1 test
+      - name: Rerun setup to verify idempotence
+        if: runner.os != 'Windows'
+        run: sh lessons/mathematics/algebra-adventure/setup.sh doctor
+      - name: Rerun Windows setup to verify idempotence
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./lessons/mathematics/algebra-adventure/setup.ps1 doctor
+      - run: git diff --exit-code -- lessons/mathematics/algebra-adventure/app
   pages-status:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -50,7 +75,7 @@ jobs:
               core.notice('One-time setup: Settings → Pages → Source → GitHub Actions. Then run this workflow again.');
             }
   deploy:
-    needs: [build, pages-status]
+    needs: [build, algebra, pages-status]
     if: needs.pages-status.outputs.enabled == 'true'
     runs-on: ubuntu-latest
     permissions:

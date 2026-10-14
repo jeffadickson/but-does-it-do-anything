@@ -61,11 +61,13 @@ python tools/catalog.py check
 python tools/catalog.py build
 ```
 
-Node 22 is used for the example's tests; it is not needed to build or serve the collection. CI uses Python 3.12 and Node 22. Each imported lesson keeps its own pinned dependencies and documented checks; the catalog build never executes arbitrary commands from metadata.
+Node 22.23.3 is used for the example's tests; it is not needed to build or serve the collection. CI uses Python 3.12 and Node 22.23.3. Each imported lesson keeps its own pinned dependencies and documented checks; the catalog build never executes arbitrary commands from metadata.
 
 ## Current contents
 
-One worked example: **Facade: more than a shorter function call**. It models a missed instrument-settling policy update and demonstrates the maintenance benefit of a shared facade. It is a conceptual simulation, not physical hardware control.
+**Algebra Adventure** is a twelve-episode browser course for children, with live equation activities and explicit connections from boxes and bars to letters. Start at [its README](lessons/mathematics/algebra-adventure/README.md); `sh lessons/mathematics/algebra-adventure/setup.sh preview` (or `./lessons/mathematics/algebra-adventure/setup.ps1 preview` on Windows) provisions just its tools and opens a local preview server. No tools are required to view its committed HTML.
+
+**Facade: more than a shorter function call**. It models a missed instrument-settling policy update and demonstrates the maintenance benefit of a shared facade. It is a conceptual simulation, not physical hardware control.
 
 Existing projects such as Pattern Atlas have not yet been migrated. Import them deliberately using the prompt; retain provenance, runtime assets, licenses and verification limits. Keep substantial products in their own repositories and import their educational demonstrations or link a pinned release.
 

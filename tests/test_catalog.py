@@ -11,7 +11,7 @@ class CatalogTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name)
         for folder in ('site','shared','templates','lessons'):
-            shutil.copytree(catalog.ROOT/folder,self.root/folder)
+            shutil.copytree(catalog.ROOT/folder,self.root/folder,ignore=shutil.ignore_patterns('.tools','node_modules','__pycache__'))
         self.path=self.root/'lessons/software-design/facade/lesson.json'
     def tearDown(self):self.temp.cleanup()
     def edit(self,**changes):
@@ -32,9 +32,10 @@ class CatalogTests(unittest.TestCase):
         self.edit(mode='pretend-real');
         with self.assertRaises(ValueError):catalog.collect(self.root)
     def test_new_lesson_appears_without_editing_homepage(self):
+        before=len(catalog.collect(self.root))
         catalog.create('mathematics','balance','Balance an equation',self.root)
         out=catalog.build(self.root)
-        self.assertEqual(len(json.loads((out/'catalog.json').read_text())),2)
+        self.assertEqual(len(json.loads((out/'catalog.json').read_text())),before+1)
         self.assertIn('Balance an equation',(out/'index.html').read_text())
         with self.assertRaises(ValueError):catalog.create('mathematics','balance','Overwrite',self.root)
 
