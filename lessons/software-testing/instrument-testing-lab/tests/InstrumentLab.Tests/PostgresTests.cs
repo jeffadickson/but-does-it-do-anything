@@ -4,7 +4,7 @@ using Testcontainers.PostgreSql;
 using Xunit;
 namespace InstrumentLab.Tests;
 public sealed class PostgresTests : IAsyncLifetime {
-    private readonly PostgreSqlContainer db = new PostgreSqlBuilder("postgres:16-alpine").Build();
+    private readonly PostgreSqlContainer db = new PostgreSqlBuilder().WithImage("postgres:16-alpine").Build();
     public Task InitializeAsync() => db.StartAsync();
     public Task DisposeAsync() => db.DisposeAsync().AsTask();
     [Fact]
