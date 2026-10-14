@@ -57,6 +57,28 @@ jobs:
         shell: pwsh
         run: ./lessons/mathematics/algebra-adventure/setup.ps1 doctor
       - run: git diff --exit-code -- lessons/mathematics/algebra-adventure/app
+  instrument-unit:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.408'
+      - name: Run xUnit / NSubstitute / WireMock tests
+        run: dotnet test lessons/software-testing/instrument-testing-lab/tests/InstrumentLab.Tests/InstrumentLab.Tests.csproj --filter FullyQualifiedName~WorkflowTests --configuration Release
+  instrument-postgres:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.408'
+      - name: Verify real PostgreSQL round trip through Testcontainers
+        run: dotnet test lessons/software-testing/instrument-testing-lab/tests/InstrumentLab.Tests/InstrumentLab.Tests.csproj --filter FullyQualifiedName~PostgresTests --configuration Release
   pages-status:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -80,7 +102,7 @@ jobs:
               core.notice('One-time setup: Settings → Pages → Source → GitHub Actions. Then run this workflow again.');
             }
   deploy:
-    needs: [build, algebra, pages-status]
+    needs: [build, algebra, instrument-unit, instrument-postgres, pages-status]
     if: needs.pages-status.outputs.enabled == 'true'
     runs-on: ubuntu-latest
     permissions:
