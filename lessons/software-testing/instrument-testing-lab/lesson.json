@@ -1,0 +1,26 @@
+{
+  "id": "instrument-testing-lab",
+  "title": "Testing instrument workflows: mock, stub, or run the real thing?",
+  "summary": "Run a browser model of a measurement test, break SCPI call order, simulate HTTP outages, and discover what xUnit, NSubstitute, WireMock.Net, and Testcontainers actually prove.",
+  "topic": "software-testing",
+  "level": "Intermediate",
+  "mode": "simulation",
+  "languages": [
+    "C#",
+    "JavaScript"
+  ],
+  "tags": [
+    "xUnit",
+    "NSubstitute",
+    "Testcontainers",
+    "WireMock.Net",
+    "integration tests",
+    "SCPI"
+  ],
+  "prerequisites": [
+    "C# async/await",
+    "Interfaces",
+    "Basic HTTP"
+  ],
+  "entrypoint": "index.html"
+}
