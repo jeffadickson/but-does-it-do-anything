@@ -24,7 +24,7 @@ python tools/catalog.py new software-testing testing-toolkit --title "Testing wi
 
 Edit the generated `lessons/software-testing/testing-toolkit/lesson.json` and `app/index.html`. Replace placeholder content, add the demo and its checks, then run check/build and commit. Do not publish unfilled templates. **The homepage discovers lesson.json files automatically. No manual card or catalog editing is required.**
 
-For importing an existing project, give its development agent [this prompt](docs/IMPORT_PROMPT.md). See [CONTRIBUTING.md](CONTRIBUTING.md) for the contract.
+For importing an existing project, copy the **[detailed, reusable lesson import prompt](docs/IMPORT_PROMPT.md)** into that project's development conversation. It includes metadata registration, educational requirements, cross-platform bootstrap, reproducible builds, CI checks, conflict handling, and GitHub Pages verification. See [CONTRIBUTING.md](CONTRIBUTING.md) for repository conventions. **No homepage edits are necessary:** `tools/catalog.py` finds each lesson from `lesson.json`.
 
 ## Where things live
 
