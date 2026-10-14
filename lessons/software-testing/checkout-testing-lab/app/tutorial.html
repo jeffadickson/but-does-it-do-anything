@@ -1,0 +1,39 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Checkout Testing Lab — Tutorial</title><style>body{max-width:920px;margin:2em auto;padding:0 20px;font:17px/1.65 system-ui,sans-serif;background:#101a2a;color:#e9f1ff}a{color:#9ad7ff}h1,h2{line-height:1.2}h2{margin-top:2em}pre{overflow:auto;background:#07101d;padding:18px;border-radius:10px}code{color:#aee3ff}blockquote{border-left:3px solid #8bbfea;padding-left:15px;color:#cddded}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #44566c;padding:10px;text-align:left}</style></head><body><p><a href="index.html">← Interactive demo</a> · <a href="../../../index.html">All lessons</a></p><h1>From mocks to real integration tests</h1>
+<p>This lesson tests a bookstore checkout, not an instrument controller. It demonstrates why each testing library is useful and when it is unnecessary. The browser experiment is a JavaScript model, not a .NET test runner. The companion source contains actual xUnit tests.</p>
+<h2>1. Start with the real problem</h2><p>A customer buys two $19.99 books. The application checks stock, requests a $39.98 payment authorization, stores the order, and sends a confirmation. The obvious test is “did checkout return success?” That question alone misses many expensive failures.</p>
+<h2>2. xUnit: the test runner and assertion vocabulary</h2><p>xUnit discovers <code>[Fact]</code> and <code>[Theory]</code> methods, runs them and reports failures. Its assertions define expected outcomes. It is not a mock library, database or HTTP server.</p><pre>[Fact]
+public async Task Invalid_cart_does_not_charge()
+{
+    var result = await service.PlaceAsync(new("", 0, "token"));
+    Assert.False(result.Success);
+}</pre><p>Run <code>dotnet test</code> to execute the C# suite. Fast unit tests should describe behavior, not just mirror implementation details.</p>
+<h2>3. NSubstitute: control and observe collaborator calls</h2><p>Inventory stock and email dispatch are separate concerns. A substitute lets the test set stock to available without needing the actual warehouse service, and verify a notification happened once.</p><pre>var inventory = Substitute.For&lt;IInventory&gt;();
+inventory.InStockAsync("BOOK-1", 2, Arg.Any&lt;CancellationToken&gt;())
+         .Returns(Task.FromResult(true));
+await inventory.Received(1).InStockAsync(
+    "BOOK-1", 2, Arg.Any&lt;CancellationToken&gt;());</pre><p>For order-sensitive synchronous interactions, <code>Received.InOrder(() =&gt; { ... })</code> can describe the expected invocation sequence. It observes invocation ordering, not completion ordering across independent asynchronous operations. A mock asserting a call happened is not proof that a production notification was delivered.</p>
+<h2>4. WireMock.Net: test your actual HTTP client</h2><p>A substituted <code>IPaymentGateway</code> cannot detect incorrect JSON property names, endpoint paths or content types. WireMock.Net starts a local HTTP endpoint. Your real <code>HttpClient</code> sends the request and a stubbed response exercises serialization and response handling.</p><pre>using var server = WireMockServer.Start();
+server.Given(Request.Create()
+    .WithPath("/authorize").UsingPost()
+    .WithBody(new JsonMatcher(new { amountCents = 3998, token = "valid" })))
+    .RespondWith(Response.Create().WithStatusCode(200)
+       .WithHeader("Content-Type", "application/json")
+       .WithBody("{\"approved\":true}"));</pre><p>A local fake does not ensure the real remote provider uses the same protocol; keep official API contracts and provider sandbox tests.</p>
+<h2>5. Testcontainers: run real PostgreSQL in Docker</h2><p>An in-memory list cannot detect PostgreSQL syntax errors, schemas, SQL types or transaction behavior. Testcontainers starts a disposable PostgreSQL container for the test, provides a connection string, and cleans up afterward.</p><pre>await using var db = new PostgreSqlBuilder("postgres:16-alpine")
+    .WithDatabase("checkout_tests")
+    .WithUsername("postgres")
+    .WithPassword("postgres").Build();
+await db.StartAsync();
+var store = new PgOrderStore(db.GetConnectionString());
+await store.InitializeAsync();</pre><p>Docker or a compatible container engine must be installed and running. CI runners need container support. The image tag in this teaching snapshot is not digest-pinned.</p>
+<h2>6. All four working together</h2><table><tr><th>Boundary</th><th>Implementation in combined test</th></tr><tr><td>Test orchestration</td><td>Real xUnit test</td></tr><tr><td>Checkout orchestration</td><td>Real CheckoutService</td></tr><tr><td>Stock and notification</td><td>NSubstitute</td></tr><tr><td>Payment API</td><td>Real HttpClient + WireMock.Net</td></tr><tr><td>Database</td><td>Real Npgsql + PostgreSQL container</td></tr></table>
+<p>The success test should assert HTTP request count, the stored row's SKU/quantity/amount and notification count. The decline test should assert zero rows and zero notifications. The database-failure test should assert that authorization occurred but insert failed and no notification went out.</p>
+<h2>7. Why the failure case matters</h2><p>It reveals a distributed consistency hole: a payment can be approved even though the order cannot be saved. Neither mocks nor a green unit suite resolves that problem. A real system should consider authorize-then-capture, idempotency keys, a persistent state machine, and an explicit reconciliation/compensation process. A test exposing this is a useful <em>failing architecture requirement</em>, not evidence of production readiness.</p>
+<h2>8. Reproduce locally</h2><pre>./setup.sh
+./task.sh doctor
+./task.sh test
+./task.sh preview
+# On Windows: .\setup.ps1 ; .\task.ps1 test</pre><p>Preview serves static HTML only. A separate integration-test command requires an explicit running Docker engine. The setup scripts do not install or start Docker without permission.</p>
+<h2>9. When to use which tool?</h2><p>Use xUnit for all ordinary C# tests. Use NSubstitute when a controlled collaborator or invocation contract matters. Use WireMock.Net when correctness depends on the HTTP wire contract. Use Testcontainers when correctness depends on the behavior of a real dependency. Resist adding a container to a pure calculation or mocking your own domain objects. Mock external edges and keep business logic real.</p>
+<h2>10. What has not been proved?</h2><p>The static browser example never runs .NET, WireMock.Net or PostgreSQL. A local test run does not validate provider uptime, production credentials, payment idempotency, production migrations, or full distributed failure recovery. See the lesson README for provenance and verification notes.</p>
+<p><b>Primary references:</b> <a href="https://xunit.net/">xUnit</a>, <a href="https://nsubstitute.github.io/">NSubstitute</a>, <a href="https://wiremock.org/dotnet/">WireMock.Net</a>, <a href="https://dotnet.testcontainers.org/">Testcontainers for .NET</a>, <a href="https://www.npgsql.org/">Npgsql</a>.</p></body></html>
