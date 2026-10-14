@@ -1,0 +1,12 @@
+{
+  "id": "facade",
+  "title": "Facade: more than a shorter function call",
+  "summary": "Two test procedures, a changed settling requirement, and one missed update. See when a shared instrument facade earns its keep.",
+  "topic": "software-design",
+  "level": "Intermediate",
+  "mode": "simulation",
+  "languages": ["JavaScript"],
+  "tags": ["facade", "design patterns", "instruments", "maintenance"],
+  "prerequisites": ["Functions", "Basic error handling"],
+  "entrypoint": "index.html"
+}
