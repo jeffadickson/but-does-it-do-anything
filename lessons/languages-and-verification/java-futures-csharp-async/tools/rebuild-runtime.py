@@ -33,7 +33,7 @@ def sdk_installation(dotnet: str) -> tuple[str, Path]:
     result = subprocess.run([dotnet, "--list-sdks"], check=True, text=True, capture_output=True)
     matches = []
     for line in result.stdout.splitlines():
-        match = re.match(r"\s*(10\.\d+\.\d+)\s+\[(.+)[\]\s*$", line)
+        match = re.match(r"\s*(10\.\d+\.\d+)\s+\[(.+)\]\s*$", line)
         if match:
             version = match.group(1)
             sdk_parent = Path(match.group(2)).resolve()
