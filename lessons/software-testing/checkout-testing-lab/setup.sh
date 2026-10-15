@@ -2,7 +2,7 @@
 set -eu
 cd "$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 export DOTNET_ROOT="${DOTNET_ROOT:-$HOME/.dotnet}"
-if ! command -v dotnet >/dev/null 2>&1 || ! dotnet --list-sdks 2>/dev/null | grep -q '^8\.'; then
+if ! command -v dotnet >/dev/null 2>&1 || ! dotnet --list-sdks 2>/dev/null | grep -q '^10\.'; then
   echo "Installing .NET SDK 10 to $DOTNET_ROOT from Microsoft's dot.net distribution"
   temp="${TMPDIR:-/tmp}/checkout-dotnet-install-$$.sh"
   trap 'rm -f "$temp"' EXIT HUP INT TERM
