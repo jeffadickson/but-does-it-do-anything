@@ -1,7 +1,7 @@
 // Shared Roslyn/.NET WebAssembly execution worker.
 // Runtime assets are currently bundled by the Java Futures lesson.
 // They remain in that location for backwards compatibility and deduplication.
-const defaultAssets=new URL('../../lessons/languages-and-verification/java-futures-csharp-async/',import.meta.url);
+const defaultAssets=new URL('../../lessons/languages-and-verification/java-futures-csharp-async/app/',import.meta.url);
 let api=null,activeAssets=null;
 const emit=(type,value)=>self.postMessage({type,value});
 function assetRoot(input){
@@ -15,7 +15,7 @@ async function initialize(root){
  emit('status','Loading Roslyn and .NET WebAssembly…');
  const runtime=await dotnet.withConfig({debugLevel:0}).withResourceLoader((type,name,uri)=>{
    if(!/\.(dll|wasm|dat)$/.test(uri))return null;
-   const resourceUrl=new URL(uri,app);
+   const resourceUrl=new URL(uri,root);
    return fetch(resourceUrl.href+'.bin').then(response=>{
      if(!response.ok)throw Error('Runtime asset unavailable: '+name+' ('+response.status+')');
      return new Response(response.body.pipeThrough(new DecompressionStream('gzip')),{headers:{'Content-Type':uri.endsWith('.wasm')?'application/wasm':'application/octet-stream'}});
