@@ -1,8 +1,10 @@
 name: Verify and publish lessons
+# Deliberate CI: ordinary pushes, PR updates and merges do not trigger this matrix.
+# Tag a release candidate (e.g. v1.2.0-rc1) or run manually in Actions.
 on:
   push:
-    branches: [main]
-  pull_request:
+    tags:
+      - 'v*-rc*'
   workflow_dispatch:
 permissions:
   contents: read
