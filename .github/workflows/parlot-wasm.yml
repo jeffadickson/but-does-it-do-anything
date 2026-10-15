@@ -1,0 +1,25 @@
+name: Build Parlot DSL WebAssembly
+# Opt in: no automatic CI bill for minor pushes.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build-parlot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Publish real C# / Parlot browser app
+        run: python3 lessons/software-design/dsl-adventures/build_wasm.py
+      - name: Ensure framework files and entry point exist
+        run: |
+          test -f lessons/software-design/dsl-adventures/app/parlot/index.html
+          test -f lessons/software-design/dsl-adventures/app/parlot/_framework/blazor.webassembly.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dsl-adventures-parlot-wasm
+          path: lessons/software-design/dsl-adventures/app/parlot/
+          retention-days: 7
