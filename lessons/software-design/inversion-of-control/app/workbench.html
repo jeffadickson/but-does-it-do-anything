@@ -1,0 +1,70 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>C# IoC workbench</title><style>:root{color-scheme:light dark}body{max-width:1000px;margin:2rem auto;padding:0 20px;font:16px/1.6 system-ui,sans-serif}textarea{box-sizing:border-box;width:100%;min-height:390px;font:13px/1.55 ui-monospace,monospace;padding:15px;border:1px solid #8295af;border-radius:8px;background:Canvas;color:CanvasText}button,select{padding:9px 13px;margin:5px 5px 5px 0;font:inherit}button:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #559eff}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#142338;color:#edf3ff;padding:18px;min-height:100px;border-radius:8px}a{color:LinkText}.note{border-left:4px solid #669cde;padding:8px 18px;background:color-mix(in srgb,Canvas 85%,#669cde)}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}</style></head><body><p><a href="index.html">← Return to lesson</a></p><h1>Run actual C#: the IoC workbench</h1><p>This workbench uses the collection's existing Roslyn/.NET WebAssembly worker. It compiles <strong>the editable source shown below</strong>, returning compiler diagnostics or standard output. No payment or network service is invoked by the examples.</p><div class="note"><strong>Runtime requirements:</strong> Run through a local HTTP server or the built GitHub Pages site, not a double-clicked <code>file://</code> URL. A modern browser needs WebAssembly, module workers and DecompressionStream. The worker loads about 21 MB of existing offline assets on first use. This runner does not include <code>Microsoft.Extensions.DependencyInjection</code>; the container examples in the main lesson require a local .NET SDK.</div><label for="preset">Select exercise</label> <select id="preset"><option value="direct">1 — tightly coupled</option><option value="manual">2 — manual constructor injection</option><option value="swap">3 — swap implementations</option><option value="broken">4 — deliberately broken contract</option></select><button id="reset">Reset source</button><p><label for="editor"><strong>Editable C# source</strong></label></p><textarea id="editor" spellcheck="false" aria-label="Editable C# source"></textarea><p><button id="run">Run C#</button><button id="stop" disabled>Stop worker</button><button id="copy">Copy source</button></p><p id="state" role="status" aria-live="polite">Not started.</p><pre id="output" role="log" aria-live="polite">Run a preset or change the program.</pre><h2>What to change</h2><p>In the direct-construction preset, the service creates its own gateway. In manual injection, construction moves into <code>Main</code>. In the swap preset, select two gateways without changing the checkout service. In the broken preset, fix the interface implementation and rerun to see Roslyn diagnostics disappear.</p><p>When switching presets, edits to each preset are preserved. Reset restores only the selected preset. Stop terminates the worker (it does not cooperatively cancel managed execution).</p><script>
+'use strict';
+const samples={
+direct:`using System;
+public interface IPaymentGateway { string Charge(int cents); }
+public sealed class Gateway : IPaymentGateway {
+    public string Charge(int cents) => "Charged " + cents;
+}
+public sealed class Checkout {
+    private readonly IPaymentGateway gateway = new Gateway();
+    public string Pay(int cents) => gateway.Charge(cents);
+}
+public class Program { public static void Main() {
+    Console.WriteLine(new Checkout().Pay(1200));
+}}`,
+manual:`using System;
+public interface IPaymentGateway { string Charge(int cents); }
+public sealed class FakeGateway : IPaymentGateway {
+    public int Calls { get; private set; }
+    public string Charge(int cents) { Calls++; return "Approved"; }
+}
+public sealed class Checkout {
+    private readonly IPaymentGateway gateway;
+    public Checkout(IPaymentGateway gateway) {
+        this.gateway = gateway ?? throw new ArgumentNullException(nameof(gateway));
+    }
+    public string Pay(int cents) => gateway.Charge(cents);
+}
+public class Program { public static void Main() {
+    var fake = new FakeGateway();
+    var checkout = new Checkout(fake);
+    Console.WriteLine(checkout.Pay(1200));
+    Console.WriteLine("Calls: " + fake.Calls);
+}}`,
+swap:`using System;
+public interface IPaymentGateway { string Charge(int cents); }
+public sealed class SandboxGateway : IPaymentGateway {
+    public string Charge(int cents) => "Sandbox accepted " + cents;
+}
+public sealed class DecliningGateway : IPaymentGateway {
+    public string Charge(int cents) => "Declined " + cents;
+}
+public sealed class Checkout {
+    private readonly IPaymentGateway gateway;
+    public Checkout(IPaymentGateway gateway) { this.gateway = gateway; }
+    public string Pay(int cents) => gateway.Charge(cents);
+}
+public class Program { public static void Main() {
+    Console.WriteLine(new Checkout(new SandboxGateway()).Pay(1200));
+    Console.WriteLine(new Checkout(new DecliningGateway()).Pay(1200));
+}}`,
+broken:`using System;
+public interface IPaymentGateway { string Charge(int cents); }
+public sealed class FakeGateway : IPaymentGateway {
+    // Exercise: repair the incompatible return type.
+    public int Charge(int cents) => 1;
+}
+public class Program { public static void Main() {
+    Console.WriteLine(new FakeGateway().Charge(1200));
+}}`
+};
+const editor=document.getElementById('editor'),preset=document.getElementById('preset'),status=document.getElementById('state'),output=document.getElementById('output'),run=document.getElementById('run'),stop=document.getElementById('stop');const edits={...samples};editor.value=samples.direct;let current='direct';let worker=null;let loading=false;
+preset.addEventListener('change',()=>{edits[current]=editor.value;current=preset.value;editor.value=edits[current]});
+document.getElementById('reset').addEventListener('click',()=>{edits[current]=samples[current];editor.value=edits[current]});
+document.getElementById('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(editor.value);status.textContent='Source copied.'}catch{status.textContent='Clipboard unavailable; select text to copy.'}});
+function workerUrl(){const path=location.pathname;const i=path.indexOf('/lessons/');if(i<0)throw Error('Serve within the repository lesson catalog path.');const prefix=path.slice(0,i);return new URL(prefix+'/lessons/languages-and-verification/java-futures-csharp-async/csharp-worker.js',location.origin)}
+function shutdown(message){if(worker){worker.terminate();worker=null}loading=false;run.disabled=false;stop.disabled=true;status.textContent=message}
+run.addEventListener('click',()=>{if(loading)return;edits[current]=editor.value;try{if(!worker){worker=new Worker(workerUrl(),{type:'module'});worker.onmessage=({data})=>{const value=String(data.value??'');if(data.type==='status'||data.type==='started')status.textContent=value;if(data.type==='stdout'){output.textContent+=value+'\n'}if(data.type==='error'){output.textContent+='Compiler/runtime error:\n'+value+'\n';shutdown('Execution failed.')}if(data.type==='fatal'){output.textContent+='Worker error: '+value+'\n';shutdown('Worker failed.')}if(data.type==='done')shutdown('Completed.')}}worker.onerror=e=>{output.textContent+='Worker loading error: '+e.message+'\n';shutdown('Worker failed.')}}loading=true;run.disabled=true;stop.disabled=false;output.textContent='';status.textContent='Compiling...';worker.postMessage({code:editor.value})}catch(e){output.textContent=String(e);shutdown('Unable to run.')}});
+stop.addEventListener('click',()=>shutdown('Stopped; worker terminated.'));
+</script></body></html>
