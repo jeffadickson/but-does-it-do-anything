@@ -1,0 +1,23 @@
+using System;
+using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
+
+// Three interchangeable asynchronous consumers, managed by one block.
+var writers = new ActionBlock<int>(async reading =>
+{
+    await Task.Delay(200); // Simulated file write; no actual file in this demo.
+    Console.WriteLine($"Recorded reading {reading}");
+}, new ExecutionDataflowBlockOptions
+{
+    MaxDegreeOfParallelism = 3,
+    BoundedCapacity = 4 // Includes active delegate calls, not four extra slots.
+});
+
+for (int reading = 1; reading <= 12; reading++)
+{
+    if (!await writers.SendAsync(reading))
+        break; // Declined: observe Completion below for the block's outcome.
+}
+writers.Complete(); // No more input; drain accepted work on normal completion.
+await writers.Completion; // A Task: all writes finished, or failure observed.
+Console.WriteLine("All writes finished.");

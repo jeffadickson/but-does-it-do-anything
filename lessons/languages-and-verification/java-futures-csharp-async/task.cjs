@@ -9,9 +9,9 @@ if(task==='setup'){run(process.execPath,[npm,'ci']);run(process.execPath,['node_
 else if(task==='doctor'){console.log('Node',process.version);console.log('HTML:',fs.existsSync(path.join(root,'app/index.html')));console.log('Playwright:',fs.existsSync(path.join(root,'node_modules/playwright')));for(const bin of ['dotnet','javac']){const r=cp.spawnSync(bin,['--version'],{encoding:'utf8'});console.log(bin,r.status===0?r.stdout.trim():fs.existsSync(path.join(root,'.tools',bin==='dotnet'?'dotnet':'java'))?'local installation present under .tools (not on system PATH)':'optional native tool missing (run native-setup)');}}
 else if(task==='build')build();
 else if(task==='test-unit'){run(process.execPath,['--test','tests/model.test.cjs']);}
-else if(task==='test'){build();run(process.execPath,['--test','tests/model.test.cjs']);run(process.execPath,['tests/browser.cjs']);}
+else if(task==='test'){build();run(process.execPath,['--test','tests/model.test.cjs']);run(process.execPath,['tests/browser.cjs']);run(process.execPath,['tests/wasm.cjs']);}
 else if(task==='native-setup'){run(process.execPath,['tools/native-setup.cjs']);}
 else if(task==='native-test'){run(process.execPath,['tools/native-test.cjs']);}
-else if(task==='preview'){build();http.createServer((req,res)=>{if(req.url==='/'||req.url==='/index.html'){res.setHeader('Content-Type','text/html; charset=utf-8');res.end(fs.readFileSync(path.join(root,'app/index.html')));}else{res.statusCode=404;res.end('Not found');}}).listen(8080,'127.0.0.1',()=>console.log('http://127.0.0.1:8080'));}
+else if(task==='preview'){build();require('./tools/serve.cjs')().on('listening',()=>console.log('http://127.0.0.1:8080'));}
 else if(task==='clean'){for(const p of ['.screenshots','.build','examples/csharp/bin','examples/csharp/obj','tests/bin','tests/obj'])fs.rmSync(path.join(root,p),{recursive:true,force:true});}
 else{console.error('Tasks: setup doctor build test-unit test native-setup native-test preview clean');process.exit(2);}

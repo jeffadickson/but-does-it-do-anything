@@ -1,0 +1,109 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
+
+bool ordered = true;
+bool failWriter = false;
+int cancelAfterMs = 0;
+using var stop = new CancellationTokenSource();
+if (cancelAfterMs > 0) stop.CancelAfter(cancelAfterMs);
+var clock = Stopwatch.StartNew();
+var recorded = new List<int>(); // Only the serial recorder writes this list.
+void Log(string message) => Console.WriteLine($"{clock.ElapsedMilliseconds,5} ms | {message}");
+
+// ONE DMM session: overlapping commands on this session are forbidden.
+var acquire = new TransformBlock<int, Reading>(async id =>
+{
+    Log($"Acquire {id}: working (80 ms simulated integration)");
+    await Task.Delay(80, stop.Token);
+    return new Reading(id, 5.0 + id * 0.001);
+}, new ExecutionDataflowBlockOptions
+{
+    MaxDegreeOfParallelism = 1, BoundedCapacity = 2,
+    CancellationToken = stop.Token
+});
+
+// Independent immutable readings can be processed concurrently.
+var calibrate = new TransformBlock<Reading, Reading>(async reading =>
+{
+    // Deliberately slow first item exposes ordered-output head-of-line waiting.
+    await Task.Delay(reading.Id == 1 ? 600 : 100, stop.Token);
+    Log($"Calibrated {reading.Id}");
+    return reading with { Volts = reading.Volts * 1.001 };
+}, new ExecutionDataflowBlockOptions
+{
+    MaxDegreeOfParallelism = 3, BoundedCapacity = 4,
+    EnsureOrdered = ordered, CancellationToken = stop.Token
+});
+
+var record = new ActionBlock<Reading>(async reading =>
+{
+    await Task.Delay(150, stop.Token); // Simulate storage I/O, not durability.
+    if (failWriter && reading.Id == 3)
+        throw new InvalidOperationException("Recorder failed on reading 3");
+    recorded.Add(reading.Id);
+    Log($"Recorded {reading.Id}: {reading.Volts:F6} V");
+}, new ExecutionDataflowBlockOptions
+{
+    MaxDegreeOfParallelism = 1, BoundedCapacity = 2,
+    CancellationToken = stop.Token
+});
+
+using var firstLink = acquire.LinkTo(calibrate,
+    new DataflowLinkOptions { PropagateCompletion = true });
+using var secondLink = calibrate.LinkTo(record,
+    new DataflowLinkOptions { PropagateCompletion = true });
+
+async Task ProduceAsync()
+{
+    try
+    {
+        for (int id = 1; id <= 8; id++)
+        {
+            Log($"Offer {id}");
+            if (!await acquire.SendAsync(id, stop.Token))
+                throw new InvalidOperationException("Acquisition declined input");
+            Log($"Accepted {id} (not yet recorded)");
+        }
+    }
+    finally { acquire.Complete(); }
+}
+
+// Observe each terminal state immediately, so a downstream fault can stop
+// upstream work and release a pending SendAsync. WhenAll alone cannot do this.
+async Task SuperviseAsync(Task work)
+{
+    try { await work; }
+    catch { stop.Cancel(); throw; }
+}
+Task[] owned =
+{
+    SuperviseAsync(acquire.Completion),
+    SuperviseAsync(calibrate.Completion),
+    SuperviseAsync(record.Completion),
+    SuperviseAsync(ProduceAsync())
+};
+Task all = Task.WhenAll(owned);
+try
+{
+    await all;
+    Log("Pipeline completed: all accepted readings recorded.");
+}
+catch
+{
+    // Demo reports errors after all owned tasks finish. A production library
+    // would normally throw or return a structured failure result to its caller.
+    if (all.Exception is { } errors)
+        foreach (Exception error in errors.Flatten().InnerExceptions)
+            Log($"Observed: {error.GetType().Name}: {error.Message}");
+    else Log("Pipeline cancelled cooperatively.");
+}
+Log($"Recorded IDs: {string.Join(",", recorded)}");
+Log($"All owned tasks terminal: {owned.All(task => task.IsCompleted)}");
+Log($"Blocks: {acquire.Completion.Status} / {calibrate.Completion.Status} / {record.Completion.Status}");
+
+public sealed record Reading(int Id, double Volts);

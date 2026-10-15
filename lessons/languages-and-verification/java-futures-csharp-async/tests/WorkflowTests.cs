@@ -8,6 +8,51 @@ public class WorkflowTests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
+    public async Task Independent_measurements_overlap_and_allow_either_completion_order(bool firstFinishesFirst)
+    {
+        var first = Substitute.For<IDigitalMultimeter>();
+        var second = Substitute.For<IDigitalMultimeter>();
+        var firstStarted = Gate<bool>();
+        var secondStarted = Gate<bool>();
+        var firstResult = Gate<double>();
+        var secondResult = Gate<double>();
+        first.MeasureAsync(Arg.Any<CancellationToken>()).Returns(_ => {
+            firstStarted.TrySetResult(true);
+            return firstResult.Task;
+        });
+        second.MeasureAsync(Arg.Any<CancellationToken>()).Returns(_ => {
+            secondStarted.TrySetResult(true);
+            return secondResult.Task;
+        });
+
+        Task<double> run = Patterns.DifferenceAsync(first, second, default);
+        try
+        {
+            // Both calls must begin while neither result has been released.
+            // Five seconds is a hung-test safeguard, NOT a performance assertion.
+            await Task.WhenAll(firstStarted.Task, secondStarted.Task)
+                .WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.False(run.IsCompleted);
+            if (firstFinishesFirst) firstResult.SetResult(5.0);
+            else secondResult.SetResult(3.0);
+            Assert.False(run.IsCompleted); // One result is still required.
+            if (firstFinishesFirst) secondResult.SetResult(3.0);
+            else firstResult.SetResult(5.0);
+            Assert.Equal(2.0, await run.WaitAsync(TimeSpan.FromSeconds(5)));
+        }
+        finally
+        {
+            // Release test-owned gates even when an assertion fails.
+            firstResult.TrySetResult(5.0);
+            secondResult.TrySetResult(3.0);
+            try { await run.WaitAsync(TimeSpan.FromSeconds(5)); }
+            catch { /* Preserve the original test failure. */ }
+        }
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
     public async Task Both_configurations_must_finish_and_acquisition_precedes_disable(bool meterFirst)
     {
         var generator = Substitute.For<IGenerator>();
@@ -30,6 +75,20 @@ public class WorkflowTests
         var result = await run.WaitAsync(TimeSpan.FromSeconds(5));
         Assert.Equal("Completed", result.State);
         await generator.Received(1).DisableAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Synchronous_second_read_failure_still_drains_first_read()
+    {
+        var first = Substitute.For<IDigitalMultimeter>();
+        var second = Substitute.For<IDigitalMultimeter>();
+        var pending = Gate<double>();
+        first.MeasureAsync(Arg.Any<CancellationToken>()).Returns(pending.Task);
+        second.MeasureAsync(Arg.Any<CancellationToken>()).Returns<Task<double>>(_ => throw new IOException("second"));
+        var difference = Patterns.DifferenceAsync(first, second, default);
+        Assert.False(difference.IsCompleted);
+        pending.SetResult(5.0);
+        await Assert.ThrowsAsync<IOException>(() => difference.WaitAsync(TimeSpan.FromSeconds(5)));
     }
 
     [Fact]

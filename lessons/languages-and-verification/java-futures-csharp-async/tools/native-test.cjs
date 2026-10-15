@@ -9,6 +9,7 @@ run(dotnet,['restore','tests/AsyncLab.Tests.csproj','--locked-mode']);
 run(dotnet,['test','tests/AsyncLab.Tests.csproj','--no-restore','--configuration','Release']);
 run(dotnet,['run','--project','examples/csharp','--configuration','Release','--','--self-test']);
 fs.mkdirSync(path.join(root,'.build/java'),{recursive:true});
-run(javac,['--release','8','-d','.build/java','examples/java/FutureLab.java','examples/java/CompositionLab.java']);
+run(javac,['--release','8','-d','.build/java','examples/java/FutureLab.java','examples/java/CompositionLab.java','examples/java/FuturePassingLab.java']);
 run(javac,['--release','21','-d','.build/java','examples/java/VirtualLab.java']);
-for(const name of ['FutureLab','CompositionLab','VirtualLab'])run(java,['-cp','.build/java',name]);
+for(const name of ['FutureLab','CompositionLab','VirtualLab','FuturePassingLab'])run(java,['-cp','.build/java',name]);
+

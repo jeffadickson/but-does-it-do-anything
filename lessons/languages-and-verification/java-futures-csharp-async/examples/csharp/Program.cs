@@ -83,7 +83,8 @@ public sealed class ExperimentRunner(IGenerator generator, IDigitalMultimeter me
     }
 }
 
-/// <summary>Holds one semaphore across each complete simulated session transaction.</summary>
+/// <summary>Workflow fixture: serial transactions, fixed 40 ms acquisition and 0.707 V.
+/// Configuration values are accepted but do not change the synthetic reading.</summary>
 public sealed class SimMeter : IDigitalMultimeter
 {
     private readonly SemaphoreSlim session = new(1, 1);
@@ -108,6 +109,7 @@ public sealed class SimMeter : IDigitalMultimeter
         // No background producer or lock is held across yield.
     }
 }
+/// <summary>Command-latency fixture; frequency values do not affect simulated readings.</summary>
 public sealed class SimGenerator : IGenerator
 {
     public bool Enabled { get; private set; }
@@ -125,8 +127,10 @@ public static class Patterns
 {
     public static async Task<double> DifferenceAsync(IDigitalMultimeter a, IDigitalMultimeter b, CancellationToken token)
     {
-        Task<double> first = a.MeasureAsync(token);
-        Task<double> second = b.MeasureAsync(token);
+        // Capture synchronous driver throws as faulted Tasks, so every started child is drained.
+        async Task<double> ReadAsync(IDigitalMultimeter device) => await device.MeasureAsync(token);
+        Task<double> first = ReadAsync(a);
+        Task<double> second = ReadAsync(b);
         double[] results = await Task.WhenAll(first, second);
         return results[0] - results[1];
     }

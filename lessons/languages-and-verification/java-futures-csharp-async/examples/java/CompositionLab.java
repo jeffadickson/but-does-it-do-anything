@@ -12,13 +12,16 @@ public class CompositionLab {
         try {
             CompletableFuture<Double> v = CompletableFuture.supplyAsync(() -> read(5.0), io);
             CompletableFuture<Double> i = CompletableFuture.supplyAsync(() -> read(0.2), io);
-            CompletableFuture<Double> power = v.thenCombine(i, (volts, amps) -> volts * amps);
+            // Register the race before waiting for dependent results.
+            CompletableFuture<Object> firstTerminal = CompletableFuture.anyOf(v, i);
             CompletableFuture<Double> calibrated = v.thenApply(volts -> volts * 1.001);
+            CompletableFuture<Double> power = calibrated.thenCombine(i, (volts, amps) -> volts * amps);
             CompletableFuture<Double> followup = calibrated.thenCompose(volts ->
                 CompletableFuture.supplyAsync(() -> read(volts + 0.01), io));
+            // A raw value alone does not identify which instrument produced it.
+            System.out.println("First observed terminal value: " + firstTerminal.join());
             CompletableFuture.allOf(power, followup).join();
             System.out.println(power.join() + " W; followup " + followup.join());
-            System.out.println("First terminal: " + CompletableFuture.anyOf(v, i).join());
             System.out.println(CompletableFuture.<Double>supplyAsync(() -> {
                 throw new IllegalStateException("Simulated failure");
             }, io).exceptionally(ex -> Double.NaN).join());
