@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const server=require('../tools/serve.cjs')(0);
 (async()=>{
  await new Promise(resolve=>server.on('listening',resolve));
- const browser=await chromium.launch({headless:true,executablePath:process.env.LESSON_CHROMIUM,args:['--no-sandbox','--single-process','--no-zygote']});
+ const browser=await chromium.launch({headless:true,executablePath:process.env.LESSON_CHROMIUM,...(process.env.LESSON_CHROMIUM && process.platform === 'linux' ? {args:['--no-sandbox','--single-process','--no-zygote']} : {})});
  const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.continue():route.abort());
  await page.goto('http://127.0.0.1:'+server.address().port);
