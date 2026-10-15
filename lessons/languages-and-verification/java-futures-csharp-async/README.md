@@ -31,7 +31,7 @@ sh setup.sh doctor          # show available tools
 sh setup.sh build           # regenerate app/index.html from src and examples
 sh setup.sh test-unit       # five semantic model tests
 sh setup.sh test            # rebuild, model tests, real browser interaction tests
-sh setup.sh native-setup    # optional local .NET SDK 8.0.408 + Temurin JDK 21.0.6+7
+sh setup.sh native-setup    # optional local .NET SDK 10.0.100 + Temurin JDK 21.0.6+7
 sh setup.sh native-test     # restore locked NuGet packages, xUnit, self-tests, Java programs
 sh setup.sh preview        # http://127.0.0.1:8080 (Ctrl+C to stop)
 sh setup.sh clean           # remove build/test outputs, retain installed tools
@@ -62,7 +62,7 @@ java -cp .build/java CompositionLab
 java -cp .build/java VirtualLab
 ```
 
-Create `.build/java` before manual javac commands. Tests restore pinned direct packages plus committed transitive NuGet locks. The SDK selection prefers 8.0.408 and allows newer major SDKs; the target runtime remains .NET 8. A newer SDK alone does not supply the .NET 8 runtime. Native setup installs the matching runtime. `DOTNET_ROLL_FORWARD=Major` is an explicit testing alternative, not the baseline configuration.
+Create `.build/java` before manual javac commands. Tests restore pinned direct packages plus committed transitive NuGet locks. The SDK selection prefers 10.0.100 and allows newer major SDKs; the target runtime remains .NET 8. A newer SDK alone does not supply the .NET 8 runtime. Native setup installs the matching runtime. `DOTNET_ROLL_FORWARD=Major` is an explicit testing alternative, not the baseline configuration.
 
 The HTML embeds code from those exact files during build; edit source, then regenerate. Body snippets are clearly labeled excerpts and can depend on surrounding variables. Downloaded tests should be placed in `tests/` beside the project file, with the console project at `examples/csharp/`, preserving the relative ProjectReference. The ZIP preserves this layout.
 
@@ -128,13 +128,13 @@ single-threaded WebAssembly concurrency, not evidence of multicore CPU speedup.
 To run either example separately with .NET 8 or later:
 
 ```sh
-dotnet new console -n DataflowDemo -f net8.0
+dotnet new console -n DataflowDemo -f net10.0
 # Copy examples/csharp/DataflowLab.cs.txt into DataflowDemo/Program.cs.
 # Or use DataflowPool.cs.txt for the compact consumer block.
 dotnet run --project DataflowDemo
 ```
 
-Use an SDK that supports the selected target framework; change net8.0 to net10.0
+Use an SDK that supports the selected target framework; change net10.0 to net10.0
 when using only the .NET 10 targeting/runtime installation. No additional Dataflow
 package is required for these targets. Edit the three variables at the top of
 DataflowLab.cs to select ordering, recorder failure, and timed cancellation.
