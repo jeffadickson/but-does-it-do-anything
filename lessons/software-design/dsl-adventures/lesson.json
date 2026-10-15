@@ -1,0 +1,23 @@
+{
+  "id": "dsl-adventures",
+  "title": "Invent a Language: Adventures, Turtles and Parlot",
+  "summary": "From Colossal Cave and Infocom to parser combinators: build and step through a tiny adventure DSL and graphical turtle, then examine a real .NET Parlot parser.",
+  "topic": "software-design",
+  "level": "Beginner to intermediate",
+  "mode": "simulation",
+  "languages": [
+    "C#",
+    "JavaScript"
+  ],
+  "tags": [
+    "DSL",
+    "parser combinators",
+    "Parlot",
+    "adventure",
+    "turtle graphics"
+  ],
+  "prerequisites": [
+    "Basic commands and variables; C# helpful for companion"
+  ],
+  "entrypoint": "index.html"
+}
