@@ -38,7 +38,6 @@ public static class Dsl
 
     private static readonly Parser<MoveCommand> Move =
         Terms.Text("go", caseInsensitive: true)
-            .AndSkip(Terms.WhiteSpace())
             .And(Direction)
             .Then(x => new MoveCommand(x.Item2));
 
@@ -56,9 +55,9 @@ public static class Dsl
             .Or(Terms.Text("right", caseInsensitive: true));
 
     private static readonly Parser<NumericCommand> Numeric =
-        TurtleVerb.AndSkip(Terms.WhiteSpace())
+        TurtleVerb
             .And(Terms.Integer())
-            .Then(x => new NumericCommand(x.Item1, (int)x.Item2));
+            .Then(x => new NumericCommand(x.Item1, checked((int)x.Item2)));
 
     // Full-line recognition prevents valid prefixes from silently consuming junk.
     public static Command ParseAdventure(string source)
