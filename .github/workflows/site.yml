@@ -22,6 +22,7 @@ jobs:
           node-version: '22.23.3'
       - run: python -m unittest discover -s tests -v
       - run: node --test lessons/software-design/facade/tests/*.cjs
+      - run: node --test lessons/software-testing/checkout-testing-lab/tests/browser-model.test.cjs
       - run: node lessons/mathematics/algebra-adventure/task.cjs build
       - run: git diff --exit-code -- lessons/mathematics/algebra-adventure/app
       - uses: actions/setup-dotnet@v4
@@ -79,6 +80,17 @@ jobs:
           dotnet-version: '8.0.408'
       - name: Verify real PostgreSQL round trip through Testcontainers
         run: dotnet test lessons/software-testing/instrument-testing-lab/tests/InstrumentLab.Tests/InstrumentLab.Tests.csproj --filter FullyQualifiedName~PostgresTests --configuration Release
+  checkout-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.408'
+      - name: Checkout unit tests
+        run: dotnet test lessons/software-testing/checkout-testing-lab/tests/Checkout.Tests/Checkout.Tests.csproj --filter 'FullyQualifiedName!~CombinedCheckoutIntegrationTests'
+      - name: Checkout combined tests (Docker/PostgreSQL and WireMock)
+        run: dotnet test lessons/software-testing/checkout-testing-lab/tests/Checkout.Tests/Checkout.Tests.csproj --filter 'FullyQualifiedName~CombinedCheckoutIntegrationTests'
   pages-status:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -102,7 +114,7 @@ jobs:
               core.notice('One-time setup: Settings → Pages → Source → GitHub Actions. Then run this workflow again.');
             }
   deploy:
-    needs: [build, algebra, instrument-unit, instrument-postgres, pages-status]
+    needs: [build, algebra, instrument-unit, instrument-postgres, checkout-tests, pages-status]
     if: needs.pages-status.outputs.enabled == 'true'
     runs-on: ubuntu-latest
     permissions:
