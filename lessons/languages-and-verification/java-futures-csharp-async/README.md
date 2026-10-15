@@ -46,7 +46,7 @@ If Chromium reports missing Linux shared libraries, install its listed OS packag
 - `examples/java/FutureLab.java`: Java 5-style Callable syntax; compiled with a modern JDK using `--release 8`, not claimed tested on an original Java 5 VM. Demonstrates timed get, exception cause and cancellation request.
 - `examples/java/CompositionLab.java`: Java 8 composition with a dedicated executor for blocking simulated I/O.
 - `examples/java/VirtualLab.java`: Java 21 stable virtual threads. No structured-concurrency preview dependency.
-- `examples/csharp/Program.cs`: complete .NET 8 console simulation, public instrument interfaces, serial session protection, async iterator, timeout patterns, and frequency-response experiment runner. Ctrl+C requests cancellation. `--self-test` runs executable checks.
+- `examples/csharp/Program.cs`: complete .NET 10 console simulation, public instrument interfaces, serial session protection, async iterator, timeout patterns, and frequency-response experiment runner. Ctrl+C requests cancellation. `--self-test` runs executable checks.
 - `tests/WorkflowTests.cs`: xUnit/NSubstitute tests with incomplete-task gates, both configuration completion orders, failure cleanup, cancellation token independence, WhenAll fault ownership and WaitAsync behavior.
 
 Manual commands from this lesson directory:
@@ -62,7 +62,7 @@ java -cp .build/java CompositionLab
 java -cp .build/java VirtualLab
 ```
 
-Create `.build/java` before manual javac commands. Tests restore pinned direct packages plus committed transitive NuGet locks. The SDK selection prefers 10.0.100 and allows newer major SDKs; the target runtime remains .NET 8. A newer SDK alone does not supply the .NET 8 runtime. Native setup installs the matching runtime. `DOTNET_ROLL_FORWARD=Major` is an explicit testing alternative, not the baseline configuration.
+Create `.build/java` before manual javac commands. Tests restore pinned direct packages plus committed transitive NuGet locks. The SDK selection prefers 10.0.100 and allows newer major SDKs; the native projects target .NET 10 and require a compatible .NET 10 runtime. Updating the SDK does not replace the already-bundled browser WebAssembly runtime; it must be rebuilt separately.
 
 The HTML embeds code from those exact files during build; edit source, then regenerate. Body snippets are clearly labeled excerpts and can depend on surrounding variables. Downloaded tests should be placed in `tests/` beside the project file, with the console project at `examples/csharp/`, preserving the relative ProjectReference. The ZIP preserves this layout.
 
@@ -125,7 +125,7 @@ and cancellation. Logs are returned at the end; timestamps describe actual C#
 execution. Task.Delay models I/O, and no hardware or file writes occur. This is
 single-threaded WebAssembly concurrency, not evidence of multicore CPU speedup.
 
-To run either example separately with .NET 8 or later:
+To run either example separately with .NET 10:
 
 ```sh
 dotnet new console -n DataflowDemo -f net10.0
@@ -134,7 +134,7 @@ dotnet new console -n DataflowDemo -f net10.0
 dotnet run --project DataflowDemo
 ```
 
-Use an SDK that supports the selected target framework; change net10.0 to net10.0
+Use an SDK that supports the selected target framework; use net10.0
 when using only the .NET 10 targeting/runtime installation. No additional Dataflow
 package is required for these targets. Edit the three variables at the top of
 DataflowLab.cs to select ordering, recorder failure, and timed cancellation.
