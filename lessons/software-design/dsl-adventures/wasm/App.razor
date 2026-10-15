@@ -1,0 +1,63 @@
+@namespace ParlotAdventure.Wasm
+<PageTitle>Real Parlot Adventure and Turtle</PageTitle>
+<main>
+<h1>Actual C# + Parlot in the browser</h1>
+<p>This interpreter and its parser run in .NET WebAssembly. Commands are parsed in C# with the Parlot NuGet assembly; no JavaScript interpreter is used here.</p>
+<div class="tabs"><button @onclick="()=>Mode=0">Adventure</button><button @onclick="()=>Mode=1">Turtle</button></div>
+<label for="program">Edit the command script</label>
+<textarea id="program" @bind="Source" @bind:event="oninput" rows="9" spellcheck="false"></textarea>
+<div><button @onclick="Reset">Parse and reset</button><button @onclick="Step" disabled="@(!Ready)">Step</button><button @onclick="RunAll" disabled="@(!Ready)">Run all</button></div>
+<p role="status">@Status</p>
+@if(Mode==0){<p>Room: @_room · Key: @_key · Gate: @_gate</p>}
+else {
+<svg viewBox="0 0 400 290" aria-label="Turtle drawing"><rect width="400" height="290" fill="#eff7fb"/>
+@foreach(var line in _lines){<line x1="@line.X1" y1="@line.Y1" x2="@line.X2" y2="@line.Y2" stroke="#087c86" stroke-width="3"/>}
+<g transform="@($"translate({_x.ToString(System.Globalization.CultureInfo.InvariantCulture)} {_y.ToString(System.Globalization.CultureInfo.InvariantCulture)}) rotate({_angle.ToString(System.Globalization.CultureInfo.InvariantCulture)})")"><path d="M 12 0 L -9 -8 L -5 0 L -9 8 Z" fill="#e68b2e"/></g>
+</svg>
+}
+<pre aria-live="polite">@string.Join("\n",_logs)</pre>
+<a href="../index.html">Back to the lesson</a>
+</main>
+@code {
+ private int _mode=0;
+ private int Mode {get=>_mode;set{_mode=value;Source=value==0?AdventureSample:TurtleSample;Ready=false;Status="Click Parse and reset.";}}
+ private const string AdventureSample="LOOK\nTAKE KEY\nGO NORTH\nLOOK\nOPEN GATE\nGO EAST\nLOOK";
+ private const string TurtleSample="PEN DOWN\nFORWARD 70\nRIGHT 90\nFORWARD 70\nRIGHT 90\nFORWARD 70\nRIGHT 90\nFORWARD 70";
+ private string Source=AdventureSample;
+ private readonly List<DslCommand> _commands=new();
+ private readonly List<string> _logs=new();
+ private readonly List<Stroke> _lines=new();
+ private int _pc; private string _room="meadow";private bool _key,_gate,_pen;
+ private double _x=200,_y=145,_angle;
+ private string Status="Click Parse and reset.";
+ private bool Ready;
+ private record Stroke(double X1,double Y1,double X2,double Y2);
+ private void Reset(){
+ _commands.Clear();_logs.Clear();_lines.Clear();_pc=0;_room="meadow";_key=false;_gate=false;_pen=false;_x=200;_y=145;_angle=0;Ready=false;
+ try{var lines=Source.Split('\n',StringSplitOptions.RemoveEmptyEntries|StringSplitOptions.TrimEntries);if(lines.Length>100)throw new FormatException("Maximum 100 lines");
+ for(var i=0;i<lines.Length;i++){try{_commands.Add(DslParser.Parse(lines[i],Mode==1));}catch(Exception e){throw new FormatException($"Line {i+1}: {e.Message}");}}
+ Status=$"Parsed {_commands.Count} commands with Parlot.";Ready=true;
+ }catch(Exception e){Status=e.Message;}
+ }
+ private void RunAll(){for(var i=0;i<100&&Ready&&_pc<_commands.Count;i++)Step();}
+ private void Step(){if(!Ready)return;if(_pc>=_commands.Count){Status="Program complete.";return;}var command=_commands[_pc++];try{var result=Mode==0?AdventureStep(command):TurtleStep(command);_logs.Add($"{_pc}. {command} → {result}");Status=$"Executed {_pc}/{_commands.Count}";}catch(Exception e){Ready=false;Status=$"Runtime error at {_pc}: {e.Message}";}}
+ private string AdventureStep(DslCommand c){
+ switch(c.Verb){
+ case "look":return _room switch{"meadow"=>"A brass key lies in the meadow.","bridge"=>"An old bridge and a locked gate.","castle"=>"Castle treasure discovered!",_=>""};
+ case "take key":if(_room!="meadow")return "No key here.";_key=true;return "Key collected.";
+ case "inventory":return _key?"You have the brass key.":"Empty pack.";
+ case "open gate":if(_room!="bridge"||!_key)return "Gate remains locked.";_gate=true;return "Gate opened.";
+ case "say":return "You say: "+c.Text;
+ case "go":var next=(_room,c.Text) switch{("meadow","north")=>"bridge",("bridge","south")=>"meadow",("bridge","east") when _gate=>"castle",("castle","west")=>"bridge",_=>null};if(next==null)return "Cannot go that way.";_room=next;return "Arrived at "+next;
+ default:throw new InvalidOperationException("Unknown adventure command.");
+ }}
+ private string TurtleStep(DslCommand c){
+ switch(c.Verb){
+ case "pen up":_pen=false;break;case "pen down":_pen=true;break;
+ case "left":_angle-=c.Amount;break;case "right":_angle+=c.Amount;break;
+ case "forward":case "back":double amount=c.Amount*(c.Verb=="back"?-1:1);double nx=_x+Math.Cos(_angle*Math.PI/180)*amount,ny=_y+Math.Sin(_angle*Math.PI/180)*amount;if(_pen)_lines.Add(new Stroke(_x,_y,nx,ny));_x=nx;_y=ny;break;
+ default:throw new InvalidOperationException("Unknown turtle command.");
+ }
+ return $"x={_x:F0}, y={_y:F0}, heading={_angle:F0}, pen={_pen}";
+ }
+}
