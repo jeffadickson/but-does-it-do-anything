@@ -1,0 +1,28 @@
+{
+  "id": "inversion-of-control",
+  "title": "Inversion of Control: from early frameworks to modern .NET",
+  "summary": "Follow control ownership from pre-Spring frameworks to XML, annotations and .NET, then test whether injection or a container earns its complexity.",
+  "topic": "software-design",
+  "level": "Intermediate",
+  "mode": "simulation",
+  "languages": [
+    "C#",
+    "Java",
+    "XML",
+    "JavaScript"
+  ],
+  "tags": [
+    "inversion of control",
+    "dependency injection",
+    "Spring",
+    "C#",
+    ".NET",
+    "design patterns"
+  ],
+  "prerequisites": [
+    "Basic classes and interfaces",
+    "Constructors",
+    "Basic testing concepts"
+  ],
+  "entrypoint": "index.html"
+}
