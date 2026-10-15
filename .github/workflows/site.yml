@@ -1,8 +1,8 @@
 name: Verify and publish lessons
+# Full matrix runs only for deliberate RC tags or manually.
 on:
   push:
-    branches: [main]
-  pull_request:
+    tags: ['v*-rc*']
   workflow_dispatch:
 permissions:
   contents: read
