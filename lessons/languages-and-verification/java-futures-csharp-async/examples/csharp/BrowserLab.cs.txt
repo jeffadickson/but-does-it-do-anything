@@ -1,0 +1,69 @@
+using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class BrowserLab
+{
+    public static async Task Main()
+    {
+        bool concurrent = true; // false: await each acquisition before starting the next
+        bool failCounter = false; // true: the counter times out after 1.2 s
+        int cancelAfterMs = 0; // 0: no deadline; try 800 for cooperative cancellation
+        using var cancel = new CancellationTokenSource();
+        if (cancelAfterMs > 0) cancel.CancelAfter(cancelAfterMs);
+        var clock = Stopwatch.StartNew();
+        void Log(string message) => Console.WriteLine($"{clock.Elapsed.TotalSeconds:F3}s | {message}");
+        var devices = new[]
+        {
+            new Instrument("DMM", "DC voltage", 5.01, "V", 2000),
+            new Instrument("Counter", "frequency", 1000, "Hz", failCounter ? 1200 : 2000, failCounter),
+            new Instrument("Scope", "peak-to-peak voltage", 2.0, "Vpp", 2000)
+        };
+        Task<double[]>? all = null;
+        try
+        {
+            if (concurrent)
+            {
+                // Calling MeasureAsync starts each operation up to its first await.
+                var pending = devices.Select(d => d.MeasureAsync(Log, cancel.Token)).ToArray();
+                all = Task.WhenAll(pending); // Does not cancel siblings on failure.
+                double[] values = await all;
+                Log($"All results: {string.Join(", ", values)} (V, Hz, Vpp)");
+            }
+            else
+            {
+                foreach (var device in devices)
+                    await device.MeasureAsync(Log, cancel.Token);
+            }
+        }
+        catch (OperationCanceledException) { Log("Cancelled cooperatively."); }
+        catch (Exception ex)
+        {
+            Log($"await threw {ex.GetType().Name}: {ex.Message}");
+            if (all?.Exception is { } aggregate)
+                Log($"WhenAll retained {aggregate.InnerExceptions.Count} fault(s).");
+        }
+        finally { Log("Cleanup: all started calls observed; no physical outputs were enabled."); }
+    }
+}
+
+public sealed record Instrument(string Name, string Quantity, double Value,
+    string Unit, int AcquisitionMs, bool Fail = false)
+{
+    public async Task<double> MeasureAsync(Action<string> log, CancellationToken token)
+    {
+        log($"{Name}: trigger {Quantity} acquisition; waiting {AcquisitionMs} ms.");
+        try
+        {
+            // Timer-backed simulated I/O. No VISA, SCPI or electrical model.
+            await Task.Delay(AcquisitionMs, token);
+            if (Fail) throw new TimeoutException($"{Name}: no reply before deadline.");
+            log($"{Name}: completed, {Value} {Unit}.");
+            return Value;
+        }
+        catch (OperationCanceledException) { log($"{Name}: cancellation observed."); throw; }
+        catch (Exception) { log($"{Name}: failed."); throw; }
+    }
+}

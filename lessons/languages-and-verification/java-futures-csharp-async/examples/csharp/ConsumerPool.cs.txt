@@ -1,0 +1,45 @@
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Channels;
+using System.Threading.Tasks;
+
+// One producer, three interchangeable consumers, four waiting slots.
+var queue = Channel.CreateBounded<int>(4); // Default full policy: Wait.
+using var stop = new CancellationTokenSource();
+
+async Task ProduceAsync()
+{
+    try
+    {
+        for (int reading = 1; reading <= 12; reading++)
+        {
+            await Task.Delay(50, stop.Token); // Simulate acquisition.
+            await queue.Writer.WriteAsync(reading, stop.Token);
+        }
+    }
+    finally { queue.Writer.TryComplete(); }
+}
+
+async Task ConsumeAsync(int worker)
+{
+    await foreach (int reading in queue.Reader.ReadAllAsync(stop.Token))
+    {
+        await Task.Delay(300, stop.Token); // Simulate asynchronous processing.
+        Console.WriteLine($"Worker {worker} processed reading {reading}");
+    }
+}
+
+// WhenAll alone does not cancel siblings. Make that policy explicit.
+async Task OwnAsync(Func<Task> operation)
+{
+    try { await operation(); }
+    catch { stop.Cancel(); throw; }
+}
+
+Task[] consumers = Enumerable.Range(1, 3)
+    .Select(id => OwnAsync(() => ConsumeAsync(id)))
+    .ToArray();
+Task producer = OwnAsync(ProduceAsync);
+await Task.WhenAll(consumers.Append(producer));
+Console.WriteLine("All readings processed; all loops finished.");

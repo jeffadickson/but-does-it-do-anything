@@ -1,0 +1,1 @@
+{"name":"java-futures-csharp-async-lesson","version":"1.0.0","private":true,"description":"Offline asynchronous programming textbook and verification","scripts":{"build":"node build.cjs","test":"node --test tests/model.test.cjs","test:browser":"node tests/browser.cjs"},"devDependencies":{"playwright":"1.51.1"}}

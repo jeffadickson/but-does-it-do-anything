@@ -69,6 +69,8 @@ Node 22.23.3 is used for the example's tests; it is not needed to build or serve
 
 ## Current contents
 
+**From Java Futures to C# async/await** is an offline interactive technical textbook for experienced Java programmers: seven simulations, six exercises, and runnable Java/C# instrument examples. Start at [its README](lessons/languages-and-verification/java-futures-csharp-async/README.md) or open its self-contained `app/index.html`.
+
 **Algebra Adventure** is a twelve-episode browser course for children, with live equation activities and explicit connections from boxes and bars to letters. Start at [its README](lessons/mathematics/algebra-adventure/README.md); `sh lessons/mathematics/algebra-adventure/setup.sh preview` (or `./lessons/mathematics/algebra-adventure/setup.ps1 preview` on Windows) provisions just its tools and opens a local preview server. No tools are required to view its committed HTML.
 
 **Facade: more than a shorter function call**. It models a missed instrument-settling policy update and demonstrates the maintenance benefit of a shared facade. It is a conceptual simulation, not physical hardware control.

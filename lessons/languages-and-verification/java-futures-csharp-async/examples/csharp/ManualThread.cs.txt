@@ -1,0 +1,26 @@
+using System;
+using System.Threading;
+using System.Runtime.ExceptionServices;
+
+// Modern C# syntax; run in a desktop .NET console project.
+// Browser WASM in this lesson does not support Thread.Start().
+double voltage = default;
+ExceptionDispatchInfo? failure = null;
+Thread worker = new(() =>
+{
+    try
+    {
+        Thread.Sleep(2000); // Simulate a blocking instrument driver.
+        voltage = 5.01;
+    }
+    catch (Exception ex)
+    {
+        failure = ExceptionDispatchInfo.Capture(ex);
+    }
+});
+worker.Start();
+Console.WriteLine("Caller can do other work.");
+worker.Join(); // Wait for termination, then safely read the shared outcome.
+failure?.Throw(); // Join does not transport the worker's exception.
+Console.WriteLine($"Voltage: {voltage:F2} V");
+// Passing worker alone would not give a consumer access to voltage/failure.

@@ -1,0 +1,28 @@
+{
+  "id": "java-futures-csharp-async",
+  "title": "From Java Futures to C# async/await: Twenty Years of Asynchronous Programming",
+  "summary": "Run real C# in the browser: Futures, tasks, cancellation, streams, bounded TPL Dataflow pipelines and causal verification.",
+  "topic": "languages-and-verification",
+  "level": "Intermediate",
+  "mode": "simulation",
+  "languages": [
+    "Java",
+    "C#",
+    "JavaScript"
+  ],
+  "tags": [
+    "async/await",
+    "Future",
+    "concurrency",
+    "instrument control",
+    "cancellation",
+    "async streams",
+    "TPL Dataflow",
+    "backpressure"
+  ],
+  "prerequisites": [
+    "Strong programming experience",
+    "Java circa 2004\u20132006 or equivalent"
+  ],
+  "entrypoint": "index.html"
+}
