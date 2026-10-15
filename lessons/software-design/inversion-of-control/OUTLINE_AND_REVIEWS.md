@@ -12,3 +12,9 @@ Five post-implementation desk reviews:
 4. UI: semantic headings, labeled controls, focus styling, reduced-motion and color-scheme support; interactive UI not yet cross-browser tested.
 5. Reproducibility: standalone app/index.html with no external scripts; catalog metadata conforms to CONTRIBUTING; catalog build not yet run in GitHub environment.
 Outstanding: run full catalog CI and actual Spring/.NET compilation; browser automation and keyboard audits.
+
+## v1.1.0 runner integration review
+- Reused established csharp-worker.js from the Java Futures lesson, leaving its runtime files in one place rather than duplicating ~21 MB of binaries.
+- Actual C# execution in workbench.html is separate from the main-page JavaScript models; no Microsoft DI container package is available in the existing runner.
+- Four editable code presets exercise direct construction, manual DI, swapping implementations, and compiler diagnostics.
+- Browser runtime integration cannot be validated through connector-only editing; follow up with live browser CI and run checks.
