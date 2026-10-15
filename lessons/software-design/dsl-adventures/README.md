@@ -8,10 +8,13 @@ Project issue #9 tracks true Parlot-in-browser integration, native compilation/v
 
 A separate **Blazor WebAssembly app** now lives in `wasm/`. It parses commands with Parlot 1.5.8, executes the adventure and turtle in C# and renders the turtle in SVG. The original `app/index.html` continues as a zero-install JavaScript teaching playground.
 
-To build on a machine with the .NET 8 SDK:
+To build on a machine with the .NET 10 SDK:
 
 ```sh
-python lessons/software-design/dsl-adventures/build_wasm.py
+cd lessons/software-design/dsl-adventures
+make doctor
+make test
+make build
 python tools/catalog.py build
 python tools/catalog.py serve
 ```
