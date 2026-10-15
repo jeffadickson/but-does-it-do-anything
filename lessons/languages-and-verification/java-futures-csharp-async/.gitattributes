@@ -1,0 +1,4 @@
+# Runtime hashes describe exact distributed bytes. Windows Git checkouts must
+# not convert line endings in the bundled JavaScript/JSON runtime payloads.
+app/csharp-runtime/** -text
+app/csharp-refs/** -text
