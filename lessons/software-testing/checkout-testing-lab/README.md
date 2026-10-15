@@ -46,7 +46,7 @@ Visit http://127.0.0.1:8000/ when preview is running. `integration` requires Doc
 
 ## Platform and tooling
 
-Target framework .NET 8; `global.json` selects SDK 8.0.408 with patch roll-forward. The native .NET CLI and NuGet restore are the build system; there is no need for Make. Setup uses Microsoft dotnet-install (user-local install) when SDK 8 is missing. Existing PATH/toolchains are not intentionally modified; shell PATH is updated inside setup's process only. If dotnet is not globally installed, invoke scripts after adding `$HOME/.dotnet` to PATH or opening a shell with that directory on PATH. Windows installs to `$HOME/.dotnet` similarly.
+Target framework .NET 8; `global.json` selects SDK 10.0.100 with patch roll-forward. The native .NET CLI and NuGet restore are the build system; there is no need for Make. Setup uses Microsoft dotnet-install (user-local install) when SDK 10 is missing. Existing PATH/toolchains are not intentionally modified; shell PATH is updated inside setup's process only. If dotnet is not globally installed, invoke scripts after adding `$HOME/.dotnet` to PATH or opening a shell with that directory on PATH. Windows installs to `$HOME/.dotnet` similarly.
 
 PackageReference versions are fixed in the two csproj files; a NuGet dependency lockfile has **not** been generated or verified yet. Dependencies still require access to NuGet on first restore. The PostgreSQL image uses `postgres:16-alpine` (not immutable digest pinned). A clean reproducible release should commit NuGet lockfiles and pin the container digest.
 
