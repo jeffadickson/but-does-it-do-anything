@@ -29,6 +29,11 @@ jobs:
           dotnet-version: '8.0.408'
       - name: Test instrument lab (no Docker)
         run: dotnet test lessons/software-testing/instrument-testing-lab/tests/InstrumentLab.Tests/InstrumentLab.Tests.csproj --filter FullyQualifiedName~WorkflowTests --configuration Release
+      - name: Build and check async lesson
+        run: |
+          node lessons/languages-and-verification/java-futures-csharp-async/build.cjs
+          node --test lessons/languages-and-verification/java-futures-csharp-async/tests/model.test.cjs
+          git diff --exit-code -- lessons/languages-and-verification/java-futures-csharp-async/app
       - run: python tools/catalog.py check
       - run: python tools/catalog.py build
       - uses: actions/upload-pages-artifact@v4
@@ -79,6 +84,32 @@ jobs:
           dotnet-version: '8.0.408'
       - name: Verify real PostgreSQL round trip through Testcontainers
         run: dotnet test lessons/software-testing/instrument-testing-lab/tests/InstrumentLab.Tests/InstrumentLab.Tests.csproj --filter FullyQualifiedName~PostgresTests --configuration Release
+  async-lesson:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: lessons/languages-and-verification/java-futures-csharp-async
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.3'
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.408'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21.0.6+7'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node task.cjs test
+      - run: node task.cjs native-test
+      - run: git diff --exit-code -- app
   pages-status:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -102,7 +133,7 @@ jobs:
               core.notice('One-time setup: Settings → Pages → Source → GitHub Actions. Then run this workflow again.');
             }
   deploy:
-    needs: [build, algebra, instrument-unit, instrument-postgres, pages-status]
+    needs: [build, algebra, instrument-unit, instrument-postgres, async-lesson, pages-status]
     if: needs.pages-status.outputs.enabled == 'true'
     runs-on: ubuntu-latest
     permissions:

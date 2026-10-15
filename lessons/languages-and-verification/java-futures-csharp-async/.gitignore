@@ -1,0 +1,6 @@
+.tools/
+.build/
+.screenshots/
+node_modules/
+bin/
+obj/
