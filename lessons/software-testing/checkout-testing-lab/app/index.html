@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Checkout Testing Lab</title>
+<style>:root{color-scheme:dark;font:16px/1.55 system-ui,sans-serif;background:#0d1726;color:#e7eef7}body{margin:0 auto;max-width:1050px;padding:24px}a{color:#91ceff}header{display:flex;gap:1em;justify-content:space-between;flex-wrap:wrap}h1{font-size:clamp(2rem,6vw,3.5rem);margin:.6em 0}.lead{font-size:1.2rem;color:#c5d9ec}.panel{border:1px solid #40536c;border-radius:14px;padding:20px;margin:16px 0;background:#15243a}table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #40536c;text-align:left;padding:10px}button,select{font:inherit;padding:10px 14px;border-radius:8px;background:#255d93;color:white;border:1px solid #89b8e3;cursor:pointer}button:hover{background:#3779b9}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#09121f;border-radius:9px;padding:16px}output{display:block;white-space:pre-wrap}.good{color:#89f0b1}.bad{color:#ffb5b5}.muted{color:#bbcede}.badge{font-size:.85rem;border:1px solid #a6b8cd;border-radius:999px;padding:3px 9px}section{margin-top:32px}</style></head>
+<body><header><a href="../../../index.html">← But Does It Do Anything?</a><span>SOFTWARE TESTING / CHECKOUT</span></header>
+<main><h1>When is a mock not enough?</h1><p class="lead">You sell a $19.99 book. A checkout service checks stock, sends a payment request, saves an order, and sends a notification. Four different testing tools answer four different questions.</p>
+<p><span class="badge">Interactive JavaScript model — not xUnit, WireMock.Net, Docker, or real PostgreSQL running in this browser</span></p>
+<section class="panel"><h2>The tools, at a glance</h2><table><thead><tr><th>Tool</th><th>Question it answers</th><th>What it cannot prove alone</th></tr></thead><tbody>
+<tr><td><b>xUnit</b></td><td>Does the expected behavior pass its assertions?</td><td>Whether your dependencies are realistic</td></tr>
+<tr><td><b>NSubstitute</b></td><td>Was a collaborator invoked with the right arguments and order?</td><td>Whether real HTTP or SQL integrations work</td></tr>
+<tr><td><b>WireMock.Net</b></td><td>Did the application send the expected real HTTP request?</td><td>Whether the real payment provider is healthy</td></tr>
+<tr><td><b>Testcontainers</b></td><td>Does the code actually interact with a PostgreSQL instance?</td><td>Whether your full production infrastructure behaves identically</td></tr></tbody></table>
+<p><a href="tutorial.html">Read the complete step-by-step tutorial →</a></p></section>
+<section class="panel"><h2>Try to catch the defect</h2><p>Choose an outcome or introduce a bug, then run the same assertions. This is an educational <em>model</em> of the tests. Run the downloadable .NET tests to exercise the real libraries.</p>
+<label for="scenario">Checkout scenario</label> <select id="scenario"><option value="ok">Valid purchase</option><option value="stock">Out of stock</option><option value="decline">Payment declined</option><option value="dbfail">Database failure after payment</option></select>
+<label for="fault">Injected bug</label> <select id="fault"><option value="none">No bug</option><option value="wrongAmount">Payment uses wrong amount</option><option value="noStock">Skip inventory verification</option><option value="notifyEarly">Notify before save</option><option value="saveDeclined">Save declined purchase</option><option value="doubleCharge">Send payment request twice</option></select>
+<button id="run" type="button">Run simulated checkout & assertions</button>
+<h3>Execution trace</h3><pre id="trace" aria-live="polite">Click Run to execute the model.</pre><h3>Test results</h3><output id="result" aria-live="polite"></output></section>
+<section><h2>What breaks in the straightforward solution?</h2><p>A pure unit test can stub every collaborator and obtain a green result, even when the payment client's JSON field names are wrong or the SQL insert fails. Move those critical boundaries into integration tests: use an HTTP fake with actual requests, and a real database in a disposable container. Keep lightweight substitutes for inventory and notifications.</p>
+<p><b>Important design flaw:</b> authorizing a payment and subsequently saving an order is not atomic. If PostgreSQL fails after approval, a customer might be charged without an order. A passing test that detects this gap does <em>not</em> fix it. Consider payment authorization/capture separation, idempotency keys and reconciliation or a saga.</p>
+<p><a href="tutorial.html">See C# test structure, setup, and verification limits →</a></p></section></main>
+<script>
+"use strict";
+function simulate(scenario,fault){
+ const trace=[],calls=[],rows=[];let approved=false,failed=false;const log=(x)=>{trace.push(x);calls.push(x)};
+ try{
+  log("Validate cart");
+  if(fault!=="noStock"){log("Inventory.InStockAsync(BOOK-1, 2)");if(scenario==="stock"){log("Return out of stock");return {trace,calls,rows,approved,failed}}}
+  log("HTTP POST /authorize, amountCents="+(fault==="wrongAmount"?1999:3998));
+  if(fault==="doubleCharge")log("HTTP POST /authorize, amountCents=3998");
+  approved=scenario!=="decline";if(!approved){log("Payment declined");if(fault==="saveDeclined"){log("SQL INSERT orders");rows.push({amount:3998})}return {trace,calls,rows,approved,failed}}
+  if(fault==="notifyEarly")log("Notifier.OrderPlacedAsync");
+  if(scenario==="dbfail"){log("PostgreSQL INSERT fails");failed=true;return {trace,calls,rows,approved,failed}}
+  log("SQL INSERT orders");rows.push({amount:3998});
+  if(fault!=="notifyEarly")log("Notifier.OrderPlacedAsync");
+  log("Return success");
+ }catch(e){failed=true;trace.push(String(e))}
+ return {trace,calls,rows,approved,failed};
+}
+function assertModel(s,f,d){
+ const has=(fragment)=>d.calls.some(x=>x.includes(fragment)),count=(fragment)=>d.calls.filter(x=>x.includes(fragment)).length;
+ const expectedPayment=(s==="ok"||s==="decline"||s==="dbfail"),success=s==="ok";
+ return [
+ ["Inventory was checked",has("Inventory.InStockAsync")],
+ ["Payment attempted iff in stock", (count("HTTP POST")>0)===expectedPayment],
+ ["Correct payment amount",!expectedPayment||d.calls.filter(x=>x.includes("HTTP POST")).every(x=>x.includes("3998"))],
+ ["Payment authorized at most once",count("HTTP POST")<=1],
+ ["Order persisted only on successful purchase",d.rows.length===(success?1:0)],
+ ["Notifications only after successful save",count("Notifier.OrderPlacedAsync")===(success?1:0)&&(!success||d.calls.indexOf("SQL INSERT orders")<d.calls.indexOf("Notifier.OrderPlacedAsync"))],
+ ["Persistence failure is observable",s!=="dbfail"||d.failed],
+ ["Declined payment is not approved",s!=="decline"||!d.approved]
+ ];
+}
+document.getElementById("run").addEventListener("click",()=>{
+ const s=document.getElementById("scenario").value,f=document.getElementById("fault").value,d=simulate(s,f),checks=assertModel(s,f,d);
+ document.getElementById("trace").textContent=d.trace.map((x,i)=>String(i+1).padStart(2,"0")+"  "+x).join("\n");
+ document.getElementById("result").innerHTML=checks.map(([name,passed])=>'<div class="'+(passed?"good":"bad")+'">'+(passed?"PASS":"FAIL")+" — "+name+"</div>").join("")+
+ '<p><b>'+checks.filter(x=>x[1]).length+'/'+checks.length+' model assertions passed.</b></p>';
+});document.getElementById("run").click();
+</script></body></html>

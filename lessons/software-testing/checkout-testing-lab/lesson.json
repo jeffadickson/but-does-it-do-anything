@@ -1,0 +1,27 @@
+{
+  "id": "checkout-testing-lab",
+  "title": "Testing a checkout: mocks, HTTP fakes, and real databases",
+  "summary": "Discover what xUnit, NSubstitute, WireMock.Net, and Testcontainers each prove by injecting faults into a bookstore checkout.",
+  "topic": "software-testing",
+  "level": "Intermediate",
+  "mode": "simulation",
+  "languages": [
+    "JavaScript",
+    "C#",
+    "SQL"
+  ],
+  "tags": [
+    "xUnit",
+    "NSubstitute",
+    "WireMock.Net",
+    "Testcontainers",
+    "integration testing",
+    "checkout"
+  ],
+  "prerequisites": [
+    "Basic C#",
+    "HTTP concepts",
+    "Async methods"
+  ],
+  "entrypoint": "index.html"
+}

@@ -16,6 +16,10 @@ python tools/catalog.py serve
 
 Open http://localhost:8000. On systems where Python is named differently, use `python3` or `py -3`. The server binds only to localhost. Rebuild/restart after edits; this is not a hot-reload server.
 
+## Reusable prompts
+
+Start with [generic](prompts/generic.md) to develop a lesson on any topic. Change its first line, `TOPIC: xxx`, then follow its outline, implementation, review, and delivery stages. See the [prompt collection](prompts/README.md) for usage and versions.
+
 ## Add a lesson
 
 ```sh
