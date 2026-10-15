@@ -1,0 +1,24 @@
+{
+  "name": "algebra-offline-reader",
+  "productName": "Offline Book Reader",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local HTML book reader with Windows network isolation",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --development-unrestricted",
+    "test": "node --test test/*.test.cjs",
+    "test:electron": "electron . --reader-smoke-test",
+    "package:win": "node scripts/package.cjs",
+    "prestart": "node scripts/stage.cjs",
+    "predev": "node scripts/stage.cjs",
+    "pretest:electron": "node scripts/stage.cjs",
+    "setup:electron": "node node_modules/electron/install.js"
+  },
+  "devDependencies": {
+    "electron": "44.7.0",
+    "@electron/packager": "20.3.0",
+    "@electron/fuses": "2.0.0"
+  }
+}

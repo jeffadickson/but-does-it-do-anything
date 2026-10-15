@@ -1,27 +1,114 @@
-# Prompt for importing another project's educational material
+# Reusable prompt: import a lesson into But Does It Do Anything?
 
-Copy the following into the project's development conversation. Replace the bracketed fields.
+Copy the text below into the development conversation for the project you want to import. Replace the four bracketed fields. This is an **implementation request**, not an invitation to generate a plan only.
 
 ---
 
-Bring the educational lesson/demo from this project into:
-https://github.com/jeffadickson/but-does-it-do-anything
+## Import request
 
-Lesson title: [TITLE]
-Topic: [software-design | software-testing | languages-and-verification | hardware | mathematics]
-Lesson slug: [lowercase-hyphenated-slug]
-Source material: [current project, paths, repository, release, or attached archive]
+Act as a senior software engineer, build systems engineer, testing lead, technical educator, and release engineer.
 
-Do the work, not just propose a structure:
+Import the educational lesson(s) and interactive demonstration(s) from the current project into:
 
-1. Inspect the destination repository, README.md, CONTRIBUTING.md and any applicable AGENTS.md. Use its current conventions. Inspect the source material and identify what actually runs and what is merely illustrated.
-2. Import the educational app into lessons/<topic>/<slug>/app/. Put supporting tutorial source, downloadable example source, tests and source assets in the appropriate sibling directories. Keep substantial product development in its original repository. Do not copy git metadata, secrets, build caches or unrelated binaries.
-3. Create or update lesson.json using the repository's existing schema. Include the title, useful summary, topic, prerequisites, tags, languages, level, entrypoint and truthful execution mode. Do not manually edit the generated homepage or generated catalog.
-4. Preserve working interactions, language choices, editable examples and downloads. Make asset and navigation URLs work under a GitHub Pages project subpath. Add a clear link back to the collection. Keep server credentials outside browser code. Browser-incompatible tools need a clearly labeled simulation, a runnable local companion, or an external backend.
-5. Strengthen the tutorial: concrete problem → straightforward solution → realistic change/pressure → improved design → experiment → specific benefit, cost and when to skip it. Explain what each test proves and does not prove. Use primary references.
-6. Document provenance and the exact source revision/release, licenses, prerequisites, build commands, test commands and known limitations in the lesson README. Pin required runtimes and dependencies. Preserve third-party notices. Do not depend on a private chat/site URL for required runtime assets.
-7. Add only the CI steps needed for this lesson. Run its meaningful checks plus the collection's tests, metadata validation and build. Do not claim a framework, Docker container, database or physical instrument actually ran unless it did. Report browser verification limits.
-8. Commit and push the scoped import if permitted by repository rules; otherwise open a pull request. Preserve concurrent/unrelated work. Do not modify or redeploy the original source project unless explicitly requested.
-9. Report the changed paths, checks, commit/PR, and the published lesson URL only after deployment succeeds. If Pages needs configuration, identify the exact missing setting. The top-level homepage should pick up the lesson automatically from lesson.json.
+**Destination:** https://github.com/jeffadickson/but-does-it-do-anything
 
-Complete the import and resolve defects found during validation. Ask only when missing source/access or a genuinely consequential choice blocks progress.
+- **Lesson title:** [TITLE]
+- **Topic:** [software-design | software-testing | languages-and-verification | hardware | mathematics]
+- **Slug:** [lowercase-hyphenated-slug]
+- **Source:** [repository URL + revision, local directory, attached source archive, or named files]
+
+Complete the implementation, validation, documentation, GitHub integration, and (where authorized and verified) publication. Do not stop at a proposal. Make routine engineering decisions autonomously, preserve unrelated work, and report genuine blockers rather than claiming unexecuted tests passed.
+
+### 1. Inspect source, destination, and concurrent changes
+
+1. Read destination `README.md`, `CONTRIBUTING.md`, `docs/IMPORT_PROMPT.md`, all applicable `AGENTS.md` files, and the actual catalog/build/Pages workflow. Read instructions in the source repository too.
+2. Identify the source's teaching objectives, audience, current examples, runtime requirements, interactive behavior, test coverage, references, licenses, and downloads. Classify **actual browser-executed code**, **conceptual simulation**, **recorded output**, and **local/server-only execution** accurately.
+3. Check `main`, open pull requests, existing lesson IDs, and any shared-file changes before modifying the destination. Do not overwrite other lesson imports or concurrent CI changes.
+4. Preserve the source project's repository and deployment. Import its educational content rather than copying an unrelated production system wholesale.
+
+### 2. Use the existing lesson structure
+
+Place the material at `lessons/<topic>/<slug>/` with:
+
+```text
+lesson.json                 # required metadata, source of truth for catalog
+app/index.html              # required static, publishable entrypoint
+app/tutorial.html           # if useful; publishable tutorial
+README.md                   # teaching goals, running, provenance, constraints
+examples/                   # local companion source; not automatically published
+tests/                      # test source; not automatically published
+assets/                     # optional source assets
+setup.sh / setup.ps1        # when a toolchain must be provisioned
+task.sh / task.ps1          # or native build commands, if appropriate
+```
+
+- Follow existing repository conventions rather than creating duplicate infrastructure.
+- Create/update `lesson.json` with `id`, `title`, `summary`, `topic`, `level`, `mode`, `languages`, `tags`, `prerequisites`, and `entrypoint`. The ID and topic must match the directory. Use a truthful primary mode: `browser`, `simulation`, `local-tools`, or `hosted`.
+- **Do not edit generated `_site/index.html` or `_site/catalog.json`** or manually add homepage cards. The `tools/catalog.py` generator discovers lessons by metadata.
+- Only files within `app/` are copied into the published site automatically. If users need example-source downloads, produce an appropriate distributable inside `app/` through an explicit build or documented checked-in artifact.
+- Use relative URLs, e.g. `../../../index.html` for the back link, compatible with `/but-does-it-do-anything/` on GitHub Pages.
+- Keep secrets, machine-specific files, databases, build caches, paid SDKs, and unrelated binaries out of the published site. Preserve license and attribution requirements.
+
+### 3. Make the educational experience convincing
+
+The lesson must clearly establish:
+
+1. **The problem:** a realistic, observable problem rather than a syntax-only showcase.
+2. **The straightforward solution:** the simplest reasonable implementation and why someone would choose it.
+3. **The pressure:** a changed requirement, failure, scaling issue, or maintenance burden that exposes a limitation.
+4. **The improvement:** working code that addresses that specific problem.
+5. **The experiment:** an editable/runnable demonstration where possible, meaningful tests, intentionally injected failures, and visible evidence.
+6. **The tradeoffs:** added complexity, limitations, when the improved technique is overkill, and what the tests do *not* establish.
+
+Include a clear introduction, labeled controls, responsive accessible layouts, a readable code example, explanatory walkthrough, and appropriate official/primary references. Keep interactivity working. Do not misrepresent a JavaScript model as .NET, a simulated database as PostgreSQL, or illustrative output as verified execution.
+
+### 4. Choose and pin the correct tooling
+
+Select the build system by actual project needs; do not introduce Make merely by habit.
+
+- **C# / F#:** .NET CLI/MSBuild/NuGet, `global.json`, and NuGet lockfiles where applicable.
+- **Python:** `uv` + `pyproject.toml`/`uv.lock` if dependencies are needed, otherwise retain small standard-library scripts.
+- **Rust:** Cargo and `Cargo.lock`.
+- **C/C++:** CMake + Ninja, using vcpkg/Conan where helpful.
+- **Java/Kotlin:** Gradle or Maven with repeatable dependency resolution.
+- **JS/TS:** preserve an appropriate package manager/lockfile; use pnpm for new projects if justified.
+- **Ruby:** Bundler and `Gemfile.lock`.
+- **FPGA/HDL:** retain suitable simulator/synthesis workflows; pin available tools and document proprietary requirements.
+
+When tools are needed, provide Windows PowerShell and macOS/Linux bootstrap entry points that detect installed versions, provision missing redistributable toolchains locally from official sources with checksum/signature verification where supported, restore pinned dependencies, and work safely if rerun. Do not silently elevate privileges, accept proprietary licenses, change unrelated global toolchains, or start heavyweight infrastructure. If Docker, vendor tools, or administrator action is necessary, make it explicit and optional.
+
+Provide documented equivalents of `setup`, `doctor`, `build`, `test`, `preview`, and `clean` (plus `integration` when useful). **Default setup provisions only this lesson**, not the entire collection.
+
+### 5. Verify real behavior and deployment compatibility
+
+1. Run lesson-specific unit tests, failure-path tests, and integration tests when their real dependencies are available.
+2. Run root tests relevant to shared modifications, then `python tools/catalog.py check` and `python tools/catalog.py build`.
+3. Inspect generated `_site/catalog.json`, `_site/index.html`, the lesson entrypoint, linked assets, downloads, and all navigation under the GitHub Pages project subpath.
+4. Verify browser controls and responsive behavior when a browser runtime is available. Record when unavailable.
+5. Check the build in a clean checkout/environment when practical. Do not claim Windows/macOS support is exercised merely because Linux passed.
+6. Extend the **existing** `.github/workflows/site.yml` only as necessary. Preserve checks for other lessons, deployment gating, and the existing Pages workflow; do not add a second competing publisher.
+7. GitHub Pages serves static HTML/JS/WASM/downloads, not live Docker databases or .NET services. Offer a runnable local companion or explicitly hosted backend for features requiring those resources.
+8. Do not fabricate CI outcomes, publication URLs, test results, or dependency reproducibility.
+
+### 6. Document the lesson and its provenance
+
+Update its `README.md` with: what it teaches, project/source revision, authorship and licensing/attribution, quick start, exact setup/doctor/build/test/preview/clean commands, supported operating systems and versions, actual browser behavior versus simulation, optional services, reproducibility caveats, troubleshooting, references, and how to regenerate the published artifacts.
+
+If a useful original prompt exists, retain it as `docs/BUILD_PROMPT.md` **inside the lesson** for historical reference; use the actual current source and requirements as the authority.
+
+### 7. Integrate into GitHub safely and finish
+
+1. Inspect the final diff and avoid unrelated changes.
+2. Use a dedicated branch and scoped commit(s). Before opening/merging, refresh `main` and reconcile concurrent changes—particularly `.github/workflows/site.yml`—without losing either set of checks.
+3. Open a pull request when appropriate, including a description of imported source, changed files, actual verification results, and known gaps. Link any tracking issue.
+4. If authorized and checks pass, merge. Confirm the GitHub Actions `deploy` job actually succeeded before claiming the lesson is live. If it has not, report the PR and exact blocking step rather than a guessed deployment status.
+5. If GitHub Pages needs one-time settings, confirm or report **Settings → Pages → Build and deployment → Source → GitHub Actions**.
+6. Report the final commit/PR link, lesson paths, exact local run commands, tests actually run (with OS), outstanding prerequisites, and confirmed published URL, if any.
+
+**Completion criteria:** The lesson is useful and self-contained; catalog registration is automatic; existing lessons remain intact; actual tests and simulations are distinguished; CI checks and release status are truthfully reported; and the destination has instructions sufficient for the next independent lesson.
+
+---
+
+## Repository-maintainer reminder
+
+The collection's expected mechanism is: a lesson's `lesson.json` → `python tools/catalog.py build` → generated `_site/index.html` and `_site/catalog.json` → the existing GitHub Actions Pages deployment. No manual homepage edits should be necessary.

@@ -19,7 +19,7 @@ server.Given(Request.Create()
     .RespondWith(Response.Create().WithStatusCode(200)
        .WithHeader("Content-Type", "application/json")
        .WithBody("{\"approved\":true}"));</pre><p>A local fake does not ensure the real remote provider uses the same protocol; keep official API contracts and provider sandbox tests.</p>
-<h2>5. Testcontainers: run real PostgreSQL in Docker</h2><p>An in-memory list cannot detect PostgreSQL syntax errors, schemas, SQL types or transaction behavior. Testcontainers starts a disposable PostgreSQL container for the test, provides a connection string, and cleans up afterward.</p><pre>await using var db = new PostgreSqlBuilder("postgres:16-alpine")
+<h2>5. Testcontainers: run real PostgreSQL in Docker</h2><p>An in-memory list cannot detect PostgreSQL syntax errors, schemas, SQL types or transaction behavior. Testcontainers starts a disposable PostgreSQL container for the test, provides a connection string, and cleans up afterward.</p><pre>await using var db = new PostgreSqlBuilder().WithImage("postgres:16-alpine")
     .WithDatabase("checkout_tests")
     .WithUsername("postgres")
     .WithPassword("postgres").Build();

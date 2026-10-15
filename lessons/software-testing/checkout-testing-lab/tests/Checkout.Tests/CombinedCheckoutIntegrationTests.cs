@@ -66,7 +66,7 @@ public sealed class CombinedCheckoutIntegrationTests
  }
  private static async Task<PostgreSqlContainer> StartDatabase()
  {
-  var db=new PostgreSqlBuilder("postgres:16-alpine")
+  var db=new PostgreSqlBuilder().WithImage("postgres:16-alpine")
    .WithDatabase("checkout_tests").WithUsername("postgres").WithPassword("postgres").Build();
   await db.StartAsync();return db;
  }

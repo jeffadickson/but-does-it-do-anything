@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Instrument Testing Lab — Does Your Test Prove Anything?</title>
+<style>
+:root{color-scheme:dark;font:16px/1.6 system-ui,sans-serif;background:#0a1425;color:#f0f5ff}*{box-sizing:border-box}
+body{margin:0}a{color:#8bdfff}header{background:radial-gradient(circle at 80% 20%,#284b77,transparent 55%),#0e2038;padding:3.6rem max(1.2rem,calc((100vw - 1080px)/2));border-bottom:1px solid #354965}
+h1{font-size:clamp(2rem,5vw,3.9rem);line-height:1.1;margin:1rem 0}h2{font-size:1.8rem;margin-top:2.8rem}h3{margin-bottom:.2rem}
+main{max-width:1080px;margin:auto;padding:1.1rem}.eyebrow{letter-spacing:.15em;text-transform:uppercase;color:#8bdfff;font-size:.78rem;font-weight:bold}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1rem}.card,.lab,.note{background:#14253d;border:1px solid #34506b;border-radius:16px;padding:1.2rem}.card p{color:#bfd0e0}
+label{display:block;font-weight:700;margin-top:1rem}select,input,button{background:#243953;color:white;border:1px solid #6782a0;border-radius:8px;padding:.7rem;font:inherit;width:100%}
+button{cursor:pointer;background:#50cbb4;color:#08221f;font-weight:800;border:0}button.secondary{background:#344b65;color:white}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem}.buttons{display:flex;gap:.8rem;margin:1.2rem 0}.buttons button{max-width:230px}
+pre{background:#081322;color:#bcf4c8;padding:1rem;white-space:pre-wrap;word-break:break-word;overflow:auto;border-radius:9px}
+.timeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:.5rem;margin:1.2rem 0}.step{border:1px solid #415873;border-radius:9px;padding:.7rem;background:#1c3048}.step.ok{background:#175c55}.step.bad{background:#774046}
+.state{font-weight:900;color:#83e9cb}.state.fail{color:#ffaeb6}.subtle{color:#bbcadc}code{color:#c8f7ed}
+table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #31475b;padding:.8rem;text-align:left;vertical-align:top}th{color:#91e4f5}
+footer{margin:3rem 0;color:#c6d4e5}
+</style></head><body>
+<header><div class="eyebrow">But Does It Do Anything? / Software Testing</div><h1>Don't just mock it.<br>Prove it.</h1>
+<p>One RF measurement workflow, four testing tools, five failure modes. Experiment in your browser, then execute the actual C# tests locally.</p>
+<p><a href="../../../index.html">← All lessons</a> · <a href="#experiment">Run the experiment</a> · <a href="#tutorial">Technical tutorial</a></p>
+</header><main>
+<section><h2>The problem</h2><p>Our signal generator must be switched OFF before configuration, turned ON only after frequency and power are set, and turned OFF again after measurement—even when an HTTP calibration server fails. The corrected reading must survive a PostgreSQL round trip.</p><p>The <strong>first attempt</strong> checks only that the final reading equals −20.8 dBm. That seems reasonable, but it cannot detect an unsafe command order, an unhandled 503 response, or an INSERT statement that fails on a real database. We need different forms of evidence for different risks.</p>
+<div class="grid">
+<article class="card"><strong>1 · xUnit</strong><p>Runs tests and asserts outcomes with <code>[Fact]</code>, <code>[Theory]</code>, <code>Assert</code>, and asynchronous fixtures. It is the test framework—not a mock generator.</p></article>
+<article class="card"><strong>2 · NSubstitute</strong><p>Programs stand-ins for our instrument interfaces; records calls; verifies order with <code>Received.InOrder</code> and counts with <code>Received(1)</code>. It proves interactions, not real device behavior.</p></article>
+<article class="card"><strong>3 · WireMock.Net</strong><p>Starts a real local HTTP listener, returns scripted JSON or errors, and records incoming requests. It tests URI creation, HTTP status handling, and response parsing.</p></article>
+<article class="card"><strong>4 · Testcontainers</strong><p>Starts disposable PostgreSQL using Docker. It checks real schema creation, parameter binding, SQL execution, and retrieval—not mocked persistence.</p></article>
+</div></section>
+<section id="experiment"><h2>Live browser experiment</h2><p class="subtle"><strong>Execution boundary:</strong> This interactive page executes JavaScript. Its traces are a conceptual <strong>simulation</strong> of the C# test suite. No xUnit process, Docker daemon, PostgreSQL server, WireMock.Net server, or hardware executes in the browser.</p>
+<div class="lab"><div class="controls">
+<div><label for="scenario">Inject a failure</label><select id="scenario">
+<option value="normal">Successful measurement</option><option value="order">Bad command order</option><option value="http">Calibration HTTP 503</option><option value="db">PostgreSQL INSERT failure</option><option value="input">Invalid 0 Hz frequency</option></select></div>
+<div><label for="check">What do we assert?</label><select id="check"><option value="order">Safety-critical call order</option><option value="count">Only call counts</option></select></div>
+<div><label for="raw">Raw reading (dBm)</label><input type="number" id="raw" value="-21.5" step=".1"></div>
+<div><label for="offset">Calibration offset (dB)</label><input type="number" id="offset" value=".7" step=".1"></div>
+</div><div class="buttons"><button id="run">▶ Run simulation</button><button class="secondary" id="reset">Reset</button></div>
+<div><span class="state" id="state">READY</span></div>
+<div class="timeline" id="timeline"></div><pre id="trace" aria-live="polite">Select a scenario and press Run.</pre>
+<p id="observation">The first experiment uses 1 MHz, −20 dBm output power, a −21.5 dBm meter reading, and a +0.7 dB calibration correction.</p></div></section>
+<section id="tutorial"><h2>Technical tutorial</h2>
+<h3>1. The business invariant versus the interaction contract</h3><p>Ordinary xUnit assertions prove the computed result and error paths. NSubstitute's ordered verification proves the generator is OFF before configuration. Crucially, <code>Received.InOrder</code> verifies an <em>ordered subsequence</em>; it does not guarantee that no additional dangerous SCPI commands were issued. For an exhaustive safety protocol use a stateful fake or compare a complete event journal.</p>
+<pre>Received.InOrder(() => {
+    gen.WriteAsync("OUTP OFF", Arg.Any&lt;CancellationToken&gt;());
+    gen.WriteAsync("FREQ 1000000", Arg.Any&lt;CancellationToken&gt;());
+    gen.WriteAsync("POW -20 DBM", Arg.Any&lt;CancellationToken&gt;());
+    gen.WriteAsync("OUTP ON", Arg.Any&lt;CancellationToken&gt;());
+});</pre>
+<h3>2. HTTP stubs are not substitute interface calls</h3><p>With WireMock.Net, <code>HttpClient</code> sends a real loopback request. The server returns <code>{"correctionDb":0.7}</code> or HTTP 503. This catches errors a substitute <code>ICalibrationClient</code> cannot, but still does not validate the real production calibration service.</p>
+<pre>using var server = WireMockServer.Start();
+server.Given(Request.Create().WithPath("/api/calibration").UsingGet())
+  .RespondWith(Response.Create().WithStatusCode(503));</pre>
+<h3>3. Why a real database matters</h3><p>Mocks let you assert that <code>SaveAsync</code> was called. They cannot validate PostgreSQL syntax, parameter types, identity columns, or the actual stored value. Testcontainers provisions an isolated PostgreSQL container and supplies its connection string. Docker is mandatory only for this test category.</p>
+<pre>private readonly PostgreSqlContainer db =
+    new PostgreSqlBuilder("postgres:16-alpine").Build();
+await db.StartAsync();
+await store.SaveAsync(reading);
+Assert.Equal(-20.8, await ReadBackFromPostgreSql(), 8);</pre>
+<h3>4. Reliability, safety, and limits</h3><p>A <code>finally</code> block requests <code>OUTP OFF</code> after downstream failures. It cannot guarantee shutdown after power loss, process termination, a broken instrument interface, or a failed output-off command. The demo is not an approved flight-hardware or RF interlock implementation. The order assertion also does not prove HTTP and database chronology relative to SCPI calls.</p>
+<h3>5. How to run the real tests</h3><p>From this lesson's checkout directory, run <code>sh setup.sh setup</code> (or <code>./setup.ps1 setup</code> on Windows), then:</p>
+<pre>sh setup.sh test-unit  # xUnit + NSubstitute + WireMock.Net
+sh setup.sh test       # includes real PostgreSQL via Docker
+sh setup.sh preview    # browser lesson at http://localhost:8001</pre>
+<p>The toolchains and exact commands are documented in the <a href="https://github.com/jeffadickson/but-does-it-do-anything/tree/main/lessons/software-testing/instrument-testing-lab">lesson source directory</a>. The source files are C# examples for local execution; the simulation on this page is not test results. The NuGet dependencies are explicitly versioned, while a fully validated locked restore is still an improvement to make.</p>
+<h3>6. Choose the smallest test that answers the question</h3>
+<table><thead><tr><th>What can go wrong?</th><th>Evidence to demand</th><th>Cost</th></tr></thead><tbody>
+<tr><td>Wrong corrected power</td><td>xUnit result assertion</td><td>Very low</td></tr>
+<tr><td>Unsafe SCPI call sequence</td><td>NSubstitute ordered calls + strict state machine for complete protocol</td><td>Low to moderate</td></tr>
+<tr><td>Wrong endpoint or HTTP 503</td><td>WireMock.Net loopback exchange</td><td>Low</td></tr>
+<tr><td>Invalid SQL or mismatched column type</td><td>Testcontainers + real PostgreSQL</td><td>Requires Docker and startup time</td></tr>
+<tr><td>Actual instrument firmware differences</td><td>Qualified hardware-in-loop test</td><td>High</td></tr></tbody></table>
+<h3>Official references</h3><p><a href="https://xunit.net/">xUnit</a> · <a href="https://nsubstitute.github.io/help/received-in-order/">NSubstitute order verification</a> · <a href="https://dotnet.testcontainers.org/modules/postgres/">Testcontainers PostgreSQL</a> · <a href="https://wiremock.org/dotnet/">WireMock.Net</a></p>
+</section><footer><a href="../../../index.html">← Back to the collection</a> · Original browser demonstration adapted for the collection, October 2026.</footer></main>
+<script>
+const $=id=>document.getElementById(id);
+const steps=['Generator OFF','Set frequency','Set power','Generator ON','Meter query','Calibration HTTP','Persist result','Generator OFF'];
+function timeline(last=-1,bad=-1){$('timeline').innerHTML=steps.map((x,i)=>'<div class="step '+(i===bad?'bad':i<=last?'ok':'')+'">'+(i+1)+'. '+x+'</div>').join('')}
+function run(){
+const kind=$('scenario').value,check=$('check').value,raw=Number($('raw').value),correction=Number($('offset').value);
+let calls=['OUTP OFF','FREQ 1000000','POW -20 DBM','OUTP ON','MEAS:POW?','OUTP OFF'],passed=true,reason='',last=7,bad=-1;
+if(!Number.isFinite(raw)||!Number.isFinite(correction)){passed=false;reason='Inputs must be finite numbers.';bad=4;last=3}
+else if(kind==='input'){calls=[];reason='xUnit passes: 0 Hz rejected before any instrument interaction.';last=-1}
+else if(kind==='order'){calls=['OUTP OFF','OUTP ON','FREQ 1000000','POW -20 DBM','MEAS:POW?','OUTP OFF'];passed=check==='count';reason=passed?'Call counts passed even though RF output was turned on too early. Counts are insufficient.':'Received.InOrder fails: frequency must be configured before RF output is enabled.';bad=passed?-1:2}
+else if(kind==='http'){reason='xUnit passes expected-failure test: HTTP 503 throws, store not called, generator OFF in finally.'}
+else if(kind==='db'){reason='Illustrative database failure: exception propagated and generator OFF requested. Real SQL is only tested by Docker.'}
+else {reason='xUnit passes: corrected = '+(raw+correction).toFixed(2)+' dBm. NSubstitute verifies one SaveAsync call.'}
+const out=['Browser simulation — no C# executed','Scenario: '+$('scenario').selectedOptions[0].text,'Verification: '+$('check').selectedOptions[0].text,'','Recorded instrument commands:',...calls.map((c,i)=>' '+(i+1)+'. '+c)];
+if(kind!=='input'){out.push('',kind==='http'?'WireMock.Net concept: HTTP 503':'WireMock.Net concept: JSON correction '+correction,(kind==='db'?'PostgreSQL concept: INSERT raises SQL exception':kind==='http'?'Database: not called':'Persistence: corrected '+(raw+correction).toFixed(2)+' dBm'))}
+out.push('',reason,'',passed?'SIMULATED ASSERTION: PASS':'SIMULATED ASSERTION: FAIL');
+$('trace').textContent=out.join('\n');$('state').textContent=passed?'SIMULATED PASS':'SIMULATED FAIL';$('state').className=passed?'state':'state fail';$('observation').textContent=reason;timeline(last,bad);
+}
+$('run').addEventListener('click',run);$('reset').addEventListener('click',()=>{$('scenario').value='normal';$('check').value='order';$('raw').value=-21.5;$('offset').value=.7;$('state').textContent='READY';$('trace').textContent='Select a scenario and press Run.';timeline()});timeline();
+</script></body></html>

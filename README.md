@@ -16,6 +16,10 @@ python tools/catalog.py serve
 
 Open http://localhost:8000. On systems where Python is named differently, use `python3` or `py -3`. The server binds only to localhost. Rebuild/restart after edits; this is not a hot-reload server.
 
+## Reusable prompts
+
+Start with [generic](prompts/generic.md) to develop a lesson on any topic. Change its first line, `TOPIC: xxx`, then follow its outline, implementation, review, and delivery stages. See the [prompt collection](prompts/README.md) for usage and versions.
+
 ## Add a lesson
 
 ```sh
@@ -24,7 +28,7 @@ python tools/catalog.py new software-testing testing-toolkit --title "Testing wi
 
 Edit the generated `lessons/software-testing/testing-toolkit/lesson.json` and `app/index.html`. Replace placeholder content, add the demo and its checks, then run check/build and commit. Do not publish unfilled templates. **The homepage discovers lesson.json files automatically. No manual card or catalog editing is required.**
 
-For importing an existing project, give its development agent [this prompt](docs/IMPORT_PROMPT.md). See [CONTRIBUTING.md](CONTRIBUTING.md) for the contract.
+For importing an existing project, copy the **[detailed, reusable lesson import prompt](docs/IMPORT_PROMPT.md)** into that project's development conversation. It includes metadata registration, educational requirements, cross-platform bootstrap, reproducible builds, CI checks, conflict handling, and GitHub Pages verification. See [CONTRIBUTING.md](CONTRIBUTING.md) for repository conventions. **No homepage edits are necessary:** `tools/catalog.py` finds each lesson from `lesson.json`.
 
 ## Where things live
 
@@ -74,3 +78,7 @@ Existing projects such as Pattern Atlas have not yet been migrated. Import them 
 ## Licensing
 
 No collection-wide redistribution license has been selected. Public visibility does not itself grant a software license. Preserve third-party license notices and each imported lesson's existing terms; select appropriate licenses before presenting the collection as broadly reusable open source.
+
+## Optional Windows offline reader
+
+[`viewer/`](viewer/README.md) contains the dedicated Chromium/Electron reader, its Windows firewall guard, tests, and packaging scripts. It bundles Algebra Adventure and opens other self-contained HTML books. Run `./viewer/setup.ps1` and `./viewer/setup.ps1 build` on Windows to build it, or download `OfflineBookReader-Windows-x64` from a successful **Windows reader** Actions run. First-run firewall installation requires an explicit administrator action; normal reading does not. This optional application is separate from GitHub Pages and ordinary lesson setup.
