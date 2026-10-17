@@ -41,6 +41,8 @@ jobs:
           node lessons/languages-and-verification/java-futures-csharp-async/build.cjs
           node --test lessons/languages-and-verification/java-futures-csharp-async/tests/model.test.cjs
           git diff --exit-code -- lessons/languages-and-verification/java-futures-csharp-async/app
+      - name: Verify metastability teaching model
+        run: node --test lessons/hardware/metastability-for-managers/tests/model.test.cjs
       - run: python tools/catalog.py check
       - run: python tools/catalog.py build
       - uses: actions/upload-pages-artifact@v4
@@ -118,6 +120,10 @@ jobs:
         run: |
           python ../../../tools/catalog.py build
           node ../../../shared/components/browser-smoke.cjs
+      - name: Verify metastability browser lesson
+        env:
+          NODE_PATH: ${{ github.workspace }}/lessons/languages-and-verification/java-futures-csharp-async/node_modules
+        run: node ../../hardware/metastability-for-managers/tests/browser.cjs
       - run: node task.cjs test
       - run: node task.cjs native-test
       - run: git diff --exit-code -- app

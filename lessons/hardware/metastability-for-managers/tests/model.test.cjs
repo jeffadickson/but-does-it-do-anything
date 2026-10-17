@@ -1,0 +1,13 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');const vm=require('node:vm');const path=require('node:path');
+const root=path.join(__dirname,'..');const html=fs.readFileSync(path.join(root,'app/index.html'),'utf8');
+const box={module:{exports:{}}};vm.runInNewContext(html.match(/<script id="model">([\s\S]*?)<\/script>/)[1],box);const {stateAt}=box.module.exports;
+test('near-edge uncertainty is initially contained, then captured next edge',()=>{assert.equal(stateAt(1.1,.98,'near').first,'M');assert.equal(stateAt(1.1,.98,'near').second,0);assert.equal(stateAt(1.7,.98,'near').first,1);assert.equal(stateAt(1.7,.98,'near').second,0);assert.equal(stateAt(2,.98,'near').second,1);});
+test('moving arrival outside window changes actual behavior',()=>{assert.equal(stateAt(1.1,.4,'near').first,1);assert.equal(stateAt(1.1,1.4,'near').first,0);assert.equal(stateAt(2.1,1.4,'near').first,1);assert.equal(stateAt(2.1,1.4,'near').second,0);assert.equal(stateAt(3,1.4,'near').second,1);});
+test('old-value resolution delays persistent-level recognition by a cycle',()=>{assert.equal(stateAt(1.7,.98,'old').first,0);assert.equal(stateAt(2,.98,'old').first,1);assert.equal(stateAt(2,.98,'old').second,0);assert.equal(stateAt(3,.98,'old').second,1);});
+test('prolonged settling explicitly permits second-stage uncertainty',()=>{assert.equal(stateAt(2.1,.98,'long').second,'M');assert.equal(stateAt(2.8,.98,'long').second,1);});
+test('pulse between edges is lost even without metastability',()=>{assert.equal(stateAt(1.4,1.25,'pulse').input,1);for(let t=0;t<=3.4;t+=.01){assert.equal(stateAt(t,1.25,'pulse').first,0);assert.equal(stateAt(t,1.25,'pulse').second,0);}});
+test('version and static standalone packaging stay consistent',()=>{const meta=JSON.parse(fs.readFileSync(path.join(root,'lesson.json'),'utf8'));assert.ok(html.includes('v'+meta.version));assert.ok(!/<script[^>]+src=|<link[^>]+stylesheet/i.test(html));assert.ok(html.includes('../../../index.html'));});
+test('counter: inconsistent enable can produce +4 on one edge, not extra clock pulses',()=>{const capture=box.module.exports.counterCapture;assert.equal(capture(3,4),7);assert.equal(capture(3,15),4);assert.equal(capture(3,0),3);});
+test('counter: all coherent enables either hold or increment modulo 16',()=>{const capture=box.module.exports.counterCapture;for(let old=0;old<16;old++){assert.equal(capture(old,0),old);assert.equal(capture(old,15),(old+1)%16);for(let mask=0;mask<16;mask++){let expected=0;for(let bit=0;bit<4;bit++)expected|=(((mask>>bit)&1?((old+1)%16>>bit):(old>>bit))&1)<<bit;assert.equal(capture(old,mask),expected);}}});
