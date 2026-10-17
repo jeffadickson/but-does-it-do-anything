@@ -47,7 +47,7 @@ JSON metadata keeps the core build dependency-free. There is no hand-maintained 
 
 ## GitHub hosting
 
-Git stores source history; **GitHub Pages hosts the static website**. In this repository, set **Settings → Pages → Build and deployment → Source → GitHub Actions** once. Then choose **Actions → Verify and publish lessons → Run workflow**. Ordinary pushes and pull-request updates no longer trigger the full test matrix. Push a release-candidate tag matching `v*-rc*`, or run the workflow manually. To publish GitHub Pages, manually run it on `main` after merging. See [CI policy](docs/CI_POLICY.md). Before Pages is configured, checks still run and the deployment job is intentionally skipped with a setup notice.
+Git stores source history; **GitHub Pages hosts the static website**. In this repository, set **Settings → Pages → Build and deployment → Source → GitHub Actions** once. Then choose **Actions → Verify and publish lessons → Run workflow** on `main` to verify and deploy. Ordinary pushes and pull requests do **not** run the expensive workflow automatically; release-candidate tags (`v*-rc*`) run verification, and manual dispatch on `main` can deploy. See [CI policy](docs/CI_POLICY.md) and the [.NET 10 migration](docs/NET10_MIGRATION.md). Before Pages is configured, checks still run and the deployment job is intentionally skipped with a setup notice.
 
 Expected address after a successful deployment:
 https://jeffadickson.github.io/but-does-it-do-anything/
