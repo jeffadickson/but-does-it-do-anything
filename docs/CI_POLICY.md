@@ -1,18 +1,43 @@
-# Opt-in CI and publishing
+# CI run policy — deliberate release-candidate verification
 
-Ordinary branch pushes, pull-request updates, and merges to `main` do not run the expensive test matrix. The root site and Windows-reader workflows run **only** when an explicit release-candidate tag matching `v*-rc*` is pushed or when you use **Actions → Run workflow**.
+The full GitHub Actions workflows `.github/workflows/site.yml` and `.github/workflows/windows-reader.yml` is **not** triggered by ordinary pushes to feature branches or `main`, by updating a pull request, or by merging a PR.
 
-Example:
+## When the full suite runs
+
+1. Push a release-candidate tag matching `v*-rc*`, for example:
+
+   ```sh
+   git fetch origin
+   git checkout main
+   git pull --ff-only
+   git tag v1.2.0-rc1
+   git push origin v1.2.0-rc1
+   ```
+
+   The tag points to the exact commit that the matrix tests. Make the next release candidate `v1.2.0-rc2` rather than moving a published tag.
+
+2. Manually request full verification from **Actions → Verify and publish lessons → Run workflow**, choosing the target branch. GitHub requires the workflow to exist on the default branch to expose the manual-run UI.
+
+The Windows reader uses the same RC tag trigger, or can be run on demand through **Actions → Windows reader → Run workflow**.
+
+## Local quick verification
 
 ```sh
-git tag v1.2.0-rc1
-git push origin v1.2.0-rc1
+python tools/catalog.py check
+python tools/catalog.py build
+python -m unittest discover -s tests -v
+node --test shared/components/csharp-runner.test.cjs
 ```
 
-This tests the tagged commit. Never move a published RC tag: create `v1.2.0-rc2` for revisions. Release-candidate tag runs **verify** the project; they do not publish Pages. For a Pages release, manually dispatch **Verify and publish lessons** on `main` after merging a tested revision. GitHub Pages must already be configured for GitHub Actions.
+Run relevant per-lesson tests only when changing that area. This policy trades fast automated feedback for fewer automatic runs. Never treat an untested commit as CI-verified.
 
-.NET 10 runtime packaging is independently available through **Actions → Rebuild and verify .NET 10 browser runner → Run workflow**, which intentionally runs only on explicit request. It publishes a short-lived artifact containing the candidate WASM assets, integrity manifest and regenerated NuGet lockfile. Review these outputs before checking them into a release.
+## Publishing the website
 
-For quick local checks, run `python tools/catalog.py check`, `python tools/catalog.py build` and relevant lesson tests. An untested push must not be described as CI-passing.
+**Merging no longer automatically deploys GitHub Pages.** After merging a tested revision into `main`, manually start **Verify and publish lessons** on `main`. The existing workflow's Pages detection/deployment logic only allows a main-branch non-PR run to deploy; release-candidate tag runs are verification-only. If Pages is not configured, the deployment remains skipped.
 
-**Important:** Branch protections that require CI check names on every PR can block merges under this policy. Configure required checks accordingly. See `docs/NET10_MIGRATION.md` for remaining runtime verification. The Windows viewer produces its downloadable package only when its workflow runs.
+## Safety notes
+
+- Avoid making passing CI checks mandatory branch-protection requirements for every PR unless you intend to invoke the workflow manually before merging; otherwise PRs may remain blocked waiting for a check that is intentionally never started.
+- Standard GitHub-hosted Actions runners are free for public repositories under GitHub's current pricing, while larger runners or storage may still incur charges. Inspect actual billing rather than assuming each run costs money.
+- The Windows offline reader workflow follows the same release-candidate/manual triggers. Its packaging artifact is still produced only when that workflow runs. Other newly added workflows must be reviewed separately.
+- To restore continuous CI, add `pull_request:` and/or `push.branches: [main]` to that workflow in a deliberate change.
