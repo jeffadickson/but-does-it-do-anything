@@ -30,3 +30,11 @@ CI remains opt-in on branches where the release-candidate policy is adopted. Run
 ### Environment and release caveat
 
 The current local container has no .NET SDK, and DNS cannot resolve `dot.net`, `api.nuget.org` or `github.com`. Consequently, **the rebuilt browser binaries and lockfile have not been produced**, and no successful .NET 10 compile, NuGet restore or browser test is claimed in this turn. A manual build on a connected runner is still required. The bundled browser binary should not be represented as upgraded merely because the source project targets net10.0.
+
+## PR integration checkpoint — 17 October 2026
+
+- Main advanced since the draft PRs began; verify the latest main changes before merging.
+- Merge order remains shared IoC runner (#8), .NET 10 migration (#12), then DSL Adventure (#10), contingent on checks.
+- Do not assume clean GitHub compare results imply conflict-free merge across sibling branches.
+- Browser smoke tests exist for IoC; a green run for its final head is still needed.
+- Runtime CI remains manual by policy; absence of a run is not a pass.
