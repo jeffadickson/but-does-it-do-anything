@@ -112,6 +112,10 @@ jobs:
           java-version: '21.0.6+7.0.LTS'
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - name: Verify shared IoC browser runner
+        run: |
+          python ../../../tools/catalog.py build
+          node ../../../shared/components/browser-smoke.cjs
       - run: node task.cjs test
       - run: node task.cjs native-test
       - run: git diff --exit-code -- app

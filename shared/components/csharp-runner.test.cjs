@@ -6,9 +6,9 @@ test('shared worker resolves one runtime root and runs exact submitted source',(
  const worker=read('shared/components/csharp-worker.js');
  assert.match(worker,/java-futures-csharp-async\/app\//);
  assert.match(worker,/typeof data\.code/);
- assert.match(worker,/api\.Run\(data\.code\)/);
- assert.match(worker,/csharp-refs\/references\.bin/);
- assert.match(worker,/DecompressionStream\('gzip'\)/);
+ assert.match(worker,/worker\.postMessage\(\{code:data\.code\}\)/);
+ assert.match(worker,/new Worker/);
+ assert.match(read('lessons/languages-and-verification/java-futures-csharp-async/app/csharp-worker.js'),/api\.Run\(data\.code\)/);
 });
 test('both lessons use shared worker when served by catalog',()=>{
  const asyncSource=read('lessons/languages-and-verification/java-futures-csharp-async/src/app.js');
