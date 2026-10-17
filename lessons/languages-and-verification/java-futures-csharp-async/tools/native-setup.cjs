@@ -15,8 +15,8 @@ async function install(url,hash,algorithm,dest){
  if(p.status!==0)throw Error('Archive extraction failed');fs.unlinkSync(archive);fs.writeFileSync(path.join(dest,'.installed'),url+'\n'+hash+'\n');
 }
 (async()=>{
- const metadata=await json('https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/8.0/releases.json');
- const sdk=metadata.releases.flatMap(r=>r.sdks||[r.sdk]).find(s=>s&&s.version==='8.0.408');
+ const metadata=await json('https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/10.0/releases.json');
+ const sdk=metadata.releases.flatMap(r=>r.sdks||[r.sdk]).find(s=>s&&s.version==='10.0.100');
  const rid=(os==='windows'?'win':os)+'-'+arch;
  const file=sdk.files.find(f=>f.rid===rid&&f.url.endsWith(os==='windows'?'.zip':'.tar.gz'));
  if(!file)throw Error('No pinned .NET SDK archive for '+rid);
@@ -26,5 +26,5 @@ async function install(url,hash,algorithm,dest){
  const assets=await json(`https://api.adoptium.net/v3/assets/release_name/eclipse/jdk-21.0.6%2B7?architecture=${javaArch}&heap_size=normal&image_type=jdk&jvm_impl=hotspot&os=${javaOs}&vendor=eclipse`);
  const pkg=assets.binaries?.[0]?.package;if(!pkg)throw Error('No pinned Java distribution for this platform');
  await install(pkg.link,pkg.checksum,'sha256',path.join(base,'java'));
- console.log('Local .NET 8.0.408 and Temurin 21.0.6+7 installed. Run native-test.');
+ console.log('Local .NET 10.0.100 and Temurin 21.0.6+7 installed. Run native-test.');
 })().catch(e=>{console.error(e.message);process.exit(1);});
