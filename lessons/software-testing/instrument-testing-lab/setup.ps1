@@ -9,7 +9,7 @@ switch($Task) {
   if (-not (Test-Path "$env:DOTNET_ROOT/dotnet.exe")) {
    $installer=Join-Path $env:TEMP 'instrument-dotnet-install.ps1'
    Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile $installer
-   & $installer -Version '8.0.408' -InstallDir $env:DOTNET_ROOT
+   & $installer -Version '10.0.100' -InstallDir $env:DOTNET_ROOT
   }
   dotnet restore $project
  }
