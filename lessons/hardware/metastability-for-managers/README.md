@@ -1,10 +1,10 @@
-# Metastability for managers — v1.0.0
+# Metastability for managers — v1.1.0
 
 A 12–15 minute briefing: asynchronous arrival, possible metastability, the purpose of two **receiving-clock** stages, and a short level/event/mailbox/FIFO comparison. Created for this repository using `prompts/generic.md`, based on main `6993af27252fcfbd8d055c2632f5d7c2f3434a78`. Tracking: #14.
 
 ## Open
 
-Open `app/index.html` directly in a modern browser. It is a single standalone file with embedded CSS, SVG and JavaScript; no installation, server, SDK or internet needed. External source links and the catalog back link are not standalone offline resources. There are five deterministic teaching scenarios, arrival/time sliders, play/pause/step/reset, and four exercises. No autoplay; reduced-motion readers can use step or scrub.
+Open `app/index.html` directly in a modern browser. It is a single standalone file with embedded CSS, SVG and JavaScript; no installation, server, SDK or internet needed. External source links and the catalog back link are not standalone offline resources. There is an interactive unsafe-enable counter (3 → 7 versus a valid 3 → 4), an RTG4 synthesis/placement sidebar, and five deterministic teaching scenarios, arrival/time sliders, play/pause/step/reset, and four exercises. No autoplay; reduced-motion readers can use step or scrub.
 
 From the repository root, Python 3.11+ builds the existing catalog:
 

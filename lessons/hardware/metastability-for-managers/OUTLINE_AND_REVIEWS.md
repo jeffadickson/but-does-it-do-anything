@@ -38,3 +38,10 @@ To be completed after implementation; tests verify the teaching model, not physi
 | Mobile / dark / keyboard / motion | CSS, semantic controls, browser script | browser verification pending |
 
 No independent human review performed. CI is deliberately manual/release-candidate only; ordinary PR creation is not a CI pass.
+
+## v1.1.0 update review
+- User requested a visible counter failure and an RTG4 implementation sidebar. Added an unsafe count-enable model: hold 3 (0011) versus increment 4 (0100), with independent per-bit enable decisions. Selecting only bit 2 yields 7 (0111). This models one possible resolved corrupted state, not additional clock pulses or a probability distribution. Compared with a settled, timed FF2 enable at a later receiving edge; explicitly retained event-protocol and residual-risk limits.
+- Added actual Synplify attribute syntax and RTG4 PDC command forms verified against primary Microchip-hosted manuals. Synthesis preservation is distinct from placement locking. All location values are placeholders; select legal nearby sites or a small region using actual netlist macro names. Templates were not run in Libero.
+- Microchip RTG4 Fabric Guide identifies clusters of 12 logic elements; AN6287 §5.1 recommends additional stages above 125 MHz. Sidebar preserves need for design-specific analysis below that threshold too.
+- Eight model/package tests pass, including all 256 old-value/update-mask combinations in the four-bit counter and coherent hold/increment controls. Catalog check/build passes. Extended browser smoke checks for counter apply/reset/hold; browser execution remains blocked as documented above.
+- Reviewed scope: manager-facing explanation stays short; technical directives are in a collapsed engineering sidebar, linked beside FF2. Version updated to 1.1.0.

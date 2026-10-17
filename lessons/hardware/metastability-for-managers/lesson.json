@@ -3,11 +3,21 @@
   "title": "Metastability: buying time for a reliable decision",
   "summary": "Move a signal toward a clock edge, compare exposed and two-stage receiving paths, and learn when a mailbox or FIFO is needed.",
   "topic": "hardware",
-  "level": "Introductory — managers",
+  "level": "Introductory \u2014 managers",
   "mode": "simulation",
-  "languages": ["JavaScript"],
-  "tags": ["metastability", "CDC", "synchronizer", "management", "FIFO"],
-  "prerequisites": ["No electronics background required"],
+  "languages": [
+    "JavaScript"
+  ],
+  "tags": [
+    "metastability",
+    "CDC",
+    "synchronizer",
+    "management",
+    "FIFO"
+  ],
+  "prerequisites": [
+    "No electronics background required"
+  ],
   "entrypoint": "index.html",
-  "version": "1.0.0"
+  "version": "1.1.0"
 }
