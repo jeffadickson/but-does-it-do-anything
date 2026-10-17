@@ -42,6 +42,13 @@ class RuntimeRebuildTests(unittest.TestCase):
             result = rebuild.reference_directory(root)
             self.assertEqual("10.0.4", result.parent.parent.name)
 
+    def test_sdk_parser_supports_windows_paths(self):
+        listing = "10.0.100 [C:\\Program Files\\dotnet\\sdk]\\n"
+        with mock.patch.object(rebuild.subprocess, "run", return_value=SimpleNamespace(stdout=listing)):
+            version, base = rebuild.sdk_installation("dotnet")
+        self.assertEqual("10.0.100", version)
+        self.assertIn("dotnet", str(base))
+
     def test_missing_ref_pack_raises(self):
         with tempfile.TemporaryDirectory() as folder:
             with self.assertRaisesRegex(RuntimeError, "Missing .NET 10 reference"):
