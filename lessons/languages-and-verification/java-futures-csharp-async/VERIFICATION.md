@@ -4,7 +4,7 @@
   the existing lesson branch in a fresh repository checkout.
 - Added chapter 10, two complete C# source examples, five actual C# browser
   presets, an admission checkpoint, source downloads, and dynamic preset descriptions.
-- Linux: .NET SDK 10.0.402 compiled the net8.0 native projects. With explicit
+- Linux: .NET SDK 10.0.402 compiled the net10.0 native projects. With explicit
   major runtime roll-forward, all 14 xUnit cases passed. Four Dataflow cases
   use gates to verify capacity/admission, both output-order policies, and
   downstream fault releasing a capacity-blocked producer. No sleep-based ordering.
@@ -35,7 +35,7 @@ The new overlap theory passed for both completion orders. Current native suite: 
 
 # Five-pass review verification · 15 October 2026
 
-- Eight xUnit/NSubstitute tests passed using .NET SDK 10 with explicit major runtime roll-forward for the net8.0 target. New regression proves a synchronous second-driver exception does not abandon the first pending measurement.
+- Eight xUnit/NSubstitute tests passed using .NET SDK 10 with explicit major runtime roll-forward for the net10.0 target. New regression proves a synchronous second-driver exception does not abandon the first pending measurement.
 - Enhanced Chromium WASM tests passed: four acquisition presets, unique edited-source output, drafts retained across preset switches, compile-error recovery, frozen source while running, Stop/restart, Code display, and mobile width.
 - Five semantic model tests passed. Six JavaScript teaching interactions and six exercises passed browser checks, including countdowns, offline reading, downloads, themes, and mobile overflow.
 - Revised Java CompositionLab compiled for Java 8 and ran on JDK 21. Its power dependency now agrees with the graph (1.001 W); anyOf is registered before dependent waits.
@@ -65,10 +65,10 @@ The new overlap theory passed for both completion orders. Current native suite: 
 - Playwright browser checks using Chromium headless shell: all seven simulations, all six exercise correct/incorrect/unanswered paths, source download, light/dark theme, mobile document overflow, offline loading with HTTP requests blocked, no browser JavaScript errors.
 - Browser tests rerun using the lesson's pinned Node 22.23.3 and Playwright 1.51.1, after setup provisioned the locked dependencies.
 - Visual inspection of desktop light theme, desktop dark instrument-lab section, and 390-pixel mobile dark layout.
-- C# compiled for net8.0 using SDK 10.0.402. Seven xUnit/NSubstitute tests passed using .NET 10.0.13 with explicit major runtime roll-forward.
+- C# compiled for net10.0 using SDK 10.0.402. Seven xUnit/NSubstitute tests passed using .NET 10.0.13 with explicit major runtime roll-forward.
 - The console companion and executable self-checks ran under both .NET 10.0.13 and the locally provisioned .NET 8.0.15 runtime. Checks cover success cleanup, fault cleanup, cancellation cleanup, retained cleanup errors, multiple aggregate faults and stream early termination.
 - All three Java programs compiled and ran with provisioned Temurin 21.0.6+7. FutureLab and CompositionLab compiled with --release 8; VirtualLab with --release 21. Java 8 target-obsolescence warnings are expected.
-- Linux Node bootstrap setup succeeded. Native provisioning downloaded .NET 8.0.408 and Temurin 21.0.6+7 and verified official metadata hashes before extraction. Corrected tar ownership portability and the Adoptium release-name endpoint during validation.
+- Linux Node bootstrap setup succeeded. Native provisioning downloaded .NET 10.0.100 and Temurin 21.0.6+7 and verified official metadata hashes before extraction. Corrected tar ownership portability and the Adoptium release-name endpoint during validation.
 - Repository catalog check/build discovers four lessons, including the new lesson; all four root catalog unit tests pass. Generated collection back-link resolves from the lesson's published location.
 
 ## Explicit limits
