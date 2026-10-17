@@ -1,0 +1,23 @@
+// Run with Playwright available via NODE_PATH or the repository's existing async-lesson dependencies.
+const {chromium}=require('playwright');const assert=require('node:assert/strict');const path=require('node:path');
+(async()=>{const browser=await chromium.launch({headless:true, executablePath:process.env.BROWSER_EXECUTABLE || undefined});try{const page=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce'});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+await page.goto('file://'+path.resolve(__dirname,'../app/index.html'));
+const scrub=async(value)=>page.locator('#time').evaluate((el,v)=>{el.value=v;el.dispatchEvent(new Event('input'));},value);
+await scrub(1.1);assert.equal(await page.locator('#first b').textContent(),'M');assert.equal(await page.locator('#second b').textContent(),'0');
+await scrub(2.1);assert.equal(await page.locator('#second b').textContent(),'1');
+await page.locator('[data-case=long]').click();await scrub(2.1);assert.equal(await page.locator('#second b').textContent(),'M');
+await page.locator('[data-case=old]').click();await scrub(2.1);assert.equal(await page.locator('#second b').textContent(),'0');await scrub(3.1);assert.equal(await page.locator('#second b').textContent(),'1');
+await page.locator('[data-case=pulse]').click();assert.equal(await page.locator('#arrival').isDisabled(),true);await scrub(1.4);assert.equal(await page.locator('#first b').textContent(),'0');
+await page.locator('[data-case=safe]').click();await scrub(1.1);assert.equal(await page.locator('#first b').textContent(),'1');
+await page.locator('[data-case=near]').click();await page.locator('#arrival').evaluate(el=>{el.value=.4;el.dispatchEvent(new Event('input'));});await scrub(1.1);assert.equal(await page.locator('#first b').textContent(),'0');
+await page.locator('#reset').click();assert.equal(await page.locator('#time').inputValue(),'0');await page.locator('#next').click();assert.equal(await page.locator('#time').inputValue(),'0.8');
+await page.locator('#play').click();await page.waitForTimeout(120);await page.locator('#play').click();assert.ok(Number(await page.locator('#time').inputValue())>.8);assert.equal(await page.locator('#play').textContent(),'Play');
+const cards=page.locator('.exercise');await cards.nth(0).locator('button').click();assert.match(await cards.nth(0).locator('.feedback').textContent(),/Choose/);
+for(const [i,v] of [1,2,0,2].entries()){await cards.nth(i).locator('input[value="'+v+'"]').check();await cards.nth(i).locator('button').click();}assert.equal(await page.locator('#score').textContent(),'4 / 4');
+await cards.nth(0).locator('input[value="0"]').check();await cards.nth(0).locator('button').click();assert.equal(await page.locator('#score').textContent(),'3 / 4');assert.match(await cards.nth(0).locator('.feedback').textContent(),/Try again/);
+await page.locator('[data-case=near]').click();await scrub(1.1);await page.locator('.lab').screenshot({path:path.join(require('node:os').tmpdir(),'metastability-lab.png')});
+await page.setViewportSize({width:390,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.locator('#intro').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(require('node:os').tmpdir(),'metastability-mobile.png')});
+await page.emulateMedia({colorScheme:'dark',reducedMotion:'reduce'});await page.locator('[data-case=near]').click();assert.equal(await page.locator('#play').textContent(),'Play');
+const ids=await page.locator('[id]').evaluateAll(els=>els.map(e=>e.id));assert.equal(new Set(ids).size,ids.length);
+assert.deepEqual(errors,[]);console.log('Browser passed: five scenarios, sliders, play/pause/reset/step, exercises, file:// offline load, mobile overflow, reduced-motion initial state, dark mode, no JS errors.');
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1);});
