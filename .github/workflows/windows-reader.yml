@@ -1,5 +1,5 @@
 name: Windows reader
-# Windows packaging follows deliberate RC or manual verification.
+# Package only on release-candidate tag or explicit manual request.
 on:
   push:
     tags: ['v*-rc*']
