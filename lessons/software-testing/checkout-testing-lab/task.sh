@@ -5,7 +5,7 @@ command="${1:-doctor}"
 case "$command" in
  setup) exec sh ./setup.sh ;;
  doctor)
-   command -v dotnet >/dev/null 2>&1 || { echo "Missing .NET SDK 8; run ./setup.sh" >&2; exit 1; }
+   command -v dotnet >/dev/null 2>&1 || { echo "Missing .NET SDK 10; run ./setup.sh" >&2; exit 1; }
    dotnet --version
    command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1 && echo "Docker available" || echo "Docker unavailable: required for integration tests"
    ;;
