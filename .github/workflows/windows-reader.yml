@@ -1,10 +1,8 @@
 name: Windows reader
+# Package only on release-candidate tag or explicit manual request.
 on:
   push:
-    branches: [main]
-    paths: ['viewer/**', 'lessons/mathematics/algebra-adventure/**', '.github/workflows/windows-reader.yml']
-  pull_request:
-    paths: ['viewer/**', 'lessons/mathematics/algebra-adventure/**', '.github/workflows/windows-reader.yml']
+    tags: ['v*-rc*']
   workflow_dispatch:
 permissions:
   contents: read

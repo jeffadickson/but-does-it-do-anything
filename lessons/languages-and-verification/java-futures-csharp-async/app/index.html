@@ -1162,7 +1162,7 @@ if (typeof document !== 'undefined') {
   if(location.protocol==='file:'){status.textContent='To execute C#, run python3 start.py and open the local URL. Browsers block module workers from file://. Reading and diagrams still work here.';return;}
   run.disabled=true;stop.disabled=false;editor.disabled=true;scenario.disabled=true;output.textContent='';status.textContent='Loading local compiler/runtime…';
   if(!worker){
-   worker=new Worker('./csharp-worker.js',{type:'module'});
+   worker=new Worker(location.pathname.includes('/lessons/languages-and-verification/java-futures-csharp-async/') ? '../../../shared/components/csharp-worker.js' : './csharp-worker.js',{type:'module'});
    worker.onmessage=({data})=>{
     if(data.type==='stdout')output.textContent+=data.value+'\n';
     else if(['error','fatal'].includes(data.type)){output.textContent+=data.value+'\n';status.textContent='C# execution failed.';terminate();}

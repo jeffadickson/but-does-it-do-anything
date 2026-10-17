@@ -1,0 +1,6 @@
+# Inversion of Control: from early frameworks to modern .NET
+Version 1.1.0 (2026-10-15). Historical analysis, progressive examples, six assessed exercises, injection and lifetime conceptual browser labs.
+Open `app/index.html` directly (offline) or from repository root use `python tools/catalog.py check && python tools/catalog.py build && python tools/catalog.py serve`.
+The main page uses JavaScript **conceptual simulations**; **app/workbench.html** also runs editable real C# using the other lesson’s bundled Roslyn/.NET WebAssembly worker. The workbench requires an HTTP-served catalog containing the languages-and-verification/java-futures-csharp-async runtime assets; it does not run from file:// or import NuGet packages. No actual Spring or Microsoft DI container executes in the browser; the C# code is intended for a local SDK with the `Microsoft.Extensions.DependencyInjection` NuGet package. Java samples require a Spring project and corresponding imports/setup.
+Primary research links appear in the lesson's sources chapter. Outline/reviews: `OUTLINE_AND_REVIEWS.md`. Changelog: `CHANGELOG.md`. Issue: #7.
+Verification: logical and source review completed; local cross-browser, .NET/Spring runtime compilation and repository CI unverified pending workflow execution. No packages or CDNs for the lesson itself.
