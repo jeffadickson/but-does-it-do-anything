@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A practical look at the Embedded Template Library for bounded, allocation-free C++ systems.">
+<title>ETL — Bounded by design | Library deep dive, October 21, 2026</title>
+<style>
+:root{color-scheme:light;--ink:#182b3b;--muted:#526373;--accent:#075d66;--paper:#fff;--wash:#edf3f4;--line:#ccdadd}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--wash);color:var(--ink);font:17px/1.7 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--accent);text-underline-offset:.2em}a:focus-visible{outline:3px solid #d98020;outline-offset:4px}
+.skip{position:absolute;left:-9999px}.skip:focus{left:1rem;top:1rem;background:white;padding:1rem;z-index:10}
+header{background:#122f40;color:white;padding:4.5rem max(6vw,1.4rem) 3.5rem}header p{max-width:760px;color:#d5e6ec}.eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:.78rem;font-weight:700;color:#90d9d0}h1{font-size:clamp(2.4rem,6vw,4.6rem);line-height:1.08;letter-spacing:-.04em;max-width:900px;margin:1rem 0}h2{font-size:1.8rem;line-height:1.25;margin:0 0 1.2rem}h3{font-size:1.2rem}
+.layout{display:grid;grid-template-columns:230px minmax(0,860px);gap:3rem;max-width:1220px;margin:auto;padding:3rem 1.5rem}
+nav{align-self:start;position:sticky;top:1.5rem;font-size:.9rem}nav ol{padding-left:1.3rem}nav li{margin:.6rem 0}
+main{min-width:0}section{background:var(--paper);padding:2.2rem;margin-bottom:1.4rem;border:1px solid var(--line);border-radius:10px;scroll-margin-top:1rem}p{margin:1rem 0}.lead{font-size:1.17rem}
+.note{background:#e8f5f1;border-left:4px solid var(--accent);padding:1rem 1.2rem}.label{font-size:.75rem;font-weight:750;text-transform:uppercase;letter-spacing:.06em;color:var(--accent)}
+pre{background:#132a38;color:#e3edf4;padding:1.3rem;border-radius:8px;overflow-x:auto;font-size:.84rem;line-height:1.6}code{font-family:Consolas,"Cascadia Code",monospace}p code,li code,td code{background:#eef2f4;padding:.12rem .25rem;border-radius:3px;overflow-wrap:anywhere}
+table{border-collapse:collapse;width:100%;font-size:.94rem}th,td{padding:.8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}th{background:#edf3f4}.table-wrap{overflow-x:auto}footer{max-width:1120px;margin:0 auto;padding:0 1.5rem 3rem;color:var(--muted);font-size:.85rem}.small{font-size:.88rem;color:var(--muted)}
+@media(max-width:850px){.layout{display:block;padding:1.2rem}nav{position:static;margin-bottom:1.5rem}nav ol{columns:2}section{padding:1.4rem}header{padding-top:3rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:white;font-size:11pt}header{background:white;color:black;padding:1rem}header p,.eyebrow{color:black}.layout{display:block;padding:0}nav{position:static}section{border:0;padding:1rem 0}pre{white-space:pre-wrap;background:#eee;color:black}a{color:black}}
+</style>
+</head>
+<body>
+<a class="skip" href="#intro">Skip to article</a>
+<header><div class="eyebrow">Jeff’s morning library deep dive · 01</div>
+<h1>Embedded Template Library<br>Bounded by design.</h1>
+<p class="lead">Familiar C++ containers with a hard limit on how much they can hold—and a useful way to think about event queues, object lifetimes, and memory budgets.</p>
+<p>October 21, 2026 · Primary sources researched today · C++ / embedded systems</p></header>
+<div class="layout">
+<nav aria-label="Table of contents"><strong>In this deep dive</strong><ol>
+<li><a href="#intro">The introduction</a></li><li><a href="#mechanics">How it works</a></li><li><a href="#uses">Where it is used</a></li><li><a href="#jeff">Why it fits your work</a></li><li><a href="#example">A bounded mailbox</a></li><li><a href="#integration">Build and integration</a></li><li><a href="#tradeoffs">Tradeoffs and evaluation</a></li><li><a href="#sources">Primary sources</a></li>
+</ol></nav>
+<main>
+<section id="intro"><h2>1. A container that cannot quietly grow</h2>
+<p>Imagine an active object with room for eight pending events. The ninth event must produce a deliberate outcome: reject it, signal overload, or apply a documented recovery policy. A container that silently obtains more memory would obscure that contract.</p>
+<p>The <strong>Embedded Template Library (ETL)</strong> supplies containers and utilities for this kind of environment. Its fixed-capacity containers make maximum size part of the type. They offer familiar operations while keeping storage bounded. The project also covers algorithms, callbacks, messaging, and state-machine facilities. Its design accommodates older embedded toolchains as well as modern C++. <a href="https://github.com/ETLCPP/etl">[Repository overview]</a></p>
+<div class="note"><strong>Why this morning’s pick:</strong> ETL makes a resource limit visible in ordinary application code. That is closely aligned with your requirement that embedded execution own all of its storage, including during boot.</div>
+<p>For a C++20 project, the most interesting question is selective reuse: which small primitives reduce maintenance without weakening your explicit lifetime, scheduling, and verification contracts?</p></section>
+
+<section id="mechanics"><h2>2. How bounded storage works</h2>
+<p>An instance such as <code>etl::queue&lt;Event, 8&gt;</code> owns capacity for eight elements. Moving from eight slots to sixteen is a source-level resource decision. ETL’s container documentation describes a compile-time maximum and storage strategies that avoid heap allocation. The container’s own placement still matters: a local instance consumes stack space; an instance inside a statically stored object contributes to that object’s storage. <a href="https://www.etlcpp.com/docs/containers/">[Container design]</a></p>
+<p>Node-based structures can use fixed pools rather than a general-purpose heap. ETL documents constant-time allocation and release for <code>etl::pool</code>. There is an important lifetime distinction: <code>allocate</code> obtains a slot without constructing the object; <code>create</code> also constructs it. Corresponding release and destruction operations have similarly different responsibilities. Placement construction uses already provided memory. <a href="https://www.etlcpp.com/docs/containers/pools/pool/">[Pool API]</a></p>
+<p>This does not make arbitrary element types allocation-free. A payload’s constructor, copy operation, or destructor can still perform work outside the container’s control. A fixed queue of owning strings, for example, needs a payload audit. For your use case, small value events with explicit ownership are an easier starting point.</p>
+<p>Capacity bounds also differ from execution-time bounds. Comparing keys, moving elements, running destructors, or entering a lock can dominate an operation. Treat complexity claims as inputs to target measurement rather than a complete worst-case timing argument.</p></section>
+
+<section id="uses"><h2>3. Where it is used—and what the evidence proves</h2>
+<div class="table-wrap"><table><thead><tr><th>Evidence</th><th>Concrete example</th><th>Scope of the claim</th></tr></thead><tbody>
+<tr><td><span class="label">Documented integration</span></td><td>modm exposes a <code>modm:etl</code> module. Its documentation describes ETL profile configuration, FreeRTOS-related configuration, and routing assertions into modm’s assertion mechanism.</td><td>This establishes a maintained integration surface in an embedded framework. It does not establish shipment volumes or identify individual deployed products. <a href="https://docs.modm.io/develop/api/arduino-uno/group__modm__etl.html">[modm API documentation]</a></td></tr>
+<tr><td><span class="label">Maintainer usage patterns</span></td><td>ETL’s concurrent-queue tutorial describes interrupt/main-loop SPSC queues, atomic SPSC queues, and mutex-protected MPMC queues.</td><td>These are supported application patterns and API guidance, rather than third-party deployment evidence. <a href="https://www.etlcpp.com/docs/tutorials/concurrent-queues/">[Concurrent queue tutorial]</a></td></tr>
+<tr><td><span class="label">Proposed application</span></td><td>A bounded simulator event inbox or a peripheral command queue in your own application.</td><td>This is my assessment of potential fit. No StateForge or RISCue integration was performed for this report.</td></tr>
+</tbody></table></div>
+<p>One especially useful lesson from modm is that integration includes the failure path. Mapping assertions into the host platform is as consequential as adding an include directory. Its documented handling is a concrete example of making a generic library obey an application’s error policy. <a href="https://docs.modm.io/develop/api/arduino-uno/group__modm__etl.html">[Configuration and debugging]</a></p></section>
+
+<section id="jeff"><h2>4. Connections to your projects</h2>
+<p><strong>StateForge resource contracts.</strong> A fixed-capacity event container gives a clear place to attach a maximum-depth requirement, overflow acceptance test, and memory-size record. Your traceability chain could connect the capacity requirement to the wrapper type and tests for empty, full, wraparound, and FIFO behavior. ETL itself does not supply that project-specific evidence.</p>
+<p><strong>RISCue OSAL boundaries.</strong> An application-level ETL container should not become a second scheduler or silently replace RISCue’s blocking queues. A plain queue supplies storage and operations; blocking, wakeup ordering, ISR rules, and priority inheritance belong to the appropriate kernel or adapter contract. This is an architectural recommendation for your work.</p>
+<p><strong>Deterministic simulation.</strong> Bounded storage can make overflow reproducible, but scheduling order and virtual time must still come from the simulator. A useful experiment would replay the same event stream into a small wrapper and a simple reference model, comparing every accept/reject and dequeue result.</p>
+<p><strong>Your C# tooling.</strong> A .NET Native AOT report tool could ingest compile-generated size and test records to track event-capacity budgets. ETL runs in native C++; this proposed tooling connection needs no managed runtime on the embedded target.</p></section>
+
+<section id="example"><h2>5. Practical example: an eight-event mailbox</h2>
+<p>This original example uses a simple value payload and a static mailbox. It checks capacity before each modifying operation and returns an explicit status. The checks and operations assume a <strong>single execution context</strong>; sharing this wrapper across threads or interrupts would introduce races.</p>
+<pre><code>#include &lt;etl/queue.h&gt;
+#include &lt;cstdint&gt;
+#include &lt;type_traits&gt;
+
+struct Event {
+    std::uint32_t tick;
+    std::uint16_t signal;
+};
+static_assert(std::is_trivially_copyable_v&lt;Event&gt;);
+
+class Mailbox {
+public:
+    bool post(Event event) {
+        if (events_.full()) return false; // Explicit backpressure.
+        events_.push(event);
+        return true;
+    }
+
+    bool take(Event&amp; event) {
+        if (events_.empty()) return false;
+        event = events_.front();
+        events_.pop();
+        return true;
+    }
+
+private:
+    etl::queue&lt;Event, 8&gt; events_;
+};
+
+// Static storage; construction still occurs before main.
+static Mailbox mailbox;
+
+int main() {
+    for (std::uint16_t n = 0; n &lt; 8; ++n)
+        if (!mailbox.post(Event{100u, n})) return 1;
+
+    if (mailbox.post(Event{100u, 99u})) return 2;
+
+    Event event{};
+    for (std::uint16_t n = 0; n &lt; 8; ++n)
+        if (!mailbox.take(event) || event.signal != n) return 3;
+
+    return mailbox.take(event) ? 4 : 0;
+}</code></pre>
+<p>The program is intended to return zero after checking successful insertion, rejection of a ninth event, FIFO order, and rejection of an empty read. The queue API documents <code>push</code> as returning void, so the wrapper creates the boolean contract. Its documented full-queue checking depends on configuration, including <code>ETL_CHECK_PUSH_POP</code>; unchecked misuse can be undefined behavior. <a href="https://www.etlcpp.com/docs/containers/queues--stacks/queue/">[Queue operations and preconditions]</a></p>
+<p>For ISR or thread communication, choose a suitable synchronization design. ETL’s concurrent queues have different APIs and protection requirements; its ISR variant requires platform locking and memory barriers, while its atomic variant depends on atomic support. Confirm the chosen atomic operations’ target properties before claiming lock-free behavior. <a href="https://www.etlcpp.com/docs/tutorials/concurrent-queues/">[Concurrency contracts]</a></p>
+<p class="small"><strong>Verification status:</strong> This sample was reviewed against the published API; it was not compiled or executed during this report. No dependencies were installed. It is a starting point for an isolated evaluation, not a verified StateForge implementation.</p></section>
+
+<section id="integration"><h2>6. CMake, Ninja, licensing, and configuration</h2>
+<p>The repository documents a CMake target named <code>etl::etl</code>, with source-tree, installed-package, and FetchContent integration options. For a reproducible evaluation, use a reviewed revision and record its exact identity. The sketch below assumes the dependency is already available locally. <a href="https://github.com/ETLCPP/etl#cmake">[Official CMake integration]</a></p>
+<pre><code>cmake_minimum_required(VERSION 3.25)
+project(etl_mailbox LANGUAGES CXX)
+# Assumes a reviewed, pinned ETL checkout already exists here.
+add_subdirectory(third_party/etl EXCLUDE_FROM_ALL)
+add_executable(mailbox main.cpp)
+target_compile_features(mailbox PRIVATE cxx_std_20)
+target_link_libraries(mailbox PRIVATE etl::etl)
+enable_testing()
+add_test(NAME mailbox.capacity_and_fifo COMMAND mailbox)
+
+# PowerShell commands:
+# cmake -S . -B build -G Ninja
+# cmake --build build --parallel
+# ctest --test-dir build --output-on-failure</code></pre>
+<p>ETL is primarily header-based, so selected templates compile into the consuming native target. Ninja tracks header dependencies and rebuilds affected translation units when inputs change. An unchanged build does not need an always-running helper compiler step. The command above permits parallel build work; the achievable parallelism depends on how many independent compilation jobs the project has.</p>
+<p>Keep the ETL profile consistent across translation units. Error policy, STL usage, and platform configuration should be deliberate build inputs. The repository documents discovery of <code>etl_profile.h</code> through include paths and notes that some optional interfaces need platform-specific functions. <a href="https://github.com/ETLCPP/etl#profile-definition">[Profile and platform notes]</a></p>
+<p>ETL uses the <strong>MIT license</strong>. Its license permits commercial use, modification, and distribution subject to retaining the required copyright and permission notice; it includes warranty and liability disclaimers. Preserve the actual license text from the pinned dependency in your notices inventory. This is distinct from the licensing questions around your other functional references. <a href="https://github.com/ETLCPP/etl/blob/master/LICENSE">[License text]</a></p></section>
+
+<section id="tradeoffs"><h2>7. What to measure before adopting it</h2>
+<div class="table-wrap"><table><thead><tr><th>Benefit</th><th>Engineering cost or limit</th><th>Useful evaluation</th></tr></thead><tbody>
+<tr><td>Explicit maximum capacity</td><td>Unused slots still consume reserved memory.</td><td>Record object size, alignment, high-water mark, and overflow rate.</td></tr>
+<tr><td>Reusable container code</td><td>A dependency adds version, configuration, and review work.</td><td>Pin a revision and run the project’s relevant tests with the target toolchain.</td></tr>
+<tr><td>Storage without a heap</td><td>Payload behavior and static initialization still need inspection.</td><td>Run allocation sentinels from startup through shutdown; inspect symbols and startup behavior.</td></tr>
+<tr><td>Concurrent queue choices</td><td>Correctness depends on topology and platform synchronization.</td><td>Test exact producer/consumer assumptions, ISR handoff, and visibility.</td></tr>
+<tr><td>Template-based specialization</td><td>Flash size and compile cost vary with types and features.</td><td>Compare map files and clean versus incremental build timings.</td></tr>
+</tbody></table></div>
+<p>A productive first experiment would isolate one mailbox type, run full/empty and repeated wraparound cases, then add model-based randomized sequences with recorded seeds. Run sanitizers on the host and separately measure target memory and stack use. Include shutdown and failed-post paths in allocation checks.</p>
+<div class="note"><strong>My assessment:</strong> ETL deserves a small, measured evaluation for application containers and object pools. Your existing framework still needs its own scheduling semantics, requirement coverage, and target evidence. Selective use is easier to justify than adopting overlapping messaging or state-machine subsystems wholesale.</div></section>
+
+<section id="sources"><h2>8. Primary-source reading list</h2>
+<p>Reviewed October 21, 2026. Documentation and default-branch links can change; this report makes no claim about a particular release’s certification or target validation.</p>
+<ol>
+<li><a href="https://github.com/ETLCPP/etl">ETL repository and README</a> — scope, integration, configuration.</li>
+<li><a href="https://www.etlcpp.com/docs/containers/">Container design</a> — storage and capacity model.</li>
+<li><a href="https://www.etlcpp.com/docs/containers/queues--stacks/queue/">Queue reference</a> — operations, capacity, error preconditions.</li>
+<li><a href="https://www.etlcpp.com/docs/containers/pools/pool/">Pool reference</a> — bounded slots, lifetime operations, complexity.</li>
+<li><a href="https://www.etlcpp.com/docs/tutorials/concurrent-queues/">Concurrent queue tutorial</a> — supported synchronization patterns.</li>
+<li><a href="https://docs.modm.io/develop/api/arduino-uno/group__modm__etl.html">modm ETL module</a> — documented third-party integration.</li>
+<li><a href="https://github.com/ETLCPP/etl/blob/master/LICENSE">MIT license</a> — authoritative licensing terms.</li>
+</ol></section>
+</main></div>
+<footer>Prepared for Jeff · Self-contained HTML with inline styling and no external assets or scripts. Research report only; StateForge and RISCue were not changed.</footer>
+</body></html>
