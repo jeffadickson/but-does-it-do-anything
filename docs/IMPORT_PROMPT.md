@@ -44,7 +44,7 @@ task.sh / task.ps1          # or native build commands, if appropriate
 
 - Follow existing repository conventions rather than creating duplicate infrastructure.
 - Create/update `lesson.json` with `id`, `title`, `summary`, `topic`, `level`, `mode`, `languages`, `tags`, `prerequisites`, and `entrypoint`. The ID and topic must match the directory. Use a truthful primary mode: `browser`, `simulation`, `local-tools`, or `hosted`.
-- **Do not edit generated `_site/index.html` or `_site/catalog.json`** or manually add homepage cards. The `tools/catalog.py` generator discovers lessons by metadata.
+- **Do not edit generated `_site/index.html` or `_site/catalog.json`** or manually add homepage cards. The `tools/Catalog` generator discovers lessons by metadata.
 - Only files within `app/` are copied into the published site automatically. If users need example-source downloads, produce an appropriate distributable inside `app/` through an explicit build or documented checked-in artifact.
 - Use relative URLs, e.g. `../../../index.html` for the back link, compatible with `/but-does-it-do-anything/` on GitHub Pages.
 - Keep secrets, machine-specific files, databases, build caches, paid SDKs, and unrelated binaries out of the published site. Preserve license and attribution requirements.
@@ -82,7 +82,7 @@ Provide documented equivalents of `setup`, `doctor`, `build`, `test`, `preview`,
 ### 5. Verify real behavior and deployment compatibility
 
 1. Run lesson-specific unit tests, failure-path tests, and integration tests when their real dependencies are available.
-2. Run root tests relevant to shared modifications, then `python tools/catalog.py check` and `python tools/catalog.py build`.
+2. Run root tests relevant to shared modifications, then `dotnet run --project tools/Catalog -- check` and `dotnet run --project tools/Catalog -- build`.
 3. Inspect generated `_site/catalog.json`, `_site/index.html`, the lesson entrypoint, linked assets, downloads, and all navigation under the GitHub Pages project subpath.
 4. Verify browser controls and responsive behavior when a browser runtime is available. Record when unavailable.
 5. Check the build in a clean checkout/environment when practical. Do not claim Windows/macOS support is exercised merely because Linux passed.
@@ -111,4 +111,4 @@ If a useful original prompt exists, retain it as `docs/BUILD_PROMPT.md` **inside
 
 ## Repository-maintainer reminder
 
-The collection's expected mechanism is: a lesson's `lesson.json` → `python tools/catalog.py build` → generated `_site/index.html` and `_site/catalog.json` → the existing GitHub Actions Pages deployment. No manual homepage edits should be necessary.
+The collection's expected mechanism is: a lesson's `lesson.json` → `dotnet run --project tools/Catalog -- build` → generated `_site/index.html` and `_site/catalog.json` → the existing GitHub Actions Pages deployment. No manual homepage edits should be necessary.

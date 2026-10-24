@@ -73,9 +73,9 @@ The HTML embeds code from those exact files during build; edit source, then rege
 From repository root:
 
 ```sh
-python -m unittest discover -s tests -v
-python tools/catalog.py check
-python tools/catalog.py build
+dotnet run --project tests/Catalog.Tests
+dotnet run --project tools/Catalog -- check
+dotnet run --project tools/Catalog -- build
 ```
 
 ## Scope and limitations

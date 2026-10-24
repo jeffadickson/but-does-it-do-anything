@@ -6,15 +6,15 @@ Each lesson starts with a concrete problem, shows a reasonable straightforward s
 
 ## Run locally
 
-Install Python 3.11+; no Python packages are required.
+Install the .NET 10 SDK; no NuGet packages are required for the catalog tools.
 
 ```sh
-python tools/catalog.py check
-python tools/catalog.py build
-python tools/catalog.py serve
+dotnet run --project tools/Catalog -- check
+dotnet run --project tools/Catalog -- build
+dotnet run --project tools/Catalog -- serve
 ```
 
-Open http://localhost:8000. On systems where Python is named differently, use `python3` or `py -3`. The server binds only to localhost. Rebuild/restart after edits; this is not a hot-reload server.
+Open http://localhost:8000. The server binds only to localhost. Rebuild/restart after edits; this is not a hot-reload server.
 
 ## Reusable prompts
 
@@ -23,12 +23,12 @@ Start with [generic](prompts/generic.md) to develop a lesson on any topic. Chang
 ## Add a lesson
 
 ```sh
-python tools/catalog.py new software-testing testing-toolkit --title "Testing without wishful thinking"
+dotnet run --project tools/Catalog -- new software-testing testing-toolkit --title "Testing without wishful thinking"
 ```
 
 Edit the generated `lessons/software-testing/testing-toolkit/lesson.json` and `app/index.html`. Replace placeholder content, add the demo and its checks, then run check/build and commit. Do not publish unfilled templates. **The homepage discovers lesson.json files automatically. No manual card or catalog editing is required.**
 
-For importing an existing project, copy the **[detailed, reusable lesson import prompt](docs/IMPORT_PROMPT.md)** into that project's development conversation. It includes metadata registration, educational requirements, cross-platform bootstrap, reproducible builds, CI checks, conflict handling, and GitHub Pages verification. See [CONTRIBUTING.md](CONTRIBUTING.md) for repository conventions. **No homepage edits are necessary:** `tools/catalog.py` finds each lesson from `lesson.json`.
+For importing an existing project, copy the **[detailed, reusable lesson import prompt](docs/IMPORT_PROMPT.md)** into that project's development conversation. It includes metadata registration, educational requirements, cross-platform bootstrap, reproducible builds, CI checks, conflict handling, and GitHub Pages verification. See [CONTRIBUTING.md](CONTRIBUTING.md) for repository conventions. **No homepage edits are necessary:** `tools/Catalog` finds each lesson from `lesson.json`.
 
 ## Where things live
 
@@ -40,7 +40,7 @@ For importing an existing project, copy the **[detailed, reusable lesson import 
 - `lessons/<topic>/<slug>/app/`: publishable HTML, JS, CSS, runtime files and downloads.
 - `tutorial/`, `examples/`, `tests/`, `assets/`: optional lesson source directories; copied into app only by an explicit lesson build step when needed on the website.
 - `templates/lesson/`: starting point for new lessons.
-- `tools/catalog.py`: validation, scaffolding, site assembly, and local serving.
+- `tools/Catalog`: validation, scaffolding, site assembly, and local serving.
 - `_site/`: generated website, including index.html and catalog.json; never edit or commit it.
 
 JSON metadata keeps the core build dependency-free. There is no hand-maintained catalog.yaml: the generator discovers all lesson.json files.
@@ -59,13 +59,13 @@ Pages can serve browser HTML/JS/WASM and downloads. It does not run a persistent
 ## Verification
 
 ```sh
-python -m unittest discover -s tests -v
+dotnet run --project tests/Catalog.Tests
 node --test lessons/software-design/facade/tests/*.cjs
-python tools/catalog.py check
-python tools/catalog.py build
+dotnet run --project tools/Catalog -- check
+dotnet run --project tools/Catalog -- build
 ```
 
-Node 22.23.3 is used for the example's tests; it is not needed to build or serve the collection. CI uses Python 3.12 and Node 22.23.3. Each imported lesson keeps its own pinned dependencies and documented checks; the catalog build never executes arbitrary commands from metadata.
+Node 22.23.3 is used for the example's tests; it is not needed to build or serve the collection. Catalog CI uses .NET 10 and Node 22.23.3. Each imported lesson keeps its own pinned dependencies and documented checks; the catalog build never executes arbitrary commands from metadata.
 
 ## Current contents
 

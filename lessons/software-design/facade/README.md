@@ -2,7 +2,7 @@
 
 A self-contained JavaScript conceptual simulation of two instrument procedures after a settling requirement changes. No actual instrument connection or timing occurs. This is a new worked example, not a migration of Pattern Atlas.
 
-From repository root: `python tools/catalog.py serve` then open `/lessons/software-design/facade/`.
+From repository root: `dotnet run --project tools/Catalog -- serve` then open `/lessons/software-design/facade/`.
 
 Check: `node --test lessons/software-design/facade/tests/*.cjs`.
 

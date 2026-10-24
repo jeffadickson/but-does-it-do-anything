@@ -1,5 +1,5 @@
 'use strict';
-// Run after `python tools/catalog.py build` and installing the async lesson's npm dependencies.
+// Run after `dotnet run --project tools/Catalog -- build` and installing the async lesson's npm dependencies.
 const {chromium}=require('../../lessons/languages-and-verification/java-futures-csharp-async/node_modules/playwright');
 const assert=require('node:assert/strict'),http=require('node:http'),fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'../../_site');

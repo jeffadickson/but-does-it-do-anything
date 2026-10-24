@@ -68,6 +68,6 @@ Imported/adapted from the Checkout Testing Lab generated in this conversation, 2
 
 ## Maintenance
 
-Modify the lesson under this directory, run `node --test tests/browser-model.test.cjs`, `sh ./task.sh test` and (with Docker) `sh ./task.sh integration`. Run the repository's `python tools/catalog.py check` and `python tools/catalog.py build` from repository root; the catalog homepage is generated, not edited manually.
+Modify the lesson under this directory, run `node --test tests/browser-model.test.cjs`, `sh ./task.sh test` and (with Docker) `sh ./task.sh integration`. Run the repository's `dotnet run --project tools/Catalog -- check` and `dotnet run --project tools/Catalog -- build` from repository root; the catalog homepage is generated, not edited manually.
 
 Known unverified items: .NET restore/compile, Docker tests, Windows/macOS bootstrap, and live Pages deployment. Do not treat the JavaScript model assertions as evidence these integrations passed.

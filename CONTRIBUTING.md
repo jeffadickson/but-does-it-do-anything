@@ -1,7 +1,7 @@
 # Contributing lessons
 
 1. Inspect this repository and any existing lesson before editing. Preserve unrelated work.
-2. Use `python tools/catalog.py new <topic> <slug> --title "..."` or import into the same structure. Metadata is `lesson.json`, not YAML.
+2. Use `dotnet run --project tools/Catalog -- new <topic> <slug> --title "..."` or import into the same structure. Metadata is `lesson.json`, not YAML.
 3. Required fields: id, title, summary, topic, level, mode, languages, tags, prerequisites, entrypoint. ID is lowercase with hyphens and unique across the collection. Topic and ID must match the directory. Entrypoint is a relative HTML path under app/.
 4. Topics: software-design, software-testing, languages-and-verification, hardware, mathematics.
 5. Execution modes: browser (actual code executes locally), simulation (conceptual model), local-tools (installation needed), hosted (external backend needed). Describe mixed modes precisely in the lesson and use the mode representing the primary experience. Never label simulated framework output as an actual tool execution.
