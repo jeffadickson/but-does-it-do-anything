@@ -21,11 +21,11 @@ CI remains opt-in on branches where the release-candidate policy is adopted. Run
 
 - Fixed a real setup bug: the checkout lesson's shell and PowerShell scripts installed the .NET 10 SDK but still tested for an installed .NET 8 SDK.
 - Corrected the checkout/async READMEs that had outdated descriptions of the active runtime target.
-- Added `python tools/check_net10_lessons.py` to enumerate C# projects and SDK pins and fail on pre-10 TFMs or SDKs. Independently checked the seven tracked existing C# projects and three SDK pins through the GitHub connector: all currently report .NET 10 targets/pins on this branch. This is **source verification**, not a successful build.
+- Added `dotnet run --project tools/Catalog -- check-net10` to enumerate C# projects and SDK pins and fail on pre-10 TFMs or SDKs. Independently checked the seven tracked existing C# projects and three SDK pins through the GitHub connector: all currently report .NET 10 targets/pins on this branch. This is **source verification**, not a successful build.
 - Added `lessons/languages-and-verification/java-futures-csharp-async/tools/rebuild-runtime.py`: use a locally installed .NET 10 SDK, publish the Roslyn WASM runner, resolve .NET 10 reference assemblies, invoke the existing bundler, regenerate SHA-256 hashes and verify packaging. `--test` additionally runs the lesson's browser test suite.
 - Added SDK-selection unit tests and an intentionally **manual-only** `Rebuild and verify .NET 10 browser runner` Actions workflow. The workflow builds the candidate runtime, performs Chromium checks, regenerates the lockfile with a real restore, and uploads both as a short-lived artifact. It does not commit assets or auto-publish.
 - Explicit cost policy also applied to the root and Windows-reader workflow on this branch: full CI runs only on `v*-rc*` tags or manual dispatch; manual dispatch on `main` publishes Pages.
-- Run `python tools/check_net10_lessons.py` before merging. From the async lesson directory, run `python tools/rebuild-runtime.py --test` on a .NET 10 / Node / Playwright-equipped machine. Review and commit the generated assets and lockfile after verification.
+- Run `dotnet run --project tools/Catalog -- check-net10` before merging. From the async lesson directory, run `python tools/rebuild-runtime.py --test` on a .NET 10 / Node / Playwright-equipped machine. Review and commit the generated assets and lockfile after verification.
 
 ### Environment and release caveat
 

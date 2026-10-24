@@ -1,0 +1,6 @@
+{
+  "tools": [
+    { "name": "catalog", "source": "Catalog/Program.cs", "commands": ["check", "build", "serve", "new"], "tags": ["csharp", "dotnet10", "catalog", "validation", "static-site", "scaffolding", "local-server"] },
+    { "name": "check-net10", "source": "Catalog/Program.cs", "commands": ["check-net10"], "tags": ["csharp", "dotnet10", "audit", "target-framework", "sdk-pins", "source-only"] }
+  ]
+}

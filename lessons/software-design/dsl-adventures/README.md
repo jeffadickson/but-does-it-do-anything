@@ -1,6 +1,6 @@
 # Invent a Language: Adventures, Turtles, Parlot
 
-Version **0.1.0** — 2026-10-15. Browser gameplay is a **real JavaScript interpreter**, not a Parlot or .NET WASM execution. Real Parlot source is in `examples/ParlotDsl` and requires a .NET SDK and first-time NuGet restore. Open `app/index.html` offline for the two browser steppers, or `python tools/catalog.py serve` from repository root.
+Version **0.1.0** — 2026-10-15. Browser gameplay is a **real JavaScript interpreter**, not a Parlot or .NET WASM execution. Real Parlot source is in `examples/ParlotDsl` and requires a .NET SDK and first-time NuGet restore. Open `app/index.html` offline for the two browser steppers, or `dotnet run --project tools/Catalog -- serve` from repository root.
 
 Project issue #9 tracks true Parlot-in-browser integration, native compilation/verification, accessibility and full release review. Avoid triggering costly full CI on each push; prefer the release candidate/manual policy.
 
@@ -15,8 +15,8 @@ cd lessons/software-design/dsl-adventures
 make doctor
 make test
 make build
-python tools/catalog.py build
-python tools/catalog.py serve
+dotnet run --project tools/Catalog -- build
+dotnet run --project tools/Catalog -- serve
 ```
 
 Then open `lessons/software-design/dsl-adventures/parlot/index.html` from the catalog server. The published WASM files are intentionally **not yet committed**; the main-page link works after the explicit publish step. Alternatively run Actions → Build Parlot DSL WebAssembly → Run workflow and use its downloadable artifact. This workflow is manually triggered to honor CI cost preferences.

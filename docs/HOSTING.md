@@ -24,7 +24,7 @@ The workflow checks whether Pages is configured before deploying. No personal to
 - Search/filter behavior: edit shared/components/catalog.js.
 - Generated result: `_site/index.html`; do not edit it directly.
 
-Run `python tools/catalog.py build` to regenerate locally. Push to main to regenerate and publish through Actions. A pull request builds and verifies without publishing. The generated catalog is `_site/catalog.json`.
+Run `dotnet run --project tools/Catalog -- build` to regenerate locally. Push to main to regenerate and publish through Actions. A pull request builds and verifies without publishing. The generated catalog is `_site/catalog.json`.
 
 ## Path and asset rules
 

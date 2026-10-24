@@ -19,7 +19,7 @@ From this lesson directory, use the same wrapper for every task:
 | Preview | `sh setup.sh preview` | `./setup.ps1 preview` |
 | Clean generated lesson files | `sh setup.sh clean` | `./setup.ps1 clean` |
 
-Preview listens on localhost port 8000 and serves the actual repository subdirectory URL, printed on startup. Its root is a single-lesson preview landing page. For the complete generated catalog, use the collection's existing `python tools/catalog.py build` / `serve` commands from repository root; that optional path requires Python 3.11+ and no packages. This lesson's setup does not install Python or other lessons' toolchains.
+Preview listens on localhost port 8000 and serves the actual repository subdirectory URL, printed on startup. Its root is a single-lesson preview landing page. For the complete generated catalog, use the collection's existing `dotnet run --project tools/Catalog -- build` / `serve` commands from repository root; that optional path requires the .NET 10 SDK and no NuGet packages. This lesson's setup does not install Python or other lessons' toolchains.
 
 Node **22.23.3** is pinned for development, with no npm dependencies and therefore no package-manager lockfile needed. Wrappers use an exact matching installed version or install the official archive under `.tools/`. They verify its SHA-256 against the committed official release manifest. They require HTTPS access to nodejs.org for first setup, do not change global PATH, and do not elevate privileges. Reruns reuse the local installation. `node task.cjs <task>` is also available when that exact Node is on PATH.
 

@@ -23,9 +23,9 @@ The Windows reader uses the same RC tag trigger, or can be run on demand through
 ## Local quick verification
 
 ```sh
-python tools/catalog.py check
-python tools/catalog.py build
-python -m unittest discover -s tests -v
+dotnet run --project tools/Catalog -- check
+dotnet run --project tools/Catalog -- build
+dotnet run --project tests/Catalog.Tests
 node --test shared/components/csharp-runner.test.cjs
 ```
 
