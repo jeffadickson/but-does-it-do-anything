@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="2026-10-25 engineering deep dive: mp-units C++20 compile-time quantity and unit safety, freestanding integration, and the RISCue/SharpUnits pilot.">
+<meta name="color-scheme" content="light">
+<title>mp-units · Make Invalid Physics Unrepresentable | Daily Engineering Deep Dive</title>
+<style>
+:root{--bg:#f4f6fb;--paper:#fff;--ink:#1c2637;--muted:#495973;--line:#d9e3f1;--navy:#142341;--blue:#264f9a;--teal:#087d77;--mint:#e0f6ef;--amber:#9d6300;--warm:#fff2d2;--accent:#e35c3f;--radius:19px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+a{color:#204d9f;text-underline-offset:3px}a:focus-visible,button:focus-visible{outline:3px solid #ed8143;outline-offset:4px}
+.skip{position:absolute;top:-80px;left:1rem;background:white;padding:.6rem 1rem;z-index:2}.skip:focus{top:1rem}
+.hero{background:linear-gradient(133deg,#12203e 0%,#183e68 58%,#116c70 100%);color:#fff;padding:3rem max(22px,calc((100% - 1120px)/2)) 3.8rem;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;width:350px;height:350px;border:1px solid #ffffff35;border-radius:100%;right:-140px;top:-110px;box-shadow:0 0 0 48px #ffffff0e,0 0 0 100px #ffffff09;pointer-events:none}
+.eyebrow{font-size:.83rem;letter-spacing:.13em;font-weight:800;text-transform:uppercase;color:#9beadf}
+.hero h1{font-size:clamp(2.65rem,6vw,5rem);letter-spacing:-.055em;line-height:1.04;margin:.6rem 0 .9rem}
+.hero h1 span{color:#95ebe4}.lead{font-size:clamp(1.08rem,1.7vw,1.35rem);max-width:800px;color:#e0eefc}
+.chips{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.45rem}.chip{border:1px solid #a5cad165;background:#ffffff18;padding:.33rem .77rem;border-radius:100px;font-size:.83rem;font-weight:650}
+.wrap{max-width:1120px;margin:-1.4rem auto 5rem;padding:0 20px;position:relative}
+.layout{display:grid;grid-template-columns:minmax(205px,245px) minmax(0,1fr);gap:22px;align-items:start}
+.toc{position:sticky;top:1rem;border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:1.15rem;box-shadow:0 8px 28px #2439560e}
+.toc h2{font-size:.87rem;letter-spacing:.1em;text-transform:uppercase;margin:.2rem .4rem 1rem;color:var(--muted)}
+.toc ol{list-style:none;padding:0;margin:0;counter-reset:t}.toc li{counter-increment:t;margin:0}
+.toc a{display:block;padding:.42rem .5rem;text-decoration:none;color:#294165;border-radius:8px;font-size:.91rem}
+.toc a::before{content:counter(t,decimal-leading-zero);font-variant-numeric:tabular-nums;font-weight:750;color:var(--teal);padding-right:.75rem;font-size:.77rem}.toc a:hover{background:#e8f3f7}
+.content{min-width:0}.panel{background:var(--paper);border:1px solid var(--line);padding:clamp(1.15rem,3vw,2rem);margin-bottom:20px;border-radius:var(--radius);box-shadow:0 9px 30px #142f560c}
+h2{font-size:clamp(1.4rem,2.5vw,2rem);line-height:1.2;color:#17345a;margin:.12rem 0 1rem;letter-spacing:-.025em}h3{font-size:1.11rem;line-height:1.35;margin:1.4rem 0 .6rem;color:#24426c}
+p{margin:.55rem 0 1rem}.kicker{font-size:.79rem;text-transform:uppercase;letter-spacing:.115em;color:var(--teal);font-weight:850}
+.callout{border-left:5px solid var(--teal);background:#e8f7f2;padding:.75rem 1.1rem;border-radius:0 11px 11px 0;color:#193f42;margin:1.2rem 0}
+.callout.warn{border-color:#d08e11;background:#fff6de;color:#5b420f}
+.verdict{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.metric{background:#f1f7fb;border:1px solid var(--line);border-radius:12px;padding:1rem}.metric b{display:block;font-size:1.05rem;color:#183e63}.metric span{display:block;font-size:.87rem;color:var(--muted)}
+.diagram{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;margin:1.5rem 0}.box{border-radius:14px;padding:1rem 1.2rem;border:1px solid var(--line);background:#f5f8ff}.box.good{background:#e4f7f0;border-color:#abdcc6}.box b{display:block;color:#26466a}.box strong{display:block;font-size:1.1rem;margin:.3rem 0;color:#122946}.arrow{font-size:2.1rem;color:#1f7776}
+pre{overflow:auto;background:#13213a;color:#eff8ff;border-radius:13px;padding:1.2rem 1.35rem;font:14px/1.6 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;tab-size:2;margin:.7rem 0 1.1rem}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.89em}p code,li code,td code{background:#edf2f8;padding:.1em .25em;border-radius:3px;color:#143e6e}pre code{font-size:1em;background:none;color:inherit;padding:0}
+.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.93rem}th,td{text-align:left;padding:.74rem .65rem;border-bottom:1px solid var(--line);vertical-align:top}th{background:#edf3fa;color:#233e60;font-size:.86rem}tr:last-child td{border-bottom:0}
+.pill{display:inline-block;padding:.12rem .5rem;border-radius:100px;font-size:.73rem;font-weight:800;text-transform:uppercase;letter-spacing:.045em}
+.pill.fact{background:#d8f3e7;color:#116246}.pill.proposal{background:#e6edff;color:#274b98}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.cards article{border:1px solid var(--line);border-radius:12px;background:#fafcff;padding:1rem}.cards h3{margin:.1rem 0 .35rem}
+ol.refs{padding-left:1.5rem;overflow-wrap:anywhere}.refs li{margin:.6rem 0}.refs a{font-weight:700}.refs small{color:var(--muted)}
+.checks{list-style:none;padding:0}.checks li{padding:.45rem 0 .45rem 1.85rem;position:relative;border-bottom:1px solid #e4ebf2}.checks li::before{content:"✓";font-weight:900;color:#137b67;position:absolute;left:.25rem}
+.checks li.pending::before{content:"!";color:#a86e09}
+footer{font-size:.83rem;color:#56637a;padding:1rem 0 3rem}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.toc{position:static}.toc ol{display:grid;grid-template-columns:repeat(2,1fr);gap:0 .6rem}.wrap{margin-top:-.7rem}}
+@media(max-width:620px){body{font-size:16px}.hero{padding:2.5rem 20px 3rem}.toc ol{grid-template-columns:1fr}.verdict,.cards,.diagram{grid-template-columns:1fr}.arrow{transform:rotate(90deg);text-align:center}.panel{padding:1.1rem}.metric{padding:.8rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:white;color:black;font-size:11pt}.hero{background:white;color:black;padding:0 0 1.5rem}.hero .lead,.eyebrow{color:black}.hero h1 span{color:black}.wrap{max-width:none;margin:0;padding:0}.layout{display:block}.toc{position:static;box-shadow:none}.panel{border:1px solid #aaa;box-shadow:none;break-inside:avoid}a{color:black}a[href]::after{content:""}pre{white-space:pre-wrap;overflow:visible}.chip{color:black;border-color:#999}.box.good{background:white}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the report</a>
+<header class="hero">
+  <div class="eyebrow">Engineering library field notes · 25 October 2026 · Edition 05</div>
+  <h1>mp-units<span> /</span><br>Make invalid physics<br>unrepresentable.</h1>
+  <p class="lead">A C++20 quantity library that catches metre-versus-second mistakes—and even differences between physical <em>kinds</em> with the same dimensions—at compile time. A focused fit assessment for RISCue and the surrounding simulation/tooling stack.</p>
+  <div class="chips" aria-label="Library characteristics"><span class="chip">Modern C++20+</span><span class="chip">MIT-licensed core</span><span class="chip">Compile-time types</span><span class="chip">Header interface</span><span class="chip">Freestanding option</span><span class="chip">Conan + CMake + Ninja</span></div>
+</header>
+<div class="wrap">
+<div class="layout">
+<nav class="toc" aria-label="Table of contents"><h2>In this report</h2>
+<ol>
+<li><a href="#assessment">Decision snapshot</a></li>
+<li><a href="#intro">The idea</a></li>
+<li><a href="#mechanics">How it works</a></li>
+<li><a href="#evidence">Documented examples</a></li>
+<li><a href="#fit">Project connections</a></li>
+<li><a href="#code">Practical C++20</a></li>
+<li><a href="#integration">CMake / Ninja</a></li>
+<li><a href="#tradeoffs">Engineering tradeoffs</a></li>
+<li><a href="#license">Licensing and boundaries</a></li>
+<li><a href="#review">Technical review</a></li>
+<li><a href="#references">Primary sources</a></li>
+</ol></nav>
+<main class="content" id="main">
+<section class="panel" id="assessment">
+<div class="kicker">00 / Executive assessment</div><h2>Strong pilot candidate, not an RTOS drop-in verdict</h2>
+<div class="verdict"><div class="metric"><b>Best first fit</b><span>Host-side engineering models and RISCue HAL interfaces</span></div><div class="metric"><b>Primary gain</b><span>Wrong units and wrong quantity kinds become compile errors</span></div><div class="metric"><b>Main gate</b><span>Cross-toolchain, freestanding, object size, ABI and WCET verification</span></div></div>
+<p>Most code reviews catch a <em>type</em> mismatch. Fewer catch the perfectly legal mistake of adding a sample period in milliseconds to a distance in metres, or treating two joule-valued quantities as interchangeable. mp-units moves those checks into the compiler instead of relying on naming conventions. The upstream project presents it as a C++29 standardization candidate, <strong>not</strong> an adopted C++ standard library facility. <a href="#src-readme">[1]</a></p>
+<div class="callout"><strong>Recommended experiment:</strong> Wrap one RISCue register conversion and one simulation time/distance calculation in quantities. Leave wire formats as explicit integers, then compare baseline and typed binaries for size, allocation activity and deterministic timing.</div>
+</section>
+<section class="panel" id="intro">
+<div class="kicker">01 / Accessible introduction</div><h2>What problem does mp-units solve?</h2>
+<p>In ordinary C++, <code>double</code> doesn't reveal whether a value is metres, seconds, volts, kelvins, clock ticks, or something else. A comment or suffix might explain it to a human; the compiler doesn't enforce it. mp-units represents a physical quantity as a number coupled to a unit and quantity specification.</p>
+<div class="diagram" role="img" aria-label="An untyped floating-point value is difficult to audit. Adding unit and quantity type information allows compile-time validation."><div class="box"><b>Before: opaque scalar</b><strong>double value = 42;</strong><small>Which physical quantity? Which scale?</small></div><span class="arrow" aria-hidden="true">→</span><div class="box good"><b>After: typed meaning</b><strong>42 × metre</strong><small>Compiler tracks dimensions, scale and compatible operations.</small></div></div>
+<p>It also distinguishes <em>quantity kinds</em>. Kinetic energy and potential energy are both expressed in joules, but an API can require one specific kind. The project illustrates this distinction in its own README. Its <code>quantity_point</code> models coordinates relative to an origin—for example, a temperature reading or a timestamp, where simply adding two absolute points is not meaningful. <a href="#src-readme">[1]</a> <a href="#src-quick">[2]</a></p>
+</section>
+<section class="panel" id="mechanics">
+<div class="kicker">02 / Internals</div><h2>How does it work?</h2>
+<div class="cards">
+<article><h3>Compile-time representation</h3><p>C++20 templates, concepts and compile-time unit descriptions encode dimensions and quantity kinds in types. Incorrect operations fail during compilation, before deployment.</p></article>
+<article><h3>Quantity arithmetic</h3><p>Operators compose units: distance ÷ time produces speed; speed × time produces distance. Compatible scales can be converted under constrained rules.</p></article>
+<article><h3>Affine space</h3><p><code>quantity</code> describes a difference; <code>quantity_point</code> describes a location relative to an origin. This matters for temperatures, timestamps and sensor calibration offsets.</p></article>
+<article><h3>Representation is a choice</h3><p>Choose integer or floating representations deliberately. Compile-time dimensional correctness does <em>not</em> prevent overflow, quantization error or invalid input measurements.</p></article>
+</div>
+<div class="callout warn">The project describes zero-runtime-overhead dimensional analysis. That is not a blanket guarantee of zero allocations in every feature or transitive dependency. Formatting, container usage and logging must be assessed separately for an allocation-free RTOS. <a href="#src-install">[3]</a></div>
+</section>
+<section class="panel" id="evidence">
+<div class="kicker">03 / Sourced evidence</div><h2>Where is it actually used?</h2>
+<p>Two concrete, inspectable applications are provided <strong>inside the upstream repository</strong>. These are documented demonstration programs; neither is independent evidence of production, avionics, or NASA deployment.</p>
+<div class="table-wrap"><table><thead><tr><th>Example</th><th>What the source demonstrates</th><th>Evidence classification</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/mpusz/mp-units/blob/master/example/hw_voltage.cpp">Hardware voltage</a></td><td>Maps a volatile <code>uint16_t</code> hardware value into a voltage <code>quantity_point</code>, with an error sentinel, explicit limits and scaling; a particularly relevant HAL pattern.</td><td><span class="pill fact">Documented example</span></td></tr>
+<tr><td><a href="https://github.com/mpusz/mp-units/blob/master/example/glide_computer.cpp">Glide computer</a></td><td>Models airspeeds, climb/sink rates, weather, airfield waypoints and units from multiple systems for glider calculations.</td><td><span class="pill fact">Documented example</span></td></tr>
+<tr><td><a href="https://github.com/mpusz/mp-units/blob/master/example/capacitor_time_curve.cpp">RC time response</a></td><td>Demonstrates volts, microfarads, resistance and time in a capacitor discharge example. Its <strong>separate GPL header</strong> matters if copying example code.</td><td><span class="pill fact">Documented example</span></td></tr>
+</tbody></table></div>
+<p>The project additionally publishes freestanding CI configuration and a freestanding build option. That demonstrates maintained build support, <strong>not</strong> qualification on a particular RISC-V ISA, RTOS, compiler, memory map or interrupt environment. <a href="#src-freestanding">[7]</a></p>
+</section>
+<section class="panel" id="fit">
+<div class="kicker">04 / Relevance to ongoing work</div><h2>Where it could fit Jeff's projects</h2>
+<div class="cards">
+<article><span class="pill proposal">Proposed pilot</span><h3>RISCue + RTOS</h3><p>Use typed volts, milliseconds, metres and derived rates at HAL and active-object message boundaries. Convert to fixed-width, explicitly scaled integers for registers and queues. The scheduler and ISR behavior remain independent of mp-units.</p></article>
+<article><span class="pill proposal">Proposed pilot</span><h3>VeloSim + SharpTestBench</h3><p>Express clock periods, simulated physical time and timing tolerances with units, while keeping discrete simulator ticks as a separate strong domain. Define conversion and rounding policy once.</p></article>
+<article><span class="pill proposal">Proposed pilot</span><h3>StressForge + FieldworkPCB</h3><p>Keep current, voltage, power, length, area and temperature meaningful through derating formulas and PCB calculations; prevent silent mm-versus-metre errors at import boundaries.</p></article>
+<article><span class="pill proposal">Proposed pilot</span><h3>SharpUnits / BenchForge / .NET 10</h3><p>Compare quantity-kind semantics and conversion tests across C++ and strongly typed C#. Do <em>not</em> pass C++ template objects across Native AOT or P/Invoke boundaries; use a documented, versioned C-compatible scalar/unit contract.</p></article>
+</div>
+<p><strong>Important separation:</strong> these are plausible integrations inferred from project requirements, not upstream-advertised integrations or claims that mp-units has already been used in these codebases.</p>
+</section>
+<section class="panel" id="code">
+<div class="kicker">05 / Practical code</div><h2>A flight-distance invariant in C++20</h2>
+<p>The example below follows the upstream header, <code>quantity</code> and unit-symbol API. It checks that 250 metres/second for 4 seconds equals 1 kilometre, verifies automatic metre/kilometre comparison, and demonstrates a compile-time distinction between kinetic and potential energy. The mismatch is intentionally <strong>commented out</strong>.</p>
+<pre aria-label="C++20 sample code"><code>// main.cpp · mp-units 2.5.x · C++20 · no console or heap calls
+#include &lt;mp-units/systems/isq.h&gt;
+#include &lt;mp-units/systems/si.h&gt;
+
+using namespace mp_units;
+using namespace mp_units::si::unit_symbols;
+
+// A tiny distance calculation with units checked at compile time.
+constexpr auto coast_distance = (250 * m / s) * (4 * s);
+static_assert(coast_distance == 1 * km);
+static_assert(1 * km + 50 * m == 1050 * m);
+
+// Two energy kinds use joules but mean different things.
+constexpr int accept_kinetic([[maybe_unused]]
+                             quantity&lt;isq::kinetic_energy[J]&gt; energy)
+{
+  return 0;
+}
+
+int main()
+{
+  quantity&lt;isq::kinetic_energy[J]&gt; kinetic = 123 * J;
+  quantity&lt;isq::potential_energy[J]&gt; potential = 123 * J;
+  // accept_kinetic(potential);  // Uncomment: must fail to compile.
+  return accept_kinetic(kinetic);
+}</code></pre>
+<p><strong>Expected behavior:</strong> compile successfully and return 0. Removing the comment from <code>accept_kinetic(potential)</code> should make compilation fail; in a pilot, make this a separate negative-compile test. Unlike runtime assertions, <code>static_assert</code> is evaluated by the C++ compiler.</p>
+<div class="callout warn"><strong>Validation boundary:</strong> this is an original adaptation of documented maintainer syntax and has been manually reviewed, but <strong>was not compiled in this environment</strong>. The upstream dependency could not be fetched into the local compiler sandbox. Do not interpret a source-level review as a green C++ build.</div>
+</section>
+<section class="panel" id="integration">
+<div class="kicker">06 / Build integration</div><h2>Pin, build and measure with Conan / CMake / Ninja</h2>
+<p>The upstream installation guide describes Conan as the recommended integration route and lists <code>mp-units/2.5.0</code> in its published-release example. A separate testing stream lists 2.6.0; do not silently substitute a testing channel for a pinned release. Use <code>find_package</code> and <code>mp-units::mp-units</code> for CMake consumers. <a href="#src-install">[3]</a></p>
+<h3>conanfile.txt</h3><pre><code>[requires]
+mp-units/2.5.0
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
+[layout]
+cmake_layout</code></pre>
+<h3>CMakeLists.txt</h3><pre><code>cmake_minimum_required(VERSION 3.23)
+project(mpunits_probe LANGUAGES CXX)
+find_package(mp-units CONFIG REQUIRED)
+add_executable(mpunits_probe main.cpp)
+target_compile_features(mpunits_probe PRIVATE cxx_std_20)
+target_link_libraries(mpunits_probe PRIVATE mp-units::mp-units)</code></pre>
+<h3>Local build sequence</h3><pre><code># Use Conan 2 with a configured C++20-capable profile.
+conan install . -s build_type=Release -s compiler.cppstd=20 --build=missing
+# Conan generates CMake user presets; names can vary by profile.
+cmake --preset conan-default
+cmake --build --preset conan-release</code></pre>
+<p>Use a Conan profile configured for the installed compiler; generated preset names can differ. Select Ninja through your Conan/CMake generator configuration. For vendoring without Conan, upstream specifically directs consumers to <code>src/CMakeLists.txt</code> rather than the repository's development-only top-level CMake file, while warning that dependencies and flags remain the integrator's responsibility.</p>
+<p><strong>Embedded-specific options:</strong> upstream documents <code>MP_UNITS_API_FREESTANDING=ON</code> for the <code>-ffreestanding</code> configuration, and a contracts option whose handler/dependencies deserve separate inspection. Avoid bringing iostream/format into target builds just to print quantities. The README's no-external-dependencies claim applies to the core; the published installation recipe still manages optional features and integrations. <a href="#src-install">[3]</a></p>
+</section>
+<section class="panel" id="tradeoffs">
+<div class="kicker">07 / Tradeoffs</div><h2>Safety is real; portability is a separate test</h2>
+<div class="table-wrap"><table><thead><tr><th>Axis</th><th>Advantage</th><th>Engineering cost / condition</th></tr></thead><tbody>
+<tr><td>Dimensional safety</td><td>Errors visible at compile time.</td><td>Requires careful modeling of quantity kinds, especially when one unit has multiple meanings.</td></tr>
+<tr><td>Runtime budget</td><td>Unit algebra resolves at compile time for supported operations.</td><td>Prove no extra code, allocations or WCET regressions with your actual target binary.</td></tr>
+<tr><td>Compile + toolchain</td><td>Modern C++20 API and standard CMake target.</td><td>Template instantiation and compiler capability matter; upstream flags specific compiler exclusions.</td></tr>
+<tr><td>Freestanding</td><td>Documented mode and upstream CI.</td><td>Not proof of interoperability with a custom RISC-V core, RTOS libc, exceptions or board support package.</td></tr>
+<tr><td>Data interchange</td><td>Units make in-process APIs safer.</td><td>Wire formats/FFI still require explicit scale, numeric type, rounding and endian rules.</td></tr>
+<tr><td>Evolution</td><td>Actively maintained and part of a C++ standardization effort.</td><td>Template API and supported toolchains may change; pin versions and build a migration test.</td></tr>
+</tbody></table></div>
+<p>The upstream compiler matrix (as reviewed October 25, 2026) lists minimum GCC 12+, Clang 16+ excluding Clang 19, and MSVC 19.5+, with more detailed feature-specific limits; consult it before any cross-compiler rollout. <a href="#src-compiler">[4]</a></p>
+</section>
+<section class="panel" id="license">
+<div class="kicker">08 / Licensing + integration</div><h2>The core is MIT; examples deserve a separate look</h2>
+<p>The root <a href="https://github.com/mpusz/mp-units/blob/master/LICENSE.md">LICENSE.md</a> grants standard MIT permission to use, modify, redistribute, sublicense and sell, subject to preserving its copyright and permission notice. This is generally favorable to open-source and proprietary tooling. It is not a warranty of fitness for high-reliability applications.</p>
+<p>Do not assume every copied sample carries the same licensing terms: <a href="https://github.com/mpusz/mp-units/blob/master/example/capacitor_time_curve.cpp"><code>example/capacitor_time_curve.cpp</code></a> has its own GPL-3.0-or-later notice. This report links to that example rather than reproducing its code. For embedded targets also review third-party notices in any selected package dependencies or optional integrations.</p>
+<div class="callout"><strong>Suggested integration discipline:</strong> lock the package revision; keep an SPDX/notice inventory; confine unit conversion to explicit ingress/egress boundaries; test overflow and rounding; audit build flags and generated object code. C++ quantity types should not be treated as a stable binary wire format.</div>
+</section>
+<section class="panel" id="review">
+<div class="kicker">09 / Technical review</div><h2>Review disposition and acceptance gates</h2>
+<ul class="checks">
+<li>Inventory reviewed: ETL, littlefs, Boost.SML and nanopb already exist in <code>DeepDives</code>; today's selection is nonduplicative.</li>
+<li>Sources are upstream maintainer documentation, repository files and the upstream license, checked October 25, 2026.</li>
+<li>Real examples are attributed to upstream source and clearly distinguished from project proposals; no unverified flight/production adoption claimed.</li>
+<li>Code uses the documented <code>&lt;mp-units/systems/…&gt;</code> headers, unit symbols and quantity-kind expressions; the deliberately ill-typed call is commented out.</li>
+<li>Report is a single HTML file: embedded CSS, no external font/CDN/script, semantic headings, working anchor targets, visible focus style, responsive and print layout.</li>
+<li class="pending">Pending: real C++20 compile, intentional negative-compile, Conan/Ninja build and RISC-V freestanding cross-compile.</li>
+<li class="pending">Pending: target allocation instrumentation, linker map/size comparison, compiler warnings and WCET measurement.</li>
+</ul>
+<h3>Minimal proposed acceptance test</h3>
+<p><strong>Host:</strong> clean Conan 2 / CMake / Ninja build; successful <code>static_assert</code> test; expected failure of incompatible energy-kind call; compile on at least GCC and Clang. <strong>Embedded:</strong> freestanding build with the real RISCue toolchain, no unexpected unresolved runtime symbols or heap calls, same numerical results as plain scalar baseline, measured binary size and cycles within agreed budget. <strong>Interface:</strong> round-trip ADC volts and discrete simulation ticks through explicit boundary conversions and test saturation behavior.</p>
+</section>
+<section class="panel" id="references">
+<div class="kicker">10 / Primary sources</div><h2>Read the source—not the marketing</h2>
+<ol class="refs">
+<li id="src-readme"><a href="https://github.com/mpusz/mp-units/blob/master/README.md">mpusz/mp-units README and maintainer sample</a> <small>– official overview, quantity-kind safety, stated design goals, standardization status.</small></li>
+<li id="src-quick"><a href="https://mpusz.github.io/mp-units/latest/getting_started/quick_start/">Official Quick Start</a> <small>– quantities, SI symbols, point semantics and compile-time examples.</small></li>
+<li id="src-install"><a href="https://mpusz.github.io/mp-units/latest/getting_started/installation_and_usage/">Official Installation and Usage</a> <small>– Conan packages, CMake target, build options, freestanding, dependencies.</small></li>
+<li id="src-compiler"><a href="https://mpusz.github.io/mp-units/latest/getting_started/cpp_compiler_support/">Official compiler compatibility matrix</a> <small>– compiler minimums, exclusions and optional feature requirements.</small></li>
+<li id="src-hw"><a href="https://github.com/mpusz/mp-units/blob/master/example/hw_voltage.cpp">Maintainer's hardware-voltage example</a> <small>– mapped register, error sentinel, scaled quantity point.</small></li>
+<li id="src-glide"><a href="https://github.com/mpusz/mp-units/blob/master/example/glide_computer.cpp">Maintainer's glide-computer example</a> <small>– aircraft, waypoints, weather and mixed unit systems.</small></li>
+<li id="src-freestanding"><a href="https://github.com/mpusz/mp-units/blob/master/.github/workflows/ci-freestanding.yml">Upstream freestanding CI workflow</a> <small>– maintained test configuration, not RISCue certification.</small></li>
+<li><a href="https://github.com/mpusz/mp-units/blob/master/LICENSE.md">Root MIT license</a> and <a href="https://github.com/mpusz/mp-units/blob/master/example/capacitor_time_curve.cpp">independently licensed RC example</a> <small>– distinguish library terms from copied examples.</small></li>
+<li><a href="https://wg21.link/p3045">ISO C++ proposal P3045</a> <small>– standardization work; proposal, not standardized adoption.</small></li>
+</ol>
+</section>
+<footer>Independent technical field note · Document date: 2026-10-25 · Reviewed against available primary sources, not a substitute for target validation. The document renders offline; linked references require internet access.</footer>
+</main>
+</div></div>
+</body>
+</html>
