@@ -14,3 +14,11 @@
 12. Run core tests, lesson tests, check and build. Test relative URLs and downloads; report if browser verification is unavailable. Update README and commit/PR only the intended files.
 
 An import should not change the existing source project or its deployment unless separately requested. The collection uses copies of educational source or pinned release references, not bidirectional automatic synchronization.
+
+## Script and automation policy
+
+Prefer **C# or F# wherever practical**, including scripts and automation; use C# file-based apps or F# Interactive for small tasks. Use PowerShell and native cmdlets for shell operations. Another language is appropriate when explicitly requested or required by the existing toolchain, workflow, browser runtime, or lesson subject; document why.
+
+**Commit all scripts used for a change**, including one-off generation, migration, testing, and validation scripts. Bring scripts written in temporary locations into the repository before completing the work. Document purpose, prerequisites, invocation, inputs, and outputs; record material interactive commands and verification results. Keep secrets, private inputs, dependencies, caches, and build artifacts out of source control.
+
+Read [AGENTS.md](AGENTS.md) for the full contributor and agent policy. Stable requirements and their verification evidence are maintained in [StrictDoc](docs/requirements.sdoc).
