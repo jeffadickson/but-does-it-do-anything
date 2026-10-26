@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Build a miniature synthesizer, see the shape of sound waves, and discover how Tone.js helps computers make music. A hands-on lesson for curious nine-year-olds.">
+<meta name="theme-color" content="#23215b">
+<title>Can You Draw a Sound? — DeepDivesKids</title>
+<style>
+:root{color-scheme:light;--night:#23215b;--violet:#5d36bc;--paper:#f7f8fe;--ink:#1c2540;--muted:#425272;--pink:#ea4b88;--teal:#087d80;--gold:#ffcf5c;--line:#d8dff2;--card:#fff;--shadow:0 16px 42px rgba(24,35,83,.09)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:clamp(16px,1.25vw,18px)/1.65 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}a{color:#2449a8;text-underline-offset:3px}a:hover{text-decoration-thickness:2px}a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #d55122;outline-offset:4px}h1,h2,h3,p{margin-top:0}h1{font-size:clamp(2.5rem,7vw,5.2rem);line-height:1.04;letter-spacing:-.035em}h2{font-size:clamp(1.6rem,3.5vw,2.4rem);line-height:1.17;letter-spacing:-.025em;color:var(--night)}h3{font-size:1.15rem;color:var(--night)}p{max-width:74ch}strong{font-weight:750}.wrap{max-width:1100px;margin:auto;padding:0 clamp(16px,4vw,40px)}.skip{position:absolute;left:12px;top:-90px;background:#fff;color:#111;padding:9px;z-index:3}.skip:focus{top:12px}.hero{background:radial-gradient(circle at 88% 25%,rgba(255,207,92,.18),transparent 23%),radial-gradient(circle at 67% 70%,rgba(252,98,175,.24),transparent 24%),linear-gradient(128deg,#171d50,#3d287d 62%,#552da3);color:#fff;overflow:hidden}.hero .wrap{padding-top:65px;padding-bottom:62px;position:relative}.eyebrow{font-size:.81rem;text-transform:uppercase;letter-spacing:.17em;font-weight:800;color:#ffe5a4}.hero p{font-size:1.2rem;max-width:43rem;color:#edf1ff}.hero h1{max-width:15ch;margin:.7rem 0 1.2rem}.hero-grid{display:grid;grid-template-columns:1.4fr .6fr;align-items:center;gap:20px}.hero-art{min-height:280px;position:relative;display:grid;place-items:center}.big-note{font-size:clamp(9rem,21vw,17rem);line-height:1;transform:rotate(-12deg);text-shadow:18px 18px 0 #b34b9d66;filter:drop-shadow(0 13px 12px #07072c33)}.orbit{position:absolute;border:3px dashed #ffffff60;border-radius:50%;width:95%;aspect-ratio:1;max-width:340px;transform:rotate(15deg)}.float{position:absolute;font-size:2.5rem}.float.a{top:7%;left:10%}.float.b{bottom:7%;right:9%}.pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}.pill{border-radius:20px;padding:5px 12px;background:#ffffff21;border:1px solid #ffffff63;color:white;font-size:.85rem;font-weight:700}.hero .cta{display:inline-block;background:var(--gold);color:#21264a;padding:11px 19px;border-radius:11px;font-weight:850;text-decoration:none;margin-top:16px}.hero .cta:hover{background:#ffe394}.contents{background:white;border:1px solid var(--line);border-radius:18px;padding:24px 28px;margin:30px 0;box-shadow:var(--shadow)}.contents h2{font-size:1.45rem;margin-bottom:10px}.contents ul{margin:0;padding-left:24px;columns:2}.contents li{break-inside:avoid;padding:3px 0}.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:clamp(20px,3.5vw,37px);box-shadow:var(--shadow);margin:25px 0;scroll-margin-top:20px}.tag{font-size:.77rem;letter-spacing:.13em;text-transform:uppercase;font-weight:850;color:var(--violet);margin-bottom:7px}.lead{font-size:1.16rem;color:#31405f}.highlight{background:linear-gradient(110deg,#fff6d9,#fce8f6);padding:17px 21px;border-left:5px solid #b93d8b;border-radius:12px;margin:17px 0}.story{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px}.story article{background:#f2f4ff;border:1px solid #dfe5fc;padding:17px;border-radius:14px}.number{display:inline-grid;place-items:center;background:#43349a;color:white;width:31px;height:31px;border-radius:50%;font-weight:bold;margin-bottom:8px}.story p{font-size:.95rem;margin-bottom:0}.wave-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;margin-top:18px}.wave-card{background:#f4f9ff;border:1px solid #d5e3f2;border-radius:14px;padding:15px}.wave-card strong{display:block}.mini-wave{width:100%;height:65px;display:block}.fact{color:var(--muted);font-size:.9rem}.lab{border:2px solid #a6b2e6;background:linear-gradient(160deg,#fff,#f1f2ff);padding:clamp(18px,3.5vw,34px)}.lab-header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}.badge{background:#ded8ff;color:#382477;padding:7px 11px;border-radius:100px;font-size:.78rem;font-weight:800}.controls{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:19px 0}.control{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}.control label{font-weight:750;display:block;margin-bottom:8px}.control select,.control input{width:100%;font:inherit;accent-color:#5133a3}.control select{padding:8px;border-radius:7px;border:1px solid #92a1ce;color:var(--ink);background:#fff}.wave-monitor{background:#171a48;border-radius:16px;padding:15px 18px;color:#fff;margin:12px 0}.wave-monitor .monitorhead{display:flex;align-items:center;flex-wrap:wrap;justify-content:space-between;gap:10px}.wave-monitor svg{width:100%;height:auto;display:block}.wave-monitor small{color:#ccd3ff}.keys{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:7px;margin:16px 0}.key{min-height:105px;border-radius:8px 8px 17px 17px;background:linear-gradient(#fff,#edf0ff);border:2px solid #777ca9;color:#202856;box-shadow:0 6px 0 #999abd;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:1.45rem}.key small{font-size:.65rem;font-weight:650}.key:hover{background:#fff5dc}.key:active{transform:translateY(4px);box-shadow:0 2px 0 #999abd}.lab-actions{display:flex;gap:10px;flex-wrap:wrap}.button{appearance:none;border:none;background:#4333a3;color:white;border-radius:12px;padding:11px 17px;font:750 1rem system-ui;cursor:pointer}.button:hover{background:#302177}.button.secondary{background:#fff;border:2px solid #5f50a3;color:#352577}.button.secondary:hover{background:#eee9ff}.status{border-left:4px solid #087d80;padding:10px 14px;background:#edfafa;margin-top:12px;border-radius:8px;min-height:45px}.steps{counter-reset:steps;list-style:none;padding:0}.steps li{counter-increment:steps;position:relative;padding:0 0 17px 48px}.steps li:before{content:counter(steps);position:absolute;left:0;top:1px;width:31px;height:31px;border-radius:50%;display:grid;place-items:center;background:#e9dcff;color:#482997;font-weight:900}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}.evidence{background:#e9f6f5;border-left:5px solid #147777;padding:16px 19px;border-radius:12px}.idea{background:#fff2e4;border-left:5px solid #af5d0c;padding:16px 19px;border-radius:12px}.evidence h3,.idea h3{margin-bottom:7px}.evidence p,.idea p{margin:0}.flow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;margin:19px 0}.flow span{background:#e7e9fa;border:1px solid #bdc3e4;color:#1a2859;padding:10px 16px;border-radius:9px;text-align:center;font-weight:750}.flow b{color:#513f8c}.code-note{background:#fff3d4;border:1px solid #f0dc99;border-radius:9px;padding:12px 15px}pre{overflow-x:auto;background:#131936;color:#eaf3ff;border-radius:13px;padding:22px;line-height:1.55;font-size:clamp(.75rem,1.65vw,.96rem);tab-size:2}code{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}p code,li code{background:#eef0fd;color:#29357a;border-radius:4px;padding:0 4px}details{border:1px solid #c8d2eb;background:#f5f7ff;border-radius:12px;padding:13px 18px;margin-top:12px}summary{cursor:pointer;font-weight:800}details p{margin:12px 0 0}.sources li{padding:4px 0;overflow-wrap:anywhere}.fineprint{color:#4c5874;font-size:.88rem}.footer{padding:25px 0 65px;text-align:center;color:#495673}.rule{border-top:1px solid var(--line);padding-top:18px;margin-top:20px}button:disabled{opacity:.6;cursor:not-allowed}@media(max-width:770px){.hero-grid{grid-template-columns:1fr}.hero-art{display:none}.story,.wave-grid{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}.contents ul{columns:1}.hero .wrap{padding-top:42px;padding-bottom:40px}}@media(max-width:530px){.keys{grid-template-columns:repeat(4,1fr)}.key{min-height:76px}.controls{grid-template-columns:1fr}.card{border-radius:14px}.flow{flex-direction:column}.flow b{transform:rotate(90deg)}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}@media print{.hero{background:#fff;color:#111}.hero p,.eyebrow{color:#111}.hero-art,.lab-actions,.keys,.cta{display:none!important}.card,.contents{box-shadow:none;break-inside:avoid}.lab{border-color:#777}.wave-monitor{-webkit-print-color-adjust:exact;print-color-adjust:exact}a{color:#16488d}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the lesson</a>
+<header class="hero">
+<div class="wrap hero-grid"><div>
+<div class="eyebrow">DeepDivesKids · Edition 12 · October 26, 2026</div>
+<h1>Can you <em>draw</em> a sound?</h1>
+<p>What if you could turn a squiggly line into a musical note? Meet <strong>Tone.js</strong>, learn how a computer invents sound, and build a little piano right here.</p>
+<div class="pills"><span class="pill">🎹 Music</span><span class="pill">〰️ Waves</span><span class="pill">💻 Code</span><span class="pill">🔬 Experiment</span></div>
+<a class="cta" href="#playground">Try the Sound Lab ↓</a>
+</div><div class="hero-art" aria-hidden="true"><div class="orbit"></div><span class="float a">✦</span><span class="big-note">♫</span><span class="float b">✶</span></div></div>
+</header>
+<main id="main" class="wrap">
+<nav class="contents" aria-label="Table of contents"><h2>🗺️ Your adventure map</h2><ul>
+<li><a href="#mystery">1. The sound mystery</a></li><li><a href="#waves">2. Meet the waves</a></li><li><a href="#playground">3. Interactive sound laboratory</a></li><li><a href="#test">4. Your three experiments</a></li><li><a href="#library">5. Meet the real Tone.js</a></li><li><a href="#code">6. Read the code</a></li><li><a href="#real">7. Real uses vs. new ideas</a></li><li><a href="#limits">8. The tricky parts</a></li><li><a href="#sources">9. Sources and review</a></li></ul></nav>
+<section id="mystery" class="card"><p class="tag">The mystery</p><h2>How does a computer sing?</h2>
+<p class="lead">A piano has strings. A drum has a stretched skin. But a computer doesn't need strings or drums to play a tune!</p>
+<p>When you press a piano key, something vibrates and makes the nearby air vibrate. Those vibrations travel to your ears as <strong>sound waves</strong>. A computer can calculate a wave as numbers, and your speakers turn the changing electrical signal into vibrations you can hear.</p>
+<div class="highlight"><strong>Think like a scientist:</strong> Will two notes at different pitches have the same wave pattern? Make a prediction before opening the experiment.</div>
+<div class="story"><article><span class="number">1</span><h3>Imagine a wiggle</h3><p>Choose how a signal goes up and down.</p></article><article><span class="number">2</span><h3>Calculate it</h3><p>The browser creates a rapidly changing audio signal.</p></article><article><span class="number">3</span><h3>Hear it</h3><p>Speakers push and pull air so your ears detect a note.</p></article></div>
+</section>
+<section id="waves" class="card"><p class="tag">The science</p><h2>Three secrets of sound waves</h2>
+<div class="wave-grid">
+<div class="wave-card"><strong>Pitch = wiggle speed</strong><svg class="mini-wave" viewBox="0 0 180 65" aria-label="A wave with several gentle ups and downs"><path d="M0 33 Q15 -12 30 33 T60 33 T90 33 T120 33 T150 33 T180 33" stroke="#5331a1" stroke-width="3" fill="none"/></svg><p class="fact">Faster vibrations make a higher note. Frequency is measured in hertz (Hz).</p></div>
+<div class="wave-card"><strong>Loudness = wiggle size</strong><svg class="mini-wave" viewBox="0 0 180 65" aria-label="A wave getting taller toward the right"><path d="M0 33 Q15 28 30 33 T60 33 Q75 9 90 33 T120 33 Q135 -17 150 33 T180 33" stroke="#0c777d" stroke-width="3" fill="none"/></svg><p class="fact">Bigger changes in air pressure often mean louder sound. Keep volume comfortable!</p></div>
+<div class="wave-card"><strong>Timbre = wiggle shape</strong><svg class="mini-wave" viewBox="0 0 180 65" aria-label="A sharp-cornered square wave"><path d="M0 46 V18 H45 V46 H90 V18 H135 V46 H180" stroke="#bc3d78" stroke-width="3" fill="none"/></svg><p class="fact">Different shapes can change a sound's character, even at the same pitch.</p></div>
+</div><p>For example, the musical note <strong>A4 is 440 Hz</strong>: its pattern repeats 440 times in one second. A different wave shape at the same 440 Hz can sound brighter or softer, even though the pitch stays A4.</p></section>
+<section id="playground" class="card lab" aria-labelledby="labtitle"><div class="lab-header"><div><p class="tag">Hands-on · No downloads</p><h2 id="labtitle">🎛️ The sound laboratory</h2></div><span class="badge">Works offline in a modern browser</span></div>
+<p>This mini instrument is <strong>built into this very page</strong>. It uses your browser's <strong>Web Audio API</strong>, which is the technology that Tone.js builds upon. <strong>It does not load or require Tone.js itself.</strong></p>
+<p class="fineprint">Set your speaker volume low before pressing a note. Audio begins only after you press a button; the page never plays sound automatically.</p>
+<div class="controls"><div class="control"><label for="shape">1. Choose a wave shape</label><select id="shape"><option value="sine">Sine — smooth and pure</option><option value="triangle">Triangle — gentle and hollow</option><option value="square">Square — buzzy and bold</option><option value="sawtooth">Sawtooth — bright and raspy</option></select></div><div class="control"><label for="tempo">2. Choose the melody speed: <output id="tempoValue" for="tempo">100</output> beats/minute</label><input id="tempo" type="range" min="60" max="160" step="10" value="100"></div></div>
+<div class="wave-monitor"><div class="monitorhead"><strong>Wave drawing <span aria-hidden="true">〰</span></strong><small id="waveReadout">Sine wave — illustration, not a live recording</small></div><svg id="waveSvg" viewBox="0 0 720 166" role="img" aria-labelledby="waveTitle waveDesc"><title id="waveTitle">Illustration of the selected wave</title><desc id="waveDesc">Smooth repeating sine wave. Switch wave type to see a different shape.</desc><path d="M0 83H720" fill="none" stroke="#505d8d" stroke-dasharray="5 7"/><path id="wavePath" fill="none" stroke="#8ef0e6" stroke-width="4" stroke-linejoin="round"/></svg></div>
+<p><strong>3. Press a key</strong> to hear a note. The tiny number under it is its frequency in hertz.</p>
+<div class="keys" role="group" aria-label="Eight musical notes"><button class="key" type="button" data-note="C4" data-hz="261.63">C<small>262 Hz</small></button><button class="key" type="button" data-note="D4" data-hz="293.66">D<small>294 Hz</small></button><button class="key" type="button" data-note="E4" data-hz="329.63">E<small>330 Hz</small></button><button class="key" type="button" data-note="F4" data-hz="349.23">F<small>349 Hz</small></button><button class="key" type="button" data-note="G4" data-hz="392">G<small>392 Hz</small></button><button class="key" type="button" data-note="A4" data-hz="440">A<small>440 Hz</small></button><button class="key" type="button" data-note="B4" data-hz="493.88">B<small>494 Hz</small></button><button class="key" type="button" data-note="C5" data-hz="523.25">C↑<small>523 Hz</small></button></div>
+<div class="lab-actions"><button type="button" class="button" id="melody">▶ Play a little melody</button><button type="button" class="button secondary" id="stop">■ Stop sounds</button></div>
+<p id="status" class="status" role="status" aria-live="polite">Choose a note or play the melody. You are in control of the sound.</p>
+<p class="fineprint">The line is a mathematically drawn picture of the chosen waveform, <em>not</em> a microphone recording or measured speaker output. Many real musical instruments produce richer, changing mixtures of waves.</p>
+</section>
+<section id="test" class="card"><p class="tag">Your laboratory notebook</p><h2>Three experiments to try together</h2>
+<ol class="steps"><li><strong>High or low?</strong> Play C (262 Hz), then C↑ (523 Hz). About twice the frequency means one octave higher. Can you hear the relationship?</li><li><strong>Same note, different voice.</strong> Play A (440 Hz) with a sine wave. Change to square and play A again. The pitch stays the same, but how does the sound change?</li><li><strong>Build a soundtrack.</strong> Choose triangle, set a slow tempo, and press the melody button. Try fast instead. Which speed fits a rocket launch? Which fits a goalie making a dramatic save?</li></ol>
+<div class="highlight"><strong>Bonus challenge:</strong> Draw a small wave and a tall wave on paper. Which would you expect to be louder? Does the shape alone tell you the exact sound? <em>No: playback level and the speaker also matter.</em></div>
+</section>
+<section id="library" class="card"><p class="tag">Meet the library</p><h2>What is Tone.js, really?</h2>
+<p class="lead"><strong>Tone.js</strong> is a free, open-source JavaScript library for making interactive music on websites.</p>
+<p>Instead of having to build every sound from scratch, a programmer can ask Tone.js for a synthesizer, a drum-like sound, an effect, or a musical clock called a <strong>Transport</strong>. It uses the browser's native Web Audio tools underneath. Tone.js helps organize musical time and instruments; it is not a replacement for the speakers or the browser's audio engine.</p>
+<div class="flow" aria-label="Sound system flow"><span>🎹 Your instructions</span><b aria-hidden="true">→</b><span>Tone.js instruments &amp; timing</span><b aria-hidden="true">→</b><span>Web Audio API</span><b aria-hidden="true">→</b><span>🔊 Speakers</span></div>
+<p>That is an example of a <strong>software layer</strong>: a simpler set of commands built on a more detailed system. Dad uses the same idea when creating software tools that hide complicated hardware operations behind clear interfaces.</p>
+</section>
+<section id="code" class="card"><p class="tag">Read actual code</p><h2>Make Tone.js play a note</h2>
+<p>This is a practical <strong>Tone.js example</strong> adapted from the project's own README. It belongs in a JavaScript project after installing the library, <em>not</em> inside this offline page's built-in sound experiment.</p>
+<pre><code>// In a JavaScript project, first run: npm install tone
+import * as Tone from "tone";
+
+// Make a synthesizer and connect it to the speakers.
+const synth = new Tone.Synth().toDestination();
+
+// A button click unlocks sound in modern browsers.
+document.querySelector("#play-c").addEventListener(
+  "click",
+  async () =&gt; {
+    await Tone.start();
+    synth.triggerAttackRelease("C4", "8n");
+  }
+);</code></pre>
+<p class="code-note"><strong>To run this example:</strong> use an HTML button with <code>id="play-c"</code> and a bundler-based JavaScript project with the <code>tone</code> npm dependency. <code>"C4"</code> names a note; <code>"8n"</code> means an eighth-note duration. The button should be pressed by a person so the browser allows audio.</p>
+<p><strong>Change one thing:</strong> replace <code>"C4"</code> with <code>"G4"</code>. What will happen to the pitch? Make your prediction before trying it in a Tone.js project.</p>
+</section>
+<section id="real" class="card"><p class="tag">Fact vs. invention</p><h2>Where is this used? And what could we build?</h2>
+<div class="two-col"><div class="evidence"><h3>✔ Published and documented</h3><p>The <a href="https://github.com/Tonejs/Tone.js#hello-tone">Tone.js maintainers publish working synth examples</a>, and their <a href="https://tonejs.github.io/examples/">examples collection</a> demonstrates musical programming techniques. Their <a href="https://tonejs.github.io/demos">showcase gallery</a> lists projects such as <em>Chrome Music Lab</em> and <em>Groove Pizza</em>. The listing is evidence of a maintainer-curated showcase, <strong>not independent proof of a particular project's current runtime dependency</strong>.</p></div><div class="idea"><h3>💡 Our possible inventions</h3><p>A hockey-goalie reaction game that beeps when the puck moves; musical feedback in an IceBreaker scoreboard; or a rocket simulator with a rising launch melody. These are <strong>ideas we could create</strong>—not claims that JPL, Dad's programs, or professional hockey already use Tone.js.</p></div></div>
+<p class="rule"><strong>Connection to Dad's engineering:</strong> music needs timing, waves, and repeatable instructions. Those ideas also matter when simulating electronics, sending spacecraft data, or writing a game clock. But a web music library is <strong>not</strong> suitable by itself for deterministic spacecraft control or a real-time embedded operating system.</p>
+</section>
+<section id="limits" class="card"><p class="tag">Engineer’s reality check</p><h2>The tricky parts—and the permission slip</h2>
+<p><strong>What it's good at:</strong> quickly trying musical ideas, organizing beats, making synthesizers, and teaching how sound can be programmed. It can save considerable audio-programming work.</p>
+<p><strong>What it is not:</strong> a recorded piano, an always-perfect timing system, or a replacement for specialized audio hardware. Browser autoplay rules mean sound normally needs a button press. Scheduling is precise inside the Web Audio engine, but the surrounding browser and operating system are not guaranteed hard real-time; devices may have audible latency. Fancy or sample-based instruments may also need audio files.</p>
+<p><strong>License:</strong> Tone.js uses the <a href="https://github.com/Tonejs/Tone.js/blob/dev/LICENSE.md">MIT license</a>. In plain English: you may generally use and modify its code, including in commercial projects, as long as the required copyright and license notices remain included. That does not automatically grant rights to third-party recordings or songs.</p>
+<p><strong>Integration:</strong> install with <code>npm install tone</code>, import it in a web project, or use an appropriate browser distribution. The HTML page you are reading includes <strong>no outside fonts, scripts, sound files, or network requests</strong>; the playground uses standard browser APIs. A modern browser with Web Audio support and an audio-output device is needed for sound.</p>
+<p class="fineprint">Safety: Start at a comfortable volume; never test with unusually loud sounds or put speakers near your ears. Adult help may be needed for npm installation or publishing projects online.</p>
+</section>
+<section id="sources" class="card"><p class="tag">Evidence desk</p><h2>Primary sources &amp; technical review</h2>
+<ul class="sources"><li><a href="https://github.com/Tonejs/Tone.js">Tone.js official repository and README</a> — synth, envelopes, Transport, examples, npm installation, browser gesture rule.</li><li><a href="https://tonejs.github.io/examples/">Tone.js official examples</a> — maintainer examples.</li><li><a href="https://tonejs.github.io/demos">Tone.js official showcase</a> — gallery project names (not separately verified runtime adoption).</li><li><a href="https://github.com/Tonejs/Tone.js/blob/dev/LICENSE.md">Tone.js MIT license</a> — use, distribution, attribution.</li><li><a href="https://www.w3.org/TR/webaudio/">W3C Web Audio specification</a> — normative browser audio model.</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Using_Web_Audio_API">MDN's Web Audio guide</a> — nodes, gain, audio context and autoplay.</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioScheduledSourceNode/start">MDN AudioScheduledSourceNode.start()</a> — scheduled start time and reusing oscillators.</li></ul>
+<div class="two-col rule"><div><h3>Reviewed for correctness</h3><p>Native audio demonstration uses a user gesture, one reusable AudioContext, fresh oscillators per note, gain envelopes to reduce clicks, scheduled note timing, and an immediate stop control. The Tone.js snippet follows the official API with its npm/bundler prerequisite stated.</p></div><div><h3>Reviewed for learning &amp; access</h3><p>Semantic headings and links, visible keyboard focus, descriptive labels, an <code>aria-live</code> status, responsive note buttons, no autoplay, no flashing animation, and no external assets. Source-backed examples and suggested inventions are clearly separated.</p></div></div>
+<p class="fineprint">Prepared October 26, 2026. Source accuracy and code are checked against upstream documentation; browser execution and audio playback must be reported separately if actually tested. This independent educational article is not sponsored by Tone.js, Google, or NASA.</p>
+</section>
+<footer class="footer"><strong>Keep experimenting.</strong> Change one thing, make a prediction, and listen to what happens. 🎼<br><small>DeepDivesKids · October 26, 2026 · Edition 12</small></footer>
+</main>
+<script>
+"use strict";
+// Offline demonstration: native browser Web Audio, not the Tone.js package.
+// Each keypress creates a fresh oscillator because oscillator sources are one-shot.
+const shapeSelect = document.getElementById("shape");
+const tempoInput = document.getElementById("tempo");
+const tempoValue = document.getElementById("tempoValue");
+const wavePath = document.getElementById("wavePath");
+const waveDesc = document.getElementById("waveDesc");
+const waveReadout = document.getElementById("waveReadout");
+const statusLine = document.getElementById("status");
+let audioContext = null;
+let masterGain = null;
+const activeOscillators = new Set();
+const pitches = Object.freeze({ C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:392,A4:440,B4:493.88,C5:523.25 });
+function waveValue(phase, type) {
+  const u = ((phase % 1) + 1) % 1;
+  if (type === "square") return u < .5 ? 1 : -1;
+  if (type === "triangle") return 1 - 4 * Math.abs(u - .5);
+  if (type === "sawtooth") return 2*u - 1;
+  return Math.sin(phase * 2 * Math.PI);
+}
+function drawWave(){
+  const type = shapeSelect.value;
+  const samples = 720;
+  const cycles = 5;
+  let d = "";
+  for (let x=0;x<=samples;x++) {
+    const y = 83 - 54 * waveValue((x / samples) * cycles, type);
+    d += (x ? " L" : "M") + x + " " + y.toFixed(2);
+  }
+  wavePath.setAttribute("d",d);
+  waveDesc.textContent = type + " wave repeated five times. An illustration, not recorded audio.";
+  waveReadout.textContent = type[0].toUpperCase()+type.slice(1)+" wave — illustration, not a live recording";
+}
+shapeSelect.addEventListener("change",drawWave);
+tempoInput.addEventListener("input",()=>{tempoValue.value = tempoInput.value;});
+drawWave();
+async function ensureAudio(){
+  const AudioContextType = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextType) throw new Error("This browser does not support Web Audio.");
+  if (!audioContext) {
+    audioContext = new AudioContextType();
+    masterGain = audioContext.createGain();
+    masterGain.gain.value = 0.16; // intentionally quiet default
+    masterGain.connect(audioContext.destination);
+  }
+  if (audioContext.state !== "running") await audioContext.resume();
+  if (audioContext.state !== "running") throw new Error("Audio is not available yet.");
+  return audioContext;
+}
+function scheduleNote(context,hz,start,duration){
+  const osc = context.createOscillator();
+  const envelope = context.createGain();
+  osc.type = shapeSelect.value;
+  osc.frequency.setValueAtTime(hz,start);
+  const attack = Math.min(.018,duration / 5);
+  const release = Math.min(.09,duration / 4);
+  envelope.gain.setValueAtTime(0,start);
+  envelope.gain.linearRampToValueAtTime(0.18,start+attack);
+  envelope.gain.setValueAtTime(0.18,start+duration-release);
+  envelope.gain.linearRampToValueAtTime(0,start+duration);
+  osc.connect(envelope);
+  envelope.connect(masterGain);
+  osc.onended=()=>{activeOscillators.delete(osc);osc.disconnect();envelope.disconnect();};
+  activeOscillators.add(osc);
+  osc.start(start);
+  osc.stop(start+duration+.02);
+}
+async function playSingle(button){
+  try{
+    const context = await ensureAudio();
+    const note = button.dataset.note;
+    const hz = pitches[note];
+    scheduleNote(context,hz,context.currentTime+.02,.48);
+    statusLine.textContent = "Playing " + note + " ("+ Math.round(hz)+" Hz) with a " + shapeSelect.value + " wave.";
+  }catch(error){statusLine.textContent = error.message;}
+}
+document.querySelectorAll(".key").forEach(button=>button.addEventListener("click",()=>playSingle(button)));
+document.getElementById("melody").addEventListener("click",async()=>{
+  try{
+    const context=await ensureAudio();
+    const sequence=["C4","E4","G4","C5","G4","E4","C4"];
+    const beat=60/Number(tempoInput.value);
+    const start=context.currentTime+.07;
+    sequence.forEach((name,index)=>scheduleNote(context,pitches[name],start+index*beat,beat*.72));
+    statusLine.textContent="Playing seven notes at "+tempoInput.value+" beats per minute. Press Stop to silence them.";
+  }catch(error){statusLine.textContent=error.message;}
+});
+document.getElementById("stop").addEventListener("click",()=>{
+  for(const osc of Array.from(activeOscillators)){
+    try{osc.stop(audioContext ? audioContext.currentTime : 0);}catch(_error){/* A note may already have ended. */}
+  }
+  statusLine.textContent="Stopped. The next note will play only when you press a key.";
+});
+</script>
+</body>
+</html>
