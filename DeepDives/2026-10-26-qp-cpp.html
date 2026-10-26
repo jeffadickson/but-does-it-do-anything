@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="2026-10-26 engineering deep dive into Quantum Leaps QP/C++, hierarchical state machines, bounded queues and deterministic active objects.">
+<title>QP/C++ · Active Objects with Boundaries | DeepDives</title>
+<style>
+:root{color-scheme:light;--paper:#f4f7fb;--ink:#13243c;--quiet:#445a74;--navy:#0b2545;--teal:#067c7b;--orange:#d65a26;--line:#d7e1ea;--card:#fff;--code:#071e35}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.68 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:#075e86;text-underline-offset:3px}a:hover{text-decoration-thickness:2px}a:focus-visible,button:focus-visible{outline:3px solid #e7a72a;outline-offset:4px}header{color:#fff;background:linear-gradient(130deg,#091e37 0%,#164266 63%,#08747b 100%);padding:4rem max(1.5rem,calc((100vw - 1140px)/2)) 4.4rem;position:relative;overflow:hidden}header:after{content:"";position:absolute;inset:auto -65px -160px auto;width:390px;height:390px;border:48px solid #ffffff10;border-radius:50%}.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:.77rem;font-weight:800;color:#a9f1e8}.pill{display:inline-block;border:1px solid #ffffff65;padding:.3rem .75rem;border-radius:999px;font-weight:600;font-size:.82rem;margin:.25rem .5rem .2rem 0}h1{font-size:clamp(2.7rem,5.9vw,5.6rem);line-height:1.04;letter-spacing:-.042em;margin:.55rem 0 1.25rem;max-width:940px}header p.lead{max-width:850px;font-size:clamp(1.08rem,2.2vw,1.4rem);line-height:1.52;color:#e4f3f7;margin:0 0 1.35rem}main{max-width:1150px;margin:auto;padding:0 1.45rem 5rem}.stage{display:grid;grid-template-columns:240px minmax(0,1fr);gap:1.55rem;align-items:start;margin-top:-1.35rem;position:relative}nav{position:sticky;top:1rem;background:var(--card);border:1px solid var(--line);border-radius:15px;padding:1rem;box-shadow:0 7px 25px #0b254514}nav strong{display:block;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;margin:.4rem .3rem .6rem}nav ol{padding-left:1.4rem;margin:.35rem 0}nav li{margin:.43rem 0;font-size:.89rem;line-height:1.35}.bodycol{min-width:0}.card{border:1px solid var(--line);background:var(--card);border-radius:17px;padding:1.8rem 2rem;margin:0 0 1.3rem;box-shadow:0 4px 16px #0b25450a}.hero-card{border-top:5px solid #04a3a4}.card h2{font-size:clamp(1.47rem,2.6vw,2.05rem);line-height:1.2;letter-spacing:-.02em;margin:.05rem 0 .9rem}.card h3{font-size:1.12rem;line-height:1.4;margin:1.4rem 0 .5rem}.card p{margin:.5rem 0 1rem}ul,ol{padding-left:1.45rem}li{margin:.28rem 0}small,.muted{color:var(--quiet)}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.85rem;margin:1.2rem 0}.metric{background:#eff8f9;border:1px solid #c4e5e4;border-radius:12px;padding:1rem}.metric strong{display:block;font-size:1.5rem;color:#075b62;line-height:1.2}.metric span{display:block;font-size:.88rem;margin-top:.4rem}.callout{border-left:5px solid var(--orange);border-radius:8px;background:#fff2e9;padding:1rem 1.2rem;margin:1.1rem 0}.callout.good{border-color:#008b85;background:#e9f8f6}.callout strong{display:block;margin-bottom:.25rem}.diagram{border:1px solid #c8dbe2;background:#f3fbfa;border-radius:14px;padding:1.1rem;margin:1.4rem 0;overflow-x:auto}.diagram svg{display:block;width:100%;min-width:460px;max-height:270px}.diagram figcaption{font-size:.82rem;color:var(--quiet);margin-top:.7rem}.check{font-weight:750;color:#0b6a66}.warn{font-weight:750;color:#a3421e}.tag{font-size:.76rem;letter-spacing:.045em;display:inline-block;background:#ecf0f5;border:1px solid #d7e1e9;color:#29475d;padding:.13rem .48rem;border-radius:5px}.code-head{display:flex;justify-content:space-between;gap:1rem;align-items:baseline;color:#d1e8f7;background:#15324b;border-radius:11px 11px 0 0;padding:.62rem 1rem;font-weight:700;font-size:.84rem;margin-top:1rem}pre{white-space:pre;overflow:auto;margin:0 0 1.15rem;padding:1.2rem;background:var(--code);color:#e8f3ff;border-radius:0 0 11px 11px;font:14px/1.57 ui-monospace,"Cascadia Code",Consolas,monospace;tab-size:4}code{font:0.93em ui-monospace,"Cascadia Code",Consolas,monospace;overflow-wrap:anywhere}pre code{font:inherit;overflow-wrap:normal}table{border-collapse:collapse;width:100%;font-size:.91rem}th,td{border-bottom:1px solid var(--line);padding:.65rem .65rem;vertical-align:top;text-align:left}th{background:#edf3f7}.table-wrap{overflow-x:auto;margin:1rem 0}button{font:inherit;font-weight:700;background:#116873;color:white;padding:.52rem .9rem;border:0;border-radius:8px;cursor:pointer;margin:.3rem .25rem .3rem 0}button:hover{background:#084650}button.secondary{background:#385573}.sim{background:#edf6f9;border:1px solid #bfd7df;border-radius:12px;padding:1rem 1.2rem}.state-name{font-size:1.4rem;font-weight:800;color:#0a555f}.sim-output{margin:1rem 0 .6rem;min-height:3.3rem}.status{border-radius:10px;padding:.55rem .8rem;background:white;border:1px solid #d7e4ea}.event-log{margin:.55rem 0 0;padding-left:1.2rem;font:13px/1.6 ui-monospace,Consolas,monospace;max-height:160px;overflow:auto}.refs{list-style:none;padding:0;counter-reset:citation}.refs li{counter-increment:citation;padding:.65rem 0;border-top:1px solid var(--line);overflow-wrap:anywhere}.refs li:before{content:"[" counter(citation) "] ";font-weight:800;color:#0d767a}.refs .date{font-size:.8rem;color:#496173}.supref{font-size:.8rem;white-space:nowrap}footer{text-align:center;color:#526579;padding:2rem 1rem}.print-note{font-size:.88rem;color:#496173}@media(max-width:850px){.stage{grid-template-columns:1fr}nav{position:static}nav ol{columns:2}.grid{grid-template-columns:1fr 1fr}}@media(max-width:620px){header{padding:3rem 1.3rem 3.6rem}.card{padding:1.2rem}.grid{grid-template-columns:1fr}nav ol{columns:1}pre{font-size:12.5px}.code-head{flex-direction:column;gap:.1rem}.diagram svg{min-width:430px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}@media print{header{background:#fff!important;color:#111;padding:1rem 0 2rem}header p.lead,.eyebrow{color:#111!important}main{padding:0}nav{position:static;box-shadow:none}.stage{display:block}.card{break-inside:avoid;box-shadow:none;border-color:#aaa}.pill{color:#111;border-color:#888}button{display:none}pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#111;background:#f1f1f1}.diagram{background:white}}
+</style>
+</head>
+<body>
+<header>
+<div class="eyebrow">DeepDives / Engineering Library Study / 26 October 2026</div>
+<h1>QP/C++: active objects<br>with boundaries.</h1>
+<p class="lead">Hierarchical state machines, asynchronous event queues, and real-time scheduling in one embedded C++ framework. A useful architectural reference for RISCue—<em>but not a drop-in RTOS replacement or a permissively licensed header-only library.</em></p>
+<div><span class="pill">Quantum Leaps · QP/C++</span><span class="pill">C++17 baseline; evaluate with C++20</span><span class="pill">GPLv3-or-later / commercial</span><span class="pill">Source reviewed 26 Oct 2026</span></div>
+</header>
+<main><div class="stage">
+<nav aria-label="Contents"><strong>Inside this report</strong><ol>
+<li><a href="#takeaways">Executive takeaways</a></li><li><a href="#mental-model">How it works</a></li><li><a href="#real-use">Verified examples</a></li><li><a href="#code">Practical C++ example</a></li><li><a href="#sandbox">Event-sequence lab</a></li><li><a href="#integration">RISCue &amp; other projects</a></li><li><a href="#build">Build and integration</a></li><li><a href="#tradeoffs">Tradeoffs &amp; failure modes</a></li><li><a href="#licensing">License and Extras</a></li><li><a href="#review">Technical review</a></li><li><a href="#references">Primary sources</a></li>
+</ol></nav>
+<div class="bodycol">
+<section id="takeaways" class="card hero-card">
+<span class="tag">THE SHORT VERSION</span><h2>An active object is an owner, not just another thread.</h2>
+<p>QP/C++ marries a <strong>private event queue</strong> and <strong>run-to-completion processing</strong> to a <strong>hierarchical state machine</strong>. Instead of letting many tasks manipulate the same state through locks, an active object accepts messages and changes its own state one event at a time. Its queue, scheduling priority, and memory resources can be deliberately bounded. <a class="supref" href="#ref-1">[1]</a> <a class="supref" href="#ref-3">[3]</a></p>
+<div class="grid"><div class="metric"><strong>QHsm</strong><span>Reusable nested state semantics; can operate without QF scheduling.</span></div><div class="metric"><strong>QActive</strong><span>State machine plus queued, asynchronous event processing.</span></div><div class="metric"><strong>QV / QK</strong><span>Cooperative or preemptive run-to-completion scheduling options.</span></div></div>
+<div class="callout"><strong>Why this is different from the October 23 Boost.SML deep dive</strong>Boost.SML emphasizes compile-time state-machine construction. QP/C++ supplies a fuller event-driven architecture: AO lifecycles, bounded queues, timed events, and kernels/RTOS ports. It is more prescriptive and has substantially different licensing.</div>
+</section>
+<section id="mental-model" class="card">
+<h2>How the moving pieces fit</h2><p>There are two largely independent concerns: <em>behavior</em> and <em>execution</em>. The <code>QHsm</code> base class implements behavior as states and transitions; <code>QActive</code> hosts that behavior inside a concurrently scheduled actor-like object. QP describes each AO as processing one event to completion before accepting its next event. <a class="supref" href="#ref-2">[2]</a> <a class="supref" href="#ref-4">[4]</a></p>
+<figure class="diagram"><svg viewBox="0 0 780 238" role="img" aria-labelledby="diagtitle diagdesc"><title id="diagtitle">Event-driven active object model</title><desc id="diagdesc">A sensor sends immutable events to a fixed-capacity queue. The active object consumes one event at a time and executes a hierarchical state machine. A priority scheduler determines when the active object runs.</desc><defs><marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0 L9 3 L0 6 Z" fill="#08747b"/></marker></defs><rect x="16" y="65" width="150" height="89" rx="14" fill="#d9f2ee" stroke="#0c7b74" stroke-width="2"/><text x="91" y="97" text-anchor="middle" font-size="16" font-weight="750" fill="#174252">Sensor / ISR</text><text x="91" y="122" text-anchor="middle" font-size="12" fill="#174252">emit typed event</text><line x1="167" y1="110" x2="208" y2="110" stroke="#08747b" stroke-width="3" marker-end="url(#arr)"/><rect x="219" y="65" width="166" height="89" rx="14" fill="#fff0d9" stroke="#be7935" stroke-width="2"/><text x="302" y="92" text-anchor="middle" font-size="16" font-weight="750" fill="#73481d">Bounded queue</text><g fill="#cf7f29"><rect x="246" y="105" width="22" height="27" rx="4"/><rect x="274" y="105" width="22" height="27" rx="4"/><rect x="302" y="105" width="22" height="27" rx="4"/><rect x="330" y="105" width="22" height="27" rx="4"/></g><line x1="386" y1="110" x2="429" y2="110" stroke="#08747b" stroke-width="3" marker-end="url(#arr)"/><rect x="442" y="37" width="321" height="143" rx="14" fill="#dfebfb" stroke="#286293" stroke-width="2"/><text x="602" y="63" text-anchor="middle" font-size="16" font-weight="750" fill="#183e68">QActive: one event at a time</text><rect x="471" y="84" width="121" height="67" rx="12" fill="#fff" stroke="#357095"/><rect x="612" y="84" width="119" height="67" rx="12" fill="#fff" stroke="#357095"/><text x="532" y="108" text-anchor="middle" font-size="14" font-weight="700" fill="#193e61">QHsm state</text><text x="532" y="126" text-anchor="middle" font-size="12" fill="#193e61">operational</text><text x="672" y="109" text-anchor="middle" font-size="13" font-weight="700" fill="#193e61">child state</text><text x="672" y="127" text-anchor="middle" font-size="12" fill="#193e61">armed / safe</text><line x1="595" y1="117" x2="608" y2="117" stroke="#08747b" stroke-width="2" marker-end="url(#arr)"/><text x="395" y="214" text-anchor="middle" font-size="14" fill="#4f6575">QV / QK scheduler chooses when the next queued event is dispatched</text></svg><figcaption>Conceptual diagram; this is an explanation, not a claim about any current RISCue implementation.</figcaption></figure>
+<h3>Determinism is a budget, not a magic property</h3><p>With a fixed event queue and correctly sized fixed-block event pools, memory consumption is bounded. Scheduling can be analyzed when event-handler execution times, priorities, arrival bursts, interrupt latencies and queue overflow policies are measured. <strong>The framework does not automatically prove worst-case execution times or make shared peripherals race-free.</strong> Its documentation contrasts fixed-block event pools with general-purpose heaps. <a class="supref" href="#ref-5">[5]</a></p>
+<h3>Hierarchy removes repeated transitions</h3><p>A shared <em>operational</em> superstate can handle <code>FAULT_SIG</code> once for both <em>disarmed</em> and <em>armed</em> children. A transition to <em>fault</em> exits the current child. After reset, the initial substate is re-entered. The example below makes those semantics explicit. <a class="supref" href="#ref-2">[2]</a></p>
+</section>
+<section id="real-use" class="card"><h2>Where it is really used—and what has not been verified</h2>
+<div class="table-wrap"><table><thead><tr><th>Concrete evidence</th><th>Status</th><th>What it proves</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/QuantumLeaps/qpcpp-examples/tree/main/arm-cm/blinky_nucleo-u545re">Blinky for STM32 NUCLEO-U545RE</a></td><td><span class="check">Maintainer sample</span></td><td>A published board-specific application, not an independent production deployment.</td></tr>
+<tr><td><a href="https://github.com/QuantumLeaps/qpcpp-examples/tree/main/arm-cm/dpp_nucleo-u545re">Dining Philosophers for STM32 NUCLEO-U545RE</a></td><td><span class="check">Maintainer sample</span></td><td>A documented demonstration of interacting active objects and resource arbitration.</td></tr>
+<tr><td><a href="https://github.com/QuantumLeaps/qpcpp/tree/master/ports/zephyr">Zephyr integration directory</a> and <a href="https://github.com/QuantumLeaps/qpcpp/tree/master/ports/freertos">FreeRTOS port</a></td><td><span class="check">Source-tree integration</span></td><td>QP/C++ ships these port directories; port presence alone does not demonstrate widespread adoption.</td></tr>
+<tr><td>NASA mission software, GRACE-C, RISCue</td><td><span class="warn">No adoption claim</span></td><td>We found no primary-source evidence of QP/C++ being deployed in those named systems. Applications below are proposals.</td></tr>
+</tbody></table></div>
+<p>The QP/C++ repository's README directs new users to Blinky and Dining Philosophers and to running an unmodified known-good board example before porting. That is unusually sound advice for real-time embedded integration. <a class="supref" href="#ref-1">[1]</a> <a class="supref" href="#ref-7">[7]</a></p>
+</section>
+<section id="code" class="card"><h2>A practical C++ example: a faultable puck gate</h2>
+<p>Start with a <strong>passive HSM</strong>, not threads. It implements a tiny safety gate: <em>disarmed → armed → fault</em>, with a common operational parent catching faults. A simulated shot only increments the counter while armed; <em>reset</em> returns to disarmed. This is a hypothetical training controller, not an approved safety interlock or deployed hockey product.</p>
+<p>The declarations, <code>Q_STATE_DECL</code>/<code>Q_STATE_DEF</code> wrappers, <code>QP::QEvt</code> constructor, and <code>QHsm::init/dispatch</code> calls were compared against upstream QP/C++ 8.1.x headers and reference documentation. The code needs a configured QP/C++ port and linked framework; it is <strong>not</strong> freestanding C++. <a class="supref" href="#ref-2">[2]</a> <a class="supref" href="#ref-11">[11]</a></p>
+<div class="code-head"><span>C++20 consumer · QP/C++ 8.1.x model</span><span>Integration-dependent</span></div><pre><code>// QP/C++ 8.1.x: passive HSM, no scheduler or heap needed by this model.
+// Compile/link only in a configured QP/C++ project with a matching port.
+#include "qpcpp.hpp"
+#include &lt;cstdint&gt;
+
+// QP reserves signal numbers 0..3 for lifecycle actions.
+enum GateSignal : QP::QSignal {
+    ARM_SIG = QP::Q_USER_SIG,
+    FIRE_SIG,
+    FAULT_SIG,
+    RESET_SIG
+};
+
+class PuckGate final : public QP::QHsm {
+public:
+    PuckGate() noexcept : QHsm(Q_STATE_CAST(&amp;PuckGate::initial)) {}
+    [[nodiscard]] std::uint32_t shots() const noexcept { return shots_; }
+
+private:
+    std::uint32_t shots_{0U};
+    Q_STATE_DECL(initial);
+    Q_STATE_DECL(operational); // composite parent
+    Q_STATE_DECL(disarmed);    // child of operational
+    Q_STATE_DECL(armed);       // child of operational
+    Q_STATE_DECL(fault);       // sibling of operational
+};
+
+Q_STATE_DEF(PuckGate, initial) {
+    Q_UNUSED_PAR(e);
+    return tran(&amp;operational);
+}
+Q_STATE_DEF(PuckGate, operational) {
+    switch (e-&gt;sig) {
+        case Q_INIT_SIG: return tran(&amp;disarmed);
+        case FAULT_SIG:  return tran(&amp;fault); // works from either child
+        default:         return super(&amp;QP::QHsm::top);
+    }
+}
+Q_STATE_DEF(PuckGate, disarmed) {
+    switch (e-&gt;sig) {
+        case ARM_SIG: return tran(&amp;armed);
+        default:      return super(&amp;operational);
+    }
+}
+Q_STATE_DEF(PuckGate, armed) {
+    switch (e-&gt;sig) {
+        case FIRE_SIG: ++shots_; return Q_HANDLED();
+        default:       return super(&amp;operational);
+    }
+}
+Q_STATE_DEF(PuckGate, fault) {
+    switch (e-&gt;sig) {
+        case RESET_SIG: return tran(&amp;operational); // re-enters disarmed
+        default:        return super(&amp;QP::QHsm::top);
+    }
+}
+
+int main() {
+    PuckGate gate;
+    gate.init(0U); // top-level initial transition; no RTOS required
+    QP::QEvt const arm{ARM_SIG};
+    QP::QEvt const fire{FIRE_SIG};
+    QP::QEvt const fault{FAULT_SIG};
+    QP::QEvt const reset{RESET_SIG};
+    gate.dispatch(&amp;fire, 0U);  // disarmed: ignored
+    gate.dispatch(&amp;arm, 0U);   // armed
+    gate.dispatch(&amp;fire, 0U);  // shots = 1
+    gate.dispatch(&amp;fault, 0U); // fault, parent catches FAULT_SIG
+    gate.dispatch(&amp;fire, 0U);  // ignored while faulted
+    gate.dispatch(&amp;reset, 0U); // reset -&gt; operational -&gt; disarmed
+    return gate.shots() == 1U ? 0 : 1;
+}</code></pre>
+<div class="callout good"><strong>Expected model test</strong>Return code <code>0</code> means only the single shot made while armed was counted. The unarmed/faulted FIRE events must be ignored. This is a logic-level model test, not certification, timing proof or a complete QF application.</div>
+<h3>From passive model to an active object</h3><p>QP's <code>QActive</code> adds a private event queue and scheduling. The following shows the essential architectural change; it intentionally omits full state handlers, startup callbacks, BSP and event producer so nobody mistakes it for a runnable firmware image. The <code>QEvtPtr</code> queue type is from the current upstream headers, which differ from some older API examples. <a class="supref" href="#ref-3">[3]</a> <a class="supref" href="#ref-11">[11]</a></p>
+<div class="code-head"><span>QActive startup shape</span><span>Illustrative / partial</span></div><pre><code>// Transition to an ACTIVE object after verifying the passive HSM.
+// This is an integration sketch, not a complete BSP/main program.
+class PuckGateAO final : public QP::QActive {
+public:
+    PuckGateAO() : QActive(Q_STATE_CAST(&amp;PuckGateAO::initial)) {}
+private:
+    Q_STATE_DECL(initial);
+    Q_STATE_DECL(disarmed);
+    Q_STATE_DECL(armed);
+};
+// In application startup, with an appropriate QV/QK/RTOS port:
+static PuckGateAO gate;
+static QP::QEvtPtr gateQueue[8]; // bounded queue: capacity is explicit
+QP::QF::init();
+gate.start(1U, gateQueue, Q_DIM(gateQueue), nullptr, 0U);
+// Define state handlers, BSP callbacks and scheduler startup as documented.
+// Never assume full queues are impossible: design a POST/POST_X policy.</code></pre>
+<p>For strictly allocation-free operation, keep handlers free of <code>new</code>, avoid unbounded operations, define fixed queue and stack budgets, and use immutable static events or explicitly provisioned fixed-block pools. A pool is <em>bounded allocation</em>, not literally “never allocates”—important when writing requirements.</p>
+</section>
+<section id="sandbox" class="card"><h2>Play with the event sequence</h2><p>Press an event and inspect how the state changes. This small interactive illustration uses only the JavaScript embedded in this HTML file: it is a <strong>behavioral teaching model, not the QP/C++ runtime</strong>. It should behave like the C++ example for these four user events.</p>
+<div class="sim"><div class="sim-output" aria-live="polite" aria-atomic="true"><span class="muted">Current state</span> <span id="stateName" class="state-name">Disarmed</span> <span id="shotCount" class="status">Shots: 0</span></div>
+<div role="group" aria-label="Send an event"><button type="button" data-signal="arm">ARM</button><button type="button" data-signal="fire">FIRE</button><button type="button" data-signal="fault">FAULT</button><button type="button" data-signal="reset">RESET</button><button type="button" data-signal="clear" class="secondary">RESTART</button></div>
+<p id="lastResult" class="status">System just started. ARM enables FIRE; FAULT trips from any operational child.</p><ol id="eventLog" class="event-log" aria-label="Event log"><li>Initial → Operational → Disarmed</li></ol></div>
+<h3>Suggested test sequences</h3><ol><li><strong>FIRE, ARM, FIRE:</strong> only the final FIRE counts.</li><li><strong>ARM, FAULT, FIRE:</strong> shots stay unchanged; fault dominates.</li><li><strong>RESET while faulted, then FIRE:</strong> still disarmed; must ARM again.</li></ol>
+</section>
+<section id="integration" class="card"><h2>Why this matters for Jeff's projects</h2>
+<div class="table-wrap"><table><thead><tr><th>Project</th><th>Credible experiment</th><th>Acceptance criteria</th></tr></thead><tbody>
+<tr><td><strong>RISCue RTOS</strong></td><td>Run two bounded AOs (timer/sensor and command/control) on host POSIX/QV first; then evaluate an RTOS adaptation or port for RV32 with explicit ISR and critical-section interfaces.</td><td>No unbounded heap after initialization; queue fill/overflow tests; timestamped worst-case event processing; measured ISR-to-AO wakeup; cross-core assumptions documented.</td></tr>
+<tr><td><strong>VeloSim</strong></td><td>Use a deterministic message scheduler and HSM stimulus actors in a testbench; compare the event trace with the single-thread reference.</td><td>Repeatable event order for a fixed seed and priority policy; no deadlocks or lost events when queues saturate.</td></tr>
+<tr><td><strong>SharpTestBench / FuzzForge</strong></td><td>Model protocol controllers as stateful actors and fuzz legal/illegal event sequences.</td><td>Trace every transition; distinguish dropped, deferred, rejected and handled events; verify recovery after faults.</td></tr>
+<tr><td><strong>SharpContracts / requirements</strong></td><td>Define requirements for queue capacities, ownership, scheduling, and rejection behavior. Map them to tests and model transitions using your traceability vocabulary.</td><td>Every event transition links to a unique requirement and executable test; no claim of verification merely because a diagram exists.</td></tr>
+<tr><td><strong>.NET 10 Native AOT tools</strong></td><td>Build a strongly typed host-side event-log viewer in C#; serialize versioned event records from firmware/simulation.</td><td>Deterministic decode of fixture logs, schema evolution tests, and compatibility without binding the C++ framework into .NET.</td></tr>
+</tbody></table></div>
+<div class="callout"><strong>RISC-V port reality check</strong>The upstream CMake guide lists <code>riscv</code> as a selectable port value, but the public repository's current <code>ports/</code> directory does <em>not</em> show a <code>riscv</code> subdirectory. Treat an RV32 RISCue port as work to scope, not an installed option. Confirm BSP, context-switch path (if needed), interrupt masking, tick source, ABI, scheduling policy, and separate-stack assumptions.</div>
+<h3>Suggested requirements to baseline</h3><p><code>RISCUE-AO-001</code> AO-owned mutable state shall not be accessed directly by another AO. <code>RISCUE-AO-002</code> Every queue shall have a compile-time capacity and documented overflow policy. <code>RISCUE-AO-003</code> Every event shall have a bounded run-to-completion budget on the target. <code>RISCUE-AO-004</code> Fault event handling shall be traceable to both state-transition tests and timing tests. These identifiers are <strong>proposed</strong> and are not claims about your existing specification.</p>
+<p>QP's own public requirements manual provides traceable IDs such as <a href="https://www.state-machine.com/qpcpp/srs-qp_ao.html">SRS_QP_REQ_000, _060 and _070</a>. That is a real example of requirements-to-design links, distinct from asserting that your repository already uses their system. <a class="supref" href="#ref-6">[6]</a></p>
+</section>
+<section id="build" class="card"><h2>CMake, Ninja, ports and an evaluation plan</h2><p>QP/C++ is a compiled library, not a single C++20 header. The maintained repository includes CMake integration documentation and platform ports. Its stated language baseline is C++17, so a C++20 compile is plausible but must be checked with your target flags, link mode, exception/RTTI policy, and static analyzers. <a class="supref" href="#ref-1">[1]</a> <a class="supref" href="#ref-8">[8]</a></p>
+<div class="code-head"><span>CMake / Ninja configuration concept</span><span>Not a complete build recipe</span></div><pre><code># Illustrative project excerpt, NOT a drop-in standalone CMakeLists.txt.
+# Use the version-matched import script / examples from the upstream SDK.
+set(QPCPP_SDK_PATH "${CMAKE_SOURCE_DIR}/vendor/qpcpp")
+# include(qpcpp_sdk_import)  # resolve SDK import script first
+# project(my_app LANGUAGES C CXX)
+set(QPCPP_CFG_KERNEL QV)      # built-in cooperative RTC kernel
+set(QPCPP_CFG_PORT posix)    # host experiment, not RISCue
+set(QPCPP_CFG_LIB_TYPE static)
+# include("${QPCPP_SDK_PATH}/qpcpp_sdk_init.cmake")
+# qpcpp_sdk_init()
+# target_link_libraries(my_app PRIVATE qpcpp)
+# Build once your chosen port, BSP and SDK setup actually configure:
+# cmake -S . -B build -G Ninja
+# cmake --build build</code></pre>
+<p>The maintainer's CMake guide has a larger SDK-import sequence and a port/configuration matrix. Start from a working upstream example rather than blindly pasting an isolated fragment; test with a pinned version and a host port before cross-compilation. The official example repo has several board-specific projects. <a class="supref" href="#ref-7">[7]</a> <a class="supref" href="#ref-8">[8]</a></p>
+<h3>Smallest useful validation experiment</h3><ol><li>Pin a QP/C++ release and record both the <em>source commit</em> and the documentation version; the public docs reviewed here report 8.1.5 while current source contains 8.1.6 identifiers.</li><li>Build an unmodified host sample with Ninja and record code/RAM sizes; only then add the passive <code>PuckGate</code> model.</li><li>Exercise all 4×4 state/event combinations, plus burst events at queue capacity and capacity+1. Record the selected <code>POST</code> versus <code>POST_X</code> failure policy.</li><li>Try a two-AO setup, instrument worst-case dispatch times, and model priority inversion, interrupt traffic, and starvation.</li><li>Evaluate RISCue integration with a tiny board support layer only after the host behavior and requirements are green.</li></ol>
+</section>
+<section id="tradeoffs" class="card"><h2>Tradeoffs you should not skip</h2>
+<div class="table-wrap"><table><thead><tr><th>Advantage</th><th>Cost / caveat</th></tr></thead><tbody>
+<tr><td>Single-owner state and run-to-completion behavior simplify many concurrency reviews.</td><td>Shared devices, DMA buffers, ISRs and global singletons still require explicit ownership and synchronization contracts.</td></tr>
+<tr><td>Hierarchical states avoid duplicated event logic.</td><td>Nested transitions, entry/exit ordering and history require tests; the real cost includes debugging generated/manual state code.</td></tr>
+<tr><td>Queue and event-pool storage can be fixed and preallocated.</td><td>Capacity exhaustion must be specified; event pool exhaustion, queue overflow and priority starvation are design faults, not framework impossibilities.</td></tr>
+<tr><td>QV cooperative kernel has a simple execution model; QK offers preemptive RTC.</td><td>Long handlers damage latency; preemptive scheduling increases timing complexity. QXK appears as a commercial Extras feature in current upstream distribution notes.</td></tr>
+<tr><td>Published architecture/requirements docs aid verification reviews.</td><td>Safety certification artifacts and complete trace/test tooling are not all included in the public GPL distribution.</td></tr>
+<tr><td>Native C++ framework aligns with embedded toolchains.</td><td>QP/C++ is not an automatic .NET Native AOT component or a zero-effort plug-in to RISCue.</td></tr>
+</tbody></table></div>
+</section>
+<section id="licensing" class="card"><h2>Licensing and integration constraints</h2>
+<p><strong>QP/C++ is dual licensed:</strong> <code>GPL-3.0-or-later</code> for GPL-compliant open-source distribution, or a separate Quantum Leaps commercial license for closed-source distribution. This is <strong>not MIT, BSD, or Apache-2.0</strong>, and it matters for any code you ship with RISCue or customer applications. Follow the publisher's conditions and obtain legal advice for distribution questions. <a class="supref" href="#ref-9">[9]</a> <a class="supref" href="#ref-11">[11]</a></p>
+<p>The publisher states that its commercial <strong>Extras</strong> include QS tracing, QXK dual-mode kernel, expanded static-analysis configuration and a trace-based QUTest coverage suite; do not assume every feature illustrated in older tutorials is present in the public code. The safety-oriented SafeQP and certification kits are commercial offerings, not inherited merely by embedding QP/C++. <a class="supref" href="#ref-1">[1]</a></p>
+<div class="callout"><strong>Practical decision gate</strong>Prototype the passive HSM and open-source QV/QK path in a suitable development setting. Before integrating into a redistributable proprietary product—or presenting full tracing/certification as available—review exact licenses, current packaging, availability, support and commercial terms.</div>
+</section>
+<section id="review" class="card"><h2>Technical review and evidence ledger</h2>
+<ul><li><strong>Primary sources:</strong> Framework repository, QHsm/QActive APIs, official architecture and requirements manuals, publisher examples, CMake guide and licensing terms.</li><li><strong>API review:</strong> Checked <code>QEvt(QSignal)</code>, signal numbering, <code>Q_STATE_DECL</code>/<code>Q_STATE_DEF</code>, <code>tran/super</code>, <code>init/dispatch</code> and <code>QEvtPtr</code> against upstream 8.1.x header text.</li><li><strong>Claims:</strong> STM32 demos are labeled publisher demos; RISCue/JPL project integration is explicitly a proposal, not verified adoption.</li><li><strong>Code:</strong> The C++ example has not been compiled/linked against QP because this environment could not fetch the full upstream source/dependencies from GitHub. Syntax/API comparison is not an integration test. The embedded teaching simulation is separately executable and can be tested without QP.</li><li><strong>Port check:</strong> CMake documentation's <code>riscv</code> value does not match the published <code>ports/</code> directory inspected on 26 October 2026; this caveat is retained rather than hidden.</li><li><strong>HTML:</strong> Single file, no fonts, images, scripts or CSS fetched externally; responsive layout, semantic headings, keyboard focus, text alternatives, reduced-motion setting and print layout. Primary-source links require an internet connection.</li></ul>
+<p class="print-note">Confidence: high for documented architecture and licensing; moderate for the uncompiled example's exact portability; intentionally unclaimed for production adoption and benchmark numbers.</p>
+</section>
+<section id="references" class="card"><h2>Primary sources</h2><p>All reference links go to the maintainer's documentation or source and were reviewed for this edition on <strong>26 October 2026</strong>. API docs showed version 8.1.5; source files showed later 8.1.6 identifiers. These version differences are recorded, not silently reconciled.</p>
+<ol class="refs">
+<li id="ref-1"><a href="https://github.com/QuantumLeaps/qpcpp">Quantum Leaps — QP/C++ repository and current README</a>. Architecture, examples, distribution and Extras. <span class="date">Maintainer source.</span></li>
+<li id="ref-2"><a href="https://www.state-machine.com/qpcpp/class_q_p_1_1_q_hsm.html">QHsm API reference</a>. State handlers, transitions and hierarchical semantics. <span class="date">Publisher API (8.1.5).</span></li>
+<li id="ref-3"><a href="https://www.state-machine.com/qpcpp/class_q_p_1_1_q_active.html">QActive API reference</a>. Start, queue storage, posting, event lifecycle. <span class="date">Publisher API (8.1.5).</span></li>
+<li id="ref-4"><a href="https://www.state-machine.com/qpcpp/sds-qp_struct.html">Structure viewpoint</a>. Active object threading and queue adaptation. <span class="date">Publisher design reference.</span></li>
+<li id="ref-5"><a href="https://www.state-machine.com/qpcpp/conc-qp.html">Conceptual model</a>. RTC processing, fixed-block event pools and ownership. <span class="date">Publisher design reference.</span></li>
+<li id="ref-6"><a href="https://www.state-machine.com/qpcpp/srs-qp_ao.html">QP/C++ AO software requirements</a>. SRS_QP_REQ_000, _060, _070, traceability. <span class="date">Publisher specification.</span></li>
+<li id="ref-7"><a href="https://github.com/QuantumLeaps/qpcpp-examples/tree/main/arm-cm">Official example tree for Cortex-M targets</a>. Blinky, DPP and other demos. <span class="date">Maintainer sample code.</span></li>
+<li id="ref-8"><a href="https://github.com/QuantumLeaps/qpcpp/blob/master/cmakeSupport.md">QP/C++ CMake support guide</a>. SDK import, kernels, ports and build choices. <span class="date">Maintainer guide.</span></li>
+<li id="ref-9"><a href="https://www.state-machine.com/licensing">Quantum Leaps licensing</a>. GPLv3/commercial dual licensing, pricing and conditions. <span class="date">Publisher licensing.</span></li>
+<li id="ref-10"><a href="https://www.state-machine.com/qpcpp/sas-qp_res.html">QP/C++ resource viewpoint</a>. Event pools, memory responsibilities and bounds. <span class="date">Publisher resource architecture.</span></li>
+<li id="ref-11"><a href="https://github.com/QuantumLeaps/qpcpp/blob/master/include/qp.hpp">Upstream C++ public header</a>. Exact 8.1.x state and event types/macros. <span class="date">Maintainer source header.</span></li>
+<li id="ref-12"><a href="https://github.com/QuantumLeaps/qpcpp/tree/master/ports">QP/C++ ports directory</a>. Verify actual available RTOS and architecture ports before committing to a target. <span class="date">Maintainer source tree.</span></li>
+</ol></section>
+</div></div></main>
+<footer>Daily engineering library study · Independent technical assessment · No endorsement or deployment claim.</footer>
+<script>
+(() => {
+  'use strict';
+  const stateEl = document.getElementById('stateName');
+  const shotEl = document.getElementById('shotCount');
+  const noteEl = document.getElementById('lastResult');
+  const logEl = document.getElementById('eventLog');
+  const captions = { disarmed: 'Disarmed', armed: 'Armed', fault: 'Fault' };
+  let state = 'disarmed';
+  let shots = 0;
+  function render(description, eventName) {
+    stateEl.textContent = captions[state];
+    shotEl.textContent = 'Shots: ' + shots;
+    noteEl.textContent = description;
+    const line = document.createElement('li');
+    line.textContent = eventName + ' → ' + captions[state] + ', shots=' + shots + ' (' + description + ')';
+    logEl.appendChild(line);
+  }
+  function handle(signal) {
+    if (signal === 'clear') {
+      state = 'disarmed'; shots = 0; logEl.replaceChildren();
+      render('Restarted at operational/disarmed.', 'RESTART'); return;
+    }
+    let description = 'Ignored in current state.';
+    if (signal === 'fault' && state !== 'fault') {
+      state = 'fault'; description = 'Handled by operational superstate.';
+    } else if (state === 'disarmed' && signal === 'arm') {
+      state = 'armed'; description = 'Transition: disarmed → armed.';
+    } else if (state === 'armed' && signal === 'fire') {
+      shots += 1; description = 'FIRE accepted while armed.';
+    } else if (state === 'fault' && signal === 'reset') {
+      state = 'disarmed'; description = 'Reset to operational; initial child disarmed.';
+    }
+    render(description, signal.toUpperCase());
+  }
+  document.querySelectorAll('button[data-signal]').forEach(button => {
+    button.addEventListener('click', () => handle(button.dataset.signal));
+  });
+})();
+</script>
+</body></html>
