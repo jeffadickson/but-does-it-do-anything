@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="A hands-on hockey geometry adventure for curious nine-year-olds: move a shooter, challenge a goalie, and discover why angles matter.">
+<title>Can a Goalie Make the Net Disappear? — DeepDivesKids</title>
+<style>
+:root { --ink:#14273c; --muted:#52647a; --midnight:#102341; --navy:#173a69; --blue:#2865a4; --teal:#12877f; --coral:#e65756; --gold:#f8c765; --ice:#eaf7fc; --paper:#f8faf8; --white:#fff; --line:#dbe5ea; --ring:#f8c765; --radius:22px; }
+*, *::before, *::after { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { margin:0; background:var(--paper); color:var(--ink); font:17px/1.72 system-ui,-apple-system,"Segoe UI",sans-serif; }
+a { color:#125c96; text-underline-offset:.18em; }
+a:hover { color:#093e67; }
+a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible { outline:3px solid #b86c07; outline-offset:4px; }
+.skip-link { position:absolute; transform:translateY(-160%); left:12px; top:12px; z-index:10; padding:12px 18px; background:white; border-radius:12px; }
+.skip-link:focus { transform:none; }
+h1,h2,h3 { line-height:1.17; letter-spacing:-.035em; }
+h1 { font-size:clamp(2.65rem,6.4vw,5.3rem); margin:.3em 0 .3em; max-width:850px; }
+h2 { font-size:clamp(1.6rem,3vw,2.5rem); margin:0 0 .7em; }
+h3 { font-size:1.28rem; margin:.3em 0; }
+p { margin:.55rem 0 1rem; }
+.container { width:min(1150px,calc(100% - 42px)); margin-inline:auto; }
+.hero { background:radial-gradient(ellipse 72% 160% at 82% -32%,#37628c 0%,transparent 68%),linear-gradient(129deg,#102341 14%,#143454 58%,#1b4b62 100%); color:white; overflow:hidden; position:relative; }
+.hero::after { content:""; width:580px; height:580px; border:2px solid #ffffff14; border-radius:50%; position:absolute; right:-265px; top:-180px; box-shadow:0 0 0 62px #ffffff0b,0 0 0 128px #ffffff06; pointer-events:none; }
+.hero-inner { position:relative; z-index:1; padding:65px 0 66px; display:grid; grid-template-columns:minmax(0,1.6fr) minmax(240px,.75fr); align-items:center; gap:20px; }
+.kicker { font-size:.77rem; text-transform:uppercase; letter-spacing:.15em; font-weight:850; color:var(--gold); }
+.hero-lede { font-size:1.19rem; line-height:1.6; max-width:690px; color:#e5f4fb; }
+.hero-meta { display:flex; flex-wrap:wrap; align-items:center; gap:9px; margin-top:22px; }
+.hero-meta span { display:inline-block; border:1px solid #ffffff57; border-radius:40px; padding:5px 12px; font-size:.82rem; color:#eef6ff; }
+.hero-art { width:min(100%,315px); justify-self:center; aspect-ratio:1; background:linear-gradient(145deg,#f5fbff,#c8e9f7); border-radius:50%; display:grid; place-items:center; box-shadow:0 24px 65px #0004,inset 0 0 0 9px #ffffff62; position:relative; transform:rotate(7deg); }
+.hero-art::before,.hero-art::after { content:""; position:absolute; border-radius:50%; width:73%; height:73%; border:2px dashed #3776a340; }
+.hero-art::after { width:55%; height:55%; border-style:solid; border-color:#b8d8ec; }
+.hero-art svg { width:80%; position:relative; z-index:1; }
+.callout { margin-top:23px; border-left:5px solid var(--gold); padding:13px 18px; background:#ffffff17; color:#f5f9fa; border-radius:0 13px 13px 0; max-width:670px; }
+.callout strong { color:var(--gold); }
+main { padding-bottom:80px; }
+.contents { margin:26px auto 34px; background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:24px 27px 28px; box-shadow:0 8px 30px #122c4610; }
+.contents h2 { margin-bottom:.6em; font-size:1.34rem; }
+.contents ol { columns:3; column-gap:38px; margin:0; padding-left:26px; }
+.contents li { break-inside:avoid; padding:4px 0 4px 4px; }
+.section { margin:34px 0; scroll-margin-top:18px; }
+.section-top { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+.number { display:grid; place-items:center; font-size:.83rem; font-weight:850; letter-spacing:.04em; width:38px; height:38px; flex:0 0 38px; background:var(--navy); color:white; border-radius:12px; }
+.panel { padding:29px 34px; background:#fff; border:1px solid var(--line); border-radius:var(--radius); box-shadow:0 5px 22px #152e4210; }
+.lead { font-size:1.17rem; color:#263f50; }
+.two-up { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.three-up { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:15px; }
+.tile { border-radius:17px; background:#f0f8fa; padding:20px 22px; border:1px solid #d8eaf0; }
+.tile:nth-child(2) { background:#fff9e9; border-color:#f1e6c7; }
+.tile:nth-child(3) { background:#fbf0f1; border-color:#f1dadc; }
+.tile .symbol { font-size:1.8rem; line-height:1.2; display:block; margin-bottom:7px; }
+.tile p { font-size:.95rem; margin-bottom:0; }
+.ribbon { border-radius:19px; padding:20px 25px; background:#e8f5f3; border:1px solid #c6e4e0; color:#184d4c; }
+.ribbon strong { color:#0c625b; }
+.badge { display:inline-block; background:#e9f4ed; color:#14564d; padding:4px 10px; font-size:.74rem; text-transform:uppercase; letter-spacing:.09em; font-weight:850; border-radius:7px; margin-bottom:8px; }
+.badge.ideas { background:#fff0d3; color:#714907; }
+.badge.limits { background:#f9eaec; color:#83343b; }
+.lab { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(255px,.95fr); gap:19px; align-items:start; }
+.rink-shell { position:relative; background:linear-gradient(180deg,#f9fdff,#e9f7fc); border:1px solid #c7e1eb; border-radius:21px; padding:14px; box-shadow:inset 0 0 35px #d3eaf64d; }
+.rink-shell svg { display:block; width:100%; height:auto; border-radius:16px; }
+.rink-note { color:#4b6071; font-size:.81rem; margin:4px 8px 0; }
+.control-card { background:#f8fafb; border:1px solid #dce7ef; border-radius:19px; padding:20px; }
+.control-card fieldset { padding:0; margin:0; border:0; }
+.control-card legend { font-weight:850; font-size:1.16rem; margin-bottom:13px; }
+.slider { padding:5px 0 13px; }
+.slider label { font-size:.87rem; font-weight:750; color:#294657; display:flex; justify-content:space-between; gap:8px; }
+.slider output { font-variant-numeric:tabular-nums; font-weight:900; color:#116a68; }
+input[type=range] { accent-color:#0c7976; width:100%; min-height:30px; cursor:pointer; margin-top:6px; }
+.metrics { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:14px; }
+.metric { border:1px solid #d7e4ec; background:white; border-radius:13px; padding:12px; }
+.metric strong { display:block; font-size:1.48rem; line-height:1.15; color:var(--navy); font-variant-numeric:tabular-nums; }
+.metric span { display:block; font-size:.76rem; line-height:1.3; margin-top:5px; color:#506679; }
+button { font:inherit; cursor:pointer; border-radius:12px; border:1px solid transparent; font-weight:750; padding:9px 15px; transition:transform .12s ease,background .2s ease; }
+button:active { transform:translateY(1px); }
+.preset-row { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 4px; }
+.preset { background:#e4f1f7; color:#204b70; border-color:#c6deed; font-size:.86rem; }
+.preset:hover { background:#d0e7f1; }
+.shot-panel { margin-top:19px; background:linear-gradient(90deg,#173960,#1d5271); color:#fff; border-radius:19px; padding:22px 26px; }
+.shot-panel h3 { color:#fff; }
+.shot-controls { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:10px 0 8px; }
+.shot-controls label { font-weight:700; }
+.shot-controls select { border:2px solid #b9d7e6; border-radius:9px; padding:8px; font:inherit; min-width:176px; color:#17354c; background:#fff; }
+.go { background:#ffce70; border-color:#f8dc96; color:#193251; }
+.go:hover { background:#ffe09c; }
+.feedback { min-height:2em; font-weight:700; margin-top:7px; color:#e8faff; }
+.shot-small { color:#d5e9f5; font-size:.81rem; margin:0; }
+.formula { background:#11283e; color:#ecf8ff; border-radius:17px; padding:21px 24px; font:clamp(.84rem,2vw,1rem)/1.7 ui-monospace,"Cascadia Code",Consolas,monospace; overflow:auto; white-space:pre; }
+.math-punch { display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin:16px 0; }
+.math-punch strong { color:var(--teal); font-size:1.4rem; }
+.experiment { counter-reset:mission; margin:0; padding:0; list-style:none; }
+.experiment li { counter-increment:mission; position:relative; padding:13px 16px 13px 59px; margin-bottom:12px; border:1px solid #dce9eb; border-radius:13px; background:#f7fbfb; }
+.experiment li::before { content:counter(mission); position:absolute; left:14px; top:14px; width:29px; height:29px; display:grid; place-items:center; background:#156d77; color:white; border-radius:50%; font-weight:800; }
+.code-head { display:flex; align-items:center; justify-content:space-between; gap:10px; background:#18344d; border-radius:17px 17px 0 0; color:#e5f3ff; padding:9px 18px; font-size:.8rem; }
+pre { margin:0; background:#0c2135; color:#e4f0f9; padding:19px 22px; overflow:auto; border-radius:0 0 17px 17px; font:14px/1.7 ui-monospace,Consolas,"Cascadia Code",monospace; tab-size:2; }
+code { overflow-wrap:normal; }
+.source-list { list-style:none; padding:0; margin:0; }
+.source-list li { padding:16px 0; border-bottom:1px solid var(--line); }
+.source-list li:last-child { border-bottom:0; }
+.source-list strong { display:block; margin-bottom:4px; }
+.source-list span { color:var(--muted); font-size:.86rem; display:block; margin-top:4px; }
+.source-list a { overflow-wrap:anywhere; }
+.quiz { display:flex; gap:12px; flex-wrap:wrap; margin:12px 0; }
+.quiz button { background:#e7f2f8; color:#154c72; border-color:#c2d9e7; }
+.quiz button:hover { background:#d6ebf5; }
+.quiz-result { min-height:26px; font-weight:700; color:#165b56; }
+footer { padding:34px 0; color:#657485; border-top:1px solid var(--line); font-size:.83rem; }
+@media(max-width:900px) { .hero-inner { grid-template-columns:1fr; } .hero-art { display:none; } .contents ol { columns:2; } .lab { grid-template-columns:1fr; } .control-card { display:grid; grid-template-columns:1fr 1fr; gap:18px; } .control-card fieldset { grid-column:1; } .control-card .metric-area { grid-column:2; } }
+@media(max-width:650px) { body { font-size:16px; line-height:1.65; } .container { width:min(100% - 24px,1150px); } .hero-inner { padding:42px 0; } .hero h1 { font-size:clamp(2.25rem,10vw,3.4rem); } .panel { padding:21px 17px; } .contents { padding:19px 18px; } .contents ol { columns:1; } .two-up,.three-up { grid-template-columns:1fr; } .control-card { display:block; } .shot-panel { padding:20px 17px; } .metric strong { font-size:1.28rem; } .hero-lede { font-size:1.05rem; } }
+@media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } button { transition:none; } }
+@media print { .hero { background:white!important; color:#132739; } .hero-lede { color:#132739; } .hero .kicker,.hero-meta span { color:#132739; border-color:#ccc; } .hero-art { display:none; } body { background:white; font-size:11pt; } .panel,.contents { box-shadow:none; break-inside:avoid; } .lab { display:block; } .control-card { margin-top:15px; } button,.shot-panel,select { display:none; } .section { margin:20px 0; } }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to the lesson</a>
+<header class="hero">
+ <div class="container hero-inner">
+  <div>
+   <div class="kicker">DeepDivesKids · Edition 13 · October 27, 2026</div>
+   <h1>Can a goalie make the net disappear?</h1>
+   <p class="hero-lede">One skater. One goalie. Two goalposts. And a surprisingly powerful secret called <strong>geometry</strong>. Discover why where you stand changes everything.</p>
+   <div class="hero-meta"><span>🏒 Hockey + mathematics</span><span>🎮 Playable offline lab</span><span>⏱ 15–25 minutes</span><span>Ages 9+</span></div>
+   <div class="callout"><strong>Today's mystery:</strong> The goal never changes size. So why does it sometimes look much harder to hit?</div>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+   <svg viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">
+    <path d="M30 178 L224 178" stroke="#cc505b" stroke-width="6" stroke-linecap="round"/>
+    <path d="M91 179 V127 Q130 102 169 127 V179" fill="#f1fdff" stroke="#dc565c" stroke-width="9" stroke-linejoin="round"/>
+    <path d="M97 135 L163 135 M100 147 L160 147 M105 159 L155 159" stroke="#a4cfe4" stroke-width="2"/>
+    <path d="M130 62 L92 176 L168 176 Z" fill="#f6cb6455" stroke="#f3bd48" stroke-width="2" stroke-dasharray="5 5"/>
+    <circle cx="130" cy="62" r="25" fill="#173a69" stroke="#f8cc73" stroke-width="5"/><text x="130" y="68" font-size="18" fill="#fff" text-anchor="middle" font-weight="800">28</text>
+    <circle cx="130" cy="160" r="22" fill="#1b7e83" stroke="white" stroke-width="4"/><text x="130" y="166" font-size="18" fill="white" text-anchor="middle" font-weight="800">66</text>
+    <path d="M55 211 Q130 236 205 211" fill="none" stroke="#449fbe" stroke-width="5" stroke-linecap="round"/>
+   </svg>
+  </div>
+ </div>
+</header>
+<main id="main" class="container">
+ <nav class="contents" aria-label="Table of contents">
+  <h2>📍 Your adventure map</h2>
+  <ol>
+   <li><a href="#mystery">The mystery on the ice</a></li>
+   <li><a href="#angle">What is an angle?</a></li>
+   <li><a href="#real">What real coaches know</a></li>
+   <li><a href="#lab">The interactive rink</a></li>
+   <li><a href="#missions">Three science missions</a></li>
+   <li><a href="#at-home">Try it without a computer</a></li>
+   <li><a href="#code">How the computer thinks</a></li>
+   <li><a href="#engineer">Connections to engineering</a></li>
+   <li><a href="#caveats">What this model gets wrong</a></li>
+   <li><a href="#sources">Sources and review</a></li>
+  </ol>
+ </nav>
+ <section class="section" id="mystery">
+  <div class="section-top"><span class="number">01</span><h2>The mystery on the ice</h2></div>
+  <div class="panel">
+   <p class="lead">Imagine skater <strong>#28</strong> racing toward the net. Goalie <strong>#66</strong> is ready. The red posts are exactly where they were a moment ago—but each player sees a different puzzle.</p>
+   <div class="two-up">
+    <div class="tile"><span class="symbol" aria-hidden="true">🏒</span><h3>For the skater</h3><p>Moving toward the <strong>middle</strong> of the rink usually makes more of the net available to aim at. Moving closer changes the view again.</p></div>
+    <div class="tile"><span class="symbol" aria-hidden="true">🥅</span><h3>For the goalie</h3><p>Staying <strong>on the puck's angle</strong> helps cover the net. Moving forward can look bigger to the shooter, but comes with risks.</p></div>
+   </div>
+   <p>Neither player needs to solve equations during a game. Their brains and practice help them make decisions—but a little geometry explains <em>why</em> those decisions work.</p>
+  </div>
+ </section>
+ <section class="section" id="angle">
+  <div class="section-top"><span class="number">02</span><h2>An angle is a slice of view</h2></div>
+  <div class="panel">
+   <p>Imagine two invisible laser lines. One runs from the puck to the <strong>left post</strong>; the other goes from the puck to the <strong>right post</strong>. The space between them is the <strong>visible goal angle</strong>.</p>
+   <div class="three-up">
+    <div class="tile"><span class="symbol" aria-hidden="true">↔️</span><h3>Move sideways</h3><p>From far toward the boards, the two posts appear closer together. Your slice of view gets narrower.</p></div>
+    <div class="tile"><span class="symbol" aria-hidden="true">🔍</span><h3>Move closer</h3><p>From the middle, the two posts spread farther apart in your view. Your slice gets wider.</p></div>
+    <div class="tile"><span class="symbol" aria-hidden="true">🧱</span><h3>Block a line</h3><p>A goalie between the puck and the goal can hide part of the opening. The better the alignment, the more of the goal they can cover.</p></div>
+   </div>
+   <div class="ribbon" style="margin-top:18px"><strong>Important distinction:</strong> The net is still six feet wide! We are talking about how <em>wide it appears</em> from the puck, not about stretching or shrinking the actual goal.</div>
+  </div>
+ </section>
+ <section class="section" id="real">
+  <div class="section-top"><span class="number">03</span><h2>Real hockey, real evidence</h2></div>
+  <div class="panel">
+   <div class="badge">Documented, not imagined</div>
+   <p><strong>Professional hockey analysts really study shot location and angle.</strong> A 2021 Seattle Kraken article explains that shots from nearer the middle generally offer shooters more of the net to target. It also explains why sealing the post helps against sharp-angle shots. <a href="https://www.nhl.com/kraken/news/seattle-kraken-analytics-with-alison-high-danger-chances-328378484" target="_blank" rel="noopener noreferrer">Read the Kraken analysis ↗</a></p>
+   <p><strong>Goalie coaches really practice staying square to the puck.</strong> A USA Hockey training article describes a shuffle drill that helps a goalie maintain a square position while moving sideways. <a href="https://www.usahockey.com/news_article/show/1035363-five-tips-for-adult-league-goalies" target="_blank" rel="noopener noreferrer">See USA Hockey's coaching tips ↗</a></p>
+   <p><strong>Positioning is not a single magic trick.</strong> An NHL report on goalie Linus Ullmark describes a small backward drift used to preserve mobility. Being too far out can make reacting to a sideways pass harder. <a href="https://www.nhl.com/news/unmasked-recoil-technique-helps-linus-ullmark-to-best-season-for-bosto-342605556" target="_blank" rel="noopener noreferrer">Read the NHL technique report ↗</a></p>
+   <div class="badge ideas">Our own invention</div>
+   <p>The computer game below is a <strong>new teaching model</strong>, not a game system used by the NHL, USA Hockey, or the coaches above. Its predictions are simple geometry experiments—not real scoring odds.</p>
+  </div>
+ </section>
+ <section class="section" id="lab">
+  <div class="section-top"><span class="number">04</span><h2>🎮 The goalie-angle laboratory</h2></div>
+  <div class="panel">
+   <p class="lead">Slide the controls or choose a challenge. Watch the two gold rays meet the net. The teal stripe on the goal line is the part hidden behind our <em>pretend</em> goalie barrier.</p>
+   <div class="lab">
+    <div class="rink-shell">
+     <svg id="rink" viewBox="0 0 720 500" role="img" aria-labelledby="rinkTitle rinkDescription">
+      <title id="rinkTitle">Overhead hockey rink geometry simulator</title>
+      <desc id="rinkDescription">A skater, goalie and six-foot goal seen from above. Controls change the shooter's position and the goalie's coverage. Numbers below describe the resulting angle.</desc>
+      <defs><pattern id="iceHatch" patternUnits="userSpaceOnUse" width="40" height="40"><path d="M0 40L40 0" stroke="#d4edf8" stroke-width="1" opacity=".55"/></pattern></defs>
+      <rect x="4" y="4" width="712" height="492" rx="24" fill="#e9f7fd"/>
+      <rect x="65" y="20" width="590" height="458" rx="48" fill="url(#iceHatch)" stroke="#527c9e" stroke-width="4"/>
+      <path d="M67 116H653" stroke="#6ba8cf" stroke-width="12" opacity=".42"/>
+      <path d="M67 116H653" stroke="#3e86bc" stroke-width="3" opacity=".75"/>
+      <g stroke="#dc7881" stroke-width="2" fill="none" opacity=".48"><circle cx="210" cy="243" r="63"/><circle cx="510" cy="243" r="63"/><circle cx="210" cy="243" r="5" fill="#dc7881"/><circle cx="510" cy="243" r="5" fill="#dc7881"/></g>
+      <path d="M65 438H655" stroke="#e77f7f" stroke-width="3"/>
+      <path d="M306 438 A54 54 0 0 1 414 438 Z" fill="#93dafa7c" stroke="#55afd6" stroke-width="3"/>
+      <polygon id="goalLane" points="360,275 333,438 387,438" fill="#f2be4f" opacity=".25"/>
+      <line id="leftRay" x1="360" y1="275" x2="333" y2="438" stroke="#c18f24" stroke-width="3" stroke-dasharray="10 5"/>
+      <line id="rightRay" x1="360" y1="275" x2="387" y2="438" stroke="#c18f24" stroke-width="3" stroke-dasharray="10 5"/>
+      <path d="M333 438v22h54v-22" fill="none" stroke="#dc5357" stroke-width="8" stroke-linejoin="round"/>
+      <path d="M339 459v-18 M348 459v-18 M357 459v-18 M366 459v-18 M375 459v-18 M384 459v-18" stroke="#bfdae6" stroke-width="2"/>
+      <line x1="333" y1="435" x2="387" y2="435" stroke="#fefefe" stroke-width="8"/>
+      <line id="coveredBar" x1="347" y1="435" x2="373" y2="435" stroke="#10a39b" stroke-width="9" stroke-linecap="butt"/>
+      <g id="goaliePiece" transform="translate(360 402)"><circle r="17" fill="#18646b" stroke="#fff" stroke-width="4"/><text y="5.5" text-anchor="middle" font-size="16" font-weight="900" fill="#fff">66</text></g>
+      <g id="shooterPiece" transform="translate(360 275)"><circle r="19" fill="#163963" stroke="#f6c56b" stroke-width="4"/><text y="6" text-anchor="middle" font-size="16" font-weight="900" fill="white">28</text><circle cx="20" cy="19" r="5" fill="#172b36" stroke="#fff" stroke-width="2"/></g>
+      <line id="shotLine" x1="0" y1="0" x2="0" y2="0" stroke="#e95362" stroke-width="4" stroke-linecap="round" opacity="0"/>
+      <circle id="flightPuck" cx="0" cy="0" r="7" fill="#162435" stroke="#fff" stroke-width="2" opacity="0"/>
+      <g fill="#426c87" font-size="17" font-weight="700"><text x="360" y="49" text-anchor="middle">TOWARD CENTER ICE ↑</text><text x="404" y="469">6 ft goal</text></g>
+      <g fill="#254965" font-size="13" font-weight="700"><text x="392" y="402">goalie</text><text x="394" y="284">skater</text></g>
+     </svg>
+     <p class="rink-note">Top view, not a regulation rink diagram. The player tokens are enlarged for readability. Gold = sight lines; teal = modeled covered goal mouth.</p>
+    </div>
+    <div class="control-card">
+     <fieldset>
+      <legend>Change the play</legend>
+      <div class="slider"><label for="side">Skater: left ↔ right <output id="sideValue" for="side">0 ft</output></label><input type="range" id="side" min="-22" max="22" step="1" value="0"></div>
+      <div class="slider"><label for="distance">Skater: distance from goal <output id="distanceValue" for="distance">24 ft</output></label><input type="range" id="distance" min="12" max="42" step="1" value="24"></div>
+      <div class="slider"><label for="depth">Goalie: distance off goal line <output id="depthValue" for="depth">4 ft</output></label><input type="range" id="depth" min="1" max="7" step="0.5" value="4"></div>
+      <div class="slider"><label for="offset">Goalie: sideways mistake <output id="offsetValue" for="offset">0 ft</output></label><input type="range" id="offset" min="-3" max="3" step="0.5" value="0"></div>
+     </fieldset>
+     <div class="metric-area">
+      <div class="metrics">
+       <div class="metric"><strong id="angleValue">14.3°</strong><span>goal's visible angle</span></div>
+       <div class="metric"><strong id="openValue">3.4 ft</strong><span>goal mouth not behind pretend barrier</span></div>
+      </div>
+      <div class="preset-row" aria-label="Example scenarios">
+       <button type="button" class="preset" data-preset="center">Center ice</button>
+       <button type="button" class="preset" data-preset="wing">Side boards</button>
+       <button type="button" class="preset" data-preset="close">In close</button>
+       <button type="button" class="preset" data-preset="off">Off angle!</button>
+      </div>
+      <p id="modelSummary" style="font-size:.86rem;color:#476173" aria-live="polite">The goalie is lined up with the puck.</p>
+     </div>
+    </div>
+   </div>
+   <div class="shot-panel">
+    <h3>🥅 Can skater #28 find an opening?</h3>
+    <p>Choose a target across the six-foot goal. Then try a shot against the model's pretend goalie barrier.</p>
+    <div class="shot-controls"><label for="target">Aim at:</label>
+     <select id="target"><option value="-2.6">Left corner</option><option value="0" selected>Middle</option><option value="2.6">Right corner</option></select>
+     <button type="button" class="go" id="shoot">Take the shot →</button>
+    </div>
+    <p class="feedback" id="shotResult" role="status" aria-live="polite">Choose a target and take a shot!</p>
+    <p class="shot-small">A "goal" here means the straight line misses a flat 2.2-foot-wide pretend goalie barrier. It does <em>not</em> predict a real save or a real goal.</p>
+   </div>
+  </div>
+ </section>
+ <section class="section" id="missions">
+  <div class="section-top"><span class="number">05</span><h2>Three science missions</h2></div>
+  <div class="panel">
+   <ol class="experiment">
+    <li><strong>The wing challenge:</strong> Tap <em>Center ice</em>. Remember the goal angle. Now tap <em>Side boards</em>. Did the angle get smaller even though the net is still six feet wide?</li>
+    <li><strong>The skater's shortcut:</strong> Compare <em>Center ice</em> to <em>In close</em>. What happened to the two gold rays? Why might the goalie need to react faster close up?</li>
+    <li><strong>The goalie's mistake:</strong> Set the goalie to four feet off the line, then move the <em>sideways mistake</em> slider. Can you find a new open corner? What if the goalie realigns?</li>
+   </ol>
+   <h3>Mini quiz: Which location usually gives the shooter a <em>wider</em> goal angle?</h3>
+   <div class="quiz"><button type="button" id="quizCenter">Same distance, center of ice</button><button type="button" id="quizBoards">Same distance, near the boards</button></div>
+   <p id="quizResult" class="quiz-result" role="status" aria-live="polite"></p>
+   <p><strong>Extra challenge:</strong> Find a position with a goal angle close to <strong>20 degrees</strong>. You are doing the same kind of <em>parameter sweep</em> that engineers use to explore designs!</p>
+  </div>
+ </section>
+ <section class="section" id="at-home">
+  <div class="section-top"><span class="number">06</span><h2>A real-world experiment</h2></div>
+  <div class="panel">
+   <p class="lead">You can demonstrate hockey geometry in a hallway with paper, tape, and a toy figure. No real puck or stick needed.</p>
+   <div class="two-up">
+    <div class="tile"><h3>Materials</h3><p>Two paper cups for goalposts, a coin for the puck, a small toy goalie, tape for markers, a ruler, and a sheet to record guesses.</p></div>
+    <div class="tile"><h3>Make your mini rink</h3><p>Place the cups six ruler inches apart. Set the coin 24 inches away, centered. Look from directly above the coin toward the goalposts.</p></div>
+   </div>
+   <ol>
+    <li>Move the coin to one side, keeping its distance from the goal roughly the same. Predict how the opening changes.</li>
+    <li>Move the coin closer to the middle of the goal and observe the angle between the two cups.</li>
+    <li>Put the toy goalie between the coin and cups. Shift it to one side. Can you see a larger gap on one side?</li>
+   </ol>
+   <p><strong>Scientist's notebook:</strong> Draw your two sight lines for each position. Say which result surprised you. Keep the experiment slow and safe—no hard shots indoors.</p>
+  </div>
+ </section>
+ <section class="section" id="code">
+  <div class="section-top"><span class="number">07</span><h2>How the computer finds the angle</h2></div>
+  <div class="panel">
+   <p>A computer can work out the angle between two lines using vectors. That sounds fancy, but a <em>vector</em> is just an arrow with a direction and length.</p>
+   <p>We place the middle of the goal at <strong>(0, 0)</strong>, the left post at <strong>(−3, 0)</strong>, and the right post at <strong>(3, 0)</strong>. The shooter is at <strong>(x, y)</strong>, measured in feet.</p>
+   <div class="code-head"><span>JavaScript · runs in your browser's console</span><span>No installation needed</span></div>
+<pre><code>// Two posts are six feet apart: -3 and +3.
+// x = sideways position, y = distance from goal.
+function goalAngleDegrees(x, y) {
+  const left  = { x: -3 - x, y: -y };
+  const right = { x:  3 - x, y: -y };
+
+  // Compare how much the two arrows turn apart.
+  const cross = left.x * right.y - left.y * right.x;
+  const dot   = left.x * right.x + left.y * right.y;
+  return Math.atan2(Math.abs(cross), dot) * 180 / Math.PI;
+}
+
+console.log(goalAngleDegrees(0, 24).toFixed(1));   // 14.3
+console.log(goalAngleDegrees(0, 12).toFixed(1));   // 28.1
+console.log(goalAngleDegrees(18, 24).toFixed(1));  // smaller
+</code></pre>
+   <div class="math-punch"><span>Think of it as</span><strong>2 arrows → 1 angle</strong></div>
+   <p>Try changing <code>24</code> to <code>12</code>. The shooter gets closer, and the angle grows. Change <code>x</code> from <code>0</code> to <code>18</code> while keeping <code>y</code> unchanged. The angle shrinks.</p>
+   <p><strong>How the goalie barrier is modeled:</strong> Draw imaginary straight lines from the puck through the left and right edges of a flat 2.2-foot-wide barrier in front of the net. Where those lines hit the goal line gives a blocked segment. This is <em>our toy model</em>, not an official rule about goalie size.</p>
+  </div>
+ </section>
+ <section class="section" id="engineer">
+  <div class="section-top"><span class="number">08</span><h2>From the hockey rink to engineering</h2></div>
+  <div class="panel">
+   <p class="lead">Engineers build little models like this to ask useful questions before trying something expensive or risky in real life.</p>
+   <div class="two-up">
+    <div class="tile"><span class="symbol" aria-hidden="true">🛰️</span><h3>Spacecraft pointing</h3><p>A spacecraft camera also has a field of view. Engineers calculate where a camera or sensor should point to see a target. The idea of sight lines connects to the work Dad does on space missions, but this hockey app is <strong>not</strong> NASA flight software.</p></div>
+    <div class="tile"><span class="symbol" aria-hidden="true">💻</span><h3>Software simulation</h3><p>Dad's projects, such as VeloSim and RISCue, explore how computers behave. Our game has inputs, a mathematical model, and outputs. Testing many positions is a small example of the careful simulation engineers do.</p></div>
+   </div>
+   <p><strong>For the goalie:</strong> find the right line to the puck. <strong>For the skater:</strong> look for a better angle. <strong>For the scientist:</strong> change one variable at a time and explain what happened.</p>
+   <p class="badge ideas">Suggested family project—not established adoption</p>
+   <p>Invent your own goalie robot on graph paper. Program it to move toward the sight line from the puck to the center of the net, then see how a sideways pass changes the problem. This is a proposed experiment, not a feature in Dad's repositories.</p>
+  </div>
+ </section>
+ <section class="section" id="caveats">
+  <div class="section-top"><span class="number">09</span><h2>What the simulation can't do</h2></div>
+  <div class="panel">
+   <div class="badge limits">Every model has limits</div>
+   <p>Our little model only watches the puck and the goalie <strong>from overhead</strong>. It imagines an unmoving, flat barrier for the goalie. Real saves also depend on shot height, skating speed, pads and gloves, reaction time, deception, deflections, rebounds, passes, and the goalie's ability to move.</p>
+   <div class="three-up">
+    <div class="tile"><h3>Not a save probability</h3><p>Our "open feet" number is horizontal geometry only. It does not mean a shot has that chance of scoring.</p></div>
+    <div class="tile"><h3>Not a coaching prescription</h3><p>Moving forward increases apparent coverage in this model, but a real goalie must stay balanced and ready for a pass.</p></div>
+    <div class="tile"><h3>Not a rink rulebook</h3><p>The picture is a diagram with simplified markings. A real rink and goal crease have many more exact measurements.</p></div>
+   </div>
+   <p style="margin-top:17px"><strong>Licensing and integration:</strong> This offline lesson uses original HTML, CSS, SVG, and plain JavaScript. It downloads no libraries, web fonts, images, or tracking scripts; there are no third-party software licenses to bundle. If you adapt the sample for a public project, decide on a license for your own code (MIT is one permissive option), and link back to the original hockey sources rather than copying their images or articles.</p>
+  </div>
+ </section>
+ <section class="section" id="sources">
+  <div class="section-top"><span class="number">10</span><h2>Source detective &amp; technical check</h2></div>
+  <div class="panel">
+   <p>Here are primary sources you can follow with an adult. The first three document <em>real</em> hockey practice and analysis. Our interactive model is an independent educational invention.</p>
+   <ol class="source-list">
+    <li><strong>Seattle Kraken / NHL — “Analytics with Alison: Digging into High-Danger Chances” (November 27, 2021).</strong><a href="https://www.nhl.com/kraken/news/seattle-kraken-analytics-with-alison-high-danger-chances-328378484" target="_blank" rel="noopener noreferrer">How distance and angle affect shot opportunities ↗</a><span>Primary evidence for why shot angle and center-ice position matter.</span></li>
+    <li><strong>USA Hockey — “Five Tips for Adult League Goalies” (2019).</strong><a href="https://www.usahockey.com/news_article/show/1035363-five-tips-for-adult-league-goalies" target="_blank" rel="noopener noreferrer">Teaching shuffle movements and staying square ↗</a><span>A real training suggestion, not a source for our toy coverage dimensions.</span></li>
+    <li><strong>NHL — “Unmasked: 'Recoil' technique helps Ullmark to best season for Bruins” (March 26, 2023).</strong><a href="https://www.nhl.com/news/unmasked-recoil-technique-helps-linus-ullmark-to-best-season-for-bosto-342605556" target="_blank" rel="noopener noreferrer">Why advancing into the crease isn't the only consideration ↗</a><span>Nuance about goalie mobility versus aggressive depth.</span></li>
+    <li><strong>USA Hockey — Goaltending Practice Plans.</strong><a href="https://www.usahockey.com/goaltendingplans" target="_blank" rel="noopener noreferrer">Beginner, intermediate, and advanced movement plans ↗</a><span>Official coaching resources; an adult can help select age-appropriate drills.</span></li>
+    <li><strong>NHL / New York Islanders — “Maven's Memories: Easter Epic Pt. 3” (2020).</strong><a href="https://www.nhl.com/islanders/news/maven-s-memories-easter-epic-pt-3-313767808" target="_blank" rel="noopener noreferrer">Description of a six-foot-wide, four-foot-high hockey goal ↗</a><span>Context for the net width used in our model; the simulator uses only the horizontal dimension.</span></li>
+   </ol>
+   <div class="ribbon" style="margin-top:22px"><strong>Review checklist:</strong> First-party links were checked for relevance. The goal-angle calculation uses the actual angle between the two sight-line vectors; the barrier calculation is labeled an approximation. The page needs no network or imported scripts. Keyboard-accessible controls, high-contrast focus rings, responsive layout, a text explanation of the SVG, and reduced-motion behavior are included. The experiment requires no real pucks or sharp tools.</div>
+  </div>
+ </section>
+</main>
+<footer><div class="container">DeepDivesKids · 27 October 2026 · Original educational lesson. © The creator of this lesson. Curiosity makes great engineers. 🏒</div></footer>
+<script>
+"use strict";
+// A deliberate, easy-to-audit 2D lesson model. The goal is six feet wide.
+const GOAL_HALF = 3;
+const BARRIER_HALF = 1.1; // Imaginary barrier; NOT an official player measurement.
+const SCALE = 9;
+const CX = 360;
+const GOAL_Y = 438;
+const byId = id => document.getElementById(id);
+const controls = ["side", "distance", "depth", "offset"];
+let currentState = null;
+let flightFrame = null;
+let animationGeneration = 0;
+
+function getInputs() {
+  return {
+    x: Number(byId("side").value),
+    y: Number(byId("distance").value),
+    depth: Number(byId("depth").value),
+    offset: Number(byId("offset").value)
+  };
+}
+function clamp(value, low, high) { return Math.max(low, Math.min(high, value)); }
+function goalieGeometry(s) {
+  // Post direction vectors are (-3-x,-y) and (+3-x,-y).
+  const cross = 6 * s.y;
+  const dot = s.x * s.x + s.y * s.y - GOAL_HALF * GOAL_HALF;
+  const angleDegrees = Math.atan2(Math.abs(cross), dot) * 180 / Math.PI;
+  // A correctly aligned goalie is on the ray from the goal center to the puck.
+  const goalieX = s.x * s.depth / s.y + s.offset;
+  const projection = s.y / (s.y - s.depth);
+  const shadowLeft = s.x + (goalieX - BARRIER_HALF - s.x) * projection;
+  const shadowRight = s.x + (goalieX + BARRIER_HALF - s.x) * projection;
+  const coveredLeft = clamp(shadowLeft, -GOAL_HALF, GOAL_HALF);
+  const coveredRight = clamp(shadowRight, -GOAL_HALF, GOAL_HALF);
+  const blockedWidth = Math.max(0, coveredRight - coveredLeft);
+  return { angleDegrees, goalieX, shadowLeft, shadowRight,
+           coveredLeft, coveredRight, blockedWidth, openWidth:6-blockedWidth };
+}
+function screenX(feet) { return CX + feet * SCALE; }
+function screenY(feet) { return GOAL_Y - feet * SCALE; }
+function setLine(id, x1, y1, x2, y2) {
+  const el = byId(id);
+  for(const [name,val] of Object.entries({x1,y1,x2,y2})) el.setAttribute(name,String(val));
+}
+function clearShot() {
+  animationGeneration++;
+  if (flightFrame !== null) cancelAnimationFrame(flightFrame);
+  flightFrame = null;
+  byId("flightPuck").setAttribute("opacity","0");
+  byId("shotLine").setAttribute("opacity","0");
+}
+function drawRink() {
+  const s = getInputs();
+  const m = goalieGeometry(s);
+  currentState = { ...s, ...m };
+  const sx = screenX(s.x), sy = screenY(s.y);
+  const gx = screenX(m.goalieX), gy = screenY(s.depth);
+  byId("goalLane").setAttribute("points",`${sx},${sy} ${screenX(-3)},${GOAL_Y} ${screenX(3)},${GOAL_Y}`);
+  setLine("leftRay",sx,sy,screenX(-3),GOAL_Y);
+  setLine("rightRay",sx,sy,screenX(3),GOAL_Y);
+  byId("shooterPiece").setAttribute("transform",`translate(${sx} ${sy})`);
+  byId("goaliePiece").setAttribute("transform",`translate(${gx} ${gy})`);
+  setLine("coveredBar",screenX(m.coveredLeft),GOAL_Y-3,screenX(m.coveredRight),GOAL_Y-3);
+  byId("angleValue").textContent=`${m.angleDegrees.toFixed(1)}°`;
+  byId("openValue").textContent=`${m.openWidth.toFixed(1)} ft`;
+  byId("sideValue").textContent=`${s.x > 0 ? "+" : ""}${s.x} ft`;
+  byId("distanceValue").textContent=`${s.y} ft`;
+  byId("depthValue").textContent=`${s.depth.toFixed(1).replace(/\.0$/,"")} ft`;
+  byId("offsetValue").textContent=`${s.offset > 0 ? "+" : ""}${s.offset.toFixed(1).replace(/\.0$/,"")} ft`;
+  const description = Math.abs(s.offset) < .01
+    ? "The goalie is lined up with the center of the net from the puck's point of view."
+    : "The goalie is shifted off the correct line. Look for a bigger opening near one post.";
+  byId("modelSummary").textContent=description;
+  byId("shotResult").textContent="Choose a target and take a shot!";
+  clearShot();
+}
+function preset(name) {
+  const options = {
+    center:{side:0,distance:24,depth:4,offset:0},
+    wing:{side:22,distance:24,depth:4,offset:0},
+    close:{side:0,distance:12,depth:4,offset:0},
+    off:{side:-12,distance:24,depth:4,offset:2.5}
+  };
+  const values = options[name];
+  if (!values) return;
+  for(const [key,value] of Object.entries(values)) byId(key).value=String(value);
+  drawRink();
+}
+function shoot() {
+  clearShot();
+  const generation = animationGeneration;
+  const s = currentState;
+  const target = Number(byId("target").value);
+  const isBlocked = target >= s.shadowLeft && target <= s.shadowRight;
+  const message = isBlocked
+    ? "SAVED in our model! The line crosses the pretend goalie barrier."
+    : "OPEN LANE in our model! That straight path misses the pretend barrier.";
+  const x0=screenX(s.x), y0=screenY(s.y), x1=screenX(target), y1=GOAL_Y;
+  setLine("shotLine",x0,y0,x1,y1);
+  const puck=byId("flightPuck"), line=byId("shotLine");
+  line.setAttribute("opacity","1");
+  byId("shotResult").textContent=message;
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    puck.setAttribute("cx",String(x1)); puck.setAttribute("cy",String(y1)); puck.setAttribute("opacity","1");
+    return;
+  }
+  const started=performance.now();
+  function animate(now) {
+    if(generation !== animationGeneration) return;
+    const t=clamp((now-started)/680,0,1);
+    puck.setAttribute("cx",String(x0+(x1-x0)*t));
+    puck.setAttribute("cy",String(y0+(y1-y0)*t));
+    puck.setAttribute("opacity","1");
+    if(t<1) flightFrame=requestAnimationFrame(animate);
+    else flightFrame=null;
+  }
+  flightFrame=requestAnimationFrame(animate);
+}
+for(const id of controls) byId(id).addEventListener("input",drawRink);
+for(const el of document.querySelectorAll("[data-preset]")) {
+  el.addEventListener("click",()=>preset(el.dataset.preset));
+}
+byId("shoot").addEventListener("click",shoot);
+byId("quizCenter").addEventListener("click",()=>{
+  byId("quizResult").textContent="Correct! At the same distance from the goal line, the center position offers a wider goal angle.";
+});
+byId("quizBoards").addEventListener("click",()=>{
+  byId("quizResult").textContent="Try again. Near the boards, the two goalposts line up more closely in your view.";
+});
+drawRink();
+</script>
+</body>
+</html>
