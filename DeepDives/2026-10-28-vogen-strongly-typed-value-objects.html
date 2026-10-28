@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="October 28, 2026 technical deep dive: Vogen C# source-generated, validated, strongly typed value objects for .NET 10 and Native AOT engineering software.">
+<meta name="theme-color" content="#152345">
+<title>Vogen · Types that Refuse to Be Confused — Daily Library Deep Dive · 28 Oct 2026</title>
+<style>
+:root{color-scheme:light;--navy:#142344;--blue:#244587;--indigo:#5753aa;--ink:#182743;--muted:#55637d;--bg:#f3f6fb;--card:#fff;--edge:#dce5f1;--teal:#007c79;--lime:#daf59f;--gold:#ffca63;--magenta:#af4e88;--red:#a83250;--radius:18px}
+*,*::before,*::after{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:2rem}
+body{margin:0;color:var(--ink);background:var(--bg);font:17px/1.68 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:#244da0;text-underline-offset:3px}a:hover{text-decoration-thickness:2px}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #ca7b07;outline-offset:4px}
+.skip{position:absolute;top:-100px;left:1rem;z-index:20;background:white;padding:.8rem 1rem;color:var(--ink)}.skip:focus{top:1rem}
+.banner{color:white;background:radial-gradient(ellipse at 76% 0,#585fba 0,transparent 43%),linear-gradient(125deg,#132443,#233f77 65%,#234e73);overflow:hidden}
+.mast{max-width:1170px;margin:0 auto;padding:1.4rem 1.4rem 5.7rem}
+.brandline{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.7rem;padding-bottom:2.8rem}
+.brand{font-size:.74rem;font-weight:820;letter-spacing:.18em;text-transform:uppercase;color:#d2f0e6}
+.edition{font-size:.8rem;color:#d8e1f6;border:1px solid #aabbe577;border-radius:99px;padding:.3rem .8rem}
+.kicker{font-size:.76rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#ddf3a6}
+h1{font-size:clamp(2.5rem,6.4vw,5.2rem);max-width:850px;line-height:1.03;letter-spacing:-.055em;margin:.7rem 0 1.2rem}
+.subtitle{max-width:790px;font-size:clamp(1.05rem,2vw,1.35rem);line-height:1.5;color:#e0e9ff;margin:0 0 1.8rem}
+.tags{display:flex;flex-wrap:wrap;gap:.6rem}.tag{font-size:.83rem;border:1px solid #a8bce388;padding:.28rem .7rem;border-radius:30px;color:#e8eeff}
+.visual{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.9rem;max-width:740px;margin:2.25rem 0 0}
+.visual .puck{background:#f7faff;color:#1a3159;border-radius:16px;padding:1rem 1.2rem;min-height:104px;border:2px solid #cfe2ff;box-shadow:0 10px 25px #06163233}
+.visual strong{display:block;font-size:1.2rem}.visual small{color:#56627c}.visual .arrow{font-size:1.8rem;color:var(--lime);font-weight:800}
+.visual .after{border-color:#8de7b9}.visual .after strong{color:#007365}
+.layout{max-width:1170px;margin:-3rem auto 6rem;padding:0 1.4rem;display:grid;grid-template-columns:280px minmax(0,1fr);gap:1.4rem;align-items:start}
+.sidebar{position:sticky;top:1rem;background:white;border:1px solid var(--edge);border-radius:var(--radius);box-shadow:0 7px 25px #172c5010;padding:1.1rem}
+.sidebar h2{font-size:.86rem;margin:.3rem .2rem 1rem;color:#61708d;letter-spacing:.09em;text-transform:uppercase}
+.sidebar ol{padding:0;margin:0;list-style:none}.sidebar a{display:flex;gap:.6rem;align-items:center;color:#253556;text-decoration:none;border-radius:9px;padding:.47rem;font-size:.85rem;line-height:1.3}.sidebar a:hover,.sidebar a:focus{background:#eaf1ff}
+.num{font-size:.65rem;font-weight:800;color:#7a88a1;flex:0 0 21px}
+.meta{border-top:1px solid var(--edge);padding:.9rem .3rem .2rem;margin-top:1rem;color:#64728a;font-size:.78rem}
+main{min-width:0}.card{background:var(--card);border:1px solid var(--edge);border-radius:var(--radius);box-shadow:0 8px 23px #1933570b;padding:clamp(1.35rem,3vw,2.3rem);margin-bottom:1.3rem}
+.card[id]{scroll-margin-top:1.5rem}.label{font-size:.75rem;font-weight:850;letter-spacing:.14em;color:var(--teal);text-transform:uppercase}.card h2{font-size:clamp(1.5rem,3vw,2.12rem);line-height:1.15;letter-spacing:-.03em;color:var(--navy);margin:.4rem 0 1.1rem}.card h3{font-size:1.12rem;line-height:1.3;color:#243d69;margin:1.55rem 0 .5rem}.card p{margin:.75rem 0 1.15rem}.card ul,.card ol{padding-left:1.4rem}.card li{margin:.4rem 0}
+.lede{font-size:1.12rem;color:#3e4c63}.callout{border-left:5px solid var(--teal);background:#e7f8f2;border-radius:6px 12px 12px 6px;padding:1rem 1.15rem;margin:1.3rem 0}.callout.warning{border-color:#e8a342;background:#fff8e8}.callout.caution{border-color:var(--red);background:#ffedf1}.callout p:last-child{margin-bottom:0}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem}.mini{border:1px solid var(--edge);border-radius:14px;padding:1.1rem;background:#f9fbff}.mini h3{margin:.1rem 0 .5rem}.mini p{margin:.2rem 0}
+.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+pre{background:#0f2039;color:#eef7ff;border-radius:13px;padding:1.25rem;overflow:auto;tab-size:4;font:13.5px/1.62 ui-monospace,SFMono-Regular,Consolas,monospace}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}p code,li code{font-size:.89em;background:#edf1f9;border-radius:4px;padding:.06rem .25rem}
+.codehead{display:flex;justify-content:space-between;gap:.5rem;align-items:center;font-size:.8rem;font-weight:850;color:#53637e;margin:1.1rem 0 .5rem}
+.metric{background:linear-gradient(100deg,#e6efff,#eef8f6);border:1px solid #d5e8f0;padding:1rem 1.2rem;border-radius:12px}
+.demo{background:linear-gradient(160deg,#edf4ff 0,#f8fcff 100%);border:1px solid #cbdff3;border-radius:17px;padding:1.1rem}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.field label{display:block;font-weight:700;font-size:.9rem;margin-bottom:.3rem}.field input{width:100%;font:inherit;padding:.65rem .8rem;background:#fff;border:1px solid #9dafc9;border-radius:8px;color:var(--ink)}
+.mode{border:0;padding:0;margin:1.1rem 0}.mode legend{font-weight:750;margin-bottom:.35rem}.radiorow{display:flex;flex-wrap:wrap;gap:.7rem}.pill{display:inline-flex;gap:.35rem;align-items:center;background:white;border:1px solid #c7d5e8;border-radius:9px;padding:.4rem .6rem;font-size:.89rem}
+.checkrow{display:flex;align-items:center;gap:.6rem;font-size:.9rem;margin:.75rem 0}input[type=checkbox],input[type=radio]{accent-color:#245b9b;inline-size:18px;block-size:18px}
+button{font:inherit;font-weight:800;color:white;background:#215694;border:0;border-radius:10px;padding:.7rem 1.1rem;cursor:pointer}button:hover{background:#123a70}button:active{transform:translateY(1px)}
+.demoresult{background:#122443;color:#f1f7ff;white-space:pre-wrap;overflow-wrap:anywhere;min-height:84px;margin-top:1rem;padding:1rem;border-radius:11px;font:14px/1.6 ui-monospace,Consolas,monospace}.demoresult.good{border-left:5px solid #82db9b}.demoresult.bad{border-left:5px solid #ffb16b}
+.caption{font-size:.83rem;color:#586881}
+table{width:100%;border-collapse:collapse;font-size:.9rem;margin:1rem 0}td,th{text-align:left;vertical-align:top;border-bottom:1px solid var(--edge);padding:.75rem .7rem}th{background:#ecf1fb;color:#2d446c}thead th:first-child{border-top-left-radius:8px}thead th:last-child{border-top-right-radius:8px}
+.scroll{overflow:auto}.badge{display:inline-block;border-radius:50px;font-size:.72rem;font-weight:780;padding:.2rem .55rem;background:#e9f5e2;color:#326a22}.badge.suggest{background:#fff1d2;color:#7b5010}
+.sources{list-style:none;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.75rem}.sources li{border:1px solid var(--edge);background:#f9fbfe;border-radius:12px;margin:0;padding:.9rem;min-width:0}.sources a{font-size:.88rem;display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem;overflow-wrap:anywhere}.sources p{color:#56657d;font-size:.8rem;margin:.35rem 0}.sources small{font-size:.71rem;color:#687995}
+footer{text-align:center;color:#66758d;font-size:.81rem;padding:1.2rem}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{position:static}.sidebar ol{columns:2}.sidebar li{break-inside:avoid}.mast{padding-bottom:5.5rem}}
+@media(max-width:600px){.layout{padding:0 .75rem}.mast{padding:1rem 1rem 5rem}.brandline{padding-bottom:1.9rem}.sidebar ol{columns:1}.grid2,.fields,.sources{grid-template-columns:1fr}.visual{grid-template-columns:1fr;gap:.5rem}.visual .arrow{transform:rotate(90deg);text-align:center}.card{padding:1.25rem}.visual .puck{min-height:auto}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button:active{transform:none}}
+@media print{body{background:white;font-size:12pt}.banner{background:white;color:black}.mast{padding-bottom:1rem}.brandline,.subtitle,.kicker,.edition{color:#111}.layout{display:block;margin:0}.sidebar{position:static;box-shadow:none}.card{box-shadow:none;break-inside:avoid}.demo{break-inside:avoid}pre{white-space:pre-wrap;word-break:break-word}a{color:inherit}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip navigation and start reading</a>
+<header class="banner">
+<div class="mast">
+<div class="brandline"><div class="brand">The Library Field Guide <span aria-hidden="true">/</span> DeepDives</div><span class="edition">Issue 08 · 28 October 2026</span></div>
+<div class="kicker">C# 12+ · Source generation · .NET 10 · Type safety</div>
+<h1>Types that refuse<br>to be confused<span aria-hidden="true">.</span></h1>
+<p class="subtitle"><strong>Vogen</strong> turns ordinary numbers into domain concepts the compiler can distinguish. An excellent fit for instrument-control identifiers and simulation events—if its boundaries are understood.</p>
+<div class="tags"><span class="tag">Vogen 8.0.7 (stable)</span><span class="tag">Apache-2.0</span><span class="tag">Generated C#</span><span class="tag">AOT: verify, do not assume</span></div>
+<div class="visual" aria-label="Illustration: ambiguous integer 17 becomes separate strongly typed Instrument ID and Channel ID concepts"><div class="puck"><small>Before: both are int</small><strong>17 ↔ 17</strong><small>Easy to swap accidentally</small></div><div class="arrow" aria-hidden="true">→</div><div class="puck after"><small>After: distinct types</small><strong>InstrumentId ≠ ChannelId</strong><small>Compile-time boundary</small></div></div>
+</div></header>
+<div class="layout">
+<aside class="sidebar" aria-label="Article navigation"><h2>Field notes</h2><nav aria-label="Table of contents"><ol><li><a href="#overview"><span class="num">01</span>The short answer</a></li><li><a href="#mechanics"><span class="num">02</span>How source generation works</a></li><li><a href="#demo"><span class="num">03</span>Interactive type-safety lab</a></li><li><a href="#code"><span class="num">04</span>Complete .NET 10 example</a></li><li><a href="#adoption"><span class="num">05</span>Evidence: where it is actually used</a></li><li><a href="#projects"><span class="num">06</span>Engineering applications</a></li><li><a href="#aot"><span class="num">07</span>Native AOT and integration</a></li><li><a href="#tradeoffs"><span class="num">08</span>Tradeoffs and failure modes</a></li><li><a href="#alternatives"><span class="num">09</span>Alternatives and adoption gate</a></li><li><a href="#licensing"><span class="num">10</span>License and supply chain</a></li><li><a href="#checks"><span class="num">11</span>Verification checklist</a></li><li><a href="#sources"><span class="num">12</span>Primary sources</a></li></ol></nav><p class="meta">Prepared 28 Oct 2026 · Sources: project maintainer, NuGet, Kentico, Microsoft. Standalone HTML; offline reading and demo.</p></aside>
+<main id="content">
+<section class="card" id="overview"><div class="label">01 / Executive assessment</div><h2>The number isn't the meaning</h2>
+<p class="lede">Imagine an instrument driver with an <code>int instrumentId</code>, an <code>int channelId</code>, and an <code>int eventId</code>. The three identifiers might all equal <strong>17</strong>. The machine sees integers; the engineer sees different concepts.</p>
+<p>Vogen is a Roslyn <strong>source generator and analyzer</strong>. Declare a partial C# value type with <code>[ValueObject&lt;int&gt;]</code>; the build generates a wrapper, an explicit <code>From(...)</code> factory, equality, and optional validation and conversion support. Distinct wrappers become distinct types in function signatures, so accidental cross-wiring is diagnosed by the C# compiler. It does not instrument an RTOS, and it is not a runtime validation service.</p>
+<div class="callout"><strong>Why it matters to your projects:</strong> BenchForge instrument and channel IDs, VeloSim event sequence numbers, and StressForge rules can be made less ambiguous. The real attraction is <em>preventing categories of bad states</em>, not faster arithmetic.</div>
+<div class="grid2"><div class="mini"><h3>Documented</h3><p>Generated wrappers, <code>From</code> validation, analysis of explicit misuse, configurable converters. See upstream README, FAQ and integration docs.</p></div><div class="mini"><h3>Not automatically guaranteed</h3><p>Allocation freedom in all integrations, total runtime prevention of default structs, Native AOT compatibility of every serializer, or better benchmark scores.</p></div></div>
+</section>
+<section class="card" id="mechanics"><div class="label">02 / Under the hood</div><h2>Generated at compile time—not magic at runtime</h2>
+<ol><li><strong>Declare the domain type.</strong> A partial struct identifies its primitive representation: <code>[ValueObject&lt;int&gt;]</code>.</li><li><strong>Roslyn runs Vogen.</strong> At build time, Vogen emits the rest of the partial type. Its analyzer reports certain forbidden construction patterns.</li><li><strong>Construct through a factory.</strong> <code>InstrumentId.From(17)</code> applies the optional declared <code>Validate(int)</code> rule and returns an initialized value.</li><li><strong>Compile strongly typed call sites.</strong> The compiler rejects <code>Connect(channel, instrument)</code> when the method requires the reverse type order.</li><li><strong>Choose explicit adapters.</strong> For a minimal simulation core, <code>Conversions.None</code> keeps the wrapper free of Vogen-generated JSON/ORM converter glue.</li></ol>
+<div class="callout warning"><strong>Important nuance:</strong> C# structs always have a zero/default representation. Vogen's analyzer flags many explicit uses of <code>default</code> and <code>new</code>, but this is not a proof that all runtime paths—including generic arrays, reflection, and deserialization—cannot construct an uninitialized wrapper. Treat external boundaries as untrusted.</div>
+<div class="codehead"><span>Illustration · int identifiers versus domain identifiers</span><span>Read-only</span></div><pre><code>// Two different concepts, yet the compiler only sees (int, int).
+static void Connect(int instrumentId, int channelId) { /* ... */ }
+Connect(channelId, instrumentId); // Compiles; silently swaps identifiers.
+
+// With Vogen-generated types:
+static void Connect(InstrumentId instrumentId, ChannelId channelId) { /* ... */ }
+Connect(ChannelId.From(2), InstrumentId.From(17)); // Does NOT compile.</code></pre>
+</section>
+<section class="card" id="demo"><div class="label">03 / Try it offline</div><h2>Interactive type-safety lab</h2>
+<p>Change identifiers, swap parameter order, and compare raw integers against distinct domain types. This is a <strong>small educational JavaScript model of the C# rules</strong>; the real Vogen generator does not run in this page.</p>
+<div class="demo">
+<div class="fields"><div class="field"><label for="inst">Instrument ID (integer)</label><input id="inst" name="inst" type="number" inputmode="numeric" step="1" value="17"></div><div class="field"><label for="chan">Channel ID (integer)</label><input id="chan" name="chan" type="number" inputmode="numeric" step="1" value="2"></div></div>
+<fieldset class="mode"><legend>What types does the API accept?</legend><div class="radiorow"><label class="pill"><input type="radio" name="approach" value="primitive" checked> Raw int, int</label><label class="pill"><input type="radio" name="approach" value="typed"> InstrumentId, ChannelId</label></div></fieldset>
+<label class="checkrow"><input id="swap" type="checkbox" checked> Intentionally swap the two arguments</label>
+<button id="go" type="button">Evaluate call</button>
+<div id="result" class="demoresult" role="status" aria-live="polite" aria-atomic="true">Choose a mode, then evaluate the call.</div>
+<p class="caption">Try 17/17, 17/2, and −4/2. Note that type correctness depends on the <em>type</em> of the value, not whether the numbers happen to match.</p>
+</div>
+</section>
+<section class="card" id="code"><div class="label">04 / Practical exercise</div><h2>A complete minimal .NET 10 console app</h2>
+<p>The listings below follow the upstream attribute, factory, validation, and <code>Conversions.None</code> patterns. The sample has two distinct validated ID types, demonstrates a rejected invalid ID, and leaves an intentionally swapped call commented out to show how to trigger a compile error.</p>
+<div class="codehead"><span>TypedTelemetry.csproj · pin the package</span><span>.NET 10</span></div><pre><code>&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+  &lt;PropertyGroup&gt;
+    &lt;OutputType&gt;Exe&lt;/OutputType&gt;
+    &lt;TargetFramework&gt;net10.0&lt;/TargetFramework&gt;
+    &lt;ImplicitUsings&gt;enable&lt;/ImplicitUsings&gt;
+    &lt;Nullable&gt;enable&lt;/Nullable&gt;
+    &lt;!-- Turn on before the Native AOT build to activate diagnostics. --&gt;
+    &lt;PublishAot&gt;true&lt;/PublishAot&gt;
+  &lt;/PropertyGroup&gt;
+  &lt;ItemGroup&gt;
+    &lt;PackageReference Include=&quot;Vogen&quot; Version=&quot;8.0.7&quot; PrivateAssets=&quot;all&quot; /&gt;
+  &lt;/ItemGroup&gt;
+&lt;/Project&gt;</code></pre>
+<div class="codehead"><span>Program.cs · complete program</span><span>C#</span></div><pre><code>using Vogen;
+
+var instrument = InstrumentId.From(17);
+var channel = ChannelId.From(2);
+
+Connect(instrument, channel);
+
+// Uncomment to see a real C# type error (CS1503):
+// Connect(channel, instrument);
+
+// The application can handle bad data at its boundary.
+try
+{
+    _ = ChannelId.From(-4);
+}
+catch (ValueObjectValidationException ex)
+{
+    Console.WriteLine($&quot;Invalid channel: {ex.Message}&quot;);
+}
+
+static void Connect(InstrumentId instrument, ChannelId channel)
+{
+    Console.WriteLine($&quot;Connecting instrument {instrument.Value}, channel {channel.Value}&quot;);
+}
+
+[ValueObject&lt;int&gt;(conversions: Conversions.None)]
+public readonly partial struct InstrumentId
+{
+    public static Validation Validate(int value) =&gt;
+        value &gt; 0 ? Validation.Ok :
+        Validation.Invalid(&quot;Instrument IDs must be positive.&quot;);
+}
+
+[ValueObject&lt;int&gt;(conversions: Conversions.None)]
+public readonly partial struct ChannelId
+{
+    public static Validation Validate(int value) =&gt;
+        value &gt; 0 ? Validation.Ok :
+        Validation.Invalid(&quot;Channel IDs must be positive.&quot;);
+}</code></pre>
+<div class="codehead"><span>Terminal · reproduce locally</span><span>PowerShell / shell</span></div><pre><code>dotnet new console -n TypedTelemetry -f net10.0
+cd TypedTelemetry
+# Replace TypedTelemetry.csproj and Program.cs with the listings here.
+dotnet restore
+dotnet build -c Release
+dotnet run -c Release
+# On Windows with the Native AOT C++ toolchain installed:
+dotnet publish -c Release -r win-x64
+# On Linux with clang/zlib development packages instead:
+# dotnet publish -c Release -r linux-x64</code></pre>
+<p><strong>Expected behavior, not an execution claim:</strong> a valid connection line, then an invalid-channel exception caught and reported. Uncommenting <code>Connect(channel, instrument)</code> should cause a C# argument-type mismatch. Actual Vogen compilation and Native AOT linking must be verified in your development machine or CI.</p>
+<div class="callout"><strong>Acceptance tests:</strong> valid positive IDs round trip through <code>Value</code>; zero/negative inputs reject; swapped parameters fail compilation (negative compilation test); static analyzers warn/error for explicit <code>default</code>; Release/Native AOT builds run independently. Include serialization/FFI cases only when needed.</div>
+</section>
+<section class="card" id="adoption"><div class="label">05 / Evidence and provenance</div><h2>What's actually documented as use?</h2>
+<div class="grid2"><div class="mini"><span class="badge">Verified package dependency</span><h3>Kentico Management API</h3><p>NuGet's published metadata for <strong>Kentico.Xperience.ManagementApi 31.9.3</strong> declares <code>Vogen (&gt;= 8.0.7)</code>. Kentico provides official installation documentation. This is concrete independent package integration evidence, <em>not</em> evidence that a particular customer runs Vogen in production. Kentico says this Management API is intended for local development, not public production exposure.</p><p><a href="https://www.nuget.org/packages/Kentico.Xperience.ManagementApi/31.9.3">Dependency metadata ↗</a> · <a href="https://docs.kentico.com/documentation/developers-and-admins/api/management-api/configure-management-mcp-server">Vendor docs ↗</a></p></div>
+<div class="mini"><span class="badge">Verified upstream demonstration</span><h3>Vogen samples and tests</h3><p>The maintainer publishes example applications and a substantial project test suite. These establish provided APIs and intended use cases; they do not independently demonstrate adoption by a flight project, RTOS, or engineering simulator.</p><p><a href="https://github.com/SteveDunn/Vogen/tree/main/samples">Maintainer samples ↗</a> · <a href="https://github.com/SteveDunn/Vogen/tree/main/tests">Maintainer tests ↗</a></p></div></div>
+<div class="callout warning"><strong>Evidence hierarchy:</strong> direct dependency metadata ≠ demonstrated feature usage ≠ fielded product. Avoid claiming Vogen is already deployed in RISCue, SharpUnits, JPL flight software, or any other user project without checking its source. The applications below are proposals.</div>
+</section>
+<section class="card" id="projects"><div class="label">06 / Proposed applications</div><h2>Five useful experiments for this codebase</h2>
+<div class="scroll"><table><thead><tr><th>Project</th><th>Proposed types</th><th>Engineering payoff / caveat</th></tr></thead><tbody>
+<tr><td><strong>BenchForge</strong> <span class="badge suggest">Proposal</span></td><td><code>InstrumentId</code>, <code>ChannelId</code>, <code>ReservationToken</code></td><td>Eliminate silent argument mix-ups across driver APIs. Token lifetime and validity still need stateful logic.</td></tr>
+<tr><td><strong>StressForge</strong> <span class="badge suggest">Proposal</span></td><td><code>DeratingRuleId</code>, <code>PartId</code>, <code>Revision</code></td><td>Improve provenance typing; do <em>not</em> replace physical unit dimensions with arbitrary IDs—SharpUnits should own units.</td></tr>
+<tr><td><strong>VeloSim</strong> <span class="badge suggest">Proposal</span></td><td><code>EventSequence</code>, <code>SignalHandle</code>, <code>ClockDomainId</code></td><td>Make deterministic event metadata unambiguous; benchmark wrapper cost and inspect generated IL where timing matters.</td></tr>
+<tr><td><strong>Wally / Clarify</strong> <span class="badge suggest">Proposal</span></td><td><code>SlideId</code>, <code>RequirementId</code>, <code>WorkflowId</code></td><td>Prevent cross-entity use in reporting/workflows. Generated JSON conversion needs a deliberately tested schema.</td></tr>
+<tr><td><strong>RISCue host tools</strong> <span class="badge suggest">Proposal</span></td><td><code>HartId</code>, <code>AddressSpaceId</code>, <code>RegisterIndex</code></td><td>Improve simulator/control-tool correctness. This is <strong>host C#</strong>, not C++20 or code for an MCU.</td></tr></tbody></table></div>
+<h3>Recommended first spike</h3><p>Introduce exactly two wrappers in a BenchForge test-only branch. Add tests for swapped arguments, invalid inputs, a benchmark on the most frequently called code path, and a Native AOT publish job. Compare error discoverability and public API friction against hand-written <code>readonly record struct</code> wrappers.</p>
+</section>
+<section class="card" id="aot"><div class="label">07 / Native AOT and boundaries</div><h2>Why source generation helps—and what still needs proving</h2>
+<p>A source generator emits C# at build time, so Vogen's basic numeric wrappers do not require runtime reflection to create their types. This makes the <em>core concept</em> attractive for Native AOT. But “source-generated” does not certify every converter, ORM, or dependency as trimming-safe; native publish and analyzer output are the real acceptance gates.</p>
+<div class="grid2"><div class="mini"><h3>Good baseline</h3><ul><li>Use <code>readonly partial struct</code> for small immutable identifiers.</li><li>Specify <code>Conversions.None</code> unless conversion is explicitly required.</li><li>Pin Vogen 8.0.7, check generated output, and preserve Roslyn diagnostics in CI.</li><li>Run <code>dotnet publish -r win-x64 -c Release</code> with <code>PublishAot=true</code>.</li></ul></div>
+<div class="mini"><h3>Review integrations separately</h3><ul><li>Any reflection-based JSON/ORM pathways.</li><li>Native AOT and linker warnings (for example IL2xxx and IL3xxx).</li><li>Trimming of serializer metadata; explicit <code>JsonSerializerContext</code> where appropriate.</li><li>Exception behavior, public API serialization contracts, and interop layout.</li></ul></div></div>
+<p>Microsoft's documented <code>IsAotCompatible</code> analyzers help check library AOT safety; a successful generator invocation alone does not prove such compatibility. The same applies to .NET 10: the target SDK and the generator run in different compilation contexts.</p>
+<div class="callout warning"><strong>Allocation claim scope:</strong> a small value-type wrapper may avoid per-instance heap allocation, but <em>boxing</em>, exception creation, formatting, strings, conversion and higher-level logging can still allocate. Do not market the whole application as allocation-free from this one library choice.</div>
+</section>
+<section class="card" id="tradeoffs"><div class="label">08 / Critical review</div><h2>Strengths, costs, failure modes</h2>
+<div class="scroll"><table><thead><tr><th>Criterion</th><th>Benefit</th><th>Cost or failure mode</th></tr></thead><tbody>
+<tr><td>Compiler-enforced meaning</td><td>Rejects cross-domain values in method calls</td><td>Requires explicit boundary conversion</td></tr>
+<tr><td>Validation at creation</td><td>Centralizes invariant checks</td><td><code>default(T)</code>, generic/interop paths, and generated integrations need review</td></tr>
+<tr><td>Code generation</td><td>Little handwritten boilerplate</td><td>Build/analyzer package becomes a toolchain dependency</td></tr>
+<tr><td>Performance</td><td>Lightweight primitive-backed value structs</td><td>Benchmark specific workloads; no universal zero-cost promise</td></tr>
+<tr><td>Serialization</td><td>Converters available for common stacks</td><td>Schema compatibility, Native AOT, and reflection must be tested</td></tr>
+<tr><td>API ergonomics</td><td>More expressive signatures and auditability</td><td>Many tiny types can overwhelm an API without naming conventions</td></tr>
+<tr><td>Failure diagnosis</td><td>Analyzer errors at authoring time</td><td>Generated error locations, IDE support and onboarding can be harder</td></tr>
+</tbody></table></div>
+<div class="codehead"><span>Boundary warning · illustrative, not runnable</span></div><pre><code>// IMPORTANT: do not treat analyzers as runtime memory protection.
+// Even if the analyzer flags explicit 'default' at compile time,
+// generic arrays and default-initialized fields can still contain zeroed structs.
+// Check invariants at deserialization / FFI / unsafe boundaries.
+// An invalid zero state may exist without invoking From(...).</code></pre>
+</section>
+<section class="card" id="alternatives"><div class="label">09 / Decision support</div><h2>What else would we use?</h2>
+<div class="grid2"><div class="mini"><h3>Manual <code>readonly record struct</code></h3><p>No generator dependency; best for very few wrappers. Write and test validation, serialization, and explicit default semantics yourself.</p></div><div class="mini"><h3>StronglyTypedId</h3><p>Another established C# source-generator approach emphasizing identifiers. Compare generated API, package maintenance, analyzer behavior and serializers before adopting. Do not assume feature equivalence.</p></div><div class="mini"><h3>SharpContracts / Z3</h3><p>Separate concern: proof of method contracts and counterexamples. Vogen adds nominal domain types, not mathematical verification.</p></div><div class="mini"><h3>SharpUnits / mp-units</h3><p>Physical dimensional analysis prevents mixing metres and seconds. Vogen prevents mixing <em>domain identifiers</em>; neither substitutes for the other.</p></div></div>
+<div class="callout"><strong>Adoption gate:</strong> promote Vogen only if a two-type spike yields meaningful compile-time bug prevention, predictable codegen, supported CI/AOT output, and negligible measurable overhead in hot paths.</div>
+</section>
+<section class="card" id="licensing"><div class="label">10 / Integration &amp; license</div><h2>Apache-2.0, not MIT</h2>
+<p>Vogen's upstream <a href="https://github.com/SteveDunn/Vogen/blob/main/LICENSE">LICENSE</a> is <strong>Apache License 2.0</strong>. It permits commercial and open-source use and includes a patent grant. Distribution of the covered software requires preserving the license and applicable notices; altered files require appropriate notices. Follow the full license for actual distribution scenarios, including any third-party package licenses.</p>
+<p>For engineering governance, record the NuGet package version, license identifier <code>Apache-2.0</code>, source repository and resolved dependency graph in the SBOM. Pin dependencies, use lock files where appropriate, run package vulnerability checks, and review changes to the generator because it executes as part of the build. Package metadata states stable <strong>8.0.7 was published 21 July 2026</strong>; 9.0.0-beta.1 exists but is prerelease.</p>
+<p>A compile-time generator is not itself the same thing as a production framework service. Keep generated code, build-time package scope (<code>PrivateAssets="all"</code>), and any chosen runtime serializer dependencies separately documented.</p>
+</section>
+<section class="card" id="checks"><div class="label">11 / Technical review &amp; acceptance</div><h2>What was checked, and what was not</h2>
+<ul><li><strong>Source reconciliation:</strong> core API pattern checked against the maintainer's README and documentation; license and package version checked against GitHub and NuGet; Kentico dependency checked against its published package metadata.</li>
+<li><strong>Code analysis:</strong> sample uses officially documented <code>[ValueObject&lt;int&gt;]</code>, <code>From</code>, <code>Validate</code>, <code>Validation.Ok/Invalid</code>, and <code>Conversions.None</code> interfaces.</li>
+<li><strong>HTML engineering:</strong> standalone CSS/JS and accessible label/legend navigation; keyboard-friendly demo with <code>aria-live</code>; responsive typography, visible focus, reduced-motion and print treatment.</li>
+<li><strong>Explicit limitations:</strong> this review does not claim a successful .NET build, Vogen unit test run, codegen compilation, Native AOT publish, or product-level performance measurement. Those need a .NET SDK, NuGet access and platform compiler toolchain.</li></ul>
+<h3>Suggested CI acceptance matrix</h3>
+<div class="scroll"><table><thead><tr><th>Check</th><th>Pass criterion</th></tr></thead><tbody><tr><td><code>dotnet build -c Release</code></td><td>Zero warnings/errors; generated code inspected once</td></tr><tr><td>Positive tests</td><td>Valid IDs maintain equality and underlying values</td></tr><tr><td>Negative tests</td><td>Invalid inputs throw; swapped order fails compilation</td></tr><tr><td>Runtime boundary tests</td><td>Default/generic, JSON and interop paths fail safely</td></tr><tr><td>Native AOT publish</td><td>Successful native binary and no unresolved trim/AOT warnings</td></tr><tr><td>Benchmark</td><td>Known cost versus plain int and hand-written record struct</td></tr></tbody></table></div>
+</section>
+<section class="card" id="sources"><div class="label">12 / References</div><h2>Primary sources &amp; provenance</h2>
+<p>The report distinguishes published package dependencies from application deployments, maintainer examples from independent adoption, and proposals from implementation. Links are provided for independent review.</p>
+<ol class="sources"><li><a href="https://github.com/SteveDunn/Vogen" rel="noopener noreferrer" target="_blank"><b>Project README and official source</b><span aria-hidden="true">↗</span></a><p>Factory From, strongly typed generated wrappers, analyzers, stated project goals.</p><small>Primary source • 1</small></li><li><a href="https://stevedunn.github.io/Vogen/home.html" rel="noopener noreferrer" target="_blank"><b>Vogen: primitive obsession and rationale</b><span aria-hidden="true">↗</span></a><p>The independent meaning of IDs, compile-time swapped-argument example, validation concept.</p><small>Primary source • 2</small></li><li><a href="https://stevedunn.github.io/Vogen/faq.html" rel="noopener noreferrer" target="_blank"><b>Vogen: FAQ and generated-code inspection</b><span aria-hidden="true">↗</span></a><p>Default-value analyzer scope and how to inspect emitted .cs files.</p><small>Primary source • 3</small></li><li><a href="https://stevedunn.github.io/Vogen/integration.html" rel="noopener noreferrer" target="_blank"><b>Vogen: integration / serialization</b><span aria-hidden="true">↗</span></a><p>Conversions.None, TypeConverter, STJ, Dapper, EF Core and explicit integration options.</p><small>Primary source • 4</small></li><li><a href="https://stevedunn.github.io/Vogen/casting.html" rel="noopener noreferrer" target="_blank"><b>Vogen: casts to underlying primitives</b><span aria-hidden="true">↗</span></a><p>Validation bypass risk and caution on implicit conversions.</p><small>Primary source • 5</small></li><li><a href="https://github.com/SteveDunn/Vogen/blob/main/LICENSE" rel="noopener noreferrer" target="_blank"><b>Vogen: Apache-2.0 LICENSE</b><span aria-hidden="true">↗</span></a><p>Full license text and redistribution obligations.</p><small>Primary source • 6</small></li><li><a href="https://www.nuget.org/packages/Vogen/8.0.7" rel="noopener noreferrer" target="_blank"><b>NuGet: Vogen 8.0.7</b><span aria-hidden="true">↗</span></a><p>Stable package version (published 21 July 2026), declared Apache-2.0 license.</p><small>Primary source • 7</small></li><li><a href="https://www.nuget.org/packages/Kentico.Xperience.ManagementApi/31.9.3" rel="noopener noreferrer" target="_blank"><b>NuGet: Kentico management API 31.9.3</b><span aria-hidden="true">↗</span></a><p>Independent published package that declares a Vogen &gt;= 8.0.7 dependency.</p><small>Primary source • 8</small></li><li><a href="https://docs.kentico.com/documentation/developers-and-admins/api/management-api/configure-management-mcp-server" rel="noopener noreferrer" target="_blank"><b>Kentico official Management API instructions</b><span aria-hidden="true">↗</span></a><p>Real published installation instructions; explicitly limited to local development environments.</p><small>Primary source • 9</small></li><li><a href="https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/" rel="noopener noreferrer" target="_blank"><b>Microsoft: Native AOT deployment</b><span aria-hidden="true">↗</span></a><p>Supported publish workflow, prerequisites, analyzer and trimming guidance.</p><small>Primary source • 10</small></li><li><a href="https://github.com/SteveDunn/Vogen/tree/main/samples" rel="noopener noreferrer" target="_blank"><b>Vogen upstream example/test repository</b><span aria-hidden="true">↗</span></a><p>Primary maintainer-created examples, not independent production adoption.</p><small>Primary source • 11</small></li><li><a href="https://www.nuget.org/packages/Vogen/" rel="noopener noreferrer" target="_blank"><b>NuGet: Package usage and dependents</b><span aria-hidden="true">↗</span></a><p>Publisher-maintained package listing and dependents; not evidence of runtime deployment.</p><small>Primary source • 12</small></li></ol>
+</section>
+<footer>Daily Library Deep Dive · 2026-10-28 · An independent engineering field note; no endorsement or project adoption implied.</footer>
+</main></div>
+<script>
+(function(){
+  'use strict';
+  var run=document.getElementById('go');
+  var result=document.getElementById('result');
+  function calculate() {
+    var iText=document.getElementById('inst').value.trim();
+    var cText=document.getElementById('chan').value.trim();
+    var i=Number(iText), c=Number(cText);
+    var swapped=document.getElementById('swap').checked;
+    var typed=document.querySelector('input[name="approach"]:checked').value==='typed';
+    var lines=[];
+    var fail=false;
+    if(iText==='' || cText==='' || !Number.isSafeInteger(i) || !Number.isSafeInteger(c)){
+      lines.push('Input rejected: enter two whole numbers within the safe integer range.');fail=true;
+    }else if(typed) {
+      lines.push('API expects Connect(InstrumentId, ChannelId).');
+      if(i<=0 || c<=0){
+        lines.push('Runtime validation rejected: From(value) requires positive IDs.');
+        fail=true;
+      }else if(swapped){
+        lines.push('COMPILE-TIME ERROR (illustrated): Cannot convert ChannelId to InstrumentId and InstrumentId to ChannelId.');
+        lines.push('The numeric values '+i+' and '+c+' do not change the type mismatch.');
+        fail=true;
+      }else{
+        lines.push('Type check: PASS. Value validation: PASS.');
+        lines.push('Connect(InstrumentId.From('+i+'), ChannelId.From('+c+')) is valid.');
+      }
+    }else{
+      lines.push('API expects Connect(int, int).');
+      lines.push('Compile-time check: PASS; both arguments are int.');
+      lines.push(swapped ?
+        'SILENT BUG: instrumentId='+c+' and channelId='+i+' were accidentally reversed.' :
+        'Call received instrumentId='+i+' and channelId='+c+'.');
+      if(i<=0 || c<=0)lines.push('No domain validation is enforced by this raw-int type signature.');
+      fail=swapped;
+    }
+    result.className='demoresult '+(fail?'bad':'good');
+    result.textContent=lines.join('\n');
+  }
+  run.addEventListener('click',calculate);
+  document.getElementById('swap').addEventListener('change',calculate);
+  document.querySelectorAll('input[name="approach"]').forEach(function(e){e.addEventListener('change',calculate);});
+  calculate();
+}());
+</script>
+</body></html>
