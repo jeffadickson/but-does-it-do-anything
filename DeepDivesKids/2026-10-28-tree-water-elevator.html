@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#113b45">
+<meta name="description" content="A colorful, fully offline, interactive nature and space-science lesson for ages 9+: how trees lift water, a celery experiment, and real NASA research.">
+<title>How Does a Tree Drink Without a Straw? — DeepDivesKids, October 28, 2026</title>
+<style>
+:root{--ink:#173b45;--dark:#103740;--green:#0d685e;--blue:#075481;--leaf:#65ae78;--paper:#f8fcf6;--line:#c3dcd4;--muted:#405e66;--gold:#ffe19b;--soft:#eff9f4}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:1.04rem/1.67 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--blue);text-underline-offset:3px}a:hover{text-decoration-thickness:3px}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #d67a17;outline-offset:4px}
+button,input{font:inherit}
+.skip{position:absolute;top:-6rem;left:1rem;z-index:10;background:#fff;padding:.6rem 1.2rem}.skip:focus{top:1rem}
+.wrap{width:min(1100px,calc(100% - 2.5rem));margin-inline:auto}
+.hero{background:radial-gradient(circle at 88% 22%,#2d716c,transparent 44%),linear-gradient(125deg,#103340,#175c5b);color:white;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:1.2rem;align-items:center;padding:3.2rem 0 2.6rem}
+.eyebrow{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;font-weight:900;color:#ddf4af}
+h1{font-size:clamp(2.7rem,6.5vw,5.6rem);line-height:1.03;letter-spacing:-.055em;margin:.7rem 0 1.1rem}
+h1 em{font-style:normal;color:#ffdb85}
+.hero p{font-size:1.18rem;color:#e6f7f3;max-width:62ch}
+.tags{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.6rem}
+.tags span{border:1px solid #c9efdf80;border-radius:80px;padding:.3rem .7rem;font-size:.85rem;font-weight:750;color:#f1fff9}
+.hero-svg{width:100%;max-height:410px;filter:drop-shadow(0 15px 17px #092d316b)}
+nav{background:#eaf7ef;border-bottom:1px solid #c0dcd1}
+nav .wrap{display:flex;flex-wrap:wrap;gap:.2rem 1.15rem;padding:.9rem 0}
+nav a{text-decoration:none;font-size:.92rem;font-weight:760;color:#14574e}
+nav a:hover{text-decoration:underline}
+main{padding:2.5rem 0 3.4rem}
+section{scroll-margin-top:1.4rem;margin-bottom:3.2rem}
+.kicker{font-size:.8rem;text-transform:uppercase;font-weight:900;letter-spacing:.15em;color:var(--green);margin:0 0 .5rem}
+h2{font-size:clamp(1.8rem,4vw,2.6rem);letter-spacing:-.035em;line-height:1.16;margin:.1rem 0 1rem}
+h3{font-size:1.27rem;line-height:1.25;margin:.35rem 0 .7rem}
+.lead{font-size:1.22rem;max-width:78ch}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.twocol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.card{background:white;border:1px solid #d2e6de;border-radius:1.15rem;padding:1.25rem 1.4rem;box-shadow:0 7px 18px #1b5c5710}
+.card p:last-child{margin-bottom:0}
+.icon{display:inline-grid;place-items:center;font-size:1.7rem;background:#e3f4ec;border-radius:.8rem;width:3rem;height:3rem}
+.callout{border-left:7px solid #087b6e;background:linear-gradient(115deg,#e7f8ed,#eaf4ff);padding:1.25rem 1.45rem;border-radius:1rem;margin:1.5rem 0}
+.callout strong{color:#06564b}
+.lab{border-radius:1.35rem;overflow:hidden;border:2px solid #b5d5c7;background:white;box-shadow:0 14px 34px #0e51451b}
+.labhead{background:#143f47;color:#fff;padding:1.3rem 1.6rem}
+.labhead p{color:#e2f8f3;margin:.25rem 0 0}.labhead h3{margin:0}
+.labgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,1fr);gap:1.4rem;padding:1.4rem}
+.screen{background:linear-gradient(#e0f4ff 0 73%,#ddbb8d 73%);border-radius:1rem;border:1px solid #bdd8d1;display:grid;place-items:center;min-height:375px}
+.screen svg{max-height:400px;width:100%}
+.controls{display:flex;flex-direction:column;gap:1rem}
+.labelrow{display:flex;align-items:center;justify-content:space-between;gap:.6rem}
+.labelrow label{font-weight:800}
+.labelrow output{font-weight:900;color:#086356}
+input[type=range]{width:100%;min-height:38px;accent-color:#0b8374;cursor:pointer}
+.hint{font-size:.88rem;color:var(--muted);margin:.05rem 0}
+.meter{height:1.3rem;border:1px solid #a4cabb;background:#e8eee7;border-radius:2rem;overflow:hidden}
+#meter-fill{height:100%;width:20%;background:linear-gradient(90deg,#24a496,#bad95b);border-radius:2rem}
+.score{font-weight:900;color:#07584d}
+.buttons{display:flex;flex-wrap:wrap;gap:.6rem}
+button{border:0;border-radius:.75rem;padding:.8rem 1rem;min-height:48px;background:#076d61;color:white;font-weight:900;cursor:pointer}
+button:hover{background:#06574e}
+button.secondary{background:#e4f3ec;color:#064a42;border:1px solid #b0d3c3}
+.status{border:1px solid #b5d8c7;background:#ecf9ef;padding:.8rem 1rem;border-radius:.75rem;margin:0;min-height:3.5rem}
+.labfoot{padding:1rem 1.45rem;background:#fff5e2;border-top:1px solid #eedcb5;font-size:.93rem}
+.steps{list-style:none;counter-reset:steps;padding:0;display:grid;gap:.7rem}
+.steps li{counter-increment:steps;background:white;border:1px solid #d9e2da;padding:1rem 1rem 1rem 4rem;border-radius:1rem;position:relative}
+.steps li:before{content:counter(steps);position:absolute;left:1rem;top:1rem;width:2.1rem;height:2.1rem;border-radius:50%;background:#126e63;color:#fff;font-weight:900;display:grid;place-items:center}
+.warning{background:#fff1e8;border:1px solid #e7c5a6;border-radius:.9rem;padding:1rem}
+.fact{border-left:6px solid #0b7869;background:#eef8f1;padding:1.1rem 1.35rem;border-radius:.7rem;margin:1rem 0}
+.fact.idea{border-color:#bc772d;background:#fff5e7}
+.badge{display:inline-block;background:#ffe6a2;border-radius:.4rem;padding:.11rem .5rem;font-size:.8rem;font-weight:900}
+pre{background:#102f3a;color:#eefffb;border-radius:.9rem;padding:1.15rem;overflow-x:auto;font-size:.91rem;line-height:1.5}
+code{font-family:ui-monospace,Consolas,"Courier New",monospace}
+details{padding:1rem 1.15rem;border:1px solid #bcd8cd;background:#fff;border-radius:.9rem;margin:.7rem 0}
+summary{cursor:pointer;font-weight:800}
+details p:last-child{margin-bottom:0}
+dl{display:grid;grid-template-columns:max-content 1fr;gap:.6rem 1.2rem}
+dt{font-weight:900;color:#0b6053}
+dd{margin:0}
+.references li{margin-bottom:.7rem;overflow-wrap:anywhere}
+footer{background:#113943;color:#e9f7f1;padding:2rem 0}footer a{color:#c3eaff}
+@media(max-width:800px){.hero-grid,.labgrid,.grid3{grid-template-columns:1fr}.hero-svg{max-width:350px;margin:auto}.screen{min-height:280px}.twocol{grid-template-columns:1fr}}
+@media(max-width:460px){.wrap{width:calc(100% - 1.4rem)}.hero-grid{padding:2.4rem 0 1.7rem}.labgrid{padding:.85rem}dl{grid-template-columns:1fr;gap:.12rem}dd{margin:0 0 .65rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media print{body{color:#000;background:#fff}nav,.buttons{display:none}.hero{background:#fff;color:#000}.hero p{color:#000}.hero h1 em{color:#000}.lab,.card{box-shadow:none}a{color:#000}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the lesson</a>
+<header class="hero"><div class="wrap hero-grid">
+<div><div class="eyebrow">DeepDivesKids · 28 October 2026 · Nature meets space</div>
+<h1>How Does a Tree <em>Drink</em> Without a Straw?</h1>
+<p>Can a tree lift water higher than a house without a pump or a heart? Discover its secret water elevator, play with the weather, and make celery reveal an invisible pathway.</p>
+<div class="tags"><span>🌳 Age 9+</span><span>🧪 Real experiment</span><span>🎮 Offline lab</span><span>🚀 Space plants</span></div></div>
+<svg class="hero-svg" viewBox="0 0 390 420" role="img" aria-labelledby="hero-title hero-desc">
+<title id="hero-title">A tree drinking through its roots</title><desc id="hero-desc">A leafy green tree above brown soil, with pale blue droplets rising through the trunk.</desc>
+<circle cx="192" cy="191" r="167" fill="#ffffff15"/><path d="M0 321Q95 308 200 321T390 320V420H0Z" fill="#b98a5c"/>
+<g fill="none" stroke="#86603c" stroke-width="18" stroke-linecap="round"><path d="M194 313L138 360L83 366"/><path d="M194 313L244 362L299 365"/><path d="M195 315v78"/></g>
+<path d="M195 315Q187 233 194 137" fill="none" stroke="#826140" stroke-width="42" stroke-linecap="round"/>
+<path d="M197 228L135 169M196 217L260 160" fill="none" stroke="#826140" stroke-width="18" stroke-linecap="round"/>
+<g fill="#5eae73"><circle cx="109" cy="151" r="63"/><circle cx="174" cy="102" r="71"/><circle cx="261" cy="112" r="78"/><circle cx="298" cy="175" r="63"/><circle cx="194" cy="165" r="76"/></g>
+<g fill="#96d189"><circle cx="119" cy="117" r="30"/><circle cx="249" cy="89" r="36"/><circle cx="179" cy="176" r="26"/></g>
+<path d="M193 320Q187 241 194 185Q197 148 211 101" stroke="#c3f0ff" stroke-width="8" stroke-dasharray="8 12" stroke-linecap="round" fill="none"/>
+<g fill="#c1efff" stroke="#0d6e91" stroke-width="2"><path d="M194 301q-14 18 0 28q14-10 0-28Z"/><path d="M194 235q-14 18 0 28q14-10 0-28Z"/><path d="M207 163q-14 18 0 28q14-10 0-28Z"/></g>
+<g fill="none" stroke="#d7f9ff" stroke-width="5" stroke-linecap="round"><path d="M280 60l11-23 9 14M319 82l9-24 9 13"/></g>
+</svg></div></header>
+<nav aria-label="Contents"><div class="wrap"><a href="#mystery">The question</a><a href="#science">How it works</a><a href="#lab">Play the lab</a><a href="#experiment">Experiment</a><a href="#real">Real &amp; imagined uses</a><a href="#code">Code</a><a href="#quiz">Quiz</a><a href="#sources">Sources</a></div></nav>
+<main id="main" class="wrap">
+<section id="mystery">
+<p class="kicker">01 · A surprising mystery</p><h2>No heart. No hose. No problem?</h2>
+<p class="lead">After a hockey game, skater Quinn (#28) and goalie Reagan (#66) can reach for water bottles. But a giant tree cannot pick up a bottle. So how does water reach its tallest leaves?</p>
+<div class="callout"><strong>Before you read:</strong> Imagine a long, narrow tube filled with water. If water disappeared from the top, might the rest of the water move? Make a prediction and explain why.</div>
+</section>
+<section id="science">
+<p class="kicker">02 · Follow one water drop</p><h2>The science behind a tree's water elevator</h2>
+<div class="grid3">
+<article class="card"><span class="icon" aria-hidden="true">🌱</span><h3>1. Roots collect</h3><p>Roots absorb water from soil. It enters special plant tissue called <strong>xylem</strong> (say “ZY-lem”), which transports water and dissolved minerals.</p></article>
+<article class="card"><span class="icon" aria-hidden="true">💧</span><h3>2. Water holds together</h3><p>Water molecules attract each other: that's <strong>cohesion</strong>. Their attraction to other surfaces is <strong>adhesion</strong>. A connected column of water can transmit a pull.</p></article>
+<article class="card"><span class="icon" aria-hidden="true">🍃</span><h3>3. Leaves lose water</h3><p>Water evaporates inside leaves and vapor leaves through tiny pores called <strong>stomata</strong>. This <strong>transpiration</strong> helps create tension that pulls water upward through the xylem.</p></article>
+</div>
+<div class="callout"><strong>Important:</strong> Capillary action helps water move through narrow spaces, but <em>capillary action alone cannot explain water reaching the tops of tall trees</em>. Scientists use the <strong>cohesion–tension mechanism</strong> to explain long-distance water movement. See the <a href="#s-usfs">Forest Service's research summary</a>.</div>
+<p>Picture hockey teammates holding hands in a long line. A tug at one end can be felt by others. Water molecules aren't teammates, but their cohesion makes this a useful first picture of a connected water column.</p>
+</section>
+<section id="lab">
+<p class="kicker">03 · Experiment on a screen</p><h2>🎛️ The Water Elevator Lab</h2>
+<p>Change one slider at a time, make a prediction, and press <strong>Watch water climb</strong>. This is a <em>teaching model</em> with invented numbers—not a real measurement of a tree!</p>
+<div class="lab"><div class="labhead"><h3>The pretend tree mission</h3><p>Sunshine, moving air and humidity can influence evaporation. What happens when you change the weather?</p></div>
+<div class="labgrid">
+<div class="screen"><svg id="tree" viewBox="0 0 370 400" role="img" aria-labelledby="tree-title tree-desc">
+<title id="tree-title">Water elevator model of a tree</title><desc id="tree-desc">A stylized tree with roots, a water pathway through its xylem, and arrows showing vapor leaving leaves. When activated, illustrated drops travel up the pathway.</desc>
+<circle cx="317" cy="57" r="29" fill="#f6cd64"/><path d="M0 290Q125 276 190 289T370 287V400H0Z" fill="#d4ae80"/>
+<g stroke="#926740" fill="none" stroke-width="15" stroke-linecap="round"><path d="M184 280L129 340L83 345"/><path d="M185 280L229 340L280 345"/><path d="M185 286L185 379"/></g>
+<path d="M184 286Q176 205 184 121" stroke="#906641" stroke-width="33" fill="none" stroke-linecap="round"/>
+<g fill="#58ab70"><circle cx="127" cy="135" r="70"/><circle cx="200" cy="98" r="73"/><circle cx="261" cy="143" r="67"/><circle cx="185" cy="174" r="64"/></g><g fill="#8bcf82"><circle cx="129" cy="103" r="33"/><circle cx="258" cy="109" r="31"/></g>
+<path id="track" d="M185 346Q178 282 184 231Q180 165 196 76" fill="none" stroke="#bff1ff" stroke-width="8" stroke-linecap="round" stroke-dasharray="8 11"/>
+<g id="drops" fill="#d4f6ff" stroke="#075b82" stroke-width="2"></g>
+<g fill="none" stroke="#097e92" stroke-width="4" stroke-linecap="round"><path d="M240 65l8-24 8 13M271 82l9-26 8 14"/></g>
+<g fill="#154453" font-size="15" font-weight="800"><text x="15" y="35">Leaves → air</text><text x="12" y="327">Roots</text><text x="214" y="255">Xylem</text></g></svg></div>
+<div class="controls">
+<div><div class="labelrow"><label for="sun">☀️ Warm sunshine</label><output for="sun" id="sun-value">60%</output></div><input id="sun" type="range" min="0" max="100" step="10" value="60" aria-describedby="sun-help"><p class="hint" id="sun-help">This simple model treats more warmth as more evaporation.</p></div>
+<div><div class="labelrow"><label for="wind">🌬️ Moving air</label><output for="wind" id="wind-value">40%</output></div><input id="wind" type="range" min="0" max="100" step="10" value="40" aria-describedby="wind-help"><p class="hint" id="wind-help">A breeze carries humid air away from leaves.</p></div>
+<div><div class="labelrow"><label for="humidity">☁️ Air humidity</label><output for="humidity" id="humidity-value">30%</output></div><input id="humidity" type="range" min="0" max="100" step="10" value="30" aria-describedby="humidity-help"><p class="hint" id="humidity-help">Water evaporates less readily into damp air.</p></div>
+<div><div class="labelrow"><strong>Made-up water-pull score</strong><output class="score" id="score">44 / 100</output></div><div role="meter" class="meter" id="meter" aria-label="Illustrative water pull score" aria-valuemin="0" aria-valuemax="100" aria-valuenow="44"><div id="meter-fill"></div></div><p class="hint">Not liters, actual speeds or real tree data.</p></div>
+<div class="buttons"><button id="run" type="button">▶ Watch water climb</button><button id="reset" class="secondary" type="button">↺ Reset weather</button></div>
+<p class="status" id="status" role="status" aria-live="polite">Try one change and predict whether the score will rise or fall.</p>
+</div></div><div class="labfoot"><strong>Science honesty:</strong> Real plants regulate stomata, need available soil water, and behave differently by species. This game ignores most of that complexity. The dots are illustrations; they do not represent actual molecular speed.</div></div>
+</section>
+<section id="experiment">
+<p class="kicker">04 · Hands-on discovery</p><h2>🧪 Make celery reveal its invisible plumbing</h2>
+<div class="twocol"><article class="card"><h3>Get ready</h3><p>You'll need two clear glasses, water, a few drops of food coloring, two similar fresh celery stalks <strong>with leaves</strong>, paper towels and a notebook. Ask an adult to handle any cutting.</p><p><strong>Setup:</strong> about 10 minutes. <strong>Observation:</strong> several hours or longer, depending on the celery.</p></article>
+<article class="card"><h3>Make it a fair test</h3><p>Put one celery stalk in plain water (your <strong>control</strong>) and another in colored water. Keep both in the same location. Predict which stalk's pathways will be easier to see.</p><div class="warning"><strong>Be safe:</strong> Food dye stains. Do not drink experiment water. Only an adult should cut the celery. Wash hands after handling coloring.</div></article></div>
+<ol class="steps">
+<li>Fill each glass with water. Color only one glass with several drops of food dye.</li>
+<li>Place a celery stalk into each glass, with its cut base underwater. Write down the starting time.</li>
+<li>Check again after an hour, then later. Sketch what you <em>actually</em> see, even if nothing appears yet.</li>
+<li>Have an adult cut a thin cross-section of the dyed stalk near its base. Look for colored spots where water-carrying tissue is located.</li>
+<li>Finish the scientist sentence: “We predicted ___; we observed ___; next time we would change ___.”</li>
+</ol>
+<div class="callout"><strong>Extra challenge:</strong> With permission, loosely place a clear bag over a few leaves on a healthy outdoor plant for a short observation, and remove it afterward. Avoid hot direct sun and don't damage the plant. Do you see condensation? This demonstrates vapor leaving leaves; it does not directly measure xylem tension. <a href="#s-bag">USGS shows this experiment.</a></div>
+</section>
+<section id="real">
+<p class="kicker">05 · Reality vs imagination</p><h2>🚀 From backyard plants to space experiments</h2>
+<article class="fact"><span class="badge">REAL · NASA documentation</span><h3>Plants really grow in experiments aboard the ISS</h3><p>NASA's <strong>Advanced Plant Habitat</strong> is an actual, automated plant-growth chamber on the International Space Station. NASA explains how its lighting and growing substrate help deliver water, nutrients and oxygen to roots. Keeping roots healthy is particularly challenging in microgravity. This is real space research—not a claim that NASA uses our simulation. <a href="#s-nasa">NASA primary source</a>.</p></article>
+<article class="fact"><span class="badge">REAL · Scientific research</span><h3>Scientists investigate forces in xylem</h3><p>The U.S. Forest Service has published research explaining the cohesion–tension theory of water transport and how evaporation at leaves generates pulling force. <a href="#s-usfs">Read their summary</a>.</p></article>
+<article class="fact idea"><span class="badge">IMAGINED · Family engineering idea</span><h3>Make a tiny plant monitor</h3><p>You could build a sensor system that records light and humidity by a plant. Dad's <strong>RISCue</strong> small-computer work or <strong>VeloSim</strong> simulation ideas could inspire how to test the readings and make predictions. That would be a new suggested project—<strong>not</strong> a claimed feature of Dad's existing projects and not a NASA flight device.</p></article>
+<p>For Reagan and Quinn, an ice-hockey bottle is a reminder that living things need water; the engineering question is how the water gets where it's needed. Try drawing your colored celery cross-section like a scientific artist. Dad can help test whether a sensor reading is repeatable, just as engineers test spacecraft instruments.</p>
+</section>
+<section id="code">
+<p class="kicker">06 · A real program with honest limits</p><h2>💻 Teach a computer a pretend tree</h2>
+<p>The interactive lab uses ordinary JavaScript, not a downloaded library. This is the <strong>actual score function</strong> used by the game. Same inputs, same output, every time—something engineers call <strong>deterministic</strong>.</p>
+<pre><code>function waterPullScore(sun, breeze, humidity) {
+  const warmth = 0.25 + 0.75 * sun / 100;
+  const airflow = 0.65 + 0.35 * breeze / 100;
+  const dryAir = 1 - 0.75 * humidity / 100;
+  return Math.round(10 + 80 * warmth * airflow * dryAir);
+}
+
+// These are MADE-UP scores, not scientific measurements.
+waterPullScore(60, 40, 30); // 44
+</code></pre>
+<p><strong>Code challenge:</strong> Predict whether <code>waterPullScore(60, 40, 100)</code> will be higher or lower than 44. Then change only the humidity slider to test your prediction.</p>
+<div class="twocol"><article class="card"><h3>✅ Why this approach is useful</h3><p>It is small, quick, offline, inspectable, and requires no external JavaScript packages, accounts, trackers, servers or network access. A saved copy works in modern browsers.</p></article><article class="card"><h3>⚠️ Where it falls short</h3><p>These weights are invented. A real plant model would need measured parameters, soil moisture, stomatal regulation, species data and physical units. No real plant is being measured here.</p></article></div>
+<details><summary>Grown-up corner: integration and licenses</summary><p>This self-contained file uses HTML, CSS, SVG, and standard browser JavaScript only. There are no third-party runtime dependencies, package managers, CDN assets, external fonts or images. The lesson's original example JavaScript is offered under the <a href="https://opensource.org/license/mit">MIT License</a> for reuse with preservation of the license notice. The primary sources are linked for reference, not copied into the file or endorsed by their agencies. The diagrams are original inline SVG. Requirements: a modern browser with SVG and requestAnimationFrame support; no build step. External research links require internet, while the lab works offline.</p></details>
+</section>
+<section id="quiz">
+<p class="kicker">07 · Test your brain</p><h2>Three mini-mysteries</h2>
+<details><summary>1. Is a tree secretly using a mechanical pump like a car?</summary><p>No. The cohesion–tension mechanism, driven largely by evaporation from leaves, helps move water through xylem. A tree has no mechanical pump like a car engine.</p></details>
+<details><summary>2. Why might a tree lose less water into very humid air?</summary><p>It can be harder for water to evaporate into air that is already moist. Real stomata also open and close.</p></details>
+<details><summary>3. Is the number 44 a measured quantity?</summary><p>No! It is an invented score. Real measurements need instruments, units and careful comparisons.</p></details>
+<div class="callout"><strong>Make your next discovery:</strong> How would you test whether a leafy stalk colors differently from a stalk with fewer leaves? What would stay the same? Ask an adult before changing a living plant.</div>
+</section>
+<section id="glossary">
+<p class="kicker">Words worth knowing</p><h2>Your scientist's pocket dictionary</h2>
+<dl><dt>Xylem</dt><dd>Plant tissue that transports water and dissolved minerals.</dd><dt>Stomata</dt><dd>Tiny pores, usually in leaves, that regulate exchange with air.</dd><dt>Transpiration</dt><dd>Water escaping plants as water vapor, often through leaves.</dd><dt>Cohesion</dt><dd>Attraction between molecules of the same substance.</dd><dt>Control</dt><dd>A comparison used to make an experiment fair.</dd><dt>Model</dt><dd>A simplified picture or calculation that explains some things but not everything.</dd></dl>
+</section>
+<section id="sources">
+<p class="kicker">08 · Follow the evidence</p><h2>Verified primary sources</h2><p>These are pages from the research organizations themselves, rather than unsourced internet summaries. Links checked on <time datetime="2026-10-28">October 28, 2026</time>.</p>
+<ol class="references">
+<li id="s-usgs"><strong>USGS Water Science School:</strong> <a href="https://www.usgs.gov/media/images/evapotranspiration-sum-plant-transpiration-and-evaporation">Evapotranspiration — roots, tissues and stomata</a>.</li>
+<li id="s-usfs"><strong>U.S. Forest Service (2011):</strong> <a href="https://research.fs.usda.gov/treesearch/38556">The role of surface tension in xylem water relations</a>. Discusses cohesion–tension and the mechanism of long-distance water ascent.</li>
+<li id="s-celery"><strong>USGS Water Science School:</strong> <a href="https://water.usgs.gov/edu/gallery/watercyclekids/pictures/plant-uptake.html">Plant uptake, including celery in colored water</a>.</li>
+<li id="s-bag"><strong>USGS Water Science School:</strong> <a href="https://water.usgs.gov/edu/gallery/watercyclekids/transpiration-bag.html">Transpiration from plant leaves: condensation in a bag</a>.</li>
+<li id="s-nasa"><strong>NASA Science:</strong> <a href="https://science.nasa.gov/mission/advanced-plant-habitat/">Advanced Plant Habitat, real research on the International Space Station</a>.</li>
+<li><strong>NASA:</strong> <a href="https://www.nasa.gov/exploration-research-and-technology/growing-plants-in-space/">Growing Plants in Space: real irrigation challenges in microgravity</a>.</li>
+<li><strong>USGS Water Science School:</strong> <a href="https://water.usgs.gov/edu/gallery/watercyclekids/evapotranspiration.html">Evapotranspiration, explained for kids</a>.</li>
+</ol>
+<p class="hint">Evidence labels are deliberate: NASA's habitat and published xylem research are real; the family sensor idea is suggested; the water-pull score is an educational invention. The page collects no data.</p>
+</section>
+</main>
+<footer><div class="wrap"><p><strong>🌳 DeepDivesKids • October 28, 2026</strong></p><p>Make a prediction. Collect evidence. Change your mind when the evidence asks you to.</p><p>Self-contained original lesson and graphics · <a href="#main">Back to top ↑</a></p></div></footer>
+<script>
+"use strict";
+(function () {
+  const names = ["sun", "wind", "humidity"];
+  const inputs = {};
+  names.forEach(function (name) { inputs[name] = document.getElementById(name); });
+  const scoreDisplay = document.getElementById("score");
+  const meter = document.getElementById("meter");
+  const fill = document.getElementById("meter-fill");
+  const status = document.getElementById("status");
+  const path = document.getElementById("track");
+  const group = document.getElementById("drops");
+  const lessMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let activeFrame = null;
+  function waterPullScore(sun, breeze, humidity) {
+    const warmth = 0.25 + 0.75 * sun / 100;
+    const airflow = 0.65 + 0.35 * breeze / 100;
+    const dryAir = 1 - 0.75 * humidity / 100;
+    return Math.round(10 + 80 * warmth * airflow * dryAir);
+  }
+  function update() {
+    const v = names.map(function (name) {
+      const value = Number(inputs[name].value);
+      document.getElementById(name + "-value").textContent = value + "%";
+      return value;
+    });
+    const n = waterPullScore(v[0], v[1], v[2]);
+    scoreDisplay.textContent = n + " / 100";
+    meter.setAttribute("aria-valuenow", String(n));
+    fill.style.width = n + "%";
+    return n;
+  }
+  function clear() {
+    if (activeFrame !== null) { cancelAnimationFrame(activeFrame); activeFrame = null; }
+    while (group.firstChild) { group.removeChild(group.firstChild); }
+  }
+  function run() {
+    clear();
+    const score = update();
+    const count = Math.max(2, Math.round(score / 12));
+    const dots = [];
+    for (let i = 0; i < count; i += 1) {
+      const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      dot.setAttribute("r", String(4 + i % 3));
+      group.appendChild(dot);
+      dots.push(dot);
+    }
+    const length = path.getTotalLength();
+    function render(progress) {
+      dots.forEach(function (dot, i) {
+        const fraction = Math.max(0, Math.min(1, progress - i * 0.08));
+        const point = path.getPointAtLength(length * fraction);
+        dot.setAttribute("cx", String(point.x));
+        dot.setAttribute("cy", String(point.y));
+      });
+    }
+    if (lessMotion) {
+      render(1);
+      status.textContent = count + " illustrated drops moved instantly for reduced motion. Score: " + score + " out of 100 (not measured).";
+      return;
+    }
+    const start = performance.now();
+    function animate(time) {
+      const progress = Math.min(1, (time - start) / 3200);
+      render(progress);
+      if (progress < 1) { activeFrame = requestAnimationFrame(animate); }
+      else { activeFrame = null; }
+    }
+    activeFrame = requestAnimationFrame(animate);
+    status.textContent = "Watching " + count + " pretend drops climb. Your invented score is " + score + " out of 100.";
+  }
+  names.forEach(function (name) {
+    inputs[name].addEventListener("input", function () {
+      clear();
+      const result = update();
+      status.textContent = "Now " + result + " out of 100. Predict what happens when you change only one more slider!";
+    });
+  });
+  document.getElementById("run").addEventListener("click", run);
+  document.getElementById("reset").addEventListener("click", function () {
+    clear();
+    inputs.sun.value = "60";
+    inputs.wind.value = "40";
+    inputs.humidity.value = "30";
+    update();
+    status.textContent = "Weather reset. Can you increase the score by changing only one slider?";
+  });
+  update();
+  if (waterPullScore(60, 40, 30) !== 44) {
+    status.textContent = "The model self-check failed. Please report this problem.";
+  }
+})();
+</script>
+</body>
+</html>
