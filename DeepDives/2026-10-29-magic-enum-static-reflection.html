@@ -65,7 +65,7 @@ input{width:100%;font:inherit;border:1px solid #97b3c4;border-radius:9px;backgro
 <p>This is not runtime reflection in the managed-language sense: no RTTI registration table, object graph discovery, or allocation is required simply to ask for the name of a reflected enumerator. There may still be compile-time and binary-size costs.</p>
 </section>
 <section id="mechanism"><h2>03. How it works under the hood</h2>
-<p>For C++20 on mainstream compilers, the library uses a documented implementation technique involving compiler-generated function signature strings such as <code>__PRETTY_FUNCTION__</code> or <code>__FUNCSIG__</code>. It examines a bounded set of possible enum values during constant evaluation and extracts the names of valid enumerators. The result is metadata that can be used by ordinary compiled code. The upstream documentation also describes selecting standard C++26 reflection automatically when that feature is available.</p>
+<p>For C++20 on mainstream compilers, the library uses a documented implementation technique involving compiler-generated function signature strings such as <code>__PRETTY_FUNCTION__</code> or <code>__FUNCSIG__</code>. It examines a bounded set of possible enum values during constant evaluation and extracts the names of valid enumerators. The result is metadata that can be used by ordinary compiled code. The pinned v0.9.8 release relies on this compiler-specific mechanism; it does not document or implement an automatic C++26 standard-reflection path. Newer development-branch guidance must not be applied to this pinned release without an upgrade review.</p>
 <h3>The compile-time / run-time split</h3>
 <div class="table-scroll"><table><thead><tr><th>Concern</th><th>Where the work lives</th><th>Operational meaning</th></tr></thead><tbody>
 <tr><td>Search candidate enum values</td><td>Compiler / constant evaluation</td><td>Larger ranges can make builds slower; range tuning matters.</td></tr>
@@ -191,7 +191,7 @@ static_assert(magic_enum::enum_name(DeviceCode::LinkLost)
 <li><strong>Forward-declared enums are not enough:</strong> the full definition must be visible. Keep range macros consistent across translation units and modules to avoid ODR hazards.</li>
 <li><strong>Potential metadata leaks:</strong> diagnostic names expose internal symbols in log files; review debug/release policies and threat models.</li>
 </ul>
-<p>The project's <a href="#ref-limits">limitations document</a> is unusually important here: consult it before interpreting an empty name as a genuine unknown value.</p>
+<p>The pinned release's <a href="#ref-limits">limitations document</a> is unusually important here: consult it before interpreting an empty name as a genuine unknown value.</p>
 </section>
 <section id="performance"><h2>10. Allocation, determinism and a practical benchmark</h2>
 <p>Several attractive facts are narrower than they first appear: a <code>string_view</code> is non-owning, and an <code>optional&lt;Signal&gt;</code> holds its small value in place, but the surrounding program can allocate memory. The library does not claim globally bounded lookup time or a universally optimal code-size result; compiler optimizations, enum cardinality, and workload matter.</p>
@@ -230,7 +230,7 @@ cmake --build build --parallel
 <pre tabindex="0" aria-label="Vendored dependency CMake alternative"><code># Offline build variant: vendor the pinned release in third_party/magic_enum.
 add_subdirectory(third_party/magic_enum)
 target_link_libraries(signal_lab PRIVATE magic_enum::magic_enum)</code></pre>
-<p>Native C++20 modules are an optional separate integration path with CMake 3.28+ according to upstream; this edition intentionally uses the simpler, more portable header-only integration. The library's documentation warns not to mix module imports and traditional magic_enum headers in the same program. <a href="#ref-readme">Official integration guidance ↗</a></p>
+<p>This pinned v0.9.8 integration is intentionally header-only. More recent development-branch documentation describes C++ modules, but v0.9.8's CMakeLists.txt does not define the newer <code>MAGIC_ENUM_USE_MODULES</code> option or <code>magic_enum::magic_enum_module</code> target. Do not copy unpinned module instructions into this build. <a href="#ref-readme">Official integration guidance ↗</a></p>
 </section>
 <section id="tradeoffs"><h2>12. Alternative approaches</h2>
 <div class="table-scroll"><table><thead><tr><th>Approach</th><th>Advantage</th><th>Cost / tradeoff</th></tr></thead><tbody>
@@ -243,7 +243,7 @@ target_link_libraries(signal_lab PRIVATE magic_enum::magic_enum)</code></pre>
 <p>For a safety-sensitive embedded core with a narrow enum set, a generated switch may remain the better risk tradeoff. For host-side tracing and test infrastructure, magic_enum's reduction in boilerplate is attractive.</p>
 </section>
 <section id="license-section"><h2>13. Licensing, supply chain and maintenance</h2>
-<p>The project is <strong>MIT licensed</strong> (Daniil Goncharov, 2019–2026 in the repository license). You may use it commercially and modify or redistribute it, including in closed-source applications, subject to retaining the copyright and permission notice in copies or substantial portions. The license explicitly disclaims warranty. This is not legal advice; include license review in your normal third-party software process.</p>
+<p>The pinned v0.9.8 project is <strong>MIT licensed</strong> (Daniil Goncharov, 2019–2024 in that tag's LICENSE file; the development branch has since updated its copyright notice). You may use it commercially and modify or redistribute it, including in closed-source applications, subject to retaining the copyright and permission notice in copies or substantial portions. The license explicitly disclaims warranty. This is not legal advice; include license review in your normal third-party software process.</p>
 <p>Recommended engineering controls: pin the exact source commit; archive source and LICENSE; record review date; run compiler-matrix tests (GCC/Clang/MSVC as appropriate); check range/alias tests; compare embedded object sizes and symbol tables; validate any update in CI before promotion. For flight-related processes, apply the project's own software assurance and traceability rules—the MIT license alone supplies no safety certification.</p>
 </section>
 <section id="validation"><h2>14. Review status and proposed acceptance tests</h2>
