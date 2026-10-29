@@ -24,14 +24,15 @@ The workflow checks whether Pages is configured before deploying. No personal to
 - Search/filter behavior: edit shared/components/catalog.js.
 - Generated result: `_site/index.html`; do not edit it directly.
 
-Run `dotnet run --project tools/Catalog -- build` to regenerate locally. Push to main to regenerate and publish through Actions. A pull request builds and verifies without publishing. The generated catalog is `_site/catalog.json`.
+Run `dotnet run --project tools/Catalog -- build` to regenerate locally. Push to main to regenerate and publish through Actions. A pull request builds and verifies without publishing. The generated lesson catalog is `_site/catalog.json`; the report index is `_site/deepdives.json`.
 
 ## Path and asset rules
 
-Only shared/ and each lesson's app/ directory enter the published artifact. App files are copied to lessons/<topic>/<slug>/ with their relative structure intact. Use relative URLs, not `/assets/...` URLs that assume a domain root. Keep individual files below GitHub's file limits and the site within Pages limits. Large runtime archives should use pinned, checksum-verified artifacts or reproducible builds; never add tokens to download URLs committed to Git.
+The build publishes `shared/`, each lesson's `app/` directory, and every committed HTML file under `DeepDives/` and `DeepDivesKids/`. Reports retain their source-relative paths, so links such as `DeepDives/2026-10-29-magic-enum-static-reflection.html` open rendered HTML. Use relative URLs, not `/assets/...` URLs that assume a domain root. Keep individual files below GitHub's file limits and the site within Pages limits. Large runtime archives should use pinned, checksum-verified artifacts or reproducible builds; never add tokens to download URLs committed to Git.
 
 ## Official references
 
 - https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages
 - https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages
 - https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits
+

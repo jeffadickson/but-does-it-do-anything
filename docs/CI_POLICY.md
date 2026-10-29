@@ -1,6 +1,6 @@
 # CI run policy — deliberate release-candidate verification
 
-The full GitHub Actions workflows `.github/workflows/site.yml` and `.github/workflows/windows-reader.yml` is **not** triggered by ordinary pushes to feature branches or `main`, by updating a pull request, or by merging a PR.
+The full GitHub Actions workflow `.github/workflows/site.yml` runs for pushes to `main`, release-candidate tags, and manual requests. It is not triggered by ordinary pushes to feature branches or pull request updates.
 
 ## When the full suite runs
 
@@ -33,11 +33,12 @@ Run relevant per-lesson tests only when changing that area. This policy trades f
 
 ## Publishing the website
 
-**Merging no longer automatically deploys GitHub Pages.** After merging a tested revision into `main`, manually start **Verify and publish lessons** on `main`. The existing workflow's Pages detection/deployment logic only allows a main-branch non-PR run to deploy; release-candidate tag runs are verification-only. If Pages is not configured, the deployment remains skipped.
+Merging a revision into `main` automatically starts **Verify and publish lessons**. The existing workflow's Pages detection/deployment logic only allows a main-branch non-PR run to deploy; release-candidate tag runs are verification-only. If Pages is not configured, the deployment remains skipped.
 
 ## Safety notes
 
 - Avoid making passing CI checks mandatory branch-protection requirements for every PR unless you intend to invoke the workflow manually before merging; otherwise PRs may remain blocked waiting for a check that is intentionally never started.
 - Standard GitHub-hosted Actions runners are free for public repositories under GitHub's current pricing, while larger runners or storage may still incur charges. Inspect actual billing rather than assuming each run costs money.
 - The Windows offline reader workflow follows the same release-candidate/manual triggers. Its packaging artifact is still produced only when that workflow runs. Other newly added workflows must be reviewed separately.
-- To restore continuous CI, add `pull_request:` and/or `push.branches: [main]` to that workflow in a deliberate change.
+- Pull requests remain intentionally outside the full matrix; use the manual workflow or an RC tag when a full verification run is needed before merge.
+

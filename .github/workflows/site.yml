@@ -1,8 +1,9 @@
 name: Verify and publish lessons
-# Deliberate CI: ordinary pushes, PR updates and merges do not trigger this matrix.
-# Tag a release candidate (e.g. v1.2.0-rc1) or run manually in Actions.
+# Full verification and Pages deployment run for pushes to main, release-candidate tags, and manual requests.
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*-rc*'
   workflow_dispatch:
@@ -168,3 +169,4 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: actions/deploy-pages@v4
         id: deployment
+

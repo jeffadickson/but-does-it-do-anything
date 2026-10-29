@@ -6,6 +6,7 @@ using Microsoft.Extensions.FileProviders;
 
 public static class Catalog
 {
+    sealed record DeepDive(string Kind, string Title, string Summary, DateTime Date, string Url, string Search);
     public static readonly string Root = FindRoot();
     static string FindRoot()
     {
@@ -59,6 +60,36 @@ public static class Catalog
         }
     }
     static string Escape(string s) => s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;").Replace("'", "&#x27;");
+    static string HtmlField(string html, string pattern, string fallback)
+    {
+        var match = Regex.Match(html, pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        if (!match.Success) return fallback;
+        var value = Regex.Replace(match.Groups[1].Value, "<[^>]+>", " ");
+        return System.Net.WebUtility.HtmlDecode(Regex.Replace(value, @"\s+", " ")).Trim();
+    }
+    static List<DeepDive> CollectDeepDives(string root)
+    {
+        var result = new List<DeepDive>();
+        foreach (var kind in new[] { (Directory: "DeepDives", Label: "Deep dive"), (Directory: "DeepDivesKids", Label: "Kids deep dive") })
+        {
+            var source = Path.Combine(root, kind.Directory);
+            if (!Directory.Exists(source)) continue;
+            foreach (var file in Directory.GetFiles(source, "*.html").Order(StringComparer.Ordinal))
+            {
+                var name = Path.GetFileName(file);
+                var dateText = name[..10];
+                if (!DateTime.TryParseExact(dateText, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var date))
+                    throw new InvalidDataException($"{file}: filename must start with yyyy-MM-dd");
+                var html = File.ReadAllText(file);
+                var fallback = Path.GetFileNameWithoutExtension(file)[11..].Replace('-', ' ');
+                var title = HtmlField(html, @"<title[^>]*>(.*?)</title>", fallback);
+                var summary = HtmlField(html, "<meta[^>]+name=[\"']description[\"'][^>]+content=[\"'](.*?)[\"']", "Standalone HTML deep dive");
+                var url = $"{kind.Directory}/{name}";
+                result.Add(new DeepDive(kind.Directory.ToLowerInvariant(), title, summary, date, url, $"{kind.Label} {title} {summary} {name}".ToLowerInvariant()));
+            }
+        }
+        return result.OrderByDescending(x => x.Date).ThenByDescending(x => x.Url, StringComparer.Ordinal).ToList();
+    }
     static void Copy(string source, string target)
     {
         Directory.CreateDirectory(target);
@@ -68,10 +99,19 @@ public static class Catalog
     static void WriteJson(string path, object value) => File.WriteAllText(path, JsonSerializer.Serialize(value, new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }) + "\n");
     public static string Build(string root)
     {
-        var lessons = Collect(root); var config = Read(Path.Combine(root, "site/config.json")); var output = Path.Combine(root, "_site");
+        var lessons = Collect(root); var deepDives = CollectDeepDives(root); var config = Read(Path.Combine(root, "site/config.json")); var output = Path.Combine(root, "_site");
         if (Directory.Exists(output)) Directory.Delete(output, true);
         Directory.CreateDirectory(output); Copy(Path.Combine(root, "shared"), Path.Combine(output, "shared"));
         var cards = new List<string>();
+        foreach (var dive in deepDives)
+        {
+            var label = dive.Kind == "deepdiveskids" ? "Kids deep dive" : "Deep dive";
+            cards.Add($"<article class=\"lesson-card\" data-topic=\"{Escape(dive.Kind)}\" data-mode=\"browser\" data-search=\"{Escape(dive.Search)}\"><div class=\"card-meta\">{Escape(label)} · {dive.Date:MMMM d, yyyy}</div><h2><a href=\"{Escape(dive.Url)}\">{Escape(dive.Title)}</a></h2><p>{Escape(dive.Summary)}</p><div class=\"card-bottom\"><span class=\"badge\">Rendered HTML</span><span>Open in your browser</span></div></article>");
+            var sourceDive = Path.Combine(root, dive.Kind == "deepdiveskids" ? "DeepDivesKids" : "DeepDives", Path.GetFileName(dive.Url));
+            var targetDive = Path.Combine(output, Path.GetDirectoryName(dive.Url)!);
+            Directory.CreateDirectory(targetDive);
+            File.Copy(sourceDive, Path.Combine(targetDive, Path.GetFileName(dive.Url)));
+        }
         foreach (var l in lessons)
         {
             string V(string k) => Escape(S(l, k));
@@ -81,8 +121,8 @@ public static class Catalog
         }
         var template = File.ReadAllText(Path.Combine(root, "site/index.template.html"));
         foreach (var key in new[] { "title", "tagline", "intro", "repository" }) template = template.Replace("{{" + key + "}}", Escape(S(config, key)));
-        File.WriteAllText(Path.Combine(output, "index.html"), template.Replace("{{cards}}", string.Join('\n', cards)).Replace("{{count}}", lessons.Count.ToString()));
-        WriteJson(Path.Combine(output, "catalog.json"), lessons); File.WriteAllText(Path.Combine(output, ".nojekyll"), ""); return output;
+        File.WriteAllText(Path.Combine(output, "index.html"), template.Replace("{{cards}}", string.Join('\n', cards)).Replace("{{count}}", (lessons.Count + deepDives.Count).ToString()));
+        WriteJson(Path.Combine(output, "catalog.json"), lessons); WriteJson(Path.Combine(output, "deepdives.json"), deepDives); File.WriteAllText(Path.Combine(output, ".nojekyll"), ""); return output;
     }
     public static string Create(string root, string topic, string slug, string title)
     {
@@ -149,4 +189,5 @@ public static class Catalog
         { Console.Error.WriteLine($"Error: {e.Message}"); return 1; }
     }
 }
+
 

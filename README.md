@@ -28,7 +28,7 @@ dotnet run --project tools/Catalog -- new software-testing testing-toolkit --tit
 
 Edit the generated `lessons/software-testing/testing-toolkit/lesson.json` and `app/index.html`. Replace placeholder content, add the demo and its checks, then run check/build and commit. Do not publish unfilled templates. **The homepage discovers lesson.json files automatically. No manual card or catalog editing is required.**
 
-For importing an existing project, copy the **[detailed, reusable lesson import prompt](docs/IMPORT_PROMPT.md)** into that project's development conversation. It includes metadata registration, educational requirements, cross-platform bootstrap, reproducible builds, CI checks, conflict handling, and GitHub Pages verification. See [CONTRIBUTING.md](CONTRIBUTING.md) for repository conventions. **No homepage edits are necessary:** `tools/Catalog` finds each lesson from `lesson.json`.
+For importing an existing project, copy the **[detailed, reusable lesson import prompt](docs/IMPORT_PROMPT.md)** into that project's development conversation. It includes metadata registration, educational requirements, cross-platform bootstrap, reproducible builds, CI checks, conflict handling, and GitHub Pages verification. See [CONTRIBUTING.md](CONTRIBUTING.md) for repository conventions. **No homepage edits are necessary:** `tools/Catalog` finds each lesson from `lesson.json` and discovers committed `DeepDives/*.html` and `DeepDivesKids/*.html` reports automatically.
 
 ## Where things live
 
@@ -41,13 +41,13 @@ For importing an existing project, copy the **[detailed, reusable lesson import 
 - `tutorial/`, `examples/`, `tests/`, `assets/`: optional lesson source directories; copied into app only by an explicit lesson build step when needed on the website.
 - `templates/lesson/`: starting point for new lessons.
 - `tools/Catalog`: validation, scaffolding, site assembly, and local serving.
-- `_site/`: generated website, including index.html and catalog.json; never edit or commit it.
+- `_site/`: generated website, including the searchable index, rendered deep-dive HTML, catalog.json, and deepdives.json; never edit or commit it.
 
 JSON metadata keeps the core build dependency-free. There is no hand-maintained catalog.yaml: the generator discovers all lesson.json files.
 
 ## GitHub hosting
 
-Git stores source history; **GitHub Pages hosts the static website**. In this repository, set **Settings → Pages → Build and deployment → Source → GitHub Actions** once. Then choose **Actions → Verify and publish lessons → Run workflow** on `main` to verify and deploy. Ordinary pushes and pull requests do **not** run the expensive workflow automatically; release-candidate tags (`v*-rc*`) run verification, and manual dispatch on `main` can deploy. See [CI policy](docs/CI_POLICY.md) and [.NET 10 migration](docs/NET10_MIGRATION.md). Before Pages is configured, checks still run and the deployment job is intentionally skipped with a setup notice.
+Git stores source history; **GitHub Pages hosts the static website**. The searchable homepage includes lessons plus committed `DeepDives` and `DeepDivesKids` reports, with newest reports first and direct rendered-HTML links. Set **Settings → Pages → Build and deployment → Source → GitHub Actions** once. Pushes to `main` now verify and deploy automatically; release-candidate tags (`v*-rc*`) remain verification-only, and manual dispatch is also available. See [CI policy](docs/CI_POLICY.md) and [.NET 10 migration](docs/NET10_MIGRATION.md). Before Pages is configured, checks still run and the deployment job is intentionally skipped with a setup notice.
 
 Expected address after a successful deployment:
 https://jeffadickson.github.io/but-does-it-do-anything/
@@ -84,3 +84,4 @@ No collection-wide redistribution license has been selected. Public visibility d
 ## Optional Windows offline reader
 
 [`viewer/`](viewer/README.md) contains the dedicated Chromium/Electron reader, its Windows firewall guard, tests, and packaging scripts. It bundles Algebra Adventure and opens other self-contained HTML books. Run `./viewer/setup.ps1` and `./viewer/setup.ps1 build` on Windows to build it, or download `OfflineBookReader-Windows-x64` from a successful **Windows reader** Actions run. First-run firewall installation requires an explicit administrator action; normal reading does not. This optional application is separate from GitHub Pages and ordinary lesson setup.
+
