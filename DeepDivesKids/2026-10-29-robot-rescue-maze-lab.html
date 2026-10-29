@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="A playful, offline, interactive rover maze: learn how breadth-first search finds the shortest route, then test it like a space engineer.">
+<title>Robot Rescue! Teach a Rover to Find Its Way | DeepDivesKids • October 29, 2026</title>
+<style>
+:root{--ink:#172746;--muted:#425779;--navy:#12274b;--deep:#07162e;--paper:#f7f9ff;--white:#fff;--teal:#00a6a0;--mint:#b8f5e7;--coral:#f76f62;--gold:#ffd766;--purple:#7b61dc;--line:#cbd8e9;--shadow:0 16px 48px rgba(14,37,75,.12);--radius:23px}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:1.4rem}body{margin:0;background:var(--paper);color:var(--ink);font:1.08rem/1.65 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}a{color:#134f9b;text-underline-offset:.18em}a:hover{text-decoration-thickness:.17em}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:4px solid #f99a31;outline-offset:3px}button,input,select{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.55}.skip{position:absolute;left:1rem;top:-100px;z-index:20;padding:.7rem 1rem;background:white;color:#13254a;border-radius:9px}.skip:focus{top:1rem}.wrap{width:min(1100px,calc(100% - 2rem));margin-inline:auto}
+.hero{background:radial-gradient(circle at 82% 17%,#365e95 0,transparent 39%),linear-gradient(123deg,#07162e,#19375c);color:#fff;overflow:hidden;position:relative}.hero::after{content:"";position:absolute;inset:0;opacity:.13;pointer-events:none;background-image:radial-gradient(white 1px,transparent 1px);background-size:23px 23px}.hero-inner{display:grid;grid-template-columns:1.16fr .84fr;align-items:center;gap:2rem;padding:4rem 0 4.5rem;position:relative;z-index:1}.eyebrow{letter-spacing:.14em;text-transform:uppercase;font-size:.77rem;font-weight:850;color:var(--mint)}.hero h1{font-size:clamp(2.7rem,6.5vw,5.8rem);line-height:1.02;letter-spacing:-.045em;margin:.48rem 0 1.1rem}.hero h1 span{color:var(--gold)}.hero p{font-size:1.2rem;max-width:37rem;color:#eef5ff}.pills{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.4rem}.pill{border:1px solid #6487ae;border-radius:999px;background:#ffffff15;padding:.3rem .8rem;font-size:.9rem}.hero-art{width:100%;filter:drop-shadow(0 18px 20px #07162e80)}
+.toc{margin-top:-2rem;position:relative;z-index:2;background:white;border:1px solid #dae4f0;border-radius:var(--radius);padding:1.15rem 1.5rem;box-shadow:var(--shadow)}.toc strong{display:block;margin-bottom:.55rem;letter-spacing:.03em}.toc-links{display:flex;gap:.55rem .95rem;flex-wrap:wrap;font-size:.95rem}.toc-links a{padding:.12rem .3rem}
+main{padding-bottom:3rem}section{scroll-margin-top:2rem;margin-top:3.3rem}section h2{font-size:clamp(1.8rem,3vw,2.55rem);letter-spacing:-.03em;line-height:1.2;margin:0 0 .65rem}section h3{font-size:1.3rem;margin:1.1rem 0 .4rem;line-height:1.32}.lead{font-size:1.18rem;color:#314967;max-width:73ch}.tag{display:inline-block;border-radius:999px;color:#163451;background:#dceeff;padding:.17rem .72rem;text-transform:uppercase;font-weight:900;letter-spacing:.1em;font-size:.74rem;margin-bottom:.4rem}.tag.green{background:#d6f4e7}.tag.orange{background:#ffe8cb}.tag.purple{background:#ece4ff}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin:1.2rem 0}.card{background:#fff;border:1px solid #dbe5ef;border-radius:var(--radius);padding:1.35rem;box-shadow:0 7px 25px #142e6110}.card h3{margin:.4rem 0}.card p:last-child{margin-bottom:0}.icon{font-size:2.1rem}.accent-teal{border-top:7px solid #22b9a8}.accent-gold{border-top:7px solid #ffcf62}.accent-coral{border-top:7px solid #f58175}.note{border-left:6px solid var(--teal);border-radius:0 16px 16px 0;background:#eafaf5;padding:1rem 1.2rem;margin:1.2rem 0}.note.warning{border-color:#f6b83f;background:#fff5dc}.note.important{border-color:var(--purple);background:#f0edff}.steps{counter-reset:step;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;padding:0;list-style:none}.steps li{counter-increment:step;background:white;border:1px solid #d4e1ed;padding:1.1rem;border-radius:18px}.steps li::before{content:counter(step);display:grid;place-items:center;width:2.1rem;height:2.1rem;background:#132b53;color:white;border-radius:50%;font-weight:900;margin-bottom:.5rem}
+.lab{border-radius:26px;background:white;border:2px solid #a9c7e1;box-shadow:var(--shadow);padding:clamp(1rem,2.6vw,2rem);margin-top:1.5rem}.lab-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap}.lab h3{font-size:1.65rem;margin:0}.lab-sub{color:#455a78;margin:.25rem 0}.controls{display:flex;gap:1rem;flex-wrap:wrap;align-items:end;margin:1.1rem 0}.controls label{display:block;font-size:.9rem;font-weight:750;color:#253d5e}.controls select{display:block;margin-top:.2rem;border:1.5px solid #819bb9;border-radius:10px;padding:.55rem .7rem;background:#fff;color:#152747;max-width:100%}.modes{border:1px solid #c4d2e4;border-radius:16px;padding:.55rem .8rem;margin:0;display:flex;flex-wrap:wrap;gap:.8rem;align-items:center}.modes legend{padding:0 .4rem;font-size:.87rem;font-weight:850}.modes label{font-size:.94rem;font-weight:600;display:inline-flex;gap:.32rem;align-items:center}.modes input{width:1.1rem;height:1.1rem;accent-color:#116d73}.btnrow{display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;margin:1rem 0}.btn{border:2px solid #1d4166;border-radius:12px;padding:.65rem .95rem;background:white;color:#19385d;font-weight:800;line-height:1.2;min-height:45px}.btn.primary{background:#146f77;color:white;border-color:#146f77}.btn.dark{background:#1b3760;color:white;border-color:#1b3760}.btn:hover:not(:disabled){filter:brightness(.94);transform:translateY(-1px)}.speed{display:flex;align-items:center;gap:.6rem;margin-left:auto}.speed label{font-weight:700;font-size:.9rem}.speed input{width:95px;accent-color:#007f7b}.maze-frame{padding:1rem;border-radius:20px;background:#eaf2fe;border:1px solid #b5cde7}.scroll-hint{display:none;font-weight:750;color:#263f67;margin:0 0 .4rem;font-size:.86rem}@media(max-width:750px){.scroll-hint{display:block}}.maze-scroll{overflow:auto;max-width:100%;padding:.35rem}.maze{display:grid;grid-template-columns:repeat(13,minmax(37px,1fr));gap:5px;min-width:555px;max-width:790px;margin:auto;user-select:none}.cell{border:2px solid transparent;border-radius:10px;aspect-ratio:1/1;padding:0;min-width:0;min-height:36px;font-weight:900;font-size:1.15rem;line-height:1;background:#fff;box-shadow:0 2px 0 #c4d5e5;color:#162b4b;transition:background .12s}.cell:hover{border-color:#5977a5}.cell.wall{background:#314461;color:white;box-shadow:inset 0 -5px #1a2944}.cell.seen{background:#c9fff1}.cell.expanded{background:#a3d8f8}.cell.current{box-shadow:inset 0 0 0 3px #ef9d27}.cell.path{background:#ffda69;color:#33280e;box-shadow:0 2px 0 #b7842c}.cell.start{background:#845ae8;color:white;box-shadow:0 2px 0 #47368d}.cell.goal{background:#fb766b;color:#451a21;box-shadow:0 2px 0 #a6443b}.cell.start.path,.cell.goal.path{box-shadow:inset 0 0 0 3px #ffdf75}.legend{display:flex;gap:.65rem 1.1rem;flex-wrap:wrap;margin-top:1rem;font-size:.9rem;color:#233c62}.legend span{white-space:nowrap}.swatch{display:inline-block;vertical-align:-.18em;width:1.02rem;height:1.02rem;border-radius:4px;margin-right:.25rem;border:1px solid #73839c}.swatch.start{background:#845ae8}.swatch.goal{background:#fb766b}.swatch.wall{background:#314461}.swatch.seen{background:#c9fff1}.swatch.expanded{background:#a3d8f8}.swatch.path{background:#ffda69}.statline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem;margin:1rem 0}.stat{border-radius:13px;background:#eef6fb;padding:.65rem 1rem}.stat strong{font-size:1.45rem;display:block;line-height:1.1}.stat small{color:#465c7c;font-size:.86rem}.message{background:#18385b;color:white;border-radius:14px;padding:.85rem 1.05rem;font-weight:650;margin-top:1rem}.help{font-size:.93rem;color:#526581;margin-top:.75rem}.sr-only{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;clip-path:inset(50%)}
+.challenge{border:1px solid #b3d3c8;background:#effff9;border-radius:18px;padding:1rem 1.2rem}.challenge ol{margin-bottom:.2rem}.quote{font-size:1.15rem;padding:1rem 1.4rem;background:#fff;border-radius:14px;border:1px dashed #90a9c8}.evidence{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.evidence article{border-radius:20px;padding:1.3rem;border:2px solid #b9d7dc;background:#f1fffb}.evidence article:nth-child(2){border-color:#dbcaad;background:#fff8ed}.evidence h3{margin-top:0}.tablewrap{overflow-x:auto}table{border-collapse:collapse;width:100%;background:white;min-width:590px;border-radius:16px;overflow:hidden}th,td{text-align:left;border-bottom:1px solid #d5e0ec;padding:.85rem 1rem;vertical-align:top}th{background:#17365a;color:white}tr:last-child td{border-bottom:0}.codebox{background:#0d2040;color:#ecf8fa;padding:1.15rem;border-radius:18px;overflow-x:auto;font-size:.93rem;line-height:1.55}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,Monaco,monospace}code:not(pre code){font-size:.9em;background:#e8f0fb;padding:.1em .25em;border-radius:5px}pre{margin:.65rem 0}.quiz{background:#fff5e5;border:1px solid #f6ce8f;border-radius:20px;padding:1.1rem 1.5rem}.quiz details{border-bottom:1px solid #edc993;padding:.6rem .2rem}.quiz details:last-child{border:none}.quiz summary{cursor:pointer;font-weight:800}.refs{padding-left:1.45rem}.refs li{padding:.45rem 0;overflow-wrap:anywhere}.ref-tag{font-size:.78rem;font-weight:850;background:#e0e9ff;border-radius:5px;padding:.1rem .35rem;margin-right:.3rem}.footer{background:#0d2240;color:#e7f3ff;padding:2.2rem 0 3rem}.footer p{max-width:80ch}.footer a{color:#b9f3ed}.footer small{color:#c3d6ef}.stars{color:#f5c94f}.checklist{padding-left:1.5rem}.checklist li{margin:.55rem 0}abbr[title]{text-decoration:underline dotted;text-underline-offset:3px}
+@media (max-width:750px){.hero-inner{grid-template-columns:1fr;padding:2.9rem 0 3.9rem}.hero-art{max-width:390px;margin:auto}.grid3,.steps,.evidence{grid-template-columns:1fr}.toc{padding:1.1rem}.statline{grid-template-columns:repeat(3,1fr)}.stat{padding:.55rem}.stat strong{font-size:1.15rem}.speed{margin-left:0}section{margin-top:2.6rem}.maze-frame{padding:.55rem}}
+@media (max-width:400px){body{font-size:1rem}.statline{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:span 2}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}.btn:hover:not(:disabled){transform:none}}
+@media print{.hero{color:#000;background:#fff}.hero h1 span{color:#000}.hero p{color:#000}.hero-art,.btnrow,.controls{display:none}.toc{box-shadow:none;margin:0}.lab{box-shadow:none}section{break-inside:avoid}a{color:#000}.footer{background:white;color:#000}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the mission</a>
+<header class="hero">
+  <div class="wrap hero-inner">
+    <div>
+      <div class="eyebrow">DeepDivesKids • Thursday, October 29, 2026 • Computer science + space</div>
+      <h1>ROBOT <span>RESCUE!</span></h1>
+      <p><strong>Can you teach a rover to escape a maze?</strong> Build a rocky landscape, then watch an algorithm discover a route—one square at a time. You're the mission director.</p>
+      <div class="pills"><span class="pill">Ages 9+</span><span class="pill">No downloads needed</span><span class="pill">Works offline</span><span class="pill">About 20–30 minutes</span></div>
+    </div>
+    <svg class="hero-art" viewBox="0 0 430 320" role="img" aria-labelledby="heroArtTitle heroArtDesc" xmlns="http://www.w3.org/2000/svg">
+      <title id="heroArtTitle">Friendly exploration rover and a winding yellow path</title><desc id="heroArtDesc">A cartoon robot with two wheels and a camera faces a winding gold road across a purple landscape, near stars and an orange flag.</desc>
+      <rect width="430" height="320" rx="33" fill="#213f68"/>
+      <g fill="#8fb5e8"><circle cx="35" cy="34" r="2"/><circle cx="102" cy="57" r="3"/><circle cx="392" cy="51" r="2"/><circle cx="322" cy="31" r="2"/><circle cx="275" cy="71" r="2"/></g>
+      <path d="M0 253Q60 198 123 251T260 246T430 235V320H0Z" fill="#6f66a9"/>
+      <path d="M220 313Q357 251 293 189Q259 155 342 136" fill="none" stroke="#ffd766" stroke-width="19" stroke-linecap="round" stroke-dasharray="2 27"/>
+      <path d="M342 137V94" stroke="#e8f6ff" stroke-width="5" stroke-linecap="round"/><path d="M346 94l40 11-40 13Z" fill="#ff816a"/>
+      <g transform="translate(61 153)">
+      <path d="M53 39V-4" stroke="#eaf6ff" stroke-width="7" stroke-linecap="round"/><rect x="28" y="-21" width="54" height="26" rx="8" fill="#d8f3fa"/><circle cx="67" cy="-9" r="7" fill="#13a4a1"/>
+      <rect x="4" y="32" width="120" height="66" rx="21" fill="#d9fbf0" stroke="#146f77" stroke-width="6"/><rect x="32" y="49" width="64" height="24" rx="12" fill="#153b66"/>
+      <circle cx="50" cy="61" r="7" fill="#ffd766"/><circle cx="78" cy="61" r="7" fill="#ffd766"/>
+      <path d="M22 98l-4 21m90-21 5 21" stroke="#a1dcd4" stroke-width="9" stroke-linecap="round"/><circle cx="19" cy="122" r="21" fill="#192d55" stroke="#8ca2cc" stroke-width="5"/><circle cx="113" cy="122" r="21" fill="#192d55" stroke="#8ca2cc" stroke-width="5"/><circle cx="19" cy="122" r="6" fill="#eaf6ff"/><circle cx="113" cy="122" r="6" fill="#eaf6ff"/>
+      <path d="M122 62l20-17" stroke="#d9fbf0" stroke-width="8" stroke-linecap="round"/>
+      </g>
+      <text x="219" y="281" fill="#fff" font-size="13" font-family="system-ui,sans-serif" font-weight="800">MISSION: FIND THE FLAG</text>
+    </svg>
+  </div>
+</header>
+<nav class="toc wrap" aria-label="On this page"><strong>🧭 Mission map / Contents</strong><div class="toc-links">
+<a href="#briefing">1. Briefing</a><a href="#algorithm">2. Secret algorithm</a><a href="#lab">3. Play the maze</a><a href="#challenges">4. Challenges</a><a href="#real-world">5. Real rovers</a><a href="#paper">6. Kitchen-table mission</a><a href="#code">7. Code corner</a><a href="#tradeoffs">8. What can go wrong?</a><a href="#family">9. Your engineering team</a><a href="#quiz">10. Quiz</a><a href="#integration">11. License & setup</a><a href="#references">12. Sources</a>
+</div></nav>
+<main id="main" class="wrap">
+<section id="briefing" aria-labelledby="briefing-head"><span class="tag">Mission 01 • Briefing</span><h2 id="briefing-head">A rover is stuck in a rocky canyon.</h2>
+<p class="lead">Imagine you are on Earth, sending a little robot across Mars. Its destination is a bright orange flag. But the direct route is blocked by rocks. How can a computer help?</p>
+<div class="grid3">
+ <article class="card accent-teal"><div class="icon" aria-hidden="true">🗺️</div><h3>Make a map</h3><p>Turn the landscape into a grid of squares. Some squares are safe. Some are blocked.</p></article>
+ <article class="card accent-gold"><div class="icon" aria-hidden="true">🌊</div><h3>Send out a wave</h3><p>Check the closest safe squares first, then squares farther away—like ripples in a pond.</p></article>
+ <article class="card accent-coral"><div class="icon" aria-hidden="true">🚩</div><h3>Follow the clues</h3><p>When the wave finds the flag, trace the path backward and give the rover directions.</p></article>
+</div>
+<p>That's a real computer science idea called <strong>breadth-first search</strong> (<abbr title="breadth-first search">BFS</abbr>). It sounds complicated, but you'll see every step in the playable maze below. On our map, every move goes <strong>up, down, left, or right</strong>; every move costs one step.</p>
+<div class="note"><strong>Our big question:</strong> Can the computer find the route with the <em>fewest grid moves</em>? Yes—under this game's simple rules. Real rovers face much trickier terrain.</div>
+</section>
+<section id="algorithm" aria-labelledby="algorithm-head"><span class="tag purple">Mission 02 • The secret</span><h2 id="algorithm-head">What is breadth-first search?</h2><p class="lead">Pretend a team of explorers stands in one square. Everyone checks the square next door. Then the next ring. Then the next. Nobody skips ahead.</p>
+<ol class="steps"><li><strong>Start at the rover.</strong><br>Put its square at the back of a <em>queue</em> (a waiting line).</li><li><strong>Explore in order.</strong><br>Take the first square from the line. Add each safe, unseen neighbor to the back.</li><li><strong>Stop at the flag.</strong><br>Each square remembers which square first led to it. Follow those memories back home.</li></ol>
+<div class="note important"><strong>Why is the route shortest?</strong> The search visits all squares one move away before the squares two moves away, and so on. The first time it reaches the flag, no route with fewer <em>equal-length</em> moves can exist. Stanford's computer-science teaching materials explain this same guarantee. <a href="#ref-stanford">[3]</a></div>
+<p><strong>Try saying it out loud:</strong> “First the nearest places, then the next-nearest places.” That's the whole big idea!</p>
+</section>
+<section id="lab" aria-labelledby="lab-head"><span class="tag green">Mission 03 • Interactive lab</span><h2 id="lab-head">Build the maze. Launch the search.</h2><p class="lead">Everything below runs in this one HTML file, even with Wi-Fi turned off. Tap a square or use Tab and Enter to make changes.</p>
+<div class="lab">
+ <div class="lab-heading"><div><h3>🚀 Rover Rescue Control Room</h3><p class="lab-sub">Purple = rover. Coral = flag. Dark = rocks. Gold = best route.</p></div><strong class="pill" style="background:#e1fcf5;color:#105b58;border-color:#8de1cf">LEVEL: ROVER PILOT</strong></div>
+ <div class="controls"><div><label for="preset">Choose a landscape</label><select id="preset"><option value="garden">🪨 Rock garden</option><option value="canyon">🏜️ Zigzag canyon</option><option value="trapped">🚧 Blocked! Find a way out</option><option value="clear">🌙 Open plain</option></select></div>
+ <fieldset class="modes"><legend>Choose your editing tool</legend><label><input type="radio" name="mode" value="wall" checked> 🪨 Rocks</label><label><input type="radio" name="mode" value="start"> 🤖 Move rover</label><label><input type="radio" name="mode" value="goal"> 🚩 Move flag</label></fieldset></div>
+ <div class="btnrow"><button type="button" id="step" class="btn dark">👣 One step</button><button type="button" id="play" class="btn primary">▶ Play the wave</button><button type="button" id="solve" class="btn">✨ Show best route</button><button type="button" id="reset" class="btn">↺ Reset search</button><div class="speed"><label for="speed">Animation speed</label><input type="range" id="speed" min="1" max="5" value="3" aria-valuetext="3 out of 5"></div></div>
+ <div class="maze-frame"><p class="scroll-hint">← On a phone, swipe the board sideways to see the flag and all 13 columns →</p><div class="maze-scroll" role="region" aria-label="Scrollable maze board; 13 columns and 9 rows" tabindex="0"><div id="maze" class="maze" role="group" aria-label="Rover maze. Each square is an editable button."></div></div>
+ <div class="legend" aria-label="Map legend"><span><i class="swatch start"></i>Rover</span><span><i class="swatch goal"></i>Flag</span><span><i class="swatch wall"></i>Rock</span><span><i class="swatch seen"></i>Waiting in line</span><span><i class="swatch expanded"></i>Checked</span><span><i class="swatch path"></i>Shortest route</span></div></div>
+ <div class="statline" aria-label="Search statistics"><div class="stat"><strong id="checked">0</strong><small>Squares checked</small></div><div class="stat"><strong id="waiting">0</strong><small>Squares waiting</small></div><div class="stat"><strong id="distance">—</strong><small>Shortest moves</small></div></div>
+ <div class="message" id="message">Mission ready. Press “One step” or “Play the wave” to start!</div><div id="announce" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+ <p class="help"><strong>Control tips:</strong> Choose “Rocks” and select any empty square to add or remove an obstacle. Switch tools to move the rover or flag. A new edit resets the search so the computer can plan again. To get an instant answer, choose “Show best route.”</p>
+</div>
+</section>
+<section id="challenges" aria-labelledby="challenges-head"><span class="tag orange">Mission 04 • Level up</span><h2 id="challenges-head">Three missions to beat</h2>
+<div class="grid3"><article class="card"><div class="icon" aria-hidden="true">🥇</div><h3>Mission A: Shortcut sleuth</h3><p>Use <strong>Open plain</strong>. Guess the number of moves before pressing “Show best route.” Does your prediction match?</p></article><article class="card"><div class="icon" aria-hidden="true">🧱</div><h3>Mission B: Make a detour</h3><p>Choose <strong>Rock garden</strong>, solve it, then add rocks on the gold route. Can you force a longer shortest route?</p></article><article class="card"><div class="icon" aria-hidden="true">🕵️</div><h3>Mission C: Rescue impossible?</h3><p>Choose <strong>Blocked!</strong> The flag is surrounded. Remove <em>one</em> rock, rerun, and find a way in.</p></article></div>
+<div class="challenge"><strong>🏆 Super challenge:</strong> Find two different routes with the <em>same</em> smallest number of moves. Why does the computer show only one? Hint: it remembers whichever equally good route it found first.</div>
+</section>
+<section id="real-world" aria-labelledby="real-head"><span class="tag">Mission 05 • Evidence check</span><h2 id="real-head">Do real Mars rovers do this?</h2><p class="lead">They do plan around obstacles—but <strong>our tiny game is not NASA's flight software</strong>. Here's what we can actually verify.</p>
+<div class="evidence"><article><h3>✅ Documented real work</h3><p>NASA/JPL describes <strong>Perseverance's AutoNav</strong> system. The rover builds terrain maps using navigation cameras, judges whether possible routes are safe, and can re-plan around hazards. In a drive on <strong>July 15, 2023</strong>, it steered around a rock about <strong>35 cm (14 in)</strong> tall. NASA published a visualization of that drive on <strong>September 21, 2023</strong>. <a href="#ref-nasa-rock">[1]</a></p><p>NASA also published a computer simulation of a <strong>2021</strong> AutoNav drive. The simulation describes camera-derived height maps and routes rejected because of risks such as wheel drops or insufficient clearance. <a href="#ref-nasa-sim">[2]</a></p></article>
+<article><h3>💡 Our invented classroom version</h3><p>Our rover pretends the map is already known and perfectly flat. It cannot measure slopes, slippery sand, wheel clearance, or moving objects. We use <strong>BFS</strong> because it makes shortest-path search easy to see—not because NASA has said this exact little algorithm drives Perseverance.</p><p>Could a real engineer use a grid and a graph-search idea as part of a planning system? Absolutely. Does that prove the real rover uses our HTML code? <strong>No.</strong></p></article></div>
+<div class="quote">🧠 <strong>Engineering truth:</strong> A simulation is like a practice rink. It teaches important patterns, but you must test the real equipment before trusting it in a real mission.</div>
+</section>
+<section id="paper" aria-labelledby="paper-head"><span class="tag green">Mission 06 • Hands-on</span><h2 id="paper-head">Try it without a computer</h2><p class="lead">Make a paper version with a pencil, some small objects, and a partner.</p>
+<ol class="checklist"><li>Draw a <strong>7-by-7</strong> grid on paper. Mark a starting square <strong>R</strong> and a different destination square <strong>F</strong>.</li><li>Place pennies or small paper scraps on 10 squares to represent rocks. Leave the start and finish free.</li><li>Write <strong>0</strong> in R. In every empty square touching a 0 (up, down, left, or right), write <strong>1</strong>. Then fill the <strong>2</strong>s, then <strong>3</strong>s, and so on. Never write in rock squares.</li><li>When you reach F, follow decreasing numbers back to R. Count the steps. You just acted as a search algorithm!</li></ol>
+<div class="note warning"><strong>What if the numbers never reach F?</strong> There is no route using the allowed moves. You must remove a rock or change the destination. That is a valuable result, not a failed experiment.</div>
+</section>
+<section id="code" aria-labelledby="code-head"><span class="tag purple">Mission 07 • Code corner</span><h2 id="code-head">The waiting-line trick, in JavaScript</h2><p class="lead">The interactive game uses regular JavaScript included below in this HTML file. No library downloads, accounts, or external servers are required.</p>
+<p>Here is the <strong>heart of the algorithm</strong>, simplified from the working demo. <code>neighbors(here)</code> is a helper that returns up to four squares; <code>rocks</code> contains blocked squares.</p>
+<pre class="codebox"><code>// The queue is a line: first in, first out.
+const queue = [start];
+const parent = new Map([[start, null]]);
+
+for (let head = 0; head &lt; queue.length; head++) {
+  const here = queue[head];
+  if (here === goal) break;
+
+  for (const next of neighbors(here)) {
+    if (!rocks.has(next) &amp;&amp; !parent.has(next)) {
+      parent.set(next, here); // Remember our clue!
+      queue.push(next);       // Join the back of the line.
+    }
+  }
+}
+// Trace parent clues backward to make the route.</code></pre>
+<p>Notice <code>head++</code>: we move forward through the array instead of repeatedly removing the first item. That keeps this little program simple and avoids shifting every waiting item around.</p>
+<div class="note"><strong>Talk like a programmer:</strong> <em>Queue</em> = waiting line. <em>Neighbor</em> = a touching square. <em>Parent</em> = the square you came from. <em>Algorithm</em> = a repeatable set of instructions.</div>
+<h3>A tiny test to try</h3><p>Choose <strong>Open plain</strong> in the lab. If the rover starts at column 2, row 8, and the flag is at column 12, row 2 (counting from 1), the shortest path has <strong>16 moves</strong>: 10 right and 6 up, in any order. Run it and check.</p>
+</section>
+<section id="tradeoffs" aria-labelledby="tradeoffs-head"><span class="tag orange">Mission 08 • Engineering choices</span><h2 id="tradeoffs-head">What can go wrong?</h2>
+<div class="tablewrap"><table><caption class="sr-only">Strengths and limitations of this maze and breadth-first search</caption><thead><tr><th scope="col">Idea</th><th scope="col">What's great</th><th scope="col">What to watch out for</th></tr></thead><tbody><tr><td><strong>BFS on our grid</strong></td><td>Finds a route using the fewest equal-cost moves, if a route exists.</td><td>It can check lots of squares and remembers a growing waiting line and parent links.</td></tr><tr><td><strong>Four directions</strong></td><td>Easy to understand and count.</td><td>A rover can turn and drive at angles; diagonal distances and turning costs differ.</td></tr><tr><td><strong>Known rocks</strong></td><td>Easy to replay and test.</td><td>Real vehicles must discover obstacles and cope with uncertain sensor data.</td></tr><tr><td><strong>Shortest in moves</strong></td><td>A clear, provable rule.</td><td>Shortest is not necessarily <em>safest</em>, <em>fastest</em>, or easiest for wheels.</td></tr><tr><td><strong>Browser animation</strong></td><td>Fun to inspect or pause.</td><td>Animation speed is <em>not</em> real rover speed or a computer benchmark.</td></tr></tbody></table></div>
+<p>On a graph, BFS uses time and memory proportional to the number of squares and connections it actually examines—often written <strong>O(V + E)</strong>. You don't need to remember that formula today; just remember that a bigger maze usually means more work. <a href="#ref-stanford">[3]</a></p>
+</section>
+<section id="family" aria-labelledby="family-head"><span class="tag green">Mission 09 • Our team</span><h2 id="family-head">Hockey players, artists, and space engineers</h2>
+<div class="grid3"><article class="card"><div class="icon" aria-hidden="true">🥅</div><h3>The hockey connection</h3><p>Imagine skater <strong>#28</strong> finding an open skating lane while goalie <strong>#66</strong> guards the net. A rink is not a simple maze, but searching for open routes is a great conversation about positioning and quick decisions.</p></article><article class="card"><div class="icon" aria-hidden="true">🎨</div><h3>The artist's connection</h3><p>Design a maze with a beautiful spiral. Can you make it look complicated while leaving a very short hidden route? Show someone else and ask them to predict it before solving.</p></article><article class="card"><div class="icon" aria-hidden="true">🛰️</div><h3>Dad's engineering connection</h3><p>Your dad works with spacecraft and builds computer simulators and processors. This lab uses the same <em>engineering habit</em>: make a model, test it, find a corner case, and improve it. It does not claim his projects use this particular maze program.</p></article></div>
+<p><strong>Family debate:</strong> Would you rather make a rover that finds the shortest route, the safest route, or the route that uses the least battery? Can one choice be best at all three?</p>
+</section>
+<section id="quiz" aria-labelledby="quiz-head"><span class="tag purple">Mission 10 • Check your thinking</span><h2 id="quiz-head">Three quick questions</h2>
+<div class="quiz"><details><summary>1. Why is the robot's waiting line important?</summary><p>It makes the search check nearby squares before farther-away ones. That's what gives BFS its shortest-route guarantee when moves all cost the same.</p></details><details><summary>2. The game reports 16 moves. Does that mean 16 meters?</summary><p>No. A “move” means going into one neighboring square. We didn't give the squares a real-world size.</p></details><details><summary>3. Why doesn't this simulation prove a real Mars rover is safe?</summary><p>It ignores hills, loose soil, wheel sizes, slippery slopes, sensor errors, and many other real hazards. Real robots need much more testing.</p></details></div>
+</section>
+<section id="integration" aria-labelledby="integration-head"><span class="tag">Mission 11 • For grown-ups & curious coders</span><h2 id="integration-head">How to run, reuse, and adapt this lab</h2>
+<p><strong>Install:</strong> Nothing. Save this file as <code>2026-10-29-robot-rescue-maze-lab.html</code> and open it in a modern browser (Chrome, Firefox, Safari, or Edge). The HTML, CSS, artwork, and JavaScript are bundled into a single file. The only network requests are optional links you choose to visit in the references.</p>
+<p><strong>Technology:</strong> Standard HTML buttons, CSS Grid, and modern built-in JavaScript (<code>Map</code>, <code>Set</code>, arrays, timers). There is <strong>no third-party runtime library</strong>, so no JavaScript package license, CDN dependency, build step, or API key. If a future version chooses a library, check its exact license and version first.</p>
+<p><strong>Re-use:</strong> The original JavaScript demonstration and its accompanying styles are offered under the <a href="https://opensource.org/license/mit" target="_blank" rel="noopener noreferrer">MIT License</a>; copyright © 2026 DeepDivesKids authors. This educational page cites NASA, Stanford, and MDN but does <em>not</em> reproduce their images or software.</p>
+<details><summary><strong>Read the MIT permission and warranty notice</strong></summary><div class="card" style="margin-top:.6rem"><p>MIT License</p><p>Copyright (c) 2026 DeepDivesKids authors</p><p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p><p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p><p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p></div></details>
+<p><strong>Accessibility:</strong> Every map square is a labeled native button, operable with mouse, touch, and keyboard. Status changes are announced in a polite live region; Play can be paused; motion preferences are respected; the board scrolls on narrow screens. See MDN's accessibility guidance. <a href="#ref-mdn-live">[4]</a> <a href="#ref-mdn-motion">[5]</a></p>
+<p><strong>Ideas to extend:</strong> Store custom maps in local storage (only if you choose to); let the rover move diagonally; add slow and risky terrain; compare BFS with Dijkstra's or A*. But remember: when moves cost different amounts, simple BFS no longer guarantees the cheapest total route.</p>
+</section>
+<section id="references" aria-labelledby="references-head"><span class="tag">Mission 12 • Check our evidence</span><h2 id="references-head">Primary sources and further exploring</h2><p>The factual claims above come from the organizations that built, tested, or documented the actual systems and algorithms. All links are optional; the game itself works offline.</p>
+<ol class="refs"><li id="ref-nasa-rock"><span class="ref-tag">NASA/JPL • 2023</span><a href="https://science.nasa.gov/photojournal/perseverance-autonav-avoids-a-boulder/" target="_blank" rel="noopener noreferrer">Perseverance AutoNav Avoids a Boulder</a>. NASA Photojournal, added September 21, 2023. Documents the July 15 autonomous drive, obstacle size, terrain modeling and path safety checks.</li>
+<li id="ref-nasa-sim"><span class="ref-tag">NASA/JPL • 2021</span><a href="https://science.nasa.gov/resource/computer-simulation-of-perseverances-first-autonav-drive/" target="_blank" rel="noopener noreferrer">Computer Simulation of Perseverance's First AutoNav Drive</a>. NASA Science, July 1, 2021. Explains camera-based height maps and hazard evaluation.</li>
+<li id="ref-stanford"><span class="ref-tag">Stanford CS106B</span><a href="https://web.stanford.edu/class/archive/cs/cs106b/cs106b.1206/lectures/dijkstra/" target="_blank" rel="noopener noreferrer">Graph Shortest Path Algorithms: Breadth First Search</a>. Original university course material; explains first-in-first-out queues and the shortest path in hops for an unweighted graph.</li>
+<li id="ref-mdn-live"><span class="ref-tag">MDN Web Docs</span><a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-live" target="_blank" rel="noopener noreferrer">ARIA: aria-live attribute</a>. Web-platform documentation for announcing changing content to assistive technologies.</li>
+<li id="ref-mdn-motion"><span class="ref-tag">MDN Web Docs</span><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/%40media/prefers-reduced-motion" target="_blank" rel="noopener noreferrer">prefers-reduced-motion</a>. Web-platform documentation for respecting reduced-motion preferences.</li>
+<li><span class="ref-tag">Open Source Initiative</span><a href="https://opensource.org/license/mit" target="_blank" rel="noopener noreferrer">The MIT License</a>. Primary licensing text.</li></ol>
+</section>
+</main>
+<footer class="footer"><div class="wrap"><div class="eyebrow">DeepDivesKids • 2026-10-29</div><h2>Mission complete. The next great question is yours. <span class="stars" aria-hidden="true">✦ ✦ ✦</span></h2><p>You don't have to be grown up to think like an engineer. Ask a question. Build a model. Test what it can do. Find out where it breaks. Then make a better one.</p><small>Offline-first educational activity • Original code available under MIT • External links are for learning, not needed to run the lab.</small></div></footer>
+<script>
+"use strict";
+// DeepDivesKids Rover Rescue. SPDX-License-Identifier: MIT
+// A teaching model: breadth-first search on a four-connected, equal-cost grid.
+(() => {
+  const COLS = 13, ROWS = 9, TOTAL = COLS * ROWS;
+  const $ = (id) => document.getElementById(id);
+  const coords = (i) => [i % COLS, Math.floor(i / COLS)];
+  const index = (x, y) => y * COLS + x;
+  const presets = {
+    garden: [".............","..###........","....#..###...","....#.....#..","...##..##.#..",".........#...","..####...#...",".............","............."],
+    canyon: ["...#.........","...#..#####..","...#..#......","...#..#.####.","......#......",".######.####.",".............",".###########.","............."],
+    trapped: [".............","..........#..",".........#.#.","..........#..",".............",".............",".............",".............","............."],
+    clear: [".............",".............",".............",".............",".............",".............",".............",".............","............."]
+  };
+  let rocks = new Set(), start = index(1, 7), goal = index(11, 1);
+  let frames = [], route = [], frameIndex = 0, timer = null;
+  const buttons = [];
+  const names = {garden: "Rock garden", canyon: "Zigzag canyon", trapped: "Blocked", clear: "Open plain"};
+  function neighbors(i) {
+    const [x, y] = coords(i);
+    const values = [];
+    if (y > 0) values.push(index(x, y - 1));
+    if (x < COLS - 1) values.push(index(x + 1, y));
+    if (y < ROWS - 1) values.push(index(x, y + 1));
+    if (x > 0) values.push(index(x - 1, y));
+    return values;
+  }
+  function tell(message) { $("message").textContent = message; $("announce").textContent = message; }
+  function stop() { if (timer !== null) { clearInterval(timer); timer = null; } $("play").textContent = "▶ Play the wave"; }
+  function resetSearch(announce = false) {
+    stop(); frames = []; route = []; frameIndex = 0;
+    $("checked").textContent = "0"; $("waiting").textContent = "0"; $("distance").textContent = "—";
+    render();
+    if (announce) tell("Map changed. The search is ready to begin again.");
+  }
+  function loadPreset(name) {
+    const map = presets[name];
+    if (!map || map.length !== ROWS || map.some(row => row.length !== COLS)) throw Error("Invalid preset map");
+    rocks = new Set();
+    for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) if (map[y][x] === "#") rocks.add(index(x, y));
+    start = index(1, 7); goal = index(11, 1);
+    if (name === "trapped") { // Four rocks surround the goal and can be removed individually.
+      goal = index(10, 2);
+    }
+    rocks.delete(start); rocks.delete(goal);
+    resetSearch(); tell(`${names[name]} loaded. Choose a search button or edit squares.`);
+  }
+  function buildBoard() {
+    const fragment = document.createDocumentFragment();
+    for (let i = 0; i < TOTAL; i++) {
+      const button = document.createElement("button");
+      button.type = "button"; button.className = "cell"; button.dataset.index = String(i);
+      button.addEventListener("click", () => edit(i));
+      buttons.push(button); fragment.appendChild(button);
+    }
+    $("maze").appendChild(fragment);
+  }
+  function edit(i) {
+    const selected = document.querySelector('input[name="mode"]:checked');
+    const mode = selected ? selected.value : "wall";
+    if (mode === "wall") {
+      if (i === start || i === goal) { tell("That's the rover or flag! Choose an empty square for a rock."); return; }
+      if (rocks.has(i)) rocks.delete(i); else rocks.add(i);
+    } else if (mode === "start") {
+      if (i === goal) { tell("Rover and flag need different squares. Try another one."); return; }
+      rocks.delete(i); start = i;
+    } else {
+      if (i === start) { tell("Rover and flag need different squares. Try another one."); return; }
+      rocks.delete(i); goal = i;
+    }
+    resetSearch(true);
+  }
+  function planRoute() {
+    const queue = [start], parent = new Map([[start, null]]);
+    const visited = new Set(), snapshots = [{current: -1, visited: new Set(), frontier: new Set([start])}];
+    let found = false;
+    // A head index avoids repeated O(n) array shifts on each expansion.
+    for (let head = 0; head < queue.length; head++) {
+      const here = queue[head];
+      visited.add(here);
+      if (here === goal) found = true;
+      if (!found) {
+        for (const next of neighbors(here)) {
+          if (!rocks.has(next) && !parent.has(next)) {
+            parent.set(next, here); // Remember the first route to each square.
+            queue.push(next);       // Add newly found square to queue's end.
+          }
+        }
+      }
+      snapshots.push({current: here, visited: new Set(visited), frontier: new Set(queue.slice(head + 1))});
+      if (found) break;
+    }
+    const best = [];
+    if (found) {
+      for (let at = goal; at !== null; at = parent.get(at)) best.push(at);
+      best.reverse();
+    }
+    return {snapshots, best};
+  }
+  function ensurePlan() {
+    if (frames.length) return;
+    const planned = planRoute(); frames = planned.snapshots; route = planned.best; frameIndex = 0;
+    render();
+  }
+  function render() {
+    const frame = frames.length ? frames[frameIndex] : null;
+    const final = Boolean(frame && frameIndex === frames.length - 1);
+    const pathCells = new Set(final ? route : []);
+    buttons.forEach((button, i) => {
+      const [x, y] = coords(i);
+      const isStart = i === start, isGoal = i === goal, isRock = rocks.has(i);
+      let clazz = "cell", marker = "", role = "empty";
+      if (isRock) { clazz += " wall"; marker = "◆"; role = "rock"; }
+      else if (frame && frame.visited.has(i)) { clazz += " expanded"; role = "checked"; }
+      else if (frame && frame.frontier.has(i)) { clazz += " seen"; role = "waiting"; }
+      if (pathCells.has(i)) { clazz += " path"; role = "shortest route"; }
+      if (frame && frame.current === i && !isStart && !isGoal) clazz += " current";
+      if (isStart) { clazz += " start"; marker = "R"; role = "rover start"; }
+      if (isGoal) { clazz += " goal"; marker = "F"; role = "destination flag"; }
+      button.className = clazz; button.textContent = marker;
+      button.setAttribute("aria-label", `Column ${x + 1}, row ${y + 1}: ${role}. Select to edit.`);
+      button.title = `Column ${x + 1}, row ${y + 1}: ${role}`;
+      button.setAttribute("aria-pressed", isRock ? "true" : "false");
+    });
+    $("checked").textContent = frame ? String(frame.visited.size) : "0";
+    $("waiting").textContent = frame ? String(frame.frontier.size) : "0";
+    $("distance").textContent = final ? (route.length ? String(route.length - 1) : "None") : "—";
+  }
+  function finished() {
+    stop();
+    if (route.length) tell(`Found it! The shortest route uses ${route.length - 1} moves. The search checked ${frames[frameIndex].visited.size} squares.`);
+    else tell(`No safe route to the flag with these rocks! The search checked ${frames[frameIndex].visited.size} squares. Try removing a rock.`);
+  }
+  function advance() {
+    ensurePlan();
+    if (frameIndex < frames.length - 1) { frameIndex++; render(); }
+    if (frameIndex === frames.length - 1) finished();
+    else $("message").textContent = `Search wave step ${frameIndex}: checking the nearest unexplored squares.`;
+  }
+  function tickInterval() { return 720 - Number($("speed").value) * 120; }
+  function play() {
+    if (timer !== null) { stop(); tell("Paused. Choose Step, Play, or Show best route."); return; }
+    ensurePlan();
+    if (frameIndex === frames.length - 1) { finished(); return; }
+    $("play").textContent = "⏸ Pause";
+    timer = setInterval(advance, tickInterval());
+    tell("Searching! The blue wave shows checked squares and mint squares are still waiting.");
+  }
+  buildBoard();
+  $("preset").addEventListener("change", e => loadPreset(e.target.value));
+  $("step").addEventListener("click", () => { stop(); advance(); });
+  $("play").addEventListener("click", play);
+  $("solve").addEventListener("click", () => { stop(); ensurePlan(); frameIndex = frames.length - 1; render(); finished(); });
+  $("reset").addEventListener("click", () => { resetSearch(); tell("Search reset. Your rocks stay in place. Try again!"); });
+  $("speed").addEventListener("input", e => { e.target.setAttribute("aria-valuetext", `${e.target.value} out of 5`); if (timer !== null) { clearInterval(timer); timer = setInterval(advance, tickInterval()); } });
+  window.addEventListener("pagehide", stop);
+  loadPreset("garden");
+  // A deliberately tiny read-only diagnostic API for reproducible automated tests.
+  Object.defineProperty(window, "roverLabDiagnostics", {value: Object.freeze({
+    getState: () => ({start, goal, rocks: [...rocks], frameIndex, frames: frames.length, route: [...route]}),
+    calculate: () => ({...(() => { const plan = planRoute(); return {moves: plan.best.length ? plan.best.length - 1 : null, path: plan.best}; })()})
+  }), configurable: false});
+})();
+</script>
+</body>
+</html>
