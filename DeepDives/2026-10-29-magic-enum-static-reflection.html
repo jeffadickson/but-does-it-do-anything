@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="A technical field guide to magic_enum v0.9.8 for C++20 deterministic simulation, RTOS diagnostics, and strongly typed event pipelines.">
+<title>magic_enum — Make Every State Nameable | Engineering Library Deep Dive · 29 Oct 2026</title>
+<style>
+:root{color-scheme:dark;--bg:#0a1021;--surface:#111b32;--surface2:#182642;--ink:#f0f7ff;--muted:#bed0e7;--cyan:#5ee5d2;--lav:#a2aafc;--gold:#ffe09c;--line:#354763;--positive:#8bf0c1;--negative:#ffadb3;--max:1160px;scroll-behavior:smooth}
+*{box-sizing:border-box}html{scroll-padding-top:1.25rem}body{margin:0;background:radial-gradient(ellipse 70% 30% at 50% -12%,#29365e,transparent),var(--bg);color:var(--ink);font:400 1rem/1.64 system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+a{color:#8df4e3;text-underline-offset:3px}a:hover{color:#fff}a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.skip{position:absolute;left:12px;top:-90px;background:white;color:#111;padding:10px;z-index:10}.skip:focus{top:12px}
+.wrap{max-width:var(--max);margin:auto;padding:0 clamp(16px,3.6vw,40px)}.hero{border-bottom:1px solid var(--line);padding:64px 0 45px;overflow:hidden}
+.eyebrow{text-transform:uppercase;letter-spacing:.17em;font-size:.78rem;color:var(--cyan);font-weight:800}
+h1{font-size:clamp(2.6rem,6vw,5.6rem);line-height:1.06;letter-spacing:-.06em;margin:.2em 0 .26em;max-width:880px}
+h1 em{font-style:normal;color:var(--cyan)}.lede{font-size:clamp(1.16rem,2vw,1.42rem);max-width:780px;color:#dce9fc}
+.badges{display:flex;flex-wrap:wrap;gap:9px;margin:27px 0}.badge{font-size:.83rem;font-weight:700;display:inline-block;border:1px solid #5f758c;padding:4px 12px;border-radius:20px;background:#11223c;color:#d9eeff}
+.herofooter{display:flex;flex-wrap:wrap;gap:16px;align-items:center;color:var(--muted);font-size:.93rem}
+.layout{display:grid;grid-template-columns:275px minmax(0,1fr);gap:clamp(18px,4vw,54px);padding-top:40px}.sidebar{align-self:start;position:sticky;top:22px;max-height:calc(100vh - 44px);overflow:auto}
+.sidebar h2{font-size:.85rem;letter-spacing:.11em;text-transform:uppercase;color:var(--gold);margin:10px 0 12px}.sidebar ol{list-style:none;padding:0;margin:0}.sidebar li{border-bottom:1px solid #263753}.sidebar li a{display:flex;align-items:baseline;gap:10px;text-decoration:none;color:#d7e8fa;padding:8px 4px}.sidebar li a:hover{background:#1a2c4b}.n{color:var(--cyan);font-size:.73rem;font-weight:800;min-width:20px}
+article{min-width:0;padding-bottom:100px}section{scroll-margin-top:24px;margin:0 0 54px}h2{font-size:clamp(1.55rem,2.6vw,2.12rem);letter-spacing:-.027em;line-height:1.19;margin:0 0 20px}h3{font-size:1.15rem;margin:25px 0 10px;color:#fff}p{margin:0 0 15px;color:#d2e0f3}strong{color:#fff}li{color:#d2e0f3}ul,ol{padding-left:24px}li+li{margin-top:7px}
+.callout{background:linear-gradient(115deg,#183b4c,#152844);border:1px solid #4a8990;border-left:5px solid var(--cyan);border-radius:15px;padding:19px 22px;margin:20px 0}
+.callout.warning{background:#312635;border-color:#a07c75;border-left-color:var(--gold)}.callout strong{color:var(--gold)}.callout p:last-child{margin-bottom:0}
+.cardgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.card{background:var(--surface);border:1px solid var(--line);padding:18px 20px;border-radius:15px}.card b{color:var(--cyan);display:block;margin-bottom:6px}.card p{margin:0;font-size:.96rem}
+.diagram{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0;align-items:stretch}.diagram>div{border:1px solid #526c88;border-radius:12px;padding:16px;background:var(--surface2);text-align:center}.diagram strong{display:block;font-size:1.04rem;color:var(--gold)}.diagram small{display:block;color:var(--muted);margin-top:6px}
+code{font:500 .91em/1.5 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;color:#b6f7ec}
+pre{overflow-x:auto;background:#091426;border:1px solid #3a5576;border-radius:13px;padding:21px;line-height:1.53;font-size:.91rem;white-space:pre;margin:16px 0 22px}pre code{color:#e2f0ff;font-size:inherit}pre:focus{outline:3px solid var(--gold)}.caption{font-size:.88rem;color:var(--muted);margin-top:-12px}
+.table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:20px 0}table{border-collapse:collapse;width:100%;min-width:590px}th,td{text-align:left;vertical-align:top;padding:13px 15px;border-bottom:1px solid var(--line)}th{background:#1e304f;color:#fff;font-size:.9rem}td{color:#dce9f5}tr:last-child td{border:0}
+.lab{border-radius:20px;padding:24px;background:linear-gradient(135deg,#24315b,#173d49);border:1px solid #648ba4;box-shadow:0 20px 42px #0005}.lab h3{margin-top:0}.formrow{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.formrow label{display:flex;flex-direction:column;gap:5px;flex:1;min-width:190px;color:#e5f8ff;font-weight:700}
+input{width:100%;font:inherit;border:1px solid #97b3c4;border-radius:9px;background:#071529;color:white;padding:10px 13px}button{font:700 .97rem system-ui;border:0;border-radius:10px;background:var(--cyan);color:#071b2b;cursor:pointer;padding:11px 16px;min-height:44px}button:hover{background:#bcfff3}.secondary{border:1px solid #87a0bc;background:#182840;color:#f7fbff}.secondary:hover{background:#2c4262}.chips{display:flex;gap:8px;flex-wrap:wrap;margin:17px 0}.readout{font-weight:750;background:#0d213a;border-radius:12px;border:1px solid #7297af;padding:13px 16px;color:#f4fafc;overflow-wrap:anywhere}.readout[data-valid="yes"]{border-color:var(--positive);color:var(--positive)}.readout[data-valid="no"]{border-color:var(--negative);color:var(--negative)}.lab #signal-explanation{padding-top:11px}.trace{max-height:225px;overflow:auto;background:#091728;border-radius:10px;padding:10px 20px 10px 40px}.trace li{font-family:ui-monospace,Consolas,monospace;font-size:.92rem;overflow-wrap:anywhere}#demo-check{color:#d3ffd3;font-size:.85rem}
+.ref-list{padding:0;list-style:none}.ref-list li{display:flex;gap:15px;padding:13px 0;border-bottom:1px solid var(--line)}.refnumber{font-size:.75rem;font-weight:800;color:var(--cyan);padding-top:3px}.ref-list p{margin:4px 0 0;font-size:.9rem;color:var(--muted)}
+.footer{padding:24px 0 42px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
+@media(max-width:950px){.layout{grid-template-columns:1fr}.sidebar{position:static;max-height:none;background:#111b32;border-radius:13px;padding:14px}.sidebar ol{columns:2}.sidebar li{break-inside:avoid}.hero{padding-top:46px}}
+@media(max-width:650px){.sidebar ol{columns:1}.cardgrid,.diagram{grid-template-columns:1fr}.lab{padding:16px}.herofooter{gap:8px}pre{font-size:.8rem;padding:14px}section{margin-bottom:44px}}
+@media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media print{:root{color-scheme:light;--bg:white;--surface:white;--surface2:#eee;--ink:black;--muted:#444;--line:#999}body{background:white;color:black}.sidebar{display:none}.layout{display:block}.hero{padding:16px 0}.hero h1{font-size:32px;color:black}h1 em{color:#054}.badge{color:black}.card,.callout,.lab{background:#f7f7f7;color:black;box-shadow:none}p,li,td{color:black}strong,h2,h3{color:black}pre{background:#eee;white-space:pre-wrap}pre code{color:#111}a{color:#056}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to article</a>
+<header class="hero"><div class="wrap">
+<div class="eyebrow">Engineering Library Deep Dive · Edition 009 · 29 October 2026</div>
+<h1>magic_enum<span aria-hidden="true">:</span><br><em>give every state a name.</em></h1>
+<p class="lede">A header-only C++17 library that can translate enum values into readable identifiers and back—useful for diagnostics, command parsers, test reports, and deterministic simulator traces.</p>
+<div class="badges"><span class="badge">C++17 / C++20</span><span class="badge">Header-only</span><span class="badge">MIT</span><span class="badge">Release v0.9.8</span><span class="badge">Allocation-aware</span><span class="badge">Ninja-friendly</span></div>
+<div class="herofooter"><span><strong>Research snapshot:</strong> 2026-10-29</span><span><strong>Recommended use:</strong> host tools &amp; optional embedded diagnostics</span><span><strong>Source:</strong> <a href="https://github.com/Neargye/magic_enum/tree/v0.9.8">Official v0.9.8 tree</a></span></div>
+</div></header>
+<div class="wrap layout">
+<nav class="sidebar" aria-label="Table of contents"><h2>Inside this issue</h2><ol><li><a href="#thesis"><span class="n">01</span>Executive assessment</a></li><li><a href="#problem"><span class="n">02</span>What problem it solves</a></li><li><a href="#mechanism"><span class="n">03</span>How it works</a></li><li><a href="#api"><span class="n">04</span>Core API</a></li><li><a href="#example"><span class="n">05</span>Checked C++20 example</a></li><li><a href="#lab"><span class="n">06</span>Interactive event decoder</a></li><li><a href="#adoption"><span class="n">07</span>Verified adoption</a></li><li><a href="#systems"><span class="n">08</span>Applications to your engineering stack</a></li><li><a href="#limits-section"><span class="n">09</span>Failure modes and hazards</a></li><li><a href="#performance"><span class="n">10</span>Determinism and measurement</a></li><li><a href="#integration"><span class="n">11</span>CMake / Ninja integration</a></li><li><a href="#tradeoffs"><span class="n">12</span>Alternatives and decision matrix</a></li><li><a href="#license-section"><span class="n">13</span>License and supply chain</a></li><li><a href="#validation"><span class="n">14</span>Review and acceptance tests</a></li><li><a href="#references"><span class="n">15</span>Primary sources</a></li></ol></nav>
+<main id="main">
+<article>
+<section id="thesis"><h2>01. Executive assessment</h2>
+<div class="callout"><p><strong>Adoption recommendation: TRY it in host-side diagnostic code first.</strong> Start with a VeloSim event trace or a RISCue debug-console command decoder; verify the bare-metal compiler, code size, compile-time footprint, and reflection semantics before adding it to a flight/RTOS core.</p></div>
+<div class="cardgrid"><div class="card"><b>Value</b><p>Type-safe enum names without maintaining a second table of strings or a long switch statement.</p></div><div class="card"><b>Best fit</b><p>Stable, modest enums at boundaries: logs, test artifacts, CLI arguments, and human-readable state reports.</p></div><div class="card"><b>Main hazard</b><p>Enumerators outside the scan range, aliases, compiler-specific implementation details, and compile-time work.</p></div><div class="card"><b>Evidence boundary</b><p>Official APIs and real ClickHouse source use are verified. No measured latency or RTOS suitability is claimed.</p></div></div>
+</section>
+<section id="problem"><h2>02. Why reflection matters to embedded software</h2>
+<p>Imagine a deterministic simulation event queue containing <code>Event::Timeout</code>. The event is small and strongly typed—but a trace recorder wants to print <code>Timeout</code>. Without reflection, the team typically writes a parallel string table, <code>switch</code> statement, macro registry, or generator. Every new enum case risks drifting out of sync with its reporting code.</p>
+<p><strong>magic_enum</strong> infers enumerator names at compile time, then exposes them through a type-safe API. A runtime value can be rendered as a <code>std::string_view</code>; a string can be checked and converted into an <code>std::optional&lt;Enum&gt;</code>. For diagnostic interfaces, this eliminates considerable repetitive boilerplate. For a stable wire protocol, numeric IDs still need an explicit independent schema.</p>
+<div class="diagram" role="img" aria-label="Three steps: typed C++ enum, compile-time reflection metadata, readable string or validated optional typed enum.">
+<div><strong>Typed value</strong><small>Signal::Timeout = 7</small></div>
+<div><strong>Compile-time discovery</strong><small>Enumerators and their names</small></div>
+<div><strong>Boundary conversion</strong><small>"Timeout" or optional&lt;Signal&gt;</small></div>
+</div>
+<p>This is not runtime reflection in the managed-language sense: no RTTI registration table, object graph discovery, or allocation is required simply to ask for the name of a reflected enumerator. There may still be compile-time and binary-size costs.</p>
+</section>
+<section id="mechanism"><h2>03. How it works under the hood</h2>
+<p>For C++20 on mainstream compilers, the library uses a documented implementation technique involving compiler-generated function signature strings such as <code>__PRETTY_FUNCTION__</code> or <code>__FUNCSIG__</code>. It examines a bounded set of possible enum values during constant evaluation and extracts the names of valid enumerators. The result is metadata that can be used by ordinary compiled code. The upstream documentation also describes selecting standard C++26 reflection automatically when that feature is available.</p>
+<h3>The compile-time / run-time split</h3>
+<div class="table-scroll"><table><thead><tr><th>Concern</th><th>Where the work lives</th><th>Operational meaning</th></tr></thead><tbody>
+<tr><td>Search candidate enum values</td><td>Compiler / constant evaluation</td><td>Larger ranges can make builds slower; range tuning matters.</td></tr>
+<tr><td>Produce names &amp; entries</td><td>Compile-time metadata</td><td>Access via constexpr-compatible containers and string views.</td></tr>
+<tr><td>Convert enum to name</td><td>Runtime lookup on prepared metadata</td><td>Does not require constructing a <code>std::string</code>.</td></tr>
+<tr><td>Convert name to enum</td><td>Runtime matching over known names</td><td>Result is optional; validate before use.</td></tr>
+<tr><td>Serialize wire protocol</td><td>Your program</td><td>Keep explicit stable numeric values and versioning.</td></tr>
+</tbody></table></div>
+<p>For important timing paths, treat <code>constexpr</code> as a tool for eliminating runtime discovery—not as a guarantee of constant-time lookup, constant code size, ISR safety, or zero heap use throughout calling code.</p>
+</section>
+<section id="api"><h2>04. The compact API worth remembering</h2>
+<div class="table-scroll"><table><thead><tr><th>API</th><th>Return</th><th>Why it matters</th></tr></thead><tbody>
+<tr><td><code>enum_name(value)</code></td><td><code>string_view</code></td><td>Diagnostic name for a recognized value; empty for unsupported/unreflected values.</td></tr>
+<tr><td><code>enum_cast&lt;E&gt;(text)</code></td><td><code>optional&lt;E&gt;</code></td><td>Validated human-readable command and configuration parser.</td></tr>
+<tr><td><code>enum_cast&lt;E&gt;(number)</code></td><td><code>optional&lt;E&gt;</code></td><td>Checks that a numeric value corresponds to a reflected enumerator.</td></tr>
+<tr><td><code>enum_entries&lt;E&gt;()</code></td><td><code>array&lt;pair&lt;E,string_view&gt;,...&gt;</code></td><td>Enumerate value-name pairs at compile time.</td></tr>
+<tr><td><code>enum_count&lt;E&gt;()</code></td><td><code>size_t</code></td><td>Compile-time reflected enumerator count.</td></tr>
+<tr><td><code>enum_flags_name(...)</code></td><td>Owning string</td><td>Convenience for bitmasks; do not assume allocation-free.</td></tr>
+</tbody></table></div>
+<p>Watch for unsafe convenience: runtime <code>enum_value&lt;E&gt;(index)</code> has <strong>undefined behavior</strong> when the index is out of bounds. Prefer explicit index validation; never feed it unchecked data. The compile-time index overload rejects invalid indices during compilation. <a href="#ref-reference">API reference ↗</a></p>
+</section>
+<section id="example"><h2>05. Minimal C++20 example: event vocabulary</h2>
+<p>This example models four RISCue-style event identifiers with explicit numeric values. The first four names are accepted; the lowercase and unknown names are rejected. The <code>static_assert</code>s make the intended reflected set and conversions compile-time testable.</p>
+<pre tabindex="0" aria-label="C++20 example source"><code>// main.cpp — a small, intentionally bounded RISCue-style event vocabulary.
+#include &lt;magic_enum/magic_enum.hpp&gt;
+#include &lt;array&gt;
+#include &lt;cstdio&gt;
+#include &lt;optional&gt;
+#include &lt;string_view&gt;
+
+enum class Signal : unsigned char {
+    Boot = 0, Tick = 1, Timeout = 7, Fault = 9
+};
+
+constexpr auto kEntries = magic_enum::enum_entries&lt;Signal&gt;();
+static_assert(kEntries.size() == 4);
+static_assert(magic_enum::enum_name(Signal::Fault) == &quot;Fault&quot;);
+static_assert(magic_enum::enum_cast&lt;Signal&gt;(&quot;Timeout&quot;).has_value());
+
+constexpr std::optional&lt;Signal&gt; parse_signal(
+    std::string_view text) noexcept {
+    return magic_enum::enum_cast&lt;Signal&gt;(text);
+}
+
+int main() {
+    constexpr std::array&lt;std::string_view, 6&gt; inputs{
+        &quot;Boot&quot;, &quot;Tick&quot;, &quot;Timeout&quot;, &quot;Fault&quot;, &quot;tick&quot;, &quot;Unknown&quot;
+    };
+    for (const auto text : inputs) {
+        if (const auto signal = parse_signal(text)) {
+            const auto name = magic_enum::enum_name(*signal);
+            // Demonstration output only; stdio is not an RTOS-safe logger.
+            std::printf(&quot;accepted: %.*s (%u)\n&quot;,
+                static_cast&lt;int&gt;(name.size()), name.data(),
+                static_cast&lt;unsigned&gt;(*signal));
+        } else {
+            std::puts(&quot;rejected&quot;);
+        }
+    }
+}</code></pre>
+<h3>Expected output</h3><pre tabindex="0"><code>accepted: Boot (0)
+accepted: Tick (1)
+accepted: Timeout (7)
+accepted: Fault (9)
+rejected
+rejected</code></pre>
+<p class="caption">The output above is the expected behavior derived from the API contract. It is not a claim that this particular sample was compiled or run in the report-generation environment. Standard I/O in this demo is illustrative and must be replaced with a project-approved RTOS logging strategy.</p>
+<p>A genuinely allocation-free hot path should keep the returned <code>std::string_view</code> and <code>std::optional</code> local and use a bounded transport or buffer. The library itself does not make the whole program allocation-free.</p>
+</section>
+<section id="lab"><h2>06. Interactive lab: decode an RTOS event</h2>
+<div class="lab">
+<h3>Try a name. Does it exist?</h3><p>This offline JavaScript model reproduces the <em>intended mapping</em> in the sample enum; it is <strong>not</strong> a JavaScript port of magic_enum and does not execute C++.</p>
+<form id="signal-form"><div class="formrow"><label for="signal-input">Signal name (case-sensitive)<input id="signal-input" type="text" value="Timeout" autocomplete="off" spellcheck="false" maxlength="40"></label><button type="submit">Check event</button></div></form>
+<div class="chips" aria-label="Example inputs">
+<button class="secondary" type="button" data-try="Boot">Boot</button>
+<button class="secondary" type="button" data-try="Timeout">Timeout</button>
+<button class="secondary" type="button" data-try="Fault">Fault</button>
+<button class="secondary" type="button" data-try="tick">tick</button>
+<button class="secondary" type="button" data-try="Unknown">Unknown</button>
+</div>
+<div id="signal-result" class="readout" role="status" aria-live="polite">No lookup yet.</div>
+<p id="signal-explanation">Select a test or type a name, then press Check.</p>
+<div class="formrow"><button type="button" id="demo-all" class="secondary">Run all six cases</button><button type="button" id="clear-trace" class="secondary">Clear trace</button></div>
+<h3>Bounded diagnostic trace</h3><p>Only the eight most recent events remain visible. A real embedded implementation should use an explicitly bounded producer/consumer buffer.</p><ol class="trace" id="trace" aria-label="Lookup trace"></ol>
+<p id="demo-check">Checking local demonstration model…</p>
+</div>
+</section>
+<section id="adoption"><h2>07. Verified real-world usage: ClickHouse</h2>
+<div class="callout"><p><strong>Source-level adoption observed.</strong> In ClickHouse's own C++ repository, <a href="#ref-clickhouse-part"><code>IMergeTreeDataPart.cpp</code></a> implements <code>stateString(MergeTreeDataPartState state)</code> by returning <code>magic_enum::enum_name(state)</code>. A separate <a href="#ref-clickhouse-session">session implementation</a> incorporates <code>magic_enum::enum_name(interface_)</code> in a logger name.</p></div>
+<p>Those source statements demonstrate actual use of the library in a named open-source project, rather than just theoretical suitability. They do <strong>not</strong> by themselves establish the exact version shipped by a particular ClickHouse release, production deployment prevalence, or a performance benchmark. The observations are based on the public project source checked for this edition.</p>
+<h3>Transferable lesson</h3>
+<p>ClickHouse converts real internal state into readable operational context. That same pattern could make simulator traces and CI failures intelligible in VeloSim—but <strong>that proposed application is not evidence of adoption by VeloSim</strong>.</p>
+</section>
+<section id="systems"><h2>08. Plausible uses in your engineering stack</h2>
+<div class="table-scroll"><table><thead><tr><th>Project</th><th>Proposed prototype, not confirmed implementation</th><th>Measurable acceptance criterion</th></tr></thead><tbody>
+<tr><td><strong>RISCue RTOS</strong></td><td>Debug-only active-object event naming for bounded tracing.</td><td>No heap calls in the trace path; compiler and image-size gates pass; no ISR logging without WCET review.</td></tr>
+<tr><td><strong>VeloSim</strong></td><td>Human-readable scheduler and HDL event-state identifiers.</td><td>All defined enum cases appear in golden trace; no trace output ordering changes.</td></tr>
+<tr><td><strong>SharpTestBench</strong></td><td>Native C++ test harness enum labels, alongside C# host reports.</td><td>Cross-language identifiers and numeric protocol codes remain stable.</td></tr>
+<tr><td><strong>BenchForge</strong></td><td>Instrument-state diagnostics in a native adapter or test server.</td><td>Unknown values are safely rejected; no name string used as a wire-format contract.</td></tr>
+<tr><td><strong>StateForge</strong></td><td>Finite state diagnostics during model-to-runtime validation.</td><td>State names match generated canonical list, including renamed/aliased cases.</td></tr>
+</tbody></table></div>
+<p>Use strong C++ enums for native components; this library does not generate C# types, synchronize schemas across languages, or prove formal-state-machine completeness. For those tasks, maintain generated contracts and cross-language tests separately.</p>
+</section>
+<section id="limits-section"><h2>09. Limitations you should test on day one</h2>
+<div class="callout warning"><p><strong>Default range:</strong> compiler-specific reflection searches integer values from <code>-128</code> through <code>127</code>. An enumerator at 201 is not discovered automatically unless you customize its scan range. Flag enums use different rules; zero is not reflected as a flag.</p></div>
+<pre tabindex="0"><code>// If an enum uses values beyond the default scan window:
+enum class DeviceCode { LinkLost = 201, Recover = 202 };
+
+template&lt;&gt;
+struct magic_enum::customize::enum_range&lt;DeviceCode&gt; {
+    static constexpr int min = 201;
+    static constexpr int max = 202;
+};
+
+static_assert(magic_enum::enum_name(DeviceCode::LinkLost)
+              == &quot;LinkLost&quot;);</code></pre>
+<ul>
+<li><strong>Aliases are ambiguous:</strong> two enumerators with the same integer cannot both have independently reliable reflected names. Compiler-specific behavior may vary.</li>
+<li><strong>Potential build-time blowup:</strong> scanning very wide candidate value ranges increases constant-evaluation effort. Measure compile time before setting enormous limits.</li>
+<li><strong>Compiler reliance:</strong> in C++20, the trick depends on compiler signature formatting. Check <code>MAGIC_ENUM_SUPPORTED</code> and your actual cross-compiler matrix.</li>
+<li><strong>String identity is not a stable protocol:</strong> refactors can change the displayed name. Use explicit versioned numeric identifiers for persistent storage, OTA and wire formats.</li>
+<li><strong>Flag operations are different:</strong> <code>enum_flags_*</code> reflect bit positions; <code>enum_flags_name</code> builds an owning string and may allocate.</li>
+<li><strong>Forward-declared enums are not enough:</strong> the full definition must be visible. Keep range macros consistent across translation units and modules to avoid ODR hazards.</li>
+<li><strong>Potential metadata leaks:</strong> diagnostic names expose internal symbols in log files; review debug/release policies and threat models.</li>
+</ul>
+<p>The project's <a href="#ref-limits">limitations document</a> is unusually important here: consult it before interpreting an empty name as a genuine unknown value.</p>
+</section>
+<section id="performance"><h2>10. Allocation, determinism and a practical benchmark</h2>
+<p>Several attractive facts are narrower than they first appear: a <code>string_view</code> is non-owning, and an <code>optional&lt;Signal&gt;</code> holds its small value in place, but the surrounding program can allocate memory. The library does not claim globally bounded lookup time or a universally optimal code-size result; compiler optimizations, enum cardinality, and workload matter.</p>
+<div class="cardgrid"><div class="card"><b>Measure on target</b><p>Binary sections (<code>size</code>), map symbol changes, hot-path cycles, cold-path cycles, cross-compiler results and stack use.</p></div><div class="card"><b>Control your baseline</b><p>Compare against a hand-coded <code>switch</code> and an explicitly generated sorted lookup table with identical semantics.</p></div><div class="card"><b>Prove no heap calls</b><p>Instrument <code>operator new</code> / allocator hooks for relevant paths in an RTOS test harness; include invalid lookups.</p></div><div class="card"><b>Make correctness first</b><p>Fuzz all accepted inputs and randomized unknown strings; confirm aliases/ranges before any speed claims.</p></div></div>
+<h3>Suggested microbenchmark design</h3>
+<ol>
+<li>Generate fixed input sequences at build time: 90% known, 10% invalid; separately test cold-cache and worst-case unknown names.</li>
+<li>Time <code>enum_name</code>, <code>enum_cast</code>, manual switch and generated table without I/O inside the timed loop.</li>
+<li>Consume results through a suitably documented anti-optimization sink; pin compiler version, CPU frequency/policy, build mode and input seed.</li>
+<li>Report distributions and absolute binary size, not just percentage “speedups.” Add CI tolerances for the embedded toolchain where practical.</li>
+</ol>
+<p>No benchmark was run for this edition. A claim such as “magic_enum is zero-cost” would be unsupported without that experiment.</p>
+</section>
+<section id="integration"><h2>11. Reproducible CMake / Ninja integration</h2>
+<p>Upstream release <strong>v0.9.8</strong> was published on <strong>3 May 2026</strong>. The Git tag resolves to commit <code>1384769c66bd16ec9bb1353f45fe8ec8ccc12dbd</code>; the example pins this complete commit SHA to avoid an accidental upgrade when main changes. The upstream CMake file defines a header-only <code>INTERFACE</code> library and the alias <code>magic_enum::magic_enum</code>.</p>
+<pre tabindex="0" aria-label="CMake integration example"><code># CMakeLists.txt — reproducible source revision, not a moving branch.
+cmake_minimum_required(VERSION 3.20)
+project(magic_enum_signal_lab LANGUAGES CXX)
+include(FetchContent)
+
+set(MAGIC_ENUM_OPT_BUILD_TESTS OFF CACHE BOOL &quot;&quot; FORCE)
+set(MAGIC_ENUM_OPT_BUILD_EXAMPLES OFF CACHE BOOL &quot;&quot; FORCE)
+FetchContent_Declare(magic_enum
+    GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
+    GIT_TAG 1384769c66bd16ec9bb1353f45fe8ec8ccc12dbd
+)
+FetchContent_MakeAvailable(magic_enum)
+add_executable(signal_lab main.cpp)
+target_compile_features(signal_lab PRIVATE cxx_std_20)
+target_link_libraries(signal_lab PRIVATE magic_enum::magic_enum)</code></pre>
+<pre tabindex="0" aria-label="CMake build commands"><code>cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
+./build/signal_lab                # Linux / macOS
+.\build\signal_lab.exe            # Windows PowerShell, Ninja generator</code></pre>
+<p>First configure requires source access through Git. For disconnected CI and flight-toolchain builds, mirror and vendor the reviewed release, record the material's checksum and license, and prefer the offline variant below in the same project. Do not combine both <code>FetchContent_MakeAvailable</code> and <code>add_subdirectory</code> for the same dependency.</p>
+<pre tabindex="0" aria-label="Vendored dependency CMake alternative"><code># Offline build variant: vendor the pinned release in third_party/magic_enum.
+add_subdirectory(third_party/magic_enum)
+target_link_libraries(signal_lab PRIVATE magic_enum::magic_enum)</code></pre>
+<p>Native C++20 modules are an optional separate integration path with CMake 3.28+ according to upstream; this edition intentionally uses the simpler, more portable header-only integration. The library's documentation warns not to mix module imports and traditional magic_enum headers in the same program. <a href="#ref-readme">Official integration guidance ↗</a></p>
+</section>
+<section id="tradeoffs"><h2>12. Alternative approaches</h2>
+<div class="table-scroll"><table><thead><tr><th>Approach</th><th>Advantage</th><th>Cost / tradeoff</th></tr></thead><tbody>
+<tr><td><strong>magic_enum</strong></td><td>Minimal boilerplate; names tracked from enum definitions.</td><td>Compiler-specific C++20 implementation, scan/range/alias behavior, compile-time cost.</td></tr>
+<tr><td><strong>Handwritten switch</strong></td><td>Explicit, predictable, friendly to tiny embedded toolchains.</td><td>Repetitive maintenance; compiler may not force exhaustive coverage.</td></tr>
+<tr><td><strong>X-macro or code generator</strong></td><td>Single source of truth; can produce C, C++, C# and docs.</td><td>Build-tool complexity; generated-code review and reproducibility needed.</td></tr>
+<tr><td><strong>Frozen</strong></td><td>Compile-time dictionary/hash mapping; already reviewed Oct 27.</td><td>Requires an explicit mapping; not automatic enum reflection.</td></tr>
+<tr><td><strong>C++26 standard reflection</strong></td><td>Standardized language direction rather than compiler signature inference.</td><td>Requires a supporting compiler/standard-library toolchain; not a C++20 deployment path.</td></tr>
+</tbody></table></div>
+<p>For a safety-sensitive embedded core with a narrow enum set, a generated switch may remain the better risk tradeoff. For host-side tracing and test infrastructure, magic_enum's reduction in boilerplate is attractive.</p>
+</section>
+<section id="license-section"><h2>13. Licensing, supply chain and maintenance</h2>
+<p>The project is <strong>MIT licensed</strong> (Daniil Goncharov, 2019–2026 in the repository license). You may use it commercially and modify or redistribute it, including in closed-source applications, subject to retaining the copyright and permission notice in copies or substantial portions. The license explicitly disclaims warranty. This is not legal advice; include license review in your normal third-party software process.</p>
+<p>Recommended engineering controls: pin the exact source commit; archive source and LICENSE; record review date; run compiler-matrix tests (GCC/Clang/MSVC as appropriate); check range/alias tests; compare embedded object sizes and symbol tables; validate any update in CI before promotion. For flight-related processes, apply the project's own software assurance and traceability rules—the MIT license alone supplies no safety certification.</p>
+</section>
+<section id="validation"><h2>14. Review status and proposed acceptance tests</h2>
+<div class="table-scroll"><table><thead><tr><th>Check</th><th>Status in this issue</th><th>Follow-on action</th></tr></thead><tbody>
+<tr><td>Release identification, license, CMake API</td><td>Verified against official v0.9.8 tag/release and repository contents</td><td>Recheck before dependency upgrade.</td></tr>
+<tr><td>ClickHouse real adoption</td><td>Verified from two upstream C++ source paths</td><td>Determine a specific shipped release separately if needed.</td></tr>
+<tr><td>C++ sample</td><td>Reviewed against documented APIs and expected output; compilation not executed</td><td>Build sample with actual v0.9.8 headers on GCC/Clang/MSVC.</td></tr>
+<tr><td>CMake instructions</td><td>Checked against upstream CMake target name and pinned commit</td><td>Run clean Ninja configure/build with network/mirror available.</td></tr>
+<tr><td>HTML / interactive model</td><td>Self-contained; JavaScript local assertions and structural checks included</td><td>Live-browser and accessibility-tree review in target browsers.</td></tr>
+<tr><td>RTOS suitability</td><td>Not verified</td><td>Measure code size, peak stack, allocator use and WCET before adoption.</td></tr>
+</tbody></table></div>
+<p><strong>Minimum pull-request acceptance criteria:</strong> build with C++20 and warnings-as-errors, validated names for every enum case, known-invalid cases rejected, one out-of-range enum fixture, a deliberate alias fixture, bounded-allocation audit, deterministic trace golden tests, and no change to serialized wire codes.</p>
+</section>
+<section id="references"><h2>15. Primary documentation and source evidence</h2>
+<p>Links point to maintained upstream repositories, a pinned tag, and original project source code. External links open in a new tab; the rest of this report functions offline.</p>
+<ol class="ref-list"><li id="ref-readme"><span class="refnumber">01</span><div><a href="https://github.com/Neargye/magic_enum/blob/v0.9.8/README.md" rel="noopener noreferrer" target="_blank">Project README &amp; integration guide <span aria-hidden="true">↗</span></a><p>API examples; supported compilers; CMake and package targets.</p></div></li><li id="ref-reference"><span class="refnumber">02</span><div><a href="https://github.com/Neargye/magic_enum/blob/v0.9.8/doc/reference.md" rel="noopener noreferrer" target="_blank">Published API reference <span aria-hidden="true">↗</span></a><p>enum_cast, enum_entries, bounds behavior, customization.</p></div></li><li id="ref-limits"><span class="refnumber">03</span><div><a href="https://github.com/Neargye/magic_enum/blob/v0.9.8/doc/limitations.md" rel="noopener noreferrer" target="_blank">Official limitations <span aria-hidden="true">↗</span></a><p>Compiler-specific reflection, scan ranges, flags, aliases and edge cases.</p></div></li><li id="ref-license"><span class="refnumber">04</span><div><a href="https://github.com/Neargye/magic_enum/blob/v0.9.8/LICENSE" rel="noopener noreferrer" target="_blank">MIT license <span aria-hidden="true">↗</span></a><p>Copyright notice, redistribution rights and warranty disclaimer.</p></div></li><li id="ref-cmake"><span class="refnumber">05</span><div><a href="https://github.com/Neargye/magic_enum/blob/v0.9.8/CMakeLists.txt" rel="noopener noreferrer" target="_blank">v0.9.8 CMake target definition <span aria-hidden="true">↗</span></a><p>INTERFACE target and magic_enum::magic_enum alias.</p></div></li><li id="ref-release"><span class="refnumber">06</span><div><a href="https://github.com/Neargye/magic_enum/releases/tag/v0.9.8" rel="noopener noreferrer" target="_blank">v0.9.8 release, 3 May 2026 <span aria-hidden="true">↗</span></a><p>Release identifier and changes; independently checked release/tag.</p></div></li><li id="ref-clickhouse-part"><span class="refnumber">07</span><div><a href="https://github.com/ClickHouse/ClickHouse/blob/master/src/Storages/MergeTree/IMergeTreeDataPart.cpp" rel="noopener noreferrer" target="_blank">ClickHouse: MergeTree data-part states <span aria-hidden="true">↗</span></a><p>Source-level real use: stateString returns magic_enum::enum_name(state).</p></div></li><li id="ref-clickhouse-session"><span class="refnumber">08</span><div><a href="https://github.com/ClickHouse/ClickHouse/blob/master/src/Interpreters/Session.cpp" rel="noopener noreferrer" target="_blank">ClickHouse: session log-name construction <span aria-hidden="true">↗</span></a><p>Source-level real use: session logging uses magic_enum::enum_name(interface_).</p></div></li></ol>
+</section>
+</article>
+</main></div>
+<footer class="footer"><div class="wrap">Daily Engineering Library Deep Dive · 29 October 2026 · Research and evaluation, not a performance certification · <a href="#main">Back to article</a></div></footer>
+<script>(() => {
+  "use strict";
+  const known = new Map([
+    ["Boot", 0], ["Tick", 1], ["Timeout", 7], ["Fault", 9]
+  ]);
+  const input = document.getElementById("signal-input");
+  const result = document.getElementById("signal-result");
+  const explanation = document.getElementById("signal-explanation");
+  const trace = document.getElementById("trace");
+  let count = 0;
+  const render = (value) => {
+    // A JavaScript analogue, NOT a call into the C++ library.
+    const valid = known.has(value);
+    const detail = valid
+      ? "ACCEPTED · Signal::" + value + " · code " + known.get(value)
+      : "REJECTED · unknown or case-mismatched identifier";
+    result.textContent = detail;
+    result.dataset.valid = valid ? "yes" : "no";
+    explanation.textContent = valid
+      ? "Name lookup succeeded. In the C++ example, enum_cast returns an optional holding the typed enum."
+      : "There is no matching enumerator. In C++, enum_cast returns an empty optional; never dereference it.";
+    count += 1;
+    const line = document.createElement("li");
+    line.textContent = String(count).padStart(2,"0") + "  " +
+      JSON.stringify(value) + " → " + (valid ? "Signal::" + value : "nullopt");
+    trace.prepend(line);
+    while (trace.children.length > 8) trace.lastElementChild.remove();
+  };
+  document.getElementById("signal-form").addEventListener("submit", event => {
+    event.preventDefault();
+    render(input.value.trim());
+  });
+  document.querySelectorAll("[data-try]").forEach(button => {
+    button.addEventListener("click", () => {
+      input.value = button.dataset.try;
+      render(input.value);
+      input.focus();
+    });
+  });
+  document.getElementById("demo-all").addEventListener("click", () => {
+    ["Boot","Tick","Timeout","Fault","tick","Unknown"].forEach(render);
+  });
+  document.getElementById("clear-trace").addEventListener("click", () => {
+    trace.replaceChildren();
+    count = 0;
+    result.textContent = "No lookup yet.";
+    result.dataset.valid = "";
+    explanation.textContent = "Select a test or type a name, then press Check.";
+  });
+  // Evaluatable model assertions, not proof about the external library.
+  const selfTests = [
+    known.get("Boot") === 0,
+    known.get("Fault") === 9,
+    !known.has("tick"),
+    !known.has("Unknown"),
+    known.size === 4
+  ];
+  document.getElementById("demo-check").textContent =
+    selfTests.every(Boolean) ? "Demo model: 5/5 self-checks passed" : "Demo model self-check failed";
+})();</script>
+</body></html>
