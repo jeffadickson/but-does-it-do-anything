@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="description" content="A tested C++20 engineering deep dive on Boost.StaticString: bounded text buffers, no-heap normal paths, fail-closed overflow handling, CMake/Ninja integration, real-world source evidence and embedded tradeoffs.">
+<title>Boost.StaticString — Put a Hard Ceiling on Text | Engineering Deep Dives</title>
+<style>
+:root{--bg:#071b28;--panel:#103146;--panel2:#133c51;--ink:#f0f8fa;--muted:#bad1d8;--edge:#345a6b;--lime:#b8f17c;--gold:#ffce85;--sky:#70d9ef;--rose:#ffaaa2;--deep:#05141c;--shadow:0 14px 35px #04121a70}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:1.2rem}body{margin:0;background:radial-gradient(circle at 88% 0%,#174f60 0%,transparent 31%),linear-gradient(180deg,#092536,#071823 60%);color:var(--ink);font:16px/1.72 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:var(--sky);text-underline-offset:.16em}a:hover{color:white}a:focus-visible,button:focus-visible,input:focus-visible,pre:focus-visible{outline:3px solid var(--gold);outline-offset:4px;border-radius:4px}.skip{position:absolute;top:-90px;left:16px;padding:.65rem 1rem;background:var(--lime);color:#071b28;z-index:30}.skip:focus{top:12px}
+.shell{max-width:1160px;margin:auto;padding:0 26px}.mast{border-bottom:1px solid var(--edge);padding:21px 0}.mast .shell{display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap}.brand{text-transform:uppercase;font-weight:900;letter-spacing:.15em;font-size:.76rem;color:var(--lime)}.edition{font-size:.83rem;color:var(--muted)}
+.hero{padding:68px 0 44px}.eyebrow{color:var(--lime);text-transform:uppercase;letter-spacing:.15em;font-size:.81rem;font-weight:800}.hero h1{font-size:clamp(2.5rem,6vw,5.2rem);line-height:1.04;letter-spacing:-.055em;max-width:920px;margin:.65rem 0 1rem}.hero h1 em{font-style:normal;color:var(--lime)}.dek{font-size:clamp(1.08rem,1.7vw,1.38rem);max-width:810px;color:var(--muted);margin-bottom:1.6rem}.chips{display:flex;gap:.6rem;flex-wrap:wrap}.chip{border:1px solid #4a7587;background:#12344a;border-radius:99px;padding:.32rem .78rem;font-size:.82rem;color:#d7edf1}
+.stickyhint{color:var(--muted);font-size:.87rem;max-width:720px}.layout{display:grid;grid-template-columns:245px minmax(0,1fr);gap:28px;align-items:start;padding-bottom:80px}
+.toc{position:sticky;top:20px;border:1px solid var(--edge);background:#102c3ddc;border-radius:16px;padding:19px;box-shadow:var(--shadow)}.toc h2{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);margin:0 0 12px}.toc ol{margin:0;padding:0;list-style:none;display:grid;gap:7px}.toc a{display:block;color:#dcebef;text-decoration:none;padding:5px 8px;border-radius:7px;font-size:.83rem;line-height:1.4}.toc a:hover,.toc a:focus-visible{background:var(--panel2);color:white}.body{min-width:0}section{margin-bottom:22px;background:linear-gradient(160deg,#113147e8,#0c2838f5);border:1px solid var(--edge);border-radius:18px;padding:clamp(18px,3vw,34px);box-shadow:var(--shadow)}section h2{font-size:clamp(1.4rem,2vw,1.95rem);line-height:1.2;letter-spacing:-.02em;margin:0 0 15px}.kicker{display:block;color:var(--lime);font-size:.73rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800;margin-bottom:10px}h3{color:#e0f4f5;margin:22px 0 7px;font-size:1.12rem}p{margin:11px 0 18px;color:#e0ecf0}strong{color:#fff}.lead{font-size:1.1rem}.note{border-left:4px solid var(--gold);background:#5c402020;padding:13px 17px;border-radius:0 10px 10px 0;color:#fff0d7;margin:17px 0}.good{border-color:var(--lime);background:#2c542626}.bad{border-color:var(--rose);background:#712f3026}.small{font-size:.87rem;color:var(--muted)}.tiny{font-size:.77rem;color:var(--muted)}.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.card{border:1px solid #386477;background:#0d2a3a;border-radius:12px;padding:16px}.card h3{margin:0 0 6px;color:var(--lime)}.card p{margin:0}
+code{font: .92em ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;color:#d8ffab;background:#08202d;border-radius:3px;padding:.12em .27em;overflow-wrap:anywhere}
+.codebar{background:#1b4b5b;border:1px solid #44707a;border-radius:11px 11px 0 0;padding:7px 15px;display:flex;justify-content:space-between;gap:12px;font-size:.74rem;font-weight:700;color:#e8f6eb}
+pre{margin:0 0 22px;background:#061924;color:#ddf7f4;border:1px solid #44707a;border-top:0;border-radius:0 0 11px 11px;padding:16px;overflow:auto;line-height:1.6;tab-size:4}pre code{display:block;color:#d0f5eb;background:none;padding:0;white-space:pre;font-size:.81rem;overflow-wrap:normal}
+table{width:100%;border-collapse:collapse;font-size:.89rem}th,td{text-align:left;padding:.8rem;border-bottom:1px solid #385d69;vertical-align:top}th{background:#194355;color:#e4fece}tbody tr:hover{background:#21475a55}.tablewrap{overflow-x:auto}
+.demo{border:1px solid #49817c;border-radius:16px;padding:21px;background:#092f38}.demo h3{margin:0 0 7px}.controls{display:grid;grid-template-columns:1fr auto;gap:12px;margin:15px 0 10px;align-items:end}label{display:block;font-weight:750;font-size:.89rem;color:#e6f5f1;margin:0 0 6px}input[type=text]{width:100%;background:#071c28;color:white;border:2px solid #608391;border-radius:9px;padding:11px 12px;font:1rem system-ui;min-height:46px}button{background:var(--lime);border:0;border-radius:9px;color:#102315;cursor:pointer;font:750 .94rem system-ui;padding:12px 16px;min-height:46px}button:hover{background:#ddffb7}.secondary{background:#215362;color:#f2fdff;border:1px solid #79a4ac}.secondary:hover{background:#326c7c}.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}.meter{margin-top:20px;background:#051824;border:1px solid #618594;padding:4px;border-radius:99px;min-height:29px;overflow:hidden}.fill{height:19px;background:linear-gradient(90deg,#73d9cf,var(--lime));border-radius:99px;width:0%;transition:width .28s}.capacity{display:flex;justify-content:space-between;margin-top:5px;gap:10px;color:var(--muted);font-size:.85rem}.status{margin-top:14px;background:#144a4d;padding:12px 15px;border-left:4px solid var(--lime);border-radius:6px;min-height:54px}.sample{text-align:left;overflow-wrap:anywhere;font-family:ui-monospace,Consolas,monospace;border-radius:9px;background:#08212c;padding:10px;color:#fff;min-height:46px}.tag{font-size:.69rem;text-transform:uppercase;letter-spacing:.08em;color:#bfe5e5}.flow{display:flex;gap:5px;flex-wrap:wrap;margin:15px 0}.cell{width:24px;height:30px;border:1px solid #65a3a2;border-radius:3px;background:#0c3648}.cell.used{background:var(--lime);border-color:var(--lime)}.cell.term{background:var(--gold);border-color:var(--gold)}.legend{display:flex;gap:15px;flex-wrap:wrap;font-size:.81rem;color:var(--muted)}
+.legend b{display:inline-block;width:13px;height:13px;border-radius:2px;margin-right:5px;vertical-align:-2px}.legend .used{background:var(--lime)}.legend .free{border:1px solid #65a3a2}.legend .term{background:var(--gold)}
+.refs{padding-left:1.5rem}.refs li{margin-bottom:15px}.refs a{overflow-wrap:anywhere}.footer{border-top:1px solid #335667;color:var(--muted);text-align:center;padding:25px 0 50px;font-size:.86rem}abbr{text-decoration:underline dotted}
+@media(max-width:920px){.layout{display:block}.toc{position:static;margin-bottom:22px}.toc ol{grid-template-columns:repeat(2,minmax(0,1fr));display:grid}.hero{padding-top:44px}}@media(max-width:610px){.shell{padding:0 15px}.toc ol{grid-template-columns:1fr}.row{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.hero h1{font-size:2.75rem}.cell{width:16px;height:28px}section{padding:19px}th,td{padding:.6rem}.chips{gap:.45rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.fill{transition:none}}
+@media print{body{background:#fff;color:#101f27}.mast,.toc,.demo button{display:none}.layout{display:block}.body section{break-inside:avoid;box-shadow:none;border-color:#888;background:white;color:#111}p,section h2,h3,code,.small{color:#111}.hero h1,.dek{color:#111}a{color:#06477f}pre{white-space:pre-wrap;overflow-wrap:anywhere;border:1px solid #888;background:#eee;color:#111}pre code{color:#111}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to report</a>
+<header class="mast"><div class="shell"><span class="brand">The Dickson Engineering Library</span><span class="edition">Field note 010 · 30 October 2026 · C++20 / Real-time design</span></div></header>
+<div class="shell">
+<div class="hero">
+<div class="eyebrow">Deep Dive / memory-bounded systems</div>
+<h1>Put a hard ceiling<br>on <em>text.</em></h1>
+<p class="dek"><strong>Boost.StaticString</strong> stores a variable-length string in fixed storage inside its object. For firmware, deterministic simulations, and event-driven systems, that makes the memory budget visible in the type—not a wish hidden in a comment.</p>
+<div class="chips"><span class="chip">Boost.StaticString</span><span class="chip">Boost Software License 1.0</span><span class="chip">Header-only</span><span class="chip">C++11 with Boost / C++17 standalone</span><span class="chip">C++20 examples built locally</span></div>
+<p class="stickyhint">Research cutoff: 30 October 2026 · Documentation examined at Boost 1.92.0 · Examples tested with the installed Boost 1.83.0; version distinction matters.</p>
+</div>
+<div class="layout">
+<nav class="toc" aria-label="On this page"><h2>Contents</h2><ol>
+<li><a href="#decision">01 · Decision in 30 seconds</a></li>
+<li><a href="#model">02 · What is in memory?</a></li>
+<li><a href="#contract">03 · The failure contract</a></li>
+<li><a href="#tested">04 · Tested C++20 example</a></li>
+<li><a href="#lab">05 · Interactive capacity lab</a></li>
+<li><a href="#integration">06 · CMake + Ninja</a></li>
+<li><a href="#noexceptions">07 · No-exceptions builds</a></li>
+<li><a href="#adoption">08 · Real source-level adoption</a></li>
+<li><a href="#applications">09 · Where it might fit</a></li>
+<li><a href="#tradeoffs">10 · Tradeoffs and hazards</a></li>
+<li><a href="#verification">11 · Verification plan</a></li>
+<li><a href="#alternatives">12 · Alternatives</a></li>
+<li><a href="#license">13 · License + integration</a></li>
+<li><a href="#review">14 · Technical review</a></li>
+<li><a href="#references">15 · Primary sources</a></li>
+</ol></nav>
+<main id="main" class="body">
+<section id="decision"><span class="kicker">01 / Decision</span><h2>A string whose maximum size is part of its C++ type</h2>
+<p class="lead">Use <code>boost::static_string&lt;24&gt;</code> when the maximum text length is a real, enforced interface requirement—an opcode, short diagnostic label, telemetry identifier, or protocol token.</p>
+<div class="row"><div class="card"><h3>What you get</h3><p>Fixed inline character capacity, familiar <code>std::string</code>-like operations, direct control of the upper bound, and no heap request for successful ordinary operations on the string's own storage.</p></div><div class="card"><h3>What you do not get</h3><p>Automatic truncation, dynamic growth past capacity, a universal guarantee about all surrounding code, or automatic real-time safety when exceptions are disabled.</p></div></div>
+<p class="note good"><strong>Engineering recommendation:</strong> a strong candidate for RISCue host/firmware message labels and fixed-format VeloSim trace identifiers, <em>provided</em> callers check lengths before mutation and review exception policy.</p>
+</section>
+<section id="model"><span class="kicker">02 / Mental model</span><h2>Where do the characters live?</h2>
+<p><code>std::string</code> may use a small-string optimization but can request heap storage for longer values. <code>boost::static_string&lt;N&gt;</code> carries its character storage with the object. The library documentation explicitly identifies memory-constrained embedded environments and latency-sensitive paths as motivating applications. <a href="#src1">[1]</a></p>
+<div class="card"><div class="tag">Conceptual illustration (not an ABI / struct layout specification)</div><p><strong>boost::static_string&lt;12&gt; label = "RISCue";</strong></p><div class="flow" aria-hidden="true"><span class="cell used"></span><span class="cell used"></span><span class="cell used"></span><span class="cell used"></span><span class="cell used"></span><span class="cell used"></span><span class="cell term"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span></div><div class="legend"><span><b class="used"></b>Six used characters</span><span><b class="term"></b>Illustrative null terminator</span><span><b class="free"></b>Remaining capacity</span></div><p class="small">Capacity <strong>12 characters</strong> excludes the null terminator. Actual object size, size bookkeeping, padding, and byte layout are implementation details—not a stable wire format. The conceptual figure includes an extra terminator cell.</p></div>
+<p>A large <code>static_string&lt;1024&gt;</code> by value may be a problem on an RTOS task stack. The storage does not vanish; it moves from a potentially allocatable heap budget to a compile-time object/stack budget.</p>
+</section>
+<section id="contract"><span class="kicker">03 / Failure policy</span><h2>Capacity checks belong at the boundary</h2>
+<p>The official documented overflow behavior is <code>std::length_error</code> when exceptions are enabled. It is <strong>not</strong> silent truncation. A bounded wrapper can instead return a status <em>before</em> calling an operation that could overflow; this is a proposed RISCue-style policy, not an upstream feature of the library. <a href="#src1">[1]</a></p>
+<div class="tablewrap"><table><thead><tr><th>Incoming operation</th><th>Guard</th><th>Result</th></tr></thead><tbody>
+<tr><td>Replace with <code>token</code></td><td><code>token.size() &lt;= out.capacity()</code></td><td>Accept or reject without changing prior value.</td></tr>
+<tr><td>Append <code>suffix</code></td><td><code>suffix.size() &lt;= out.capacity() - out.size()</code></td><td>Accept or reject without partial modification.</td></tr>
+<tr><td>Untrusted data</td><td>Validate encoding, grammar, and size separately</td><td>Capacity alone is not input validation.</td></tr>
+<tr><td>Hard real-time / ISR</td><td>Audit entire call graph, failures, stack footprint</td><td>Inline storage alone does not establish worst-case execution time.</td></tr>
+</tbody></table></div>
+<p class="note bad"><strong>Do not assume <code>-fno-exceptions</code> makes overflow harmless.</strong> In the tested standalone configuration, the default throw macro made a no-exceptions build fail to compile. Section 07 shows a tested explicit failure hook.</p>
+</section>
+<section id="tested"><span class="kicker">04 / Copy-ready program</span><h2>A test that survives Release builds</h2>
+<p>The complete example is intentionally small. It covers exact capacity, an overlong replacement, an overlong append, empty input, and preservation of the old value. It uses explicit return-code checks rather than <code>assert</code>, because <code>assert</code> is commonly removed when <code>NDEBUG</code> is defined in Release builds.</p>
+<div class="codebar"><span>cpp</span><span>Copy-ready • complete example</span></div><pre tabindex="0"><code>#include &lt;boost/static_string.hpp&gt;
+#include &lt;cstddef&gt;
+#include &lt;string_view&gt;
+
+using Label = boost::static_string&lt;24&gt;;
+enum class Result { ok, too_long };
+
+// Check before mutation; rejected input preserves the previous value.
+Result set_label(Label&amp; out, std::string_view token) {
+    if (token.size() &gt; out.capacity()) return Result::too_long;
+    if (token.empty()) { out.clear(); return Result::ok; }
+    out.assign(token.data(), token.size());
+    return Result::ok;
+}
+
+Result append_suffix(Label&amp; out, std::string_view suffix) {
+    if (suffix.size() &gt; out.capacity() - out.size())
+        return Result::too_long;
+    if (!suffix.empty()) out.append(suffix.data(), suffix.size());
+    return Result::ok;
+}
+
+int main() {
+    Label name;
+    if (set_label(name, &quot;RISCue&quot;) != Result::ok) return 1;
+    if (name != &quot;RISCue&quot;) return 2;
+    if (append_suffix(name, &quot;/RTOS&quot;) != Result::ok) return 3;
+    if (name != &quot;RISCue/RTOS&quot;) return 4;
+    const Label before = name;
+    if (append_suffix(name, &quot;-a-label-far-beyond-the-capacity&quot;) != Result::too_long) return 5;
+    if (name != before) return 6; // unchanged on rejection
+    if (set_label(name, &quot;&quot;) != Result::ok) return 7;
+    if (!name.empty()) return 8;
+    if (set_label(name, &quot;123456789012345678901234&quot;) != Result::ok) return 9;
+    if (name.size() != 24) return 10;
+    if (set_label(name, &quot;1234567890123456789012345&quot;) != Result::too_long) return 11;
+    if (name.size() != 24) return 12;
+    return 0;
+}</code></pre>
+<p class="small">Source compatibility and test evidence: GCC 14.2, Clang 17, C++20, local Boost 1.83.0. <strong>It was not compiled with Boost 1.92.0.</strong> The example is based on documented public APIs <code>assign</code>, <code>append</code>, <code>capacity</code>, <code>size</code>, and comparison. <a href="#src1">[1]</a></p>
+</section>
+<section id="lab"><span class="kicker">05 / Interactive demonstration</span><h2>Capacity lab: design your own bounded label</h2>
+<p>Try appending text to a 24-character simulated buffer. A rejected append leaves the buffer unchanged. This <strong>offline JavaScript teaching model</strong> mirrors the guard policy above; it does <em>not</em> execute Boost code or benchmark the library.</p>
+<div class="demo">
+<h3>24-character label budget</h3>
+<div class="tag">Current label</div><div class="sample" id="demo-value" aria-live="polite">RISCue</div>
+<div class="controls"><div><label for="demo-input">Suffix to append</label><input id="demo-input" type="text" maxlength="160" value="/RTOS" spellcheck="false" autocomplete="off" aria-describedby="demo-help"></div><button id="demo-append" type="button">Try append</button></div>
+<p class="tiny" id="demo-help">Spaces count as characters. This lab counts JavaScript UTF-16 code units; the C++ example operates on <code>char</code> bytes. For non-ASCII text those counts can differ.</p>
+<div class="btnrow"><button class="secondary" id="demo-reset" type="button">Reset label</button><button class="secondary" id="demo-fill" type="button">Try an overlong suffix</button></div>
+<div class="meter" role="img" id="demo-meter" aria-label="6 of 24 simulated character units used"><div class="fill" id="demo-bar"></div></div>
+<div class="capacity"><span id="demo-count">6 / 24 used</span><span id="demo-left">18 remaining</span></div>
+<div class="status" id="demo-status" role="status" aria-live="polite">Ready: append a suffix and see whether it fits.</div>
+</div>
+<p class="small"><strong>Discussion:</strong> Decide whether rejection, truncation, or an error event is right for a spacecraft command. The library supplies the storage primitive; the system designer owns the policy.</p>
+</section>
+<section id="integration"><span class="kicker">06 / Build system</span><h2>CMake, Ninja, and reproducible dependencies</h2>
+<p>For an installed, CMake-configured Boost distribution, link the header-only Boost headers target and compile as C++20. This exact CMake shape was configured and built in the local environment with <strong>CMake 3.31.6, Ninja, and Boost 1.83.0</strong>.</p>
+<div class="codebar"><span>CMakeLists.txt</span><span>Copy-ready • complete example</span></div><pre tabindex="0"><code>cmake_minimum_required(VERSION 3.22)
+project(static_string_probe LANGUAGES CXX)
+
+find_package(Boost 1.73 CONFIG REQUIRED)
+add_executable(static_string_probe main.cpp)
+target_compile_features(static_string_probe PRIVATE cxx_std_20)
+target_link_libraries(static_string_probe PRIVATE Boost::headers)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES &quot;GNU|Clang&quot;)
+  target_compile_options(static_string_probe
+    PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endif()
+
+enable_testing()
+add_test(NAME static_string_probe COMMAND static_string_probe)</code></pre>
+<div class="codebar"><span>shell</span><span>Copy-ready • complete example</span></div><pre tabindex="0"><code>cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+ctest --test-dir build --output-on-failure
+
+# Useful comparison: a second CMake build with -DCMAKE_BUILD_TYPE=Debug
+# Pin your Boost provider at the dependency-manager/lockfile level.</code></pre>
+<p>In a controlled CI environment, pin the Boost version in the package manager or source archive and record the SHA256/lockfile. The <code>find_package</code> minimum above is permissive for compatibility; <strong>it is not itself a reproducibility pin</strong>. Boost's own CMake infrastructure documents <code>BOOST_INCLUDE_LIBRARIES</code> for source-based selective builds and warns that individual Boost modules require transitive dependencies. <a href="#src5">[5]</a></p>
+<p class="note">Keep this separate from a recommendation to vendor one header: the default configuration depends on other Boost headers. Standalone mode is an explicit macro with a C++17 minimum and different exception handling considerations. <a href="#src1">[1]</a></p>
+</section>
+<section id="noexceptions"><span class="kicker">07 / Exception policy</span><h2>The no-exceptions trap we reproduced</h2>
+<p>We deliberately compiled the standalone mode with <code>-fno-exceptions</code> against installed Boost 1.83.0. <strong>It failed</strong>: <code>BOOST_STATIC_STRING_THROW(ex)</code> expands to <code>throw ex</code> in standalone mode unless overridden, and the compiler rejects the reachable throw expression even if the normal inputs are prechecked. The documented macro is visible in the library's versioned source configuration. <a href="#src6">[6]</a></p>
+<p>The following explicit hook compiled and the bounded-path tests passed with both GCC 14.2 and Clang 17. In this example, a missed overflow <strong>terminates</strong> the process; it does not recover. For a safety-critical system, an approved flight failure mechanism requires a separate design review.</p>
+<div class="codebar"><span>C++ / no-exceptions include bridge</span><span>Copy-ready • complete example</span></div><pre tabindex="0"><code>// Before &lt;boost/static_string.hpp&gt; in a -fno-exceptions build:
+#include &lt;exception&gt;
+#define BOOST_STATIC_STRING_STANDALONE
+#define BOOST_STATIC_STRING_THROW(ex) std::terminate()
+#include &lt;boost/static_string.hpp&gt;
+
+// Tested with GCC 14.2 + Clang 17 against Boost 1.83.
+// Overflow is still forbidden by set_label()/append_suffix();
+// this hook defines the last-resort failure behavior.</code></pre>
+<p>When the project uses the Boost-dependent mode, review that mode's <code>BOOST_THROW_EXCEPTION</code> behavior as well. Do not rely on the standalone override to address every exception path in a mixed dependency tree. The no-exceptions compile is a <strong>local demonstration on Boost 1.83</strong>, not a cross-version certification.</p>
+<div class="codebar"><span>shell / local verification</span><span>Copy-ready • complete example</span></div><pre tabindex="0"><code>g++ -std=c++20 -O2 -Wall -Wextra -Wpedantic -Werror \
+    main.cpp -o static_string_probe
+./static_string_probe
+
+# Bare -fno-exceptions + BOOST_STATIC_STRING_STANDALONE
+# did NOT compile in this environment (Boost 1.83).
+# With the fail-closed BOOST_STATIC_STRING_THROW hook:
+g++ -std=c++20 -fno-exceptions -O2 -Wall -Wextra \
+    -Wpedantic -Werror noexc_main.cpp -o noexc_probe
+./noexc_probe</code></pre>
+</section>
+<section id="adoption"><span class="kicker">08 / Evidence: actual code</span><h2>Three observed uses—not hypothetical deployments</h2>
+<div class="card"><h3>01 · Cemu: PowerPC assembler mnemonic buffer</h3><p>The Cemu emulator's <code>ppcAssembler.cpp</code> declares <code>boost::static_string&lt;32&gt; instructionName</code>, passes it to an alias translation function, and checks <code>instructionName.size() &gt;= instructionName.capacity()</code> while parsing. This is direct source evidence of a bounded name in a real project's assembler. It is <strong>not</strong> evidence of Cemu's runtime allocation count. <a href="#src2">[2]</a></p></div>
+<div class="card"><h3>02 · Boost.Cobalt: IPv4 address text</h3><p>Boost.Cobalt's source defines <code>boost::static_string&lt;15&gt; ip_address_v4::addr_str() const</code> and constructs a <code>boost::static_string&lt;16&gt;</code> for parsing an IPv4 address. The implementation validates an address-string length before this construction. This is actual Boost library integration shown in the repository's source. <a href="#src3">[3]</a></p></div>
+<div class="card"><h3>03 · emu-ex-plus-alpha: static-string alias</h3><p>The Imagine utilities in emu-ex-plus-alpha declare <code>template &lt;size_t N&gt; using StaticString = boost::static_string&lt;N&gt;;</code>. This is direct evidence of the public type being adopted in an independent emulator-related codebase, <em>not</em> proof of which runtime paths use the alias. <a href="#src4">[4]</a></p></div>
+<p class="small">These adoption statements are limited to inspection of public source at the linked paths on 30 October 2026; no customer, flight, or production-deployment claim is inferred.</p>
+</section>
+<section id="applications"><span class="kicker">09 / Proposals, not existing integrations</span><h2>Where this might belong in your engineering stack</h2>
+<div class="tablewrap"><table><thead><tr><th>Project</th><th>Plausible limited experiment</th><th>What would need proof</th></tr></thead><tbody>
+<tr><td><strong>RISCue RTOS</strong></td><td>Use <code>static_string&lt;24&gt;</code> for diagnostic event tags or fixed-capacity command labels <em>outside critical ISR paths</em>.</td><td>Task stack impact, failure policy, exact WCET and no-allocation audit.</td></tr>
+<tr><td><strong>VeloSim</strong></td><td>Store fixed-format opcode labels or signal names in deterministic test-case structures.</td><td>Peak in-object memory, trace throughput, cache behavior, source-level allocation instrumentation.</td></tr>
+<tr><td><strong>BenchForge</strong></td><td>Use bounded short device/channel labels in a native C++ instrument bridge; preserve richer .NET strings at the external boundary.</td><td>Interop encoding and maximum lengths; ownership and lifetime.</td></tr>
+<tr><td><strong>SharpContracts</strong></td><td>Host-side parser/test harness cases validating that overlong IDs fail closed; C# type wrappers are a different design layer.</td><td>Actual need for a native C++ component; no direct .NET 10 library dependency.</td></tr>
+</tbody></table></div>
+<p class="note"><strong>Scope boundary:</strong> these are engineering hypotheses. None of those repositories was audited for a current StaticString dependency or modified in this report.</p>
+</section>
+<section id="tradeoffs"><span class="kicker">10 / Engineering hazards</span><h2>Bounded storage is not magic real-time safety</h2>
+<div class="row">
+<div class="card"><h3>Capacity can become memory waste</h3><p>Large fixed text fields duplicate their full storage in every instance. Quantify <code>sizeof(T)</code>, object counts, stack highs, and copying.</p></div>
+<div class="card"><h3>No implicit truncation</h3><p>An over-capacity operation can throw with exceptions enabled. Define a domain-specific reject/truncate/escalate policy first.</p></div>
+<div class="card"><h3>Exceptions have a cost</h3><p>A successful operation avoids string heap growth; an error path or surrounding logging may still allocate. Instrument the full call graph.</p></div>
+<div class="card"><h3>Moving changes addresses</h3><p>The documented iterator invalidation rules differ from <code>std::string</code> for move and swap. Don't retain <code>data()</code> across object moves. <a href="#src1">[1]</a></p></div>
+<div class="card"><h3>Text encoding is separate</h3><p><code>N</code> is a character-capacity count for <code>CharT</code>; UTF-8 may occupy multiple <code>char</code> bytes per displayed character.</p></div>
+<div class="card"><h3>ABI and wire formats</h3><p>Do not reinterpret or transmit an entire <code>static_string</code> object as a portable, stable packet. Serialize explicit length and bytes.</p></div>
+</div>
+</section>
+<section id="verification"><span class="kicker">11 / Acceptance criteria</span><h2>How to decide whether to adopt it</h2>
+<p><strong>Correctness gate.</strong> Exercise lengths <code>0</code>, <code>N-1</code>, <code>N</code>, and <code>N+1</code>; append to a nearly full buffer; verify error statuses and unchanged values. Run ASan/UBSan on host. Test UTF-8 policy separately, if relevant.</p>
+<p><strong>Allocation gate.</strong> Interpose <code>operator new</code> or instrument target-RTOS allocators around the exact production functions. Check successful and rejected paths separately and count allocations from formatting, logging, and error reporting—not just the container.</p>
+<p><strong>Timing gate.</strong> Use fixed input distributions, worst-case lengths, adequate warmup, and pinned CPU/toolchain settings for host comparisons. On embedded hardware, collect cycle counts or timer captures under representative preemption and cache conditions. There are <strong>no performance numbers claimed</strong> in this report.</p>
+<p><strong>Evidence gate.</strong> Lock the release and compiler versions, build Debug and Release, check with/without exceptions, and log target stack high-water marks. Integrate a CI test that intentionally triggers the wrapper's too-long return path without triggering the library's throw policy.</p>
+</section>
+<section id="alternatives"><span class="kicker">12 / Design space</span><h2>Why not just use something else?</h2>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>Advantages</th><th>Tradeoffs</th></tr></thead><tbody>
+<tr><td><code>std::array&lt;char,N&gt;</code> + length</td><td>Minimal dependencies and fully explicit memory model.</td><td>You own every string operation, boundary check, and null-terminator rule.</td></tr>
+<tr><td><strong>ETL <code>etl::string</code></strong></td><td>Embedded-focused library; previously examined in this series.</td><td>Separate framework conventions and dependency choice. <strong>Not repeated as today's selection.</strong></td></tr>
+<tr><td><code>std::string</code></td><td>Flexible, universally familiar and often fast for small text.</td><td>SSO is implementation-specific; a long value may dynamically allocate.</td></tr>
+<tr><td><code>std::string_view</code></td><td>Non-owning, compact and allocation-free view.</td><td>Does not own its characters; caller must guarantee lifetime.</td></tr>
+<tr><td><strong>Boost.StaticString</strong></td><td>Inline ownership, string-like API, compile-time maximum.</td><td>Finite bound, Boost ecosystem or standalone macro, exception-policy work.</td></tr>
+</tbody></table></div>
+</section>
+<section id="license"><span class="kicker">13 / Legal + supply chain</span><h2>Boost Software License 1.0</h2>
+<p>Boost.StaticString is distributed under the <strong>Boost Software License, Version 1.0 (BSL-1.0)</strong>, not MIT. It permits commercial and noncommercial use, modification, and distribution subject to its conditions. In general, preserve the license notice with redistributed source and applicable distributions, and have the project owner review the official text. <a href="#src7">[7]</a></p>
+<p><strong>Practical integration:</strong> record version/tag, dependency source, full license text, compiler flags, exception policy, and the decision to use Boost-dependent or standalone mode. Use CMake/Ninja and keep the API wrapper small enough to replace if project assurance rules require a different fixed-string implementation.</p>
+</section>
+<section id="review"><span class="kicker">14 / Review log</span><h2>What was verified—and what was not</h2>
+<div class="tablewrap"><table><thead><tr><th>Check</th><th>Result / scope</th></tr></thead><tbody>
+<tr><td>Repeated-library scan</td><td>Checked the repository's existing <code>DeepDives/</code> filenames on 30 Oct; StaticString was not represented. ETL appeared twice, so deliberately avoided.</td></tr>
+<tr><td>C++20 Release CMake/Ninja</td><td><strong>Passed</strong> with GCC 14.2, Boost 1.83.0, CMake 3.31.6, Ninja, 1/1 CTest.</td></tr>
+<tr><td>Alternate compiler</td><td><strong>Passed</strong> with Clang 17 and <code>-Werror</code>.</td></tr>
+<tr><td>Standalone macro with exceptions</td><td><strong>Passed</strong> on locally installed Boost 1.83.0.</td></tr>
+<tr><td>Standalone <code>-fno-exceptions</code> without hook</td><td><strong>Failed as expected</strong>: exception handling disabled; default throw expression present.</td></tr>
+<tr><td>Standalone <code>-fno-exceptions</code> with explicit hook</td><td><strong>Passed</strong> with GCC 14.2 and Clang 17 on Boost 1.83.0.</td></tr>
+<tr><td>Boost 1.92.0 source build / target board</td><td><strong>Not performed.</strong> 1.92.0 behavior sourced from upstream docs; host testing used 1.83.0.</td></tr>
+<tr><td>Heap measurements, WCET, flash footprint, target RTOS</td><td><strong>Not measured.</strong> No unsupported performance or flight qualification claims.</td></tr>
+<tr><td>Third-party use</td><td>Verified directly in public Cemu, Boost.Cobalt, and emu-ex-plus-alpha source files; no deployment status inferred.</td></tr>
+</tbody></table></div>
+<p class="small">The page's interactive capacity exercise is original browser-side JavaScript; it is not an upstream StaticString demo or a real-time benchmark. The page contains no CDN, font download, analytics, or required network access after opening.</p>
+</section>
+<section id="references"><span class="kicker">15 / Source trail</span><h2>Primary documentation and exact source paths</h2>
+<ol class="refs">
+<li id="src1"><strong>Boost.StaticString 1.92.0 documentation.</strong> Contract, motivation, standalone/Boost modes, overflow, and iterators. <a href="https://www.boost.org/doc/libs/1_92_0/libs/static_string/doc/html/index.html" target="_blank" rel="noopener noreferrer">Versioned upstream docs ↗</a></li>
+<li id="src2"><strong>Cemu PowerPC assembler source.</strong> Search <code>_ppcAssembler_translateAlias</code> and <code>static_string&lt;32&gt;</code>. <a href="https://github.com/cemu-project/Cemu/blob/main/src/Cemu/PPCAssembler/ppcAssembler.cpp" target="_blank" rel="noopener noreferrer">Cemu repository ↗</a></li>
+<li id="src3"><strong>Boost.Cobalt endpoint source.</strong> Search <code>ip_address_v4::addr_str</code> and <code>static_string&lt;16&gt;</code>. <a href="https://github.com/boostorg/cobalt/blob/develop/src/io/endpoint.cpp" target="_blank" rel="noopener noreferrer">Cobalt source ↗</a></li>
+<li id="src4"><strong>emu-ex-plus-alpha Imagine StaticString alias.</strong> <a href="https://github.com/Rakashazi/emu-ex-plus-alpha/blob/master/imagine/include/imagine/util/string/StaticString.hh" target="_blank" rel="noopener noreferrer">Independent source ↗</a></li>
+<li id="src5"><strong>Boost's CMake infrastructure README.</strong> Supported dependency patterns and transitive requirements. <a href="https://github.com/boostorg/cmake/blob/develop/README.md" target="_blank" rel="noopener noreferrer">CMake README ↗</a></li>
+<li id="src6"><strong>Boost.StaticString configuration header.</strong> <code>BOOST_STATIC_STRING_STANDALONE</code> and <code>BOOST_STATIC_STRING_THROW</code>. <a href="https://github.com/boostorg/static_string/blob/boost-1.92.0/include/boost/static_string/config.hpp" target="_blank" rel="noopener noreferrer">Release-tagged config.hpp ↗</a></li>
+<li id="src7"><strong>Boost Software License 1.0.</strong> <a href="https://www.boost.org/LICENSE_1_0.txt" target="_blank" rel="noopener noreferrer">Official license text ↗</a></li>
+<li id="src8"><strong>Boost.StaticString 1.92.0 release directory.</strong> Release metadata and dependencies. <a href="https://www.boost.org/library/1.92.0/static_string/" target="_blank" rel="noopener noreferrer">Boost library page ↗</a></li>
+<li id="src9"><strong>Boost.StaticString upstream implementation.</strong> <a href="https://github.com/boostorg/static_string/tree/boost-1.92.0" target="_blank" rel="noopener noreferrer">Release-tagged source tree ↗</a></li>
+</ol>
+<p class="small">No secondary blog was used as authoritative evidence. Some upstream repository links target moving <code>main</code> / <code>develop</code> branches; inspect the linked file revision when reproducing findings.</p>
+</section>
+</main></div></div>
+<footer class="footer"><div class="shell">Engineering Deep Dives · 30 October 2026 · A source-led technical note, not a certification or endorsement by Boost, NASA, Cemu, or the other projects mentioned.</div></footer>
+<script>
+(function () {
+  "use strict";
+  var capacity = 24;
+  var current = "RISCue";
+  var input = document.getElementById("demo-input");
+  var value = document.getElementById("demo-value");
+  var bar = document.getElementById("demo-bar");
+  var meter = document.getElementById("demo-meter");
+  var count = document.getElementById("demo-count");
+  var left = document.getElementById("demo-left");
+  var status = document.getElementById("demo-status");
+  function render(message, rejected) {
+    var used = current.length;
+    value.textContent = current.length ? current : "(empty)";
+    count.textContent = used + " / " + capacity + " used";
+    left.textContent = (capacity - used) + " remaining";
+    bar.style.width = (used / capacity * 100) + "%";
+    meter.setAttribute("aria-label", used + " of " + capacity + " simulated character units used");
+    status.textContent = message;
+    status.style.borderLeftColor = rejected ? "var(--rose)" : "var(--lime)";
+  }
+  document.getElementById("demo-append").addEventListener("click", function () {
+    var suffix = input.value;
+    if (suffix.length > capacity - current.length) {
+      render("REJECTED: " + suffix.length + " units need space, but only " +
+        (capacity - current.length) + " remain. The label is unchanged.", true);
+      return;
+    }
+    current += suffix;
+    render("ACCEPTED: appended " + suffix.length + " units; no simulated resizing occurred.", false);
+  });
+  document.getElementById("demo-reset").addEventListener("click", function () {
+    current = "RISCue"; input.value = "/RTOS";
+    render("Reset complete. A fresh 24-unit budget is available.", false);
+  });
+  document.getElementById("demo-fill").addEventListener("click", function () {
+    input.value = "-diagnostic-overflow-example";
+    input.focus();
+    render("Try Append to see the rejection case.", false);
+  });
+  input.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") document.getElementById("demo-append").click();
+  });
+  render("Ready: append a suffix and see whether it fits.", false);
+}());
+</script>
+</body>
+</html>
