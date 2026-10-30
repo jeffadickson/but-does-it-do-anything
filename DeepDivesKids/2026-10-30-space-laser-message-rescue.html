@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Space Laser Message Rescue: a playful, offline, interactive lesson about spacecraft laser communications, binary data, and parity-bit error detection for curious nine-year-olds.">
+<meta name="theme-color" content="#10224d">
+<title>Space Laser Message Rescue! | DeepDivesKids | 30 October 2026</title>
+<style>
+:root{color-scheme:light;--ink:#15254b;--navy:#10224d;--deep:#0c1635;--blue:#245ee9;--teal:#087e82;--sky:#e5f5ff;--yellow:#ffe184;--orange:#ff9b62;--pink:#ffd6e9;--paper:#fffdf7;--muted:#486081;--line:#cdd8ec;--green:#126945;--red:#9b2442;--shadow:0 14px 36px rgba(21,37,75,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font:clamp(16px,1.8vw,18px)/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(165deg,#f3f8ff,#fffdf2 46%,#f6f0ff);color:var(--ink)}
+a{color:#134ebf;text-underline-offset:3px}a:hover{color:#7f2477}a:focus-visible,button:focus-visible,select:focus-visible,summary:focus-visible{outline:4px solid #f49a2d;outline-offset:3px}button,select{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.6}p{max-width:75ch}h1,h2,h3{line-height:1.2;letter-spacing:-.035em}h1{font-size:clamp(2.5rem,6.5vw,5.2rem);margin:.4rem 0 .7rem}h2{font-size:clamp(1.55rem,3.4vw,2.4rem);margin:0 0 1rem}h3{font-size:1.25rem;margin:0 0 .5rem}section{scroll-margin-top:1.5rem}.skip{position:absolute;left:-999px;top:0;background:#fff;color:#10224d;padding:.6rem 1rem;z-index:50}.skip:focus{left:1rem;top:1rem}
+.hero{background:radial-gradient(circle at 80% 12%,#374a92 0,transparent 32%),radial-gradient(circle at 12% 63%,#14718a 0,transparent 29%),linear-gradient(140deg,#0c1635,#1c2e62 65%,#17214a);color:#fff;padding:clamp(2rem,5vw,4rem) 1rem 3rem;overflow:hidden;position:relative}
+.hero:before{content:"✦    ·       ✧           ✦      ·      ✨      ✧       ✦";position:absolute;inset:0;opacity:.18;letter-spacing:2rem;font-size:3rem;line-height:5rem;pointer-events:none}.wrap{width:min(1100px,calc(100% - 2.4rem));margin:auto;position:relative}.kicker{display:inline-flex;background:#ffe184;color:#223157;padding:.34rem .8rem;border-radius:30px;font-size:.78rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase}.intro{font-size:clamp(1.1rem,2.5vw,1.4rem);color:#e7f3ff;max-width:59ch}.tagrow{display:flex;flex-wrap:wrap;gap:.6rem;margin:1.3rem 0}.tag{padding:.3rem .7rem;border:1px solid #92b8fa;border-radius:50px;background:#ffffff17;font-weight:650;font-size:.83rem;color:#fff}.heroart{background:#ffffff0b;border:1px solid #ffffff39;border-radius:24px;padding:1rem;max-width:930px;margin:1.4rem 0 0}.heroart svg{width:100%;height:auto;display:block}.heroart figcaption{font-size:.86rem;color:#dbe9ff;text-align:center;margin-top:.5rem}
+main{padding:2rem 0 4rem}.contents{background:#fff;border:2px solid #d5e1ff;border-radius:22px;padding:1.2rem 1.5rem;box-shadow:var(--shadow);margin-bottom:2.2rem}.contents h2{font-size:1.25rem}.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.4rem 1.1rem;list-style:none;padding:0;margin:0}.toc a{display:block;padding:.24rem .1rem;font-weight:750;text-decoration-thickness:2px}
+.card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:clamp(1.1rem,3vw,2rem);margin-bottom:1.5rem;box-shadow:0 8px 24px rgba(21,37,75,.06)}.card.tint{background:linear-gradient(120deg,#eafaff,#fff7df)}.card.pink{background:linear-gradient(110deg,#fff1fa,#fff)}.card.dark{background:#10224d;color:#f4f7ff}.card.dark a{color:#b4dcff}.eyebrow{font-size:.73rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:#126f78;margin-bottom:.6rem}.dark .eyebrow{color:#ffdc84}.lead{font-size:1.16rem;font-weight:650}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.mini{border-radius:18px;padding:1rem;background:#eef6ff}.mini.gold{background:#fff1c6}.mini.lilac{background:#f3ecff}.mini strong{font-size:1.06rem}.pill{display:inline-block;padding:.1rem .55rem;border-radius:99px;font-weight:800;font-size:.76rem;background:#c2fbdf;color:#075036}.pill.idea{background:#ffebac;color:#614000}.fact{border-left:5px solid #08a898;padding:.75rem 1rem;background:#eafbf5;border-radius:0 12px 12px 0;margin:1.1rem 0}.idea{border-left:5px solid #ed9c21;padding:.75rem 1rem;background:#fff4d4;border-radius:0 12px 12px 0;margin:1.1rem 0}
+.analogy{font-size:1.12rem;padding:.85rem 1.2rem;border-radius:16px;background:#f1ebff}.list{padding-left:1.5rem}.list li{margin:.45rem 0}
+.lab{border:3px solid #597cf4;background:linear-gradient(145deg,#f3f6ff,#fff 50%,#eafffb);box-shadow:var(--shadow)}.labhead{display:flex;align-items:center;justify-content:space-between;gap:.9rem;flex-wrap:wrap}.missiontag{border-radius:99px;padding:.35rem .75rem;background:#10224d;color:#fff;font-weight:800;font-size:.75rem;letter-spacing:.05em}.controls{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:1.1rem 0}.controls label{font-weight:800}.controls select{border:2px solid #355b97;border-radius:12px;padding:.55rem .8rem;background:#fff;color:var(--ink);min-height:44px}.btn{min-height:46px;border:2px solid transparent;border-radius:13px;background:#245ee9;color:#fff;padding:.6rem .9rem;font-weight:850;box-shadow:0 4px 0 #163d9c}.btn:hover{transform:translateY(-1px)}.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #163d9c}.btn.secondary{background:#fff;color:#17386f;border-color:#4167a3;box-shadow:0 4px 0 #b6c5e3}.btn.pink{background:#a62c7f;box-shadow:0 4px 0 #6b1750}.btn.sun{background:#b15a12;box-shadow:0 4px 0 #764006}
+.channel{display:grid;grid-template-columns:minmax(0,1fr);gap:1rem}.station{padding:1.1rem;background:#fff;border-radius:18px;border:2px solid #c4d6ff}.station.receiver{border-color:#8de1d2}.station h3{display:flex;align-items:center;gap:.6rem}.bits{display:flex;flex-wrap:wrap;gap:.42rem;margin:.75rem 0}.bit{width:clamp(37px,7.8vw,64px);min-height:60px;display:grid;place-items:center;border-radius:12px;background:#dceaff;color:#10214d;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:clamp(1.3rem,2.8vw,1.65rem);font-weight:900;border:2px solid #a9c7ed;position:relative}.bit.parity{background:#ffe5aa;border-color:#d18a26}.bit.changed{background:#ffe0ec;color:#9a1b4e;border-color:#d34a86}.bitbutton{border-width:3px;min-height:64px}.bitbutton:hover{filter:brightness(.97)}.bit:after{content:attr(data-label);position:absolute;bottom:3px;font-family:system-ui;font-size:.55rem;letter-spacing:.01em;font-weight:800}.transfer{display:flex;align-items:center;gap:.65rem;justify-content:center;color:#23529d;font-weight:850}.transfer .beam{flex:1;max-width:280px;height:5px;border-radius:10px;background:linear-gradient(90deg,#617ff8,#ffc96b,#57cdb2)}.result{margin-top:1.1rem;padding:1rem 1.15rem;border-radius:16px;background:#ecfff4;border:2px solid #3da87c}.result.problem{background:#ffecf1;border-color:#db5d7d}.result.tricky{background:#fff2cf;border-color:#d69820}.result strong{font-size:1.13rem}.readouts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem;margin:.9rem 0}.readout{border-radius:14px;padding:.8rem;background:#e9f1ff}.readout span{display:block;color:var(--muted);font-size:.8rem;font-weight:800}.readout b{font-size:1.3rem;word-break:break-word}.small{font-size:.88rem;color:var(--muted)}.live{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.steps{counter-reset:mission}.step{display:flex;gap:.9rem;margin:1rem 0;align-items:flex-start}.step:before{counter-increment:mission;content:counter(mission);display:grid;place-items:center;flex:none;width:2rem;height:2rem;background:#215ee9;color:#fff;font-weight:900;border-radius:50%}
+code{background:#e8efff;border-radius:5px;padding:0 .22rem;font:0.92em ui-monospace,Consolas,monospace;color:#122c70}pre{overflow-x:auto;background:#0b1735;color:#d8f5fc;padding:1rem 1.2rem;border-radius:16px;font:14px/1.65 ui-monospace,Consolas,monospace}pre code{background:transparent;color:inherit;padding:0;white-space:pre}.note{font-size:.91rem;color:var(--muted)}.dark .note{color:#d2e4ff}
+details{border:1px solid #c5d7ea;background:#f8fbff;padding:.8rem 1rem;border-radius:14px;margin:1rem 0}summary{font-weight:850;cursor:pointer}details p:last-child{margin-bottom:0}.references{counter-reset:ref;list-style:none;padding:0}.references li{padding:.8rem .2rem;border-bottom:1px solid #dde4f0}.references li::before{counter-increment:ref;content:"[" counter(ref) "]";font-weight:900;color:#176075;margin-right:.5rem}.references a{font-weight:800;overflow-wrap:anywhere}footer{padding:2.5rem 1rem;text-align:center;background:#10224d;color:#dbe7ff}footer a{color:#b5dfff}.back{display:inline-block;margin-top:1rem;font-weight:800}
+@media(min-width:750px){.channel{grid-template-columns:1fr 1fr}.transfer{grid-column:1/-1;grid-row:2}.station.receiver{grid-column:2;grid-row:1}}
+@media(max-width:630px){.grid2,.readouts{grid-template-columns:1fr}.wrap{width:min(1100px,calc(100% - 1.2rem))}.bits{gap:.3rem}.bit{min-width:31px;width:calc((100% - 7*.3rem)/8);min-height:55px}.station{padding:.65rem}.bitbutton{min-height:60px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}.btn:hover,.btn:active{transform:none}}
+@media print{.hero{background:#10224d!important;print-color-adjust:exact}.card{break-inside:avoid;box-shadow:none}.controls,.btn{display:none!important}a{color:#10224d;text-decoration:underline}body{background:#fff}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the lesson</a>
+<header class="hero" id="top">
+<div class="wrap">
+<div class="kicker">DeepDivesKids · Friday, October 30, 2026 · Space + Computing</div>
+<h1>Space Laser<br>Message Rescue! <span aria-hidden="true">🚀</span></h1>
+<p class="intro">A spaceship sends one tiny letter. But a sneaky space gremlin changes a <strong>bit</strong>. Can Quinn and Reagan catch the mistake before it reaches Earth?</p>
+<div class="tagrow"><span class="tag">Ages 8–11</span><span class="tag">15–25 minutes</span><span class="tag">Hands-on + clickable lab</span><span class="tag">Works offline</span></div>
+<figure class="heroart">
+<svg viewBox="0 0 900 245" role="img" aria-labelledby="spaceTitle spaceDesc" xmlns="http://www.w3.org/2000/svg">
+<title id="spaceTitle">Illustration of a spaceship sending a light signal to Earth</title>
+<desc id="spaceDesc">A simple spacecraft on the left points a dotted orange light beam toward the blue Earth on the right. This is a drawing, not a NASA spacecraft design.</desc>
+<defs><linearGradient id="beamG"><stop stop-color="#6be7ff"/><stop offset=".5" stop-color="#ffe387"/><stop offset="1" stop-color="#ff7c9c"/></linearGradient></defs>
+<g fill="#fff7ac"><circle cx="36" cy="38" r="2"/><circle cx="124" cy="204" r="2"/><circle cx="455" cy="38" r="3"/><circle cx="740" cy="43" r="2"/><circle cx="860" cy="206" r="2"/><circle cx="326" cy="213" r="2"/></g>
+<path d="M210 116 L710 116" stroke="url(#beamG)" stroke-width="10" stroke-dasharray="35 14" stroke-linecap="round"/>
+<g transform="translate(110 120)"><rect x="-68" y="-40" width="50" height="80" rx="5" fill="#5ea4fa" stroke="#cceaff" stroke-width="3"/><path d="M-58 -24h30M-58 0h30M-58 24h30" stroke="#e2f4ff" stroke-width="3"/><rect x="-16" y="-34" width="64" height="68" rx="11" fill="#fff0c0" stroke="#bad4ff" stroke-width="4"/><circle cx="20" cy="0" r="15" fill="#15295f"/><circle cx="20" cy="0" r="7" fill="#60e6d4"/><path d="M46 -8 L83 -24 L83 24 L46 8 Z" fill="#fcbe6e"/><text x="-66" y="80" fill="#fff" font-size="17" font-family="system-ui">SPACECRAFT</text></g>
+<g transform="translate(769 115)"><circle r="75" fill="#65d6f5" stroke="#b2eff9" stroke-width="7"/><path d="M-65 -24 Q-5 -55 22 -20 L7 3 33 17 9 48 -33 26 -45 -4 Z" fill="#54b890"/><path d="M35 -42 Q76 -33 62 0 L26 0 15 -20 Z" fill="#54b890"/><path d="M-25 55Q-10 46 4 67" fill="none" stroke="#fff" stroke-width="7"/><text x="-33" y="96" fill="#fff" font-size="17" font-family="system-ui">EARTH</text></g>
+</svg>
+<figcaption>Our cartoon "laser" represents information traveling through space. It is not a real laser, and nothing here flashes brightly.</figcaption>
+</figure>
+</div>
+</header>
+<main id="main" class="wrap">
+<nav class="contents" aria-label="Lesson contents"><h2>🧭 Choose your mission</h2><ol class="toc">
+<li><a href="#question">1 · The big question</a></li><li><a href="#how">2 · Bits and check bits</a></li>
+<li><a href="#real">3 · What NASA actually did</a></li><li><a href="#lab">4 · Play the message lab</a></li>
+<li><a href="#challenge">5 · Kitchen-table experiment</a></li><li><a href="#code">6 · Peek at the code</a></li>
+<li><a href="#connections">7 · Engineering connections</a></li><li><a href="#limits">8 · Honest limitations</a></li>
+<li><a href="#sources">9 · Sources and license</a></li>
+</ol></nav>
+<section id="question" class="card tint">
+<div class="eyebrow">Mission briefing · 01</div><h2>How do you mail a message across space?</h2>
+<p class="lead">A spaceship cannot toss a paper letter toward Earth. Instead, it sends <em>information</em> as signals.</p>
+<p>Your computer represents information using just two numbers: <strong>0</strong> and <strong>1</strong>. Each one is a <strong>bit</strong>. Bits can describe letters, pictures, music, or even hockey scores. A spacecraft can send bits by changing a radio or light signal over time.</p>
+<div class="grid2"><div class="mini"><strong>📫 A letter</strong><p>Imagine the spacecraft wants to tell Earth: <strong>R</strong> for Reagan. We turn the letter into a pattern of seven bits.</p></div><div class="mini gold"><strong>🧩 A mystery</strong><p>What if one bit changes on the trip? The receiver might read the wrong letter. How could it notice?</p></div></div>
+<p class="analogy">Think of a goalie hearing the coach shout "LEFT!" across a noisy rink. The message is useful only if it arrives correctly.</p>
+</section>
+<section id="how" class="card">
+<div class="eyebrow">Build the idea · 02</div><h2>Seven bits + one superhero check bit</h2>
+<p>In our <em>toy</em> system, the letter <strong>R</strong> is number <strong>82</strong> in the ASCII alphabet chart. In seven binary digits, 82 is <strong><code>1010010</code></strong>. The <code>1</code>s are the "on" positions. Count them: there are <strong>three</strong>.</p>
+<p>We add an eighth bit called a <strong>parity bit</strong>. Our rule is easy: <strong>the total number of 1s in all eight positions must be even</strong>. Three is odd, so we add a <strong>1</strong>. Now there are four 1s. That is even.</p>
+<div class="grid2"><div class="mini"><strong>Original packet</strong><p><code>1 0 1 0 0 1 0 | 1</code></p><p>The final golden bit is the check bit. Count all the 1s: <strong>4</strong>. Check passed!</p></div><div class="mini lilac"><strong>After one accident</strong><p><code>1 0 1 0 0 0 0 | 1</code></p><p>A single bit changed, so only <strong>3</strong> ones remain. The receiver can detect trouble.</p></div></div>
+<div class="fact"><strong>Important:</strong> Parity is an <em>error detector</em>. It warns that something may be wrong. It does not tell you which bit changed or how to repair it.</div>
+<p>Here's the twist: if <strong>two bits</strong> change, the number of 1s can still be even. That is why real communications systems need much more powerful techniques.</p>
+</section>
+<section id="real" class="card pink">
+<div class="eyebrow">True space history · 03</div><h2>NASA really sent data using laser light!</h2>
+<p>NASA's <strong>Deep Space Optical Communications (DSOC)</strong> experiment flew with the <strong>Psyche spacecraft</strong>. Engineers at NASA's Jet Propulsion Laboratory built a way to send and receive data using carefully aimed <em>near-infrared laser light</em>, which human eyes cannot see. The experiment was about future ways to move information faster from very far away. <a href="#sources">Sources 1–3</a>.</p>
+<div class="grid2"><div class="mini gold"><strong>📅 December 11, 2023</strong><p>DSOC transmitted a short ultra-high-definition video from about <strong>19 million miles</strong> (31 million kilometers) away, at up to <strong>267 megabits per second</strong>. That is real NASA test history. <a href="#sources">Source 1</a>.</p></div><div class="mini"><strong>📅 September 2, 2025</strong><p>DSOC finished its <strong>65th and final communication pass</strong>. NASA said the demonstration had exceeded its technical goals. It was a completed experiment, not a service for sending ordinary messages to Mars. <a href="#sources">Sources 1–2</a>.</p></div></div>
+<div class="fact"><span class="pill">DOCUMENTED</span> Laser-based deep-space data transmission is real. JPL reports that DSOC demonstrated data rates at least 10 times higher than comparable state-of-the-art radio systems.</div>
+<div class="idea"><span class="pill idea">OUR IMAGINATION</span> Our classroom spaceship sends a single ASCII letter with one even-parity check bit. <strong>NASA did not report using this little classroom packet format for DSOC.</strong> Our game is an analogy about data errors, not a model of DSOC's actual laser modulation or error-correction system.</div>
+</section>
+<section id="lab" class="card lab">
+<div class="labhead"><div><div class="eyebrow">Interactive experiment · 04</div><h2>🛰️ Mission Control: Message Rescue</h2></div><span class="missiontag">OFFLINE · NO INSTALLATION</span></div>
+<p>Pick a letter. The spaceship creates its eight-bit packet. Then introduce "space noise" by changing bits. Your job is to find out <strong>when the parity alarm helps</strong> — and when it is fooled.</p>
+<div class="controls"><label for="letter">Send this letter:</label><select id="letter"><option value="R">R · Reagan</option><option value="Q">Q · Quinn</option><option value="H">H · Hockey</option><option value="S">S · Space</option><option value="A">A · Art</option></select></div>
+<div class="channel">
+<div class="station"><h3>🚀 Transmitter · original</h3><p class="small">Seven blue data bits, one gold parity bit. This original stays safe at the spaceship.</p><div class="bits" id="sentBits" role="group" aria-label="Original packet's eight bits"></div><p class="small" id="sentExplanation"></p></div>
+<div class="station receiver"><h3>🌍 Receiver · can you detect damage?</h3><p class="small">Click any bit to switch 0 ↔ 1. Pink means it differs from the original.</p><div class="bits" id="receivedBits" role="group" aria-label="Received packet bits; each button toggles a bit"></div><p class="small" id="countExplanation"></p></div>
+<div class="transfer" aria-hidden="true"><span>SPACE</span><span class="beam"></span><span>EARTH</span></div>
+</div>
+<div class="controls" aria-label="Experiment presets"><button id="one" class="btn" type="button">⚡ Flip 1 data bit</button><button id="two" class="btn pink" type="button">👾 Flip 2 data bits</button><button id="check" class="btn sun" type="button">🔎 Flip just the check bit</button><button id="reset" class="btn secondary" type="button">↺ Reset packet</button></div>
+<div class="readouts"><div class="readout"><span>Spacecraft meant to send</span><b id="sentLetter">R</b></div><div class="readout"><span>Receiver reads</span><b id="receivedLetter">R</b></div></div>
+<div id="result" class="result" role="status" aria-live="off"><strong id="resultHeading">Packet ready</strong><p id="resultBody"></p></div>
+<p class="note" id="difference"></p><div id="announcement" aria-live="polite" aria-atomic="true" class="live"></div>
+<details><summary>💡 Hint: what should you try first?</summary><p>Choose <strong>Flip 1 data bit</strong>. Then choose <strong>Flip 2 data bits</strong>. Did the parity checker notice both accidents? Try changing a bit yourself.</p></details>
+</section>
+<section id="challenge" class="card tint">
+<div class="eyebrow">Offline invention · 05</div><h2>Try it with paper: a message from Planet Hockey</h2>
+<p>You do not need a computer for this experiment. Get eight small pieces of paper and a pencil. No lasers, bright flashing lights, or batteries are needed.</p>
+<div class="steps"><div><strong>Build.</strong> Write the packet <code>1 0 1 0 0 1 0 1</code>, one digit per paper square. Place a star above the last square: it is the check bit.</div></div>
+<div class="step"><div><strong>Transmit.</strong> One explorer looks away. The other secretly flips exactly <strong>one</strong> paper square from 1 to 0 or 0 to 1.</div></div>
+<div class="step"><div><strong>Inspect.</strong> Count the 1s. If the total is odd, announce "ERROR DETECTED!" You do <em>not</em> know which square changed.</div></div>
+<div class="step"><div><strong>Level up.</strong> Reset, then secretly flip <strong>two</strong> squares. Count again. Why did the alarm stay quiet?</div></div>
+<p class="analogy">Optional family challenge: Ask one person to be Mission Control, one to be the spacecraft, and one to be the mischievous cosmic gremlin. Swap roles!</p>
+</section>
+<section id="code" class="card dark">
+<div class="eyebrow">For curious coders · 06</div><h2>A real JavaScript mini-program</h2>
+<p>This is a small version of the algorithm running in the lab above. It uses normal browser JavaScript: <strong>no library download, cloud account, or build tools</strong>. The <code>charCodeAt</code> operation converts a one-letter string into a number. See <a href="#sources">MDN Source 4</a>.</p>
+<pre aria-label="JavaScript example of adding and checking an even parity bit"><code>// Send one uppercase ASCII letter, like R.
+function encodeLetter(letter) {
+  const number = letter.charCodeAt(0); // R → 82
+  const data = number.toString(2)
+    .padStart(7, "0")
+    .split("")
+    .map(Number);
+  const ones = data.reduce((a, b) => a + b, 0);
+  const checkBit = ones % 2; // Makes the total even
+  return [...data, checkBit];
+}
+
+// A receiver checks all eight bits.
+function parityIsEven(packet) {
+  const ones = packet.reduce((a, b) => a + b, 0);
+  return ones % 2 === 0;
+}
+
+const sent = encodeLetter("R");
+const received = [...sent];
+received[5] ^= 1; // Flip one data bit
+console.log(sent.join("")); // 10100101
+console.log(parityIsEven(received)); // false</code></pre>
+<details><summary>👩‍🚀 How can I change the code?</summary><p>Change <code>"R"</code> to <code>"Q"</code>. Then try changing <code>received[5]</code> to <code>received[7]</code> to flip the parity bit instead. Or flip <em>two</em> positions and predict the result. This simplified seven-bit encoding is limited to basic ASCII (letters A–Z here).</p></details>
+<p class="note">The example is included directly in this HTML for reading and copying. It is MIT-licensed original lesson code; the NASA missions and documentation are not part of that license.</p>
+</section>
+<section id="connections" class="card">
+<div class="eyebrow">Connect the dots · 07</div><h2>How this connects to your world</h2>
+<div class="grid2">
+<div class="mini"><h3>🏒 Hockey</h3><p>Reagan as goalie and Quinn as skater both need accurate information. A shouted instruction that changes from "LEFT" to "RIGHT" is a communication error. Counting bits is one way computers look for trouble.</p></div>
+<div class="mini gold"><h3>🎨 Art + science</h3><p>The real DSOC experiment sent a video and test data, not just numbers for fun. That means beautiful images and scientific results can travel as bits through a signal.</p></div>
+<div class="mini lilac"><h3>🛠️ Dad's engineering</h3><p>Projects such as <strong>RISCue</strong> (a tiny computer design) and <strong>TinyTMR</strong> (circuits built to keep working when parts misbehave) ask an important question: <em>How do we spot or survive mistakes?</em> This parity game is a first step, not flight-ready technology.</p></div>
+<div class="mini"><h3>🌲 Nature</h3><p>A hike can be a message hunt: invent an eight-symbol code with sticks and stones, then let wind or a teammate alter one symbol. Which clues tell you that the message may have changed?</p></div>
+</div>
+<div class="idea"><strong>Suggested, not verified:</strong> A homemade family rover or a future classroom game could use similar checks to spot wrong button commands. This is an idea for a project; we are <em>not</em> claiming that RISCue or any real spacecraft uses this exact toy parity scheme.</div>
+</section>
+<section id="limits" class="card">
+<div class="eyebrow">A real engineer asks "what's missing?" · 08</div><h2>What our model gets right — and what it doesn't</h2>
+<div class="grid2">
+<div class="mini"><h3>✅ Good for learning</h3><ul class="list"><li>Bits represent information.</li><li>One even-parity check bit detects <strong>any odd number</strong> of flipped bits in our eight-bit packet.</li><li>Two flipped bits can fool it.</li><li>Everything works in a browser without network access.</li></ul></div>
+<div class="mini gold"><h3>⚠️ Not a real deep-space link</h3><ul class="list"><li>We ignore faint light, pointing errors, timing, weather, and noise statistics.</li><li>Parity detects errors; it <em>does not repair them</em>.</li><li>Our 7-bit ASCII examples are not NASA DSOC's format.</li><li>Two or any even number of flips can escape this parity test, even if the data is wrong.</li></ul></div>
+</div>
+<p>Why not use fancy library software? Because this is a tiny eight-bit game. <strong>Plain JavaScript</strong> lets you inspect every step and keeps the whole page self-contained. Real mission systems use far more sophisticated designs, and engineers test them under realistic conditions.</p>
+</section>
+<section id="sources" class="card">
+<div class="eyebrow">Evidence and permissions · 09</div><h2>Source notes, license &amp; integration</h2>
+<p>These are <strong>primary sources</strong> from the organizations that performed the work or maintain the documented programming interfaces. Read them with an adult if you want the full technical story.</p>
+<ol class="references">
+<li><a href="https://www.jpl.nasa.gov/missions/deep-space-optical-communications-dsoc/" target="_blank" rel="noopener noreferrer">NASA JPL — Deep Space Optical Communications mission</a>. Mission results and its September 2, 2025 completion; video and data-rate figures.</li>
+<li><a href="https://www.jpl.nasa.gov/news/nasas-deep-space-communications-demo-exceeds-project-expectations/" target="_blank" rel="noopener noreferrer">NASA JPL — Deep-space demo exceeds expectations</a> (September 18, 2025). Independent project summary of the final pass and achievements.</li>
+<li><a href="https://www.nasa.gov/missions/psyche-mission/nasas-optical-comms-demo-transmits-data-over-140-million-miles/" target="_blank" rel="noopener noreferrer">NASA — Optical communications over 140 million miles</a> (April 2024). Documents engineering data and why laser links matter.</li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charCodeAt" target="_blank" rel="noopener noreferrer">MDN — <code>String.prototype.charCodeAt()</code></a>. Programming reference for letter-to-number conversion; the first 128 Unicode code points match ASCII.</li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-live" target="_blank" rel="noopener noreferrer">MDN — <code>aria-live</code></a>. Accessible announcements for dynamically updated page content.</li>
+</ol>
+<h3>Reuse &amp; integration</h3>
+<p>The interactive lesson uses original inline HTML, CSS, SVG, and plain JavaScript. <strong>No third-party runtime libraries, downloads, analytics, tracking, or external assets</strong> are needed. Open this <code>.html</code> file directly in Chrome, Edge, Firefox, or Safari; it can also be served on GitHub Pages. External reference links are optional and need internet access.</p>
+<p><strong>Sample-code license:</strong> The original JavaScript in this page is made available under the <strong>MIT License</strong>, copyright © 2026 DeepDivesKids contributors. NASA and MDN content remains under those publishers' respective terms; this page links to their work rather than republishing it.</p>
+<details><summary>📜 Read the MIT license for the original example code</summary><p>Copyright (c) 2026 DeepDivesKids contributors</p><p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p><p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p><p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p></details>
+<p class="note">Editorial review date: October 30, 2026. All dates above refer to completed events, not future mission predictions. This educational activity is not affiliated with or endorsed by NASA.</p>
+</section>
+<a class="back" href="#top">↑ Back to Mission Control</a>
+</main>
+<footer><strong>DeepDivesKids · Be curious. Test your ideas. Build something wonderful.</strong><br>One byte at a time, the universe makes more sense.</footer>
+<script>
+"use strict";
+// A deliberately tiny, inspectable classroom model: uppercase ASCII only.
+function encodeLetter(letter) {
+  if (!/^[A-Z]$/.test(letter)) throw new RangeError("Pick one uppercase letter A-Z.");
+  const bits = letter.charCodeAt(0).toString(2).padStart(7,"0").split("").map(Number);
+  return bits.concat(bits.reduce((sum, bit) => sum + bit, 0) % 2);
+}
+function parityIsEven(packet) {
+  if (!Array.isArray(packet) || packet.length !== 8 || packet.some(bit => bit !== 0 && bit !== 1)) {
+    throw new TypeError("Packet must be exactly eight bits.");
+  }
+  return packet.reduce((sum, bit) => sum + bit, 0) % 2 === 0;
+}
+function decodedLetter(packet) {
+  const number = parseInt(packet.slice(0, 7).join(""), 2);
+  return number >= 32 && number <= 126 ? String.fromCharCode(number) : "[unprintable code " + number + "]";
+}
+function changesBetween(a, b) { return a.reduce((count, bit, index) => count + (bit !== b[index] ? 1 : 0), 0); }
+
+if (typeof document !== "undefined") {
+  const byId = id => document.getElementById(id);
+  const choice = byId("letter");
+  let sent = encodeLetter(choice.value);
+  let received = sent.slice();
+  function bitsView(containerId, bits, interactive) {
+    const container = byId(containerId);
+    container.replaceChildren();
+    bits.forEach((bit, i) => {
+      const node = document.createElement(interactive ? "button" : "span");
+      node.className = "bit" + (i === 7 ? " parity" : "") +
+        (interactive ? " bitbutton" : "") + (interactive && sent[i] !== bit ? " changed" : "");
+      node.textContent = String(bit);
+      node.setAttribute("data-label", i === 7 ? "CHECK" : "BIT " + (i + 1));
+      if (interactive) {
+        node.type = "button";
+        node.setAttribute("aria-label", "Received bit " + (i + 1) + (i === 7 ? " (parity)" : " (data)") +
+          ", currently " + bit + ". Activate to flip it.");
+        node.setAttribute("aria-pressed", String(sent[i] !== bit));
+        node.addEventListener("click", () => { received[i] ^= 1; render(); });
+      } else {
+        node.setAttribute("aria-label", (i === 7 ? "Parity" : "Data") + " bit " + (i + 1) + " is " + bit);
+      }
+      container.appendChild(node);
+    });
+  }
+  function render() {
+    bitsView("sentBits", sent, false);
+    bitsView("receivedBits", received, true);
+    const original = choice.value;
+    const read = decodedLetter(received);
+    const changed = changesBetween(sent, received);
+    const valid = parityIsEven(received);
+    byId("sentLetter").textContent = original;
+    byId("receivedLetter").textContent = read;
+    const ones = received.reduce((sum, bit) => sum + bit, 0);
+    byId("sentExplanation").textContent =
+      "Original bits: " + sent.join(" ") + ". Number of ones: " +
+      sent.reduce((sum, bit) => sum + bit, 0) + " (even).";
+    byId("countExplanation").textContent =
+      "Received ones: " + ones + " (" + (ones % 2 === 0 ? "even" : "odd") + ").";
+    const box = byId("result");
+    box.className = "result";
+    let heading, body;
+    if (changed === 0) {
+      heading = "✅ Packet arrived without changes in this game";
+      body = "The check passed, and our simulation knows no bits were changed. Ready to send a gremlin!";
+    } else if (!valid) {
+      box.classList.add("problem");
+      heading = "🚨 ERROR DETECTED";
+      body = "Odd number of ones! The parity checker noticed a problem, but cannot tell which bit is wrong or repair it.";
+    } else {
+      box.classList.add("tricky");
+      heading = "👀 A SNEAKY ERROR GOT THROUGH";
+      body = "The number of ones is even, so the checker says OK — but " + changed +
+        " bits changed. Parity missed the mistake! A real receiver doesn't have our original packet to compare.";
+    }
+    byId("resultHeading").textContent = heading;
+    byId("resultBody").textContent = body;
+    byId("difference").textContent =
+      "Simulation control room: " + changed + " bit" + (changed === 1 ? "" : "s") +
+      " changed. The receiver itself only knows whether parity is even or odd.";
+    byId("announcement").textContent = heading + ". " + body;
+  }
+  function preset(indices) {
+    received = sent.slice();
+    indices.forEach(i => { received[i] ^= 1; });
+    render();
+  }
+  choice.addEventListener("change", () => { sent = encodeLetter(choice.value); preset([]); });
+  byId("one").addEventListener("click", () => preset([5]));
+  byId("two").addEventListener("click", () => preset([5, 6]));
+  byId("check").addEventListener("click", () => preset([7]));
+  byId("reset").addEventListener("click", () => preset([]));
+  render();
+}
+</script>
+</body>
+</html>
