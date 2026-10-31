@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="HFSM2: a practical C++20 engineering deep dive into compile-time hierarchical state machines, fixed memory, integration, and deterministic testing.">
+<meta name="date" content="2026-10-31">
+<title>HFSM2: Hierarchy Without the Heap · Engineering Deep Dives</title>
+<style>
+:root{--bg:#080f22;--panel:#111e36;--panel2:#162944;--ink:#f5f8ff;--muted:#bdcee2;--line:#37516b;--cyan:#72edee;--lime:#c6f078;--coral:#ffc397;--shadow:0 18px 50px #0005;--r:20px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 85% 3%,#173f59 0,transparent 35%),radial-gradient(ellipse at 4% 18%,#25345b 0,transparent 30%),var(--bg);color:var(--ink);font:17px/1.68 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--cyan);text-underline-offset:.18em}a:hover{color:#fff}a:focus-visible,button:focus-visible{outline:3px solid var(--lime);outline-offset:4px}p{margin:0 0 1rem}h1,h2,h3{line-height:1.18;letter-spacing:-.028em}h1{font-size:clamp(2.65rem,6.5vw,5.6rem);max-width:13ch;margin:.35em 0}h2{font-size:clamp(1.65rem,3vw,2.35rem);margin:0 0 .8rem}h3{font-size:1.18rem;margin:.2em 0 .6rem}ul,ol{padding-left:1.35rem}li+li{margin-top:.25rem}strong{color:#fff}code,kbd{font-family:ui-monospace,"Cascadia Code",Consolas,monospace}code:not(pre code){padding:.12em .34em;background:#223451;border-radius:5px;color:#dbf7c1}pre{margin:.8rem 0 1.1rem;padding:1.15rem 1.2rem;background:#071526;color:#dcf7f4;border:1px solid var(--line);border-radius:15px;overflow:auto;font-size:.86rem;line-height:1.55;tab-size:2}pre code{font-size:inherit}small{font-size:.84rem}.shell{width:min(1170px,calc(100% - 2.1rem));margin:auto}.eyebrow{font-weight:800;letter-spacing:.16em;text-transform:uppercase;font-size:.75rem;color:var(--lime)}.muted{color:var(--muted)}.skip{position:absolute;top:-100px;left:10px;padding:.7rem;background:#fff;color:#111;z-index:99}.skip:focus{top:12px}.top{border-bottom:1px solid #38566e9e;background:#0b152bcd}.top .shell{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.72rem 0}.brand{font-size:.9rem;text-transform:uppercase;letter-spacing:.13em;font-weight:900;color:#e8f7ff}.topnav{display:flex;gap:1.3rem;flex-wrap:wrap;font-size:.86rem}.hero{padding:clamp(3rem,7vw,6.2rem) 0 2.6rem}.hero-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:2.2rem;align-items:center}.lead{font-size:clamp(1.12rem,2vw,1.35rem);color:#d5e6f7;max-width:60ch}.kickers{display:flex;flex-wrap:wrap;gap:.6rem;margin:1.4rem 0}.pill{border:1px solid #4b657e;border-radius:999px;padding:.32rem .72rem;background:#172742;color:#e9f5ff;font-size:.8rem;font-weight:700}.pill.feature{border-color:#82dcb7;color:#d8ffc8}.orbit{border-radius:30px;padding:1.5rem;background:linear-gradient(150deg,#17425c,#202e58 65%,#2b3651);border:1px solid #63849f;box-shadow:var(--shadow);transform:rotate(2deg)}.orbit .node{background:#0e1b34;border:1px solid #719ab0;border-radius:12px;padding:.55rem .8rem;margin:.5rem auto;text-align:center;font-weight:800}.orbit .sub{display:grid;grid-template-columns:1fr 1fr;gap:.55rem}.orbit .sub .node{color:var(--lime);border-color:#6d956c}.orbit .arrow{text-align:center;color:var(--lime);font-size:1.6rem;line-height:1}.orbit small{display:block;text-align:center;margin-top:1rem;color:#e2f1ff}.rule{height:1px;background:linear-gradient(90deg,transparent,#6891b3,transparent)}.grid{display:grid;grid-template-columns:270px minmax(0,1fr);gap:2rem;align-items:start;padding:2rem 0 5rem}.toc{position:sticky;top:1.5rem;padding:1.25rem 1.3rem;border:1px solid var(--line);border-radius:var(--r);background:#101f36}.toc h2{font-size:1rem;color:var(--lime);letter-spacing:.13em;text-transform:uppercase}.toc ol{margin:0;padding-left:1.2rem;font-size:.89rem}.toc li{margin:.35rem 0}.toc a{color:#c9e9f4}.bodycontent{min-width:0}.section{margin-bottom:1.3rem;padding:clamp(1.2rem,3vw,2.15rem);border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(145deg,#14233b,#0f1a31);box-shadow:0 9px 25px #0002;scroll-margin-top:1.3rem}.section>p:last-child{margin-bottom:0}.number{display:inline-block;min-width:2.55em;padding:.25em .55em;margin-bottom:1rem;border-radius:6px;background:var(--lime);color:#10221e;font-size:.7rem;letter-spacing:.13em;font-weight:900}.callout{padding:1rem 1.15rem;margin:1.2rem 0;background:#20384a;border-left:4px solid var(--lime);border-radius:0 12px 12px 0}.callout.warn{border-left-color:var(--coral);background:#352d37}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.tile{padding:1.1rem;background:#1a304a;border:1px solid #4a6680;border-radius:14px}.tile p:last-child{margin:0}.tile h3{color:var(--cyan)}.diagram{background:#071628;border:1px solid #537089;border-radius:14px;padding:1.25rem}.tree{list-style:none;padding:0;margin:0}.tree ul{list-style:none;border-left:2px dashed #7599b5;margin:.4rem 0 .7rem 1rem;padding-left:1rem}.tree li{margin:.5rem 0}.tree span{display:inline-block;padding:.3rem .65rem;background:#18324b;border:1px solid #7794ac;border-radius:9px}.tree .tag{color:var(--lime);font-size:.8rem;margin-left:.5rem}table{width:100%;border-collapse:collapse;margin:.8rem 0 1.1rem;font-size:.88rem}th,td{padding:.7rem .65rem;text-align:left;border-bottom:1px solid #435b70;vertical-align:top}th{color:var(--lime);background:#1a2e46}caption{text-align:left;color:var(--muted);padding:.2rem 0 .7rem}.scroll{overflow:auto}.label{font-size:.75rem;text-transform:uppercase;letter-spacing:.14em;font-weight:900;color:var(--lime)}.scenario{display:grid;grid-template-columns:1.1fr .9fr;gap:1.1rem}.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin:1rem 0}button{cursor:pointer;min-height:43px;padding:.65rem .84rem;border:1px solid #89b4bd;border-radius:10px;color:#08242f;background:var(--cyan);font-weight:850;font:inherit;font-size:.86rem}button:hover{background:#e6fcff}button.secondary{background:#243b55;color:#f4faff}button.secondary:hover{background:#355570}button.danger{background:#ffd1ae;border-color:#e9a67c}button.danger:hover{background:#fff0df}.state-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;list-style:none;padding:0;margin:1rem 0}.state{padding:.85rem;border-radius:11px;background:#1c304a;border:2px solid #506781;color:#bed6e7}.state[data-active="true"]{border-color:var(--lime);background:#34503e;color:#fff;box-shadow:inset 0 0 0 1px var(--lime)}.state small{display:block;color:inherit;opacity:.85}.live{background:#203c46;border:1px solid #679a91;border-radius:12px;padding:1rem}.log{max-height:280px;overflow:auto;padding:.65rem 1rem .65rem 2.3rem;margin:.5rem 0;background:#071628;border:1px solid #355670;border-radius:12px;font:.8rem/1.7 ui-monospace,Consolas,monospace}.log li{padding:.1rem 0;overflow-wrap:anywhere}.evidence{display:inline-block;padding:.08rem .4rem;background:#264d3c;border:1px solid #6ab48c;border-radius:5px;color:#e4ffe9;font-size:.73rem;font-weight:900}.proposal{background:#3e3754;border-color:#aa8fc1;color:#f6eaff}.refs li{margin-bottom:.65rem;overflow-wrap:anywhere}.footer{border-top:1px solid var(--line);padding:2rem 0 3rem;color:var(--muted);font-size:.89rem}.footer a{margin-right:1rem}::selection{background:var(--lime);color:#082016}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.toc{position:static}.toc ol{columns:2}.hero-grid{grid-template-columns:1fr}.orbit{transform:none;max-width:560px}}@media(max-width:580px){.shell{width:min(100% - 1rem,1170px)}.top .shell{align-items:flex-start;flex-direction:column}.hero{padding-top:2rem}.twocol,.scenario{grid-template-columns:1fr}.toc ol{columns:1}.section{padding:1.15rem}.state-list{grid-template-columns:1fr}.kickers{gap:.4rem}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}@media print{body{background:#fff;color:#111;font-size:11pt}a{color:#07466c}.top,.toc,.controls,.orbit,.skip{display:none}.hero{padding:1rem 0}.grid,.hero-grid{display:block}.section{background:#fff;color:#111;box-shadow:none;border:1px solid #bbb;break-inside:avoid}.section h2,.section h3,.muted,.lead{color:#111}pre,.diagram{white-space:pre-wrap;background:#f5f5f5;color:#111;border-color:#ccc}.tile,.callout{background:#eee;color:#111}.pill{color:#111}.footer{color:#111}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the deep dive</a>
+<header class="top"><div class="shell"><div class="brand">◈ Engineering Deep Dives</div><nav class="topnav" aria-label="Site links"><a href="../index.html">Library index</a><a href="https://github.com/andrew-gresyk/HFSM2">Official HFSM2 source ↗</a><a href="#demo">Interactive lab</a></nav></div></header>
+<div class="shell">
+<header class="hero">
+<div class="hero-grid"><div><div class="eyebrow">31 October 2026 · C++20 / deterministic embedded design</div>
+<h1>HFSM2: Hierarchy <span style="color:var(--lime)">Without</span> the Heap</h1>
+<p class="lead">An RTOS controller is not just <em>on</em> or <em>off</em>. It may be <em>on → ready → executing</em>, with faults, guarded transitions, and independent regions. HFSM2 gives that nested behavior a compile-time shape—without asking the state-machine library to allocate memory.</p>
+<div class="kickers"><span class="pill feature">MIT licensed</span><span class="pill">C++11 minimum; C++20 compatible target</span><span class="pill">Header-only</span><span class="pill">Release 2.12.1 · 10 Jun 2026</span></div>
+<p class="muted"><strong>Engineering decision:</strong> Prototype HFSM2 as a state-behavior engine <em>inside</em> a RISCue active object. Do not mistake it for an RTOS scheduler, event queue, or proof of deterministic timing.</p></div>
+<div class="orbit" aria-label="Illustration of a nested machine: root, online state with idle and running children, and separate offline state">
+<div class="label">Nested behavior, static shape</div><div class="node">ROOT · one machine</div><div class="arrow">↓</div><div class="node">ONLINE · composite region</div><div class="sub"><div class="node">IDLE</div><div class="node">RUNNING</div></div><div class="arrow">↕</div><div class="node" style="border-color:#eaa381;color:#ffc397">OFFLINE · peer state</div><small>Diagram is explanatory, not generated HFSM2 output.</small></div></div>
+</header>
+<div class="rule"></div>
+<div class="grid">
+<nav class="toc" aria-label="Deep dive table of contents"><h2>On this page</h2><ol>
+<li><a href="#verdict">Decision in 60 seconds</a></li><li><a href="#mental">Mental model</a></li><li><a href="#features">What the library offers</a></li><li><a href="#real">Evidence versus proposals</a></li><li><a href="#code">Complete C++ example</a></li><li><a href="#integration">CMake + vcpkg</a></li><li><a href="#demo">Interactive state lab</a></li><li><a href="#determinism">Determinism &amp; memory</a></li><li><a href="#tradeoffs">Tradeoffs &amp; alternatives</a></li><li><a href="#validation">Validation plan</a></li><li><a href="#license">License &amp; adoption</a></li><li><a href="#sources">Primary sources</a></li></ol></nav>
+<main id="main" class="bodycontent">
+<section id="verdict" class="section"><span class="number">01 · RECOMMENDATION</span><h2>Decision in 60 seconds</h2>
+<div class="twocol"><div class="tile"><h3>Where HFSM2 shines</h3><p>Hierarchical and orthogonal regions, type-safe transitions, no heap allocation in the framework's statically configured core, and optional diagnostics. It is highly relevant to RISCue's proposed hierarchical state-machine layer. <a href="#sources">[1]</a></p></div><div class="tile"><h3>Where it stops</h3><p>No event queue, RTOS scheduling guarantee, persistence of arbitrary host context, or automatic worst-case execution-time proof is provided merely by declaring a machine.</p></div></div>
+<div class="callout"><strong>Recommended experiment:</strong> model a bounded, single-owner <code>Idle → Active → Fault</code> controller; run a scripted event corpus; measure <code>sizeof(FSM::Instance)</code>, allocations, step latency, and compiler footprint under the actual RISCue toolchain.</div>
+</section>
+
+<section id="mental" class="section"><span class="number">02 · MENTAL MODEL</span><h2>Why a hierarchy matters</h2>
+<p>Flat state machines multiply states when several modes share behavior. A hierarchical FSM groups related states under a parent: the <strong>Online</strong> parent can own common entry/exit work while <strong>Idle</strong> and <strong>Running</strong> handle their own behavior. Orthogonal regions express simultaneously active subregions—useful, but potentially subtle when mapping to a single-threaded actor.</p>
+<div class="diagram"><ul class="tree"><li><span>MissionMode (root)</span><ul><li><span>Offline</span><span class="tag">peer</span></li><li><span>Online</span><span class="tag">composite</span><ul><li><span>Idle</span><span class="tag">initial substate</span></li><li><span>Running</span><span class="tag">other substate</span></li></ul></li></ul></li></ul></div>
+<p>HFSM2 uses templates to describe this topology in C++ source. It supports periodic <code>update()</code> and explicit event reactions via <code>react()</code>, with transitions addressed by <em>types</em> rather than fragile integer IDs. <a href="#sources">[1, 2]</a></p>
+</section>
+
+<section id="features" class="section"><span class="number">03 · API LANDSCAPE</span><h2>Capabilities that matter for embedded systems</h2>
+<div class="scroll"><table><caption>Documented functionality; optional features are not assumed enabled.</caption><thead><tr><th>Capability</th><th>HFSM2 mechanism</th><th>Engineering implication</th></tr></thead><tbody>
+<tr><td>Static hierarchy</td><td><code>MachineT</code>, <code>PeerRoot</code>, <code>Composite</code>, <code>Orthogonal</code></td><td>Topology represented at compile time; benchmark resulting type size.</td></tr>
+<tr><td>Dispatch</td><td><code>update()</code>, <code>react(event)</code></td><td>Host owns scheduling and sequencing of calls.</td></tr>
+<tr><td>Transitions</td><td><code>changeTo&lt;State&gt;()</code> and related APIs</td><td>Compile-time target checking; study when queued changes take effect.</td></tr>
+<tr><td>Transition introspection</td><td><code>HFSM2_ENABLE_TRANSITION_HISTORY</code></td><td>Useful for traceability; profile optional footprint.</td></tr>
+<tr><td>Serialization</td><td><code>HFSM2_ENABLE_SERIALIZATION</code></td><td>Machine activity can be serialized; external context and event queues need separate handling.</td></tr>
+<tr><td>Plans and utility</td><td><code>HFSM2_ENABLE_PLANS</code>, <code>HFSM2_ENABLE_UTILITY_THEORY</code></td><td>Powerful, but increase analysis surface; avoid random choices in deterministic baselines.</td></tr>
+<tr><td>Logging / structure</td><td><code>HFSM2_ENABLE_LOG_INTERFACE</code>, <code>HFSM2_ENABLE_STRUCTURE_REPORT</code></td><td>Diagnostics can be compiled in intentionally, not universally.</td></tr>
+</tbody></table></div><p class="muted">Feature switches are documented by the maintainer and must be defined before including <code>&lt;hfsm2/machine.hpp&gt;</code>. <a href="#sources">[3]</a></p>
+</section>
+
+<section id="real" class="section"><span class="number">04 · EVIDENCE QUALITY</span><h2>What exists versus what we would build</h2>
+<div class="twocol"><div class="tile"><h3><span class="evidence">VERIFIED ARTIFACTS</span></h3><p>The maintainer publishes an <a href="https://github.com/andrew-gresyk/HFSM2/blob/master/examples/basic_traffic_light/main.cpp">actual traffic-light program</a>, a CMake project, and a separate <a href="https://github.com/andrew-gresyk/HFSM2-uplugin">Unreal Engine integration plugin</a> (documenting UE 5.2). Microsoft's vcpkg publishes the <code>hfsm2</code> port, version 2.12.1 as inspected. These are inspectable artifacts—not independently verified production deployments. <a href="#sources">[2, 5, 6, 8]</a></p></div><div class="tile"><h3><span class="evidence proposal">PROPOSED APPLICATIONS</span></h3><p><strong>RISCue:</strong> dispatch one actor's events into a bounded HFSM2 instance. <strong>VeloSim:</strong> replay recorded events to compare state traces. <strong>SharpHDL / TinyTMR:</strong> use a state-machine test fixture to drive fault scenarios. None is claimed as existing integration or actual flight usage.</p></div></div>
+<div class="callout warn"><strong>Adoption honesty:</strong> Public examples, plugins, stars, and package availability do not establish safety certification, production flight heritage, field reliability, or any particular commercial customer. Treat those as unanswered qualification questions.</div>
+</section>
+
+<section id="code" class="section"><span class="number">05 · C++20 WALKTHROUGH</span><h2>A small, genuinely hierarchical machine</h2>
+<p>This is an independently adapted example using the API patterns in the <a href="https://github.com/andrew-gresyk/HFSM2/blob/master/examples/basic_traffic_light/main.cpp">upstream traffic-light implementation</a>. Its first top-level region is <code>Online</code> with nested <code>Idle</code> and <code>Active</code>; its peer is <code>Offline</code>. The machine starts in <code>Idle</code>. One update requests <code>Active</code>; a later explicit change selects <code>Offline</code>.</p>
+<pre aria-label="C++20 standalone main.cpp example"><code>#include &lt;cassert&gt;
+#include &lt;hfsm2/machine.hpp&gt;
+
+struct Context {
+    unsigned starts = 0;
+};
+
+using Config = hfsm2::Config::ContextT&lt;Context&amp;&gt;;
+using M = hfsm2::MachineT&lt;Config&gt;;
+
+// The online region owns two nested states.
+using FSM = M::PeerRoot&lt;
+    M::Composite&lt;struct Online, struct Idle, struct Active&gt;,
+    struct Offline
+&gt;;
+
+struct Online : FSM::State {};
+
+struct Idle : FSM::State {
+    void update(FullControl&amp; control) {
+        control.changeTo&lt;Active&gt;();
+    }
+};
+
+struct Active : FSM::State {
+    void enter(Control&amp; control) {
+        ++control.context().starts;
+    }
+};
+
+struct Offline : FSM::State {};
+
+int main() {
+    Context context{};
+    FSM::Instance machine{context};
+
+    assert(machine.isActive&lt;Idle&gt;());
+    machine.update();
+    assert(machine.isActive&lt;Active&gt;());
+    assert(context.starts == 1);
+
+    machine.changeTo&lt;Offline&gt;();
+    machine.update();
+    assert(machine.isActive&lt;Offline&gt;());
+}</code></pre>
+<div class="callout"><strong>Compile check:</strong> This sample was checked against the maintainer's current template and method usage but <strong>not compiled</strong> in this run because the HFSM2 development headers were not available to the local build environment. Treat the accompanying vcpkg/Ninja commands as the reproducible verification route, not a reported passing build.</div>
+<p><strong>Design discipline:</strong> never place arbitrary I/O into entry/exit callbacks without accounting for worst-case duration and failure semantics. Transition guards, event ordering, and shutdown behavior deserve tests as much as the happy path.</p>
+</section>
+
+<section id="integration" class="section"><span class="number">06 · BUILD &amp; INTEGRATION</span><h2>Bring it into a CMake/Ninja target</h2>
+<p>The <a href="https://vcpkg.io/en/package/hfsm2.html">vcpkg port</a> reports release <strong>2.12.1</strong> (last updated 11 June 2026). Use a controlled vcpkg baseline and lock/pin the exact dependency revision for reproducible work; a floating branch is not a build manifest. <a href="#sources">[5, 7]</a></p>
+<pre aria-label="vcpkg install command"><code>vcpkg add port hfsm2</code></pre>
+<p>For a manifest-based project, include <code>"hfsm2"</code> in <code>dependencies</code>; configure CMake using the vcpkg toolchain file. The upstream CMake target and the vcpkg usage file agree on the imported name. <a href="#sources">[4, 7]</a></p>
+<pre aria-label="CMakeLists.txt example"><code>cmake_minimum_required(VERSION 3.21)
+project(hfsm2_probe LANGUAGES CXX)
+
+find_package(hfsm2 CONFIG REQUIRED)
+add_executable(hfsm2_probe main.cpp)
+target_compile_features(hfsm2_probe PRIVATE cxx_std_20)
+target_link_libraries(hfsm2_probe PRIVATE hfsm2::hfsm2)</code></pre>
+<pre aria-label="CMake Ninja configure and build commands"><code>cmake -S . -B build -G Ninja \
+  -DCMAKE_TOOLCHAIN_FILE=/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake --build build
+./build/hfsm2_probe</code></pre>
+<p>On Windows, run the produced executable using its platform-appropriate path. The library is header-only; the examples and upstream test harness have separate dependencies that need not ship in the target firmware. <a href="#sources">[4]</a></p>
+</section>
+
+<section id="demo" class="section"><span class="number">07 · HANDS-ON LAB</span><h2>Drive a mission-mode state machine</h2>
+<p>Try the buttons and watch the active state. The <strong>Online</strong> parent is represented by <em>Idle / Running / Fault</em>; <em>Offline</em> is its peer. One event is processed at a time. The replay button runs a fixed script twice to check equal outcomes.</p>
+<div class="callout"><strong>Important:</strong> this is a <em>standalone JavaScript teaching model</em>, not an HFSM2 runtime, C++→JavaScript port, API conformance test, or proof of deterministic embedded scheduling.</div>
+<div class="scenario"><div><div class="label">Send an event</div><div class="controls" role="group" aria-label="State machine event controls">
+<button type="button" data-event="POWER">Power toggle</button><button type="button" data-event="START" class="secondary">Start task</button><button type="button" data-event="STOP" class="secondary">Stop task</button><button type="button" data-event="TRIP" class="danger">Trip fault</button><button type="button" data-event="RESET" class="secondary">Reset fault</button><button type="button" data-event="TICK" class="secondary">Tick</button></div>
+<div class="controls" role="group" aria-label="Experiment controls"><button type="button" id="replay" class="secondary">Run deterministic replay</button><button type="button" id="clear" class="secondary">Reset experiment</button></div>
+<div class="live"><strong>Current state:</strong> <output id="modeStatus" role="status" aria-live="polite" aria-atomic="true">OFFLINE · 0 active ticks</output><div id="testStatus" class="muted">Choose POWER to begin.</div></div>
+<p class="muted"><small>Events outside their allowed state are explicitly ignored. Ticks count only while Running.</small></p></div><div><div class="label">Mode map</div><ul class="state-list" aria-label="Possible states"><li class="state" id="state-off" data-active="true"><strong>OFFLINE</strong><small>no task active</small></li><li class="state" id="state-idle" data-active="false"><strong>ONLINE / IDLE</strong><small>ready for START</small></li><li class="state" id="state-running" data-active="false"><strong>ONLINE / RUNNING</strong><small>TICK advances count</small></li><li class="state" id="state-fault" data-active="false"><strong>ONLINE / FAULT</strong><small>RESET required</small></li></ul>
+<div class="label">Trace — newest last</div><ol id="eventLog" class="log" aria-label="State machine event trace"><li>Initial state: OFFLINE</li></ol></div></div>
+<div class="scroll"><table><caption>Event semantics of this demo (not an HFSM2 API specification).</caption><thead><tr><th>Event</th><th>Valid from</th><th>Effect</th></tr></thead><tbody><tr><td>POWER</td><td>Any</td><td>OFFLINE ↔ ONLINE / IDLE</td></tr><tr><td>START</td><td>IDLE</td><td>RUNNING</td></tr><tr><td>STOP</td><td>RUNNING</td><td>IDLE</td></tr><tr><td>TRIP</td><td>IDLE or RUNNING</td><td>FAULT</td></tr><tr><td>RESET</td><td>FAULT</td><td>IDLE</td></tr><tr><td>TICK</td><td>RUNNING</td><td>Increment counter</td></tr></tbody></table></div>
+<p><strong>Challenge:</strong> Can you produce exactly three running ticks and finish safely Offline? Can you explain why <code>START</code> has no effect in Fault mode?</p>
+</section>
+
+<section id="determinism" class="section"><span class="number">08 · REAL-TIME DISCIPLINE</span><h2>“No heap” is not the same as “deterministic”</h2>
+<div class="twocol"><div class="tile"><h3>What is supported</h3><p>HFSM2's maintainer describes a fully statically defined framework with no dynamic allocations in its core. Its compile-time types can make memory provision explicit. <a href="#sources">[1]</a></p></div><div class="tile"><h3>What needs proof</h3><p>Application callbacks may allocate, block, throw, or depend on external clocks. C++ construction, I/O, and log sinks have their own behavior. A fixed machine layout alone does not certify bounded CPU time.</p></div></div>
+<p>For RISCue, use <strong>one serialized owner per machine</strong>: dequeue one event in a known order, call the chosen reaction/update API, record state and transition trace, and continue. An RTOS priority change or an unrelated producer can otherwise change the observed event sequence. Do not assume that an HFSM2 instance is safe for concurrent unsynchronized access.</p>
+<p>Disable or fix the seed and inputs to any utility-theory random decisions when comparing replay traces; declare feature switches consistently across all translation units; and measure worst-case transition chains, guard invocations, and stack growth in the actual embedded configuration.</p>
+</section>
+
+<section id="tradeoffs" class="section"><span class="number">09 · ARCHITECTURAL FIT</span><h2>Tradeoffs, not a silver bullet</h2>
+<div class="scroll"><table><caption>Qualitative engineering comparison; no benchmark numbers are invented.</caption><thead><tr><th>Option</th><th>Strength</th><th>Cost / limitation</th></tr></thead><tbody>
+<tr><td><strong>HFSM2</strong></td><td>Hierarchical/orthogonal topology, type-safe transitions, no-heap static core.</td><td>Template instantiation and generated code must be measured; host supplies queues and scheduling.</td></tr>
+<tr><td><strong>Boost.Ext SML</strong></td><td>Compile-time event-driven transition-table style; previously covered on 23 October.</td><td>Different expression of hierarchy and guards; compare target-specific footprint, not aesthetics alone.</td></tr>
+<tr><td><strong>QP/C++</strong></td><td>Active-object framework with event-driven architecture; previously covered on 26 October.</td><td>Broader architectural adoption and licensing review. HFSM2 alone is not a replacement for an active-object runtime.</td></tr>
+<tr><td><strong>Handwritten switch</strong></td><td>Easy to step through for tiny flat machines; no third-party dependency.</td><td>Nested behaviors, common guards, and trace coverage become harder to maintain as states multiply.</td></tr>
+</tbody></table></div>
+<div class="callout warn"><strong>Qualify before flight use:</strong> assess code-generation size, toolchain warnings, interrupt boundary policy, callback failures, transition semantics, serialization versioning, trace observability, static analysis compatibility, and independent requirements-to-test traceability. None of these are proven by this report.</div>
+</section>
+
+<section id="validation" class="section"><span class="number">10 · TEST PLAN</span><h2>A measurable proof-of-value for RISCue</h2>
+<ol><li><strong>Functional matrix:</strong> cover every transition, invalid event, guard and hierarchical entry/exit ordering; assert exact active states.</li><li><strong>Memory:</strong> inspect <code>sizeof(FSM::Instance)</code>, alignment, linker map, new/delete hooks, and stack high-water marks.</li><li><strong>Timing:</strong> measure per-event latency and worst-case transition sequences on the target, in Release builds with representative instrumentation.</li><li><strong>Replay:</strong> feed a fixed event corpus twice with identical initial context and compare state/transition traces byte-for-byte.</li><li><strong>Traceability:</strong> assign each state, event and guard a requirement identifier; link those IDs to tests rather than assuming library reflection supplies requirements coverage.</li><li><strong>Cross-toolchain:</strong> GCC, Clang, and the actual RTOS target toolchain with controlled flags (including exceptions and RTTI policy).</li><li><strong>Negative cases:</strong> unexpected event while Fault, duplicate reset, callback failure, full event queue, power transition during work, and malformed serialized state if used.</li></ol>
+<p class="muted">Practical acceptance gate: no undesired dynamic allocation, measured footprint within budget, replay equivalence, guard coverage, and successful target builds. No values have been measured in this edition.</p>
+</section>
+
+<section id="license" class="section"><span class="number">11 · PROCUREMENT</span><h2>License, version, and due diligence</h2>
+<p><strong>License:</strong> MIT, copyright © 2023 Andrew Gresyk in the upstream license text. Commercial and proprietary use is permitted subject to preserving copyright and permission notices in copies or substantial portions. The software comes without warranty. <a href="#sources">[9]</a></p>
+<p><strong>Version:</strong> upstream latest release verified as <a href="https://github.com/andrew-gresyk/HFSM2/releases/tag/2.12.1">2.12.1, published 10 June 2026</a>; vcpkg lists the same version. Pin it, and audit any transitive development-only tools separately. <a href="#sources">[5, 10]</a></p>
+<p><strong>C++20:</strong> upstream advertises a C++11 minimum and compiler support including contemporary GCC/Clang/MSVC; that is <em>not</em> a claim that this exact example was compiled or validated on every C++20 embedded configuration.</p>
+</section>
+
+<section id="sources" class="section"><span class="number">12 · PRIMARY SOURCES &amp; REVIEW</span><h2>Documentation trail</h2>
+<ol class="refs">
+<li><a href="https://github.com/andrew-gresyk/HFSM2">HFSM2 upstream repository and README</a> — static hierarchy, scope, advertised features and toolchains.</li>
+<li><a href="https://github.com/andrew-gresyk/HFSM2/blob/master/examples/basic_traffic_light/main.cpp">Upstream traffic-light implementation</a> — actual <code>MachineT</code>, <code>Composite</code>, <code>FullControl</code>, <code>changeTo</code>, <code>update</code> usage.</li>
+<li><a href="https://github.com/andrew-gresyk/HFSM2/wiki/Feature-Macros">Maintainer wiki: feature macros</a> — optional history, plans, serialization, structure and logging switches.</li>
+<li><a href="https://github.com/andrew-gresyk/HFSM2/blob/master/CMakeLists.txt">Upstream CMakeLists</a> — exported <code>hfsm2::hfsm2</code> interface target and include layout.</li>
+<li><a href="https://vcpkg.io/en/package/hfsm2.html">Microsoft vcpkg HFSM2 catalog</a> — 2.12.1 package and install commands, last updated 11 June 2026.</li>
+<li><a href="https://github.com/andrew-gresyk/HFSM2-uplugin">Maintainer's HFSM2 Unreal Engine plugin</a> — inspectable integration, not evidence of deployment.</li>
+<li><a href="https://github.com/microsoft/vcpkg/blob/master/ports/hfsm2/usage">vcpkg CMake usage file</a> — <code>find_package(hfsm2 CONFIG REQUIRED)</code> and imported target.</li>
+<li><a href="https://github.com/andrew-gresyk/HFSM2/tree/master/examples">Upstream example programs</a> — traffic light, audio player and event handling examples.</li>
+<li><a href="https://github.com/andrew-gresyk/HFSM2/blob/master/LICENSE">MIT license text</a> — rights, notices, disclaimer.</li>
+<li><a href="https://github.com/andrew-gresyk/HFSM2/releases/tag/2.12.1">Upstream release 2.12.1</a> — 10 June 2026, “Fixed move() ambiguity.”</li>
+</ol>
+<div class="callout"><strong>Review performed:</strong> checked the DeepDives directory to avoid duplicates; verified official upstream sources, release, vcpkg instructions, CMake target and license; statically checked this HTML's navigation and JavaScript syntax; and checked the demo's fixed replay logic. <strong>Not performed:</strong> compiling the C++ example against HFSM2, running on an embedded target, profiling allocations/latency, or certifying any application.</div>
+</section>
+</main></div>
+</div>
+<footer class="footer"><div class="shell"><strong>Engineering Deep Dives</strong> · 2026-10-31 · Written for rigorous engineering exploration, not product certification. <br><a href="../index.html">Back to index</a><a href="https://github.com/jeffadickson/but-does-it-do-anything/tree/main/DeepDives">Source collection</a><a href="#main">Back to top ↑</a></div></footer>
+<script>
+(function () {
+  'use strict';
+  var state = {mode: 'off', ticks: 0};
+  var history = ['Initial state: OFFLINE'];
+  var status = document.getElementById('modeStatus');
+  var testStatus = document.getElementById('testStatus');
+  var log = document.getElementById('eventLog');
+  var modes = ['off', 'idle', 'running', 'fault'];
+  var names = {off: 'OFFLINE', idle: 'ONLINE / IDLE', running: 'ONLINE / RUNNING', fault: 'ONLINE / FAULT'};
+  function reduce(current, event) {
+    var next = {mode: current.mode, ticks: current.ticks};
+    var accepted = true;
+    switch (event) {
+      case 'POWER': next.mode = next.mode === 'off' ? 'idle' : 'off'; break;
+      case 'START': if (next.mode === 'idle') next.mode = 'running'; else accepted = false; break;
+      case 'STOP': if (next.mode === 'running') next.mode = 'idle'; else accepted = false; break;
+      case 'TRIP': if (next.mode === 'idle' || next.mode === 'running') next.mode = 'fault'; else accepted = false; break;
+      case 'RESET': if (next.mode === 'fault') next.mode = 'idle'; else accepted = false; break;
+      case 'TICK': if (next.mode === 'running') next.ticks += 1; else accepted = false; break;
+      default: accepted = false;
+    }
+    return {state: next, accepted: accepted};
+  }
+  function render() {
+    status.textContent = names[state.mode] + ' · ' + state.ticks + ' active tick' + (state.ticks === 1 ? '' : 's');
+    for (var i = 0; i < modes.length; i += 1) {
+      document.getElementById('state-' + modes[i]).setAttribute('data-active', String(state.mode === modes[i]));
+    }
+    log.replaceChildren();
+    history.slice(-30).forEach(function (line) {
+      var li = document.createElement('li');
+      li.textContent = line;
+      log.appendChild(li);
+    });
+    log.scrollTop = log.scrollHeight;
+  }
+  function apply(event) {
+    var old = state.mode;
+    var result = reduce(state, event);
+    state = result.state;
+    history.push(event + ': ' + names[old] + ' → ' + names[state.mode] + (result.accepted ? (event === 'TICK' ? ' (tick ' + state.ticks + ')' : '') : ' (ignored)'));
+    render();
+  }
+  document.querySelectorAll('[data-event]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      apply(button.getAttribute('data-event'));
+      testStatus.textContent = 'Manual event processed. Try the replay for a repeatability check.';
+    });
+  });
+  document.getElementById('clear').addEventListener('click', function () {
+    state = {mode: 'off', ticks: 0};
+    history = ['Initial state: OFFLINE'];
+    testStatus.textContent = 'Experiment reset.';
+    render();
+  });
+  document.getElementById('replay').addEventListener('click', function () {
+    var sequence = ['POWER', 'START', 'TICK', 'TICK', 'TRIP', 'RESET', 'START', 'TICK', 'STOP', 'POWER'];
+    function execute() {
+      var s = {mode: 'off', ticks: 0};
+      var record = [];
+      sequence.forEach(function (event) {
+        var result = reduce(s, event);
+        s = result.state;
+        record.push(event + ':' + s.mode + ':' + s.ticks + ':' + result.accepted);
+      });
+      return {state: s, record: record};
+    }
+    var first = execute();
+    var second = execute();
+    var pass = JSON.stringify(first) === JSON.stringify(second) &&
+               first.state.mode === 'off' && first.state.ticks === 3;
+    state = first.state;
+    history = ['Replay: OFFLINE start'].concat(first.record);
+    render();
+    testStatus.textContent = pass ?
+      'PASS: two identical 10-event scripts produced the same trace; 3 active ticks, final OFFLINE.' :
+      'FAIL: replay mismatch. Check the implementation.';
+  });
+  render();
+}());
+</script>
+</body>
+</html>
