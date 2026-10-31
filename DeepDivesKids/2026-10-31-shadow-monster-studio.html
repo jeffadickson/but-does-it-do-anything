@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="Build giant Halloween bat shadows while learning how light, geometry, and real spacecraft observations work. A complete offline experiment for curious nine-year-olds.">
+<title>Shadow Monster Studio! | DeepDivesKids • 31 October 2026</title>
+<style>
+:root{--ink:#19213c;--muted:#495674;--purple:#653ec1;--orange:#f89c25;--cream:#fff8eb;--line:#d9dff0;--good:#126344;--focus:#ffb200;--radius:22px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#f5f6ff;color:var(--ink);font:17px/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:#4831a5;text-underline-offset:.18em}a:hover{text-decoration-thickness:3px}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:4px solid var(--focus);outline-offset:4px}
+.skip{position:absolute;left:12px;top:-100px;padding:12px;background:#fff;z-index:20}.skip:focus{top:8px}
+.wrap{width:min(1100px,calc(100% - 32px));margin:auto}
+.hero{background:radial-gradient(circle at 78% 12%,#a78aff 0,transparent 25%),linear-gradient(125deg,#271c57,#5834a1 63%,#a24e8e);color:white;padding:48px 0 66px;position:relative;overflow:hidden}
+.hero:after{content:"✦  ✧  ✦";position:absolute;right:6%;bottom:10px;color:#ffc766;font-size:4rem;opacity:.35;transform:rotate(-15deg);pointer-events:none}
+.hero p{max-width:740px}.hero h1{font-size:clamp(2.3rem,6vw,4.6rem);line-height:1.06;letter-spacing:-.055em;margin:.28em 0}
+.eyebrow{font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:.84rem;color:#ffdf88}
+.hero .lead{font-size:clamp(1.15rem,2.4vw,1.42rem);line-height:1.55}
+.badges{display:flex;gap:10px;flex-wrap:wrap;margin:26px 0}
+.badges span{background:#ffffff21;border:1px solid #ffffff66;border-radius:100px;padding:6px 13px;font-weight:700;font-size:.89rem}
+.hero a{color:#fff; font-weight:800}
+main{position:relative;margin-top:-30px}
+.section{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:clamp(20px,3vw,34px);box-shadow:0 8px 30px #28305a0c;margin:0 0 24px}
+.section h2{font-size:clamp(1.5rem,3vw,2rem);line-height:1.2;margin:.15em 0 .55em;color:#32226f}
+.section h3{color:#473491;margin:1.2em 0 .3em;font-size:1.2rem}
+.section p{margin:.7em 0}.section :first-child{margin-top:0}
+.toc ol{columns:2;padding-left:24px;margin-bottom:0}.toc li{break-inside:avoid;padding:4px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.card{background:var(--cream);border:1px solid #f1dcac;border-radius:16px;padding:20px}
+.card.purple{background:#f3eeff;border-color:#ded1fb}
+.card.teal{background:#e9fcf5;border-color:#b9e5d6}
+.callout{background:#f0f3ff;border-left:5px solid #7657de;border-radius:0 14px 14px 0;padding:15px 18px;margin:18px 0}
+.warning{background:#fff4e4;border-left-color:#e28912}
+.kicker{font-size:.84rem;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:#7650bd}
+.fun{font-size:1.15rem;font-weight:700}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field{display:block;background:#fff;padding:16px;border:1px solid #d9dff0;border-radius:14px}
+.field span{display:flex;justify-content:space-between;gap:10px;font-weight:700}
+output{color:#5527aa;font-variant-numeric:tabular-nums;white-space:nowrap}
+input[type="range"]{display:block;width:100%;height:24px;accent-color:#6846c8;margin:15px 0 6px;cursor:pointer}
+.controlhelp{font-size:.86rem;color:var(--muted);line-height:1.35}
+.lab{background:linear-gradient(#fffaf1,#f5f0ff);border:2px solid #dfd5f5;border-radius:20px;padding:20px;margin-top:18px}
+.scene{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:14px}
+.viewport{background:#15122d;border-radius:16px;overflow:hidden;min-width:0}
+.viewport svg{display:block;width:100%;height:auto}
+.viewcaption{font-size:.89rem;color:#33405d;margin:8px 0 0}
+.live-number{font-size:clamp(1.7rem,4vw,2.7rem);font-weight:900;line-height:1.2;color:#3a258b}
+.readout{background:white;border:1px solid #d9dff0;border-radius:14px;padding:14px 16px;margin-top:16px}
+.readout strong{font-variant-numeric:tabular-nums}
+code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,Monaco,monospace;font-size:.92em}
+pre{white-space:pre;overflow-x:auto;background:#17152f;color:#f8f5ff;border-radius:14px;padding:18px;line-height:1.6}
+pre code{font-size:.9em}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{padding:10px 11px;text-align:left;border-bottom:1px solid #d7ddeb}
+th{background:#f0edff;color:#35207f}
+.table-scroll{overflow-x:auto}
+.missions{display:flex;flex-wrap:wrap;gap:10px}
+button{font:inherit;font-weight:800;cursor:pointer;background:#6340c2;border:2px solid #6340c2;border-radius:12px;color:white;padding:10px 14px;min-height:44px}
+button:hover{background:#4729a6}
+button[aria-pressed="true"]{background:#ffdf8c;color:#321963;border-color:#b8750e}
+button.secondary{background:#fff;color:#5536aa}
+button.secondary:hover{background:#eee7ff}
+.status{padding:14px 16px;background:#fff;border-radius:12px;border:1px dashed #aaa1d0;min-height:58px}
+.status.pass{background:#e8fbf1;border-color:#3a956a;color:#154a36;font-weight:800}
+.predictrow{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.predictrow label{font-weight:700}
+.predictrow input{display:block;width:170px;font:inherit;padding:10px;border:2px solid #a8a2c6;border-radius:10px}
+.small{font-size:.9rem;color:var(--muted)}
+.factgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.fact{border-radius:14px;padding:17px;background:#eef5ff;border:1px solid #cfddf4}
+.fact .icon{font-size:1.8rem}
+.fact strong{display:block}
+footer{padding:18px 0 60px;text-align:center;color:#47536e}
+footer a{margin:0 .3em}
+summary{cursor:pointer;font-weight:800}
+.license{font-size:.86rem;white-space:pre-wrap;background:#f3f4fa;padding:16px;border-radius:12px}
+:target{scroll-margin-top:16px}
+@media(max-width:760px){.grid,.scene,.controls{grid-template-columns:1fr}.toc ol{columns:1}.factgrid{grid-template-columns:1fr}.hero{padding-top:32px}.section{margin-bottom:16px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media print{body{background:#fff}.hero{color:#1e2055;background:#f3efff;padding:20px 0}.section{box-shadow:none;break-inside:avoid}button,input{display:none}.hero a{color:#4831a5}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the adventure</a>
+<header class="hero">
+<div class="wrap">
+<div class="eyebrow">DeepDivesKids • Saturday, October 31, 2026 • Science + Art</div>
+<h1>🦇 Shadow Monster Studio!</h1>
+<p class="lead">How can a teeny paper bat become a <em>giant</em> Halloween monster on your wall—without growing at all? Become a light detective, run a real geometry simulator, and make your own shadow theater.</p>
+<div class="badges"><span>Age 9+</span><span>15–25 minute adventure</span><span>Interactive • works offline</span><span>No downloads or libraries needed</span></div>
+<p><a href="#lab">Jump into the shadow lab ↓</a></p>
+</div>
+</header>
+<main id="main" class="wrap">
+<nav class="section toc" aria-label="On this page">
+<h2>🧭 Adventure map</h2>
+<ol>
+<li><a href="#mystery">The mysterious giant bat</a></li>
+<li><a href="#how">The secret of straight-line light</a></li>
+<li><a href="#lab">Play: Shadow Monster Lab</a></li>
+<li><a href="#missions">Three shadow missions</a></li>
+<li><a href="#experiment">Make a real shadow theater</a></li>
+<li><a href="#real">Real science &amp; real art</a></li>
+<li><a href="#code">Peek inside the computer</a></li>
+<li><a href="#limits">What our model gets wrong</a></li>
+<li><a href="#family">Hockey, engineering &amp; you</a></li>
+<li><a href="#sources">Sources and licensing</a></li>
+</ol>
+</nav>
+
+<section id="mystery" class="section">
+<p class="kicker">The mystery</p>
+<h2>👻 A six-inch monster? Or a six-foot monster?</h2>
+<p>Imagine cutting a small bat from black paper. You hold it in front of a flashlight, and suddenly an enormous flying creature stretches across your wall. Did your bat grow? Nope! You changed how the light spreads around it.</p>
+<div class="grid">
+<div class="card"><p class="fun">🕵️ Detective question</p><p>To make a shadow <strong>bigger</strong>, should you move the paper bat toward the flashlight or toward the wall?</p><details><summary>Reveal the clue</summary><p>Move it <strong>toward the flashlight</strong>. The bat blocks a bigger part of the widening light beam. We can test this instead of guessing.</p></details></div>
+<div class="card purple"><p class="fun">🎨 Artist question</p><p>Could a shadow tell a story? Yes. Real artists have used carved shadow puppets with lamps, screens, narration, and music for centuries. <a href="#sources">See the Smithsonian's example.</a></p></div>
+</div>
+</section>
+
+<section id="how" class="section">
+<p class="kicker">How it works</p>
+<h2>💡 Light draws invisible straight lines</h2>
+<p>Imagine light traveling outward from one tiny point on a flashlight. When the paper bat blocks some of those lines, the wall behind the bat is darker: a <strong>shadow</strong>. The light lines that just skim the bat's top and bottom form two spreading rays.</p>
+<p>The trick is a pair of <strong>similar triangles</strong>. A triangle from the light to the bat and a larger one from the light to the wall have matching angles. That gives us a prediction:</p>
+<div class="callout"><strong>Shadow height = Bat height × (flashlight-to-wall distance ÷ flashlight-to-bat distance)</strong><br>Example: an 8 cm bat, a wall 120 cm from the flashlight, and a bat 60 cm from the flashlight make a <strong>16 cm shadow</strong>. Because 8 × (120 ÷ 60) = 16.</div>
+<p>Move the bat halfway as far from the light, to 30 cm, and the model predicts a <strong>32 cm shadow</strong>. The bat is still just 8 cm tall!</p>
+<div class="callout warning"><strong>Important:</strong> This simple rule assumes a tiny <em>point</em> light, a flat upright cutout, and a wall parallel to it. Real flashlights have wider light sources, so shadow edges can look fuzzy. We explore that later.</div>
+</section>
+
+<section id="lab" class="section">
+<p class="kicker">Interactive experiment • no network required</p>
+<h2>🔦 Shadow Monster Lab</h2>
+<p>Move the three sliders. The purple rays show the light's path, and the orange screen shows your bat's shadow. You can use arrow keys on a selected slider, too.</p>
+<div class="controls">
+<label class="field" for="distance"><span>🦇 Light → bat <output id="distanceOut" for="distance">60 cm</output></span><input id="distance" type="range" min="25" max="110" value="60" step="1" aria-describedby="distHelp"><div id="distHelp" class="controlhelp">Closer to the light usually means a larger shadow.</div></label>
+<label class="field" for="wall"><span>🏠 Light → wall <output id="wallOut" for="wall">120 cm</output></span><input id="wall" type="range" min="100" max="150" value="120" step="10" aria-describedby="wallHelp"><div id="wallHelp" class="controlhelp">We always keep the bat in front of the wall.</div></label>
+<label class="field" for="size"><span>📏 Bat height <output id="sizeOut" for="size">8 cm</output></span><input id="size" type="range" min="4" max="10" value="8" step="1" aria-describedby="sizeHelp"><div id="sizeHelp" class="controlhelp">Pretend your paper cutout is this tall.</div></label>
+<div class="field"><span>📐 Predicted shadow</span><div class="live-number"><output id="shadowOut" aria-live="polite" aria-atomic="true">16.0 cm</output></div><div class="controlhelp">Calculated from the distances you choose.</div></div>
+</div>
+<div class="lab">
+<div class="scene">
+<div>
+<div class="viewport">
+<svg id="rayScene" viewBox="0 0 840 390" role="img" aria-labelledby="rayTitle rayDesc">
+<title id="rayTitle">Side view of a flashlight, a bat, and its projected shadow</title>
+<desc id="rayDesc">Two light rays fan outward from the flashlight, skim a bat, and land on the wall. The exact distances and shadow size appear below.</desc>
+<defs><linearGradient id="glow" x1="0" x2="1"><stop stop-color="#ffdc73" stop-opacity=".4"/><stop offset="1" stop-color="#ffdc73" stop-opacity=".06"/></linearGradient></defs>
+<rect width="840" height="390" fill="#15132d"/>
+<g opacity=".22" fill="#fff"><circle cx="100" cy="45" r="2"/><circle cx="255" cy="83" r="2"/><circle cx="465" cy="37" r="2"/><circle cx="660" cy="78" r="2"/><circle cx="375" cy="335" r="2"/></g>
+<polygon id="beam" points="64,195 782,135 782,255" fill="url(#glow)"/>
+<line id="rayTop" x1="64" y1="195" x2="782" y2="135" stroke="#ffdb80" stroke-width="3"/>
+<line id="rayBottom" x1="64" y1="195" x2="782" y2="255" stroke="#ffdb80" stroke-width="3"/>
+<line x1="782" y1="25" x2="782" y2="363" stroke="#79e5e8" stroke-width="7" stroke-linecap="round"/>
+<line id="shadowBar" x1="778" y1="135" x2="778" y2="255" stroke="#f988b6" stroke-width="18" stroke-linecap="round"/>
+<g transform="translate(35 175)"><rect x="0" y="8" width="35" height="24" rx="7" fill="#a4a6e9"/><path d="M35 9 L47 2 L47 38 L35 31 Z" fill="#ffde7e"/><rect x="10" y="0" width="12" height="9" rx="2" fill="#a4a6e9"/></g>
+<line id="batStick" x1="423" x2="423" y1="175" y2="215" stroke="#c4a3ff" stroke-width="8" stroke-linecap="round"/>
+<circle id="batDot" cx="423" cy="195" r="10" fill="#bf8cff" stroke="#fff" stroke-width="2"/>
+<text x="40" y="352" fill="#e1dafa" font-size="19" font-weight="700">LIGHT</text>
+<text id="batLabel" x="385" y="286" fill="#e1dafa" font-size="19" font-weight="700">BAT</text>
+<text x="738" y="382" fill="#b7ffff" font-size="19" font-weight="700">WALL</text>
+</svg>
+</div>
+<p class="viewcaption">Side view (ray diagram). The purple marker is the paper bat seen edge-on, not its wing shape.</p>
+</div>
+<div>
+<div class="viewport">
+<svg viewBox="0 0 356 390" role="img" aria-labelledby="screenTitle screenDesc">
+<title id="screenTitle">Front view of the projected bat shadow</title>
+<desc id="screenDesc">A purple bat silhouette on an orange-lit wall grows or shrinks with the calculated shadow height. This drawing fits the screen and is not a physical ruler.</desc>
+<rect width="356" height="390" fill="#16132d"/>
+<rect x="19" y="27" width="318" height="314" rx="18" fill="#ffdda6"/>
+<rect x="29" y="37" width="298" height="294" rx="12" fill="#ffe8bf"/>
+<path d="M0 -6 C -8 -30 -16 -17 -18 -7 C -34 -23 -47 -20 -60 -10 C -55 -1 -50 1 -45 13 C -35 4 -29 12 -22 19 C -12 13 -7 19 0 25 C 7 19 12 13 22 19 C 29 12 35 4 45 13 C 50 1 55 -1 60 -10 C 47 -20 34 -23 18 -7 C 16 -17 8 -30 0 -6 Z" id="shadowShape" transform="translate(178 181) scale(.64)" fill="#362052"/>
+<text x="178" y="370" text-anchor="middle" font-size="18" fill="#e9dcff" font-weight="700">YOUR SHADOW THEATER</text>
+</svg>
+</div>
+<p class="viewcaption">Front view. Its drawing resizes to fit, while the number above is the calculated height.</p>
+</div>
+</div>
+<div class="readout"><strong>What's happening?</strong> <span id="explanation">The bat is halfway to the wall, so its shadow is twice as tall as the bat.</span><p class="small" id="sceneNarration" aria-live="polite">Light to bat: 60 cm. Light to wall: 120 cm. Bat: 8 cm. Predicted shadow: 16 cm.</p></div>
+</div>
+</section>
+
+<section id="missions" class="section">
+<p class="kicker">Mission control</p>
+<h2>🎯 Three shadow missions</h2>
+<p>Choose a mission, change the sliders, and try to beat it! No timer, no pressure—scientists learn by experimenting.</p>
+<div class="missions" role="group" aria-label="Choose a shadow challenge">
+<button type="button" class="mission" data-mission="0" aria-pressed="true">🦇 Make it giant</button>
+<button type="button" class="mission" data-mission="1" aria-pressed="false">🐭 Make it tiny</button>
+<button type="button" class="mission" data-mission="2" aria-pressed="false">🎯 Hit 20 cm</button>
+</div>
+<p id="missionPrompt" class="fun">Mission: Make a bat shadow at least 32 cm tall.</p>
+<div id="missionStatus" class="status" role="status" aria-live="polite">Move the sliders to solve the mission.</div>
+<h3>🔮 Predict before you peek</h3>
+<p>Try to calculate the shadow with pencil and paper. Type your answer in centimeters (a decimal is fine).</p>
+<div class="predictrow">
+<label for="guess">My prediction (cm)<input id="guess" inputmode="decimal" type="number" min="0" max="999" step="0.1" placeholder="e.g., 16.0"></label>
+<button id="checkGuess" type="button" class="secondary">Check my prediction</button>
+</div>
+<p id="guessResult" class="status" role="status" aria-live="polite">Your prediction can be different from the computer's. That's how we learn!</p>
+</section>
+
+<section id="experiment" class="section">
+<p class="kicker">Real-world maker lab</p>
+<h2>✂️ Build a Halloween shadow theater</h2>
+<div class="grid">
+<div>
+<h3>What you need</h3>
+<p>A small flashlight, paper or cardstock, a pencil, tape, a popsicle stick, a ruler, and a light-colored wall. Ask a grown-up for help with scissors.</p>
+<h3>Your experiment</h3>
+<ol>
+<li>Cut a bat, ghost, or hockey stick silhouette from paper. Measure its height.</li>
+<li>Point your flashlight at a clear wall in a dim room. Put the flashlight about <strong>120 cm</strong> from the wall.</li>
+<li>Hold the cutout <strong>60 cm</strong> from the flashlight and measure its shadow on the wall.</li>
+<li>Move the cutout to <strong>30 cm</strong> from the flashlight. Measure again. Is the shadow nearly twice as tall?</li>
+<li>Change only one thing at a time. Write down your evidence.</li>
+</ol>
+</div>
+<div class="card teal">
+<h3>📓 Tiny scientist notebook</h3>
+<div class="table-scroll"><table><caption>Predictions for an 8 cm bat and a wall 120 cm away</caption><thead><tr><th scope="col">Bat distance</th><th scope="col">Predicted shadow</th></tr></thead><tbody><tr><td>30 cm</td><td>32 cm</td></tr><tr><td>60 cm</td><td>16 cm</td></tr><tr><td>100 cm</td><td>9.6 cm</td></tr></tbody></table></div>
+<p class="small">Add a third column on paper for what you <em>actually measure</em>. Your real numbers may differ from the ideal model.</p>
+<p><strong>Art challenge:</strong> Write a 30-second story in which a tiny bat grows into a mountain-sized monster.</p>
+</div>
+</div>
+<div class="callout warning"><strong>Safe scientist rule:</strong> Use an ordinary cool flashlight, never shine it into anyone's eyes, and don't use the Sun as your flashlight. Never look directly at the Sun or an eclipse without proper solar viewing protection.</div>
+</section>
+
+<section id="real" class="section">
+<p class="kicker">Evidence, not guesses</p>
+<h2>🌍 Real shadows used by real people</h2>
+<div class="factgrid">
+<div class="fact"><div class="icon" aria-hidden="true">🎭</div><strong>Shadow theater is real art.</strong><p>The Smithsonian has a Chinese lion shadow puppet made around 1850–1925. Its museum record describes figures moved in front of a lamp to project images onto a screen. <a href="#ref-smith">Museum source</a>.</p></div>
+<div class="fact"><div class="icon" aria-hidden="true">🌑</div><strong>Eclipse shadows are real.</strong><p>NASA explains that the Moon can block sunlight and cast shadows on Earth. The darkest central region is the <em>umbra</em>; the partially shaded area is the <em>penumbra</em>. <a href="#ref-nasa-eclipse">NASA source</a>.</p></div>
+<div class="fact"><div class="icon" aria-hidden="true">🦇</div><strong>A cosmic “bat shadow” is real!</strong><p>Hubble observed a giant bat-like shadow on a cloud, cast by a dusty disk around a young star called HBC 672. Its width spans roughly 200 solar-system lengths, according to NASA. <a href="#ref-hubble">NASA source</a>.</p></div>
+</div>
+<h3>🧠 One more real scientific use</h3>
+<p>NASA uses computer-generated light and shadow in <strong>shaded-relief maps</strong> of terrain. These images help viewers see slopes and landforms. That is a real visualization technique, not the Halloween simulator specifically. <a href="#ref-srtm">NASA Earth Observatory example</a>.</p>
+<div class="callout"><strong>Imagined, not verified deployments:</strong> A future haunted-house robot could plan where to cast a spooky shadow, or a rover simulator might use ray geometry to test whether an obstacle blocks a camera. Those are <em>project ideas</em>; we have not found evidence that RISCue, VeloSim, or any particular NASA mission uses this page's code.</div>
+</section>
+
+<section id="code" class="section">
+<p class="kicker">A peek under the hood</p>
+<h2>💻 The computer's shadow trick</h2>
+<p>This whole page runs with ordinary <strong>HTML, CSS, and JavaScript</strong>. The picture uses SVG (Scalable Vector Graphics). No outside coding library, login, installation, internet connection, or data collection is required after opening the file.</p>
+<p>At the heart of the working simulator is this calculation:</p>
+<pre><code>function shadowHeight(batCm, wallCm, batDistanceCm) {
+  if (batCm &lt;= 0 || batDistanceCm &lt;= 0 ||
+      wallCm &lt;= batDistanceCm) {
+    throw new RangeError("Check the distances.");
+  }
+  return batCm * wallCm / batDistanceCm;
+}
+
+// Try it:
+// shadowHeight(8, 120, 60) is 16.
+// shadowHeight(8, 120, 30) is 32.</code></pre>
+<p>In words: <strong>height × wall distance ÷ bat distance</strong>. The simulator calls that same function when you change a slider. It then redraws the rays and shadow using the answer.</p>
+<h3>🔍 A mini debugging challenge</h3>
+<p>If somebody writes <code>batCm * batDistanceCm / wallCm</code>, will the shadow grow when the bat approaches the light? Try two values. If your computer's answer disagrees with an experiment, investigate the formula first.</p>
+</section>
+
+<section id="limits" class="section">
+<p class="kicker">Good scientists admit limitations</p>
+<h2>⚖️ What the model gets wrong</h2>
+<div class="grid">
+<div class="card purple"><h3>✅ What our model does well</h3><p>For a tiny light source, a flat centered cutout parallel to a flat wall, and straight-line rays, the <strong>relative shadow height</strong> follows the similar-triangle equation. It makes repeatable predictions you can calculate yourself.</p></div>
+<div class="card"><h3>⚠️ What real life adds</h3><p>Real flashlight bulbs are not perfect points. Their size can make blurred shadow edges (the penumbra). Paper can tilt. Walls may not be parallel. The simulator ignores brightness, detailed bat-wing geometry, reflections, and changing light colors.</p></div>
+</div>
+<p>Scientists call this a <strong>model</strong>: a simplified explanation that is useful for a specific question. The model is not a photograph, not a NASA mission design, and not an exact calculation of every shadow.</p>
+</section>
+
+<section id="family" class="section">
+<p class="kicker">Connect the dots</p>
+<h2>🏒 What does this have to do with hockey and engineering?</h2>
+<p><strong>For a hockey player or goalie:</strong> imagine the straight line from a shooter toward the goal. A goalie tries to cover the dangerous shooting angles. A puck isn't a beam of light and may deflect or curve, but practicing a line-of-sight diagram is a neat geometry connection.</p>
+<p><strong>For your dad's engineering projects:</strong> he works on software that models how systems behave—like <em>RISCue</em> and <em>VeloSim</em>. Our shadow simulator is a tiny example of the same idea: choose inputs, run a repeatable rule, predict an output, and test it. These are educational analogies, <strong>not claims that his software already implements this experiment</strong>.</p>
+<p><strong>For artists:</strong> the same measurements can help you stage a Halloween puppet show. You can use science to make a small character look mighty—and then use storytelling to make the audience gasp.</p>
+</section>
+
+<section id="sources" class="section">
+<p class="kicker">Check our evidence</p>
+<h2>📚 Primary sources, credits &amp; licenses</h2>
+<p>The links below lead to the original organizations, rather than copied pictures or uncredited claims. They were checked October 31, 2026.</p>
+<ol>
+<li id="ref-shadow"><a href="https://www.sciencebuddies.org/stem-activities/change-the-size-of-a-shadow" rel="noopener noreferrer">Science Buddies — Change the Size of a Shadow</a>. Hands-on measurements and the finding that an object closer to a flashlight makes a larger shadow.</li>
+<li id="ref-smith"><a href="https://americanhistory.si.edu/it/collections/object/nmah_1030885" rel="noopener noreferrer">Smithsonian National Museum of American History — Lion Shadow Puppet</a>. Primary collection record and documented shadow theater practices.</li>
+<li id="ref-nasa-eclipse"><a href="https://science.nasa.gov/eclipses/geometry/" rel="noopener noreferrer">NASA Science — Why Do Eclipses Happen?</a>. Moon shadows, umbra, penumbra, and alignment.</li>
+<li id="ref-hubble"><a href="https://science.nasa.gov/missions/hubble/hubble-reveals-a-giant-cosmic-bat-shadow/" rel="noopener noreferrer">NASA Hubble — Giant Cosmic “Bat Shadow”</a>. Actual observation of the HBC 672 disk shadow.</li>
+<li id="ref-srtm"><a href="https://science.nasa.gov/earth/earth-observatory/panama-canal-2932/" rel="noopener noreferrer">NASA Earth Observatory — Panama Canal</a>. Shaded-relief terrain created with a computer-generated light source.</li>
+<li><a href="https://www.sciencebuddies.org/stem-activities/shadow-puppets" rel="noopener noreferrer">Science Buddies — Making Shadow Puppets</a>. Additional safe experiment and theater ideas.</li>
+</ol>
+<h3>🛠️ Integration details</h3>
+<p><strong>Language:</strong> HTML5 + modern browser JavaScript + inline SVG. <strong>Build:</strong> none. <strong>Dependencies:</strong> none. <strong>Storage and tracking:</strong> none. <strong>Works offline:</strong> yes, except external reference links. <strong>Works in:</strong> current major browsers with standard SVG and JavaScript support. SVG ray lengths are schematic; the numeric output uses centimeters.</p>
+<p><strong>Licensing:</strong> This page's original example code and original SVG drawing are made available under the MIT License below. Links do not grant permission to reproduce NASA/Smithsonian/Science Buddies page content or images. No third-party code is bundled.</p>
+<details><summary>Read the MIT License for this lesson's original code and drawings</summary><div class="license">MIT License
+
+Copyright (c) 2026 DeepDivesKids contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</div></details>
+<p class="small">Prepared October 31, 2026. Original educational simulation; not a scientific instrument. Sources are linked, not embedded. To inspect or modify the experiment, use your browser's View Source feature.</p>
+</section>
+</main>
+<footer class="wrap">✨ Keep asking “What if?” • <a href="#main">Back to the top</a> • A DeepDivesKids discovery</footer>
+<script>
+"use strict";
+(function () {
+  const $ = id => document.getElementById(id);
+  const distance = $("distance");
+  const wall = $("wall");
+  const size = $("size");
+  const missionButtons = Array.from(document.querySelectorAll(".mission"));
+  let activeMission = 0;
+  let wasSolved = false;
+  const missions = [
+    {text:"Mission: Make a bat shadow at least 32 cm tall.", pass:h=>h>=32, hint:"Move the bat toward the flashlight, or enlarge it."},
+    {text:"Mission: Make a shadow 12 cm tall or smaller.", pass:h=>h<=12, hint:"Move the bat toward the wall, or shrink the paper bat."},
+    {text:"Mission: Reach 20 cm, within half a centimeter.", pass:h=>Math.abs(h-20)<=0.5, hint:"Try 8 cm, 120 cm, and 48 cm."}
+  ];
+  function shadowHeight(batCm, wallCm, batDistanceCm) {
+    if (!(batCm>0 && batDistanceCm>0 && wallCm>batDistanceCm)) {
+      throw new RangeError("Check the distances.");
+    }
+    return batCm * wallCm / batDistanceCm;
+  }
+  function values() {
+    return {d:Number(distance.value), L:Number(wall.value), h:Number(size.value)};
+  }
+  const format = n => n.toFixed(1);
+  function updateMission(height) {
+    const mission = missions[activeMission];
+    const solved = mission.pass(height);
+    const status = $("missionStatus");
+    if (solved) {
+      status.textContent = wasSolved ? "Success! Your settings still complete this mission. 🎉" : "Mission complete! 🎉 You used measurements and geometry to solve it.";
+      status.classList.add("pass");
+    } else {
+      status.textContent = "Not yet: shadow is "+format(height)+" cm. Hint: "+mission.hint;
+      status.classList.remove("pass");
+    }
+    wasSolved = solved;
+  }
+  function update() {
+    const v = values();
+    distance.max = String(v.L-10);
+    if (v.d > v.L-10) { distance.value = String(v.L-10); v.d = v.L-10; }
+    const H = shadowHeight(v.h, v.L, v.d);
+    $("distanceOut").textContent = v.d+" cm";
+    $("wallOut").textContent = v.L+" cm";
+    $("sizeOut").textContent = v.h+" cm";
+    $("shadowOut").textContent = format(H)+" cm";
+    const xLight=64, xWall=782, cy=195;
+    const xBat = xLight+(xWall-xLight)*v.d/v.L;
+    const halfBat=v.h*2.3;
+    const halfShadow=halfBat*v.L/v.d;
+    const top=cy-halfShadow, bottom=cy+halfShadow;
+    $("beam").setAttribute("points",xLight+","+cy+" "+xWall+","+top+" "+xWall+","+bottom);
+    $("rayTop").setAttribute("x2",xWall); $("rayTop").setAttribute("y2",top);
+    $("rayBottom").setAttribute("x2",xWall); $("rayBottom").setAttribute("y2",bottom);
+    $("batStick").setAttribute("x1",xBat); $("batStick").setAttribute("x2",xBat);
+    $("batStick").setAttribute("y1",cy-halfBat); $("batStick").setAttribute("y2",cy+halfBat);
+    $("batDot").setAttribute("cx",xBat);
+    $("batLabel").setAttribute("x",Math.min(xBat-18,680));
+    $("shadowBar").setAttribute("y1",top); $("shadowBar").setAttribute("y2",bottom);
+    $("shadowShape").setAttribute("transform","translate(178 181) scale("+(H*2/50).toFixed(4)+")");
+    const ratio=v.L/v.d;
+    $("explanation").textContent = "The wall is "+format(ratio)+" times as far from the light as the bat. So the "+v.h+" cm bat casts a shadow "+format(ratio)+" times as tall: "+format(H)+" cm.";
+    $("sceneNarration").textContent = "Light to bat: "+v.d+" cm. Light to wall: "+v.L+" cm. Bat height: "+v.h+" cm. Predicted shadow: "+format(H)+" cm.";
+    updateMission(H);
+    return H;
+  }
+  function chooseMission(i) {
+    activeMission=i;
+    wasSolved=false;
+    missionButtons.forEach((b,j)=>b.setAttribute("aria-pressed",String(i===j)));
+    $("missionPrompt").textContent = missions[i].text;
+    update();
+  }
+  for (const input of [distance,wall,size]) input.addEventListener("input",update);
+  missionButtons.forEach(button=>button.addEventListener("click",()=>chooseMission(Number(button.dataset.mission))));
+  $("checkGuess").addEventListener("click",()=>{
+    const guess=$("guess");
+    const response=$("guessResult");
+    if (guess.value.trim()==="" || !Number.isFinite(guess.valueAsNumber) || guess.valueAsNumber<=0) {
+      response.textContent="Try a number bigger than zero, like 16 or 32.";
+      response.classList.remove("pass");
+      return;
+    }
+    const v=values(), exact=shadowHeight(v.h,v.L,v.d), diff=guess.valueAsNumber-exact;
+    if (Math.abs(diff)<=0.5) {
+      response.textContent="Great prediction! Your answer is within half a centimeter of "+format(exact)+" cm. 🌟";
+      response.classList.add("pass");
+    } else {
+      response.textContent="Interesting! Your guess is "+(diff>0?"higher":"lower")+" than the model's "+format(exact)+" cm. Try height × wall distance ÷ bat distance.";
+      response.classList.remove("pass");
+    }
+  });
+  $("guess").addEventListener("keydown",event=>{if(event.key==="Enter"){$("checkGuess").click();}});
+  update();
+})();
+</script>
+</body>
+</html>
