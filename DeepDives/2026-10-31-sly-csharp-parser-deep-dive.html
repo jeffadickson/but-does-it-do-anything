@@ -1,0 +1,1381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Sly 3.8.1 in depth: C# attributes, lexical modes, expression precedence, real test evidence, an offline explorer, and a downloadable .NET laboratory. Why ANTLR stays in our simulator.">
+<meta name="color-scheme" content="light dark">
+<title>Sly: a language hiding in your C# attributes</title>
+<style>
+:root{--paper:#f5f3ed;--card:#fffefa;--ink:#202e37;--muted:#54646d;--line:#d8ddd8;--accent:#12675d;--wash:#e5f0e9;--warn:#8e4c18;--bad:#993747;--code:#14242e;--codeink:#e2efee;--shadow:0 12px 40px #18332b0a;font-family:Inter,Segoe UI,system-ui,sans-serif;color:var(--ink);background:var(--paper);line-height:1.7}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:5rem}body{margin:0}a{color:var(--accent);text-underline-offset:.2em}a:hover{text-decoration-thickness:2px}button,input,select{font:inherit}button,.button{cursor:pointer;border:1px solid var(--line);border-radius:9px;padding:.48rem .85rem;background:var(--card);color:var(--ink);font-weight:650;text-decoration:none;display:inline-block}button:hover,.button:hover{border-color:var(--accent)}:focus-visible{outline:3px solid #b75b18;outline-offset:4px}button[aria-pressed=true]{background:var(--accent);color:white}.skip{position:absolute;top:-100px;left:12px;z-index:20;padding:12px;background:var(--card)}.skip:focus{top:10px}
+.topbar{position:sticky;top:0;z-index:10;background:var(--paper);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:.7rem max(1.2rem,calc((100vw - 1240px)/2));gap:1rem}.brand{font-size:.82rem;font-weight:750;letter-spacing:.045em;text-decoration:none}.topbar .button{font-size:.8rem}.hero{background:#122b33;color:#f0f6ef;padding:4.5rem max(1.4rem,calc((100vw - 1120px)/2)) 3.5rem;position:relative;overflow:hidden}.hero:after{content:'[Production]';font:600 clamp(50px,9vw,140px)/1 ui-monospace,Consolas,monospace;position:absolute;right:-35px;bottom:4px;color:#b5e4cf0b;pointer-events:none}.eyebrow{font-size:.75rem;font-weight:750;text-transform:uppercase;letter-spacing:.16em;color:#a6d8c3}.hero h1{font:500 clamp(2.8rem,6vw,5rem)/1.08 Georgia,serif;letter-spacing:-.04em;max-width:850px;margin:1rem 0 1.2rem}.hero h1 em{color:#a6d8c3;font-style:normal}.hero .lead{font-size:1.13rem;max-width:760px;color:#d6e6df}.pills{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.5rem}.pill{font-size:.75rem;border:1px solid #73978e70;border-radius:30px;padding:.22rem .75rem}.hero .byline{font-size:.8rem;color:#b4cbc3;margin-top:1.5rem}.layout{display:grid;grid-template-columns:210px minmax(0,840px);gap:3.5rem;max-width:1190px;margin:auto;padding:2.5rem 1.4rem 4rem}.toc{position:sticky;top:5rem;align-self:start;font-size:.82rem;max-height:85vh;overflow:auto}.toc strong{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em}.toc a{display:block;text-decoration:none;color:var(--muted);padding:.3rem 0;border-left:2px solid transparent;padding-left:.8rem}.toc a:hover{border-color:var(--accent);color:var(--accent)}main{min-width:0}section{margin-bottom:3.5rem}h2{font:500 2.15rem/1.2 Georgia,serif;letter-spacing:-.025em;margin:.6rem 0 1.2rem}h3{font-size:1.16rem;line-height:1.35;margin:1.7rem 0 .7rem}h4{margin:.8rem 0}.number{font:.7rem/1.5 ui-monospace,Consolas,monospace;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:700}.intro{font-size:1.08rem}.muted,.caption{color:var(--muted)}.caption{font-size:.8rem}.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.4rem;box-shadow:var(--shadow);margin:1.2rem 0}.note{border-left:4px solid var(--accent);background:var(--wash);padding:1rem 1.2rem;border-radius:0 9px 9px 0;margin:1.4rem 0}.note strong{display:block}.note.warning{border-color:var(--warn);background:#f9eddf;color:#633f21}.columns{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.columns .box{margin:.3rem 0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin:1.5rem 0}.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.9rem}.stat b{display:block;font-size:1.8rem;line-height:1.3;color:var(--accent)}.stat span{font-size:.75rem;color:var(--muted)}pre{background:var(--code);color:var(--codeink);border-radius:12px;padding:1.15rem 1.3rem;overflow:auto;line-height:1.6;font-size:.8rem;tab-size:4;white-space:pre}code{font-family:ui-monospace,Cascadia Code,Consolas,monospace}p code,li code,td code{font-size:.88em;background:var(--wash);padding:.08em .3em;border-radius:4px}pre code{background:none;padding:0}.kw{color:#9cd6f1}.at{color:#a8e4bc}.st{color:#e7c598}.comment{color:#97b7a7}.codehead{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:1.3rem;font-size:.76rem;font-weight:700}.codehead button{font-size:.73rem}.codehead+pre{margin-top:.5rem}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px;margin:1rem 0;background:var(--card)}table{border-collapse:collapse;width:100%;font-size:.84rem;text-align:left}th,td{padding:.8rem .95rem;border-bottom:1px solid var(--line);vertical-align:top}th{background:var(--wash);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em}tr:last-child td{border-bottom:0}.status{display:inline-block;font-size:.7rem;font-weight:750;border:1px solid currentColor;border-radius:20px;padding:.08rem .55rem;white-space:nowrap}.good{color:var(--accent)}.gap{color:var(--warn)}.bad{color:var(--bad)}.controls{display:flex;flex-wrap:wrap;align-items:end;gap:.7rem;margin:1rem 0}.controls label{display:flex;flex-direction:column;gap:.3rem;font-size:.8rem;font-weight:650}.controls input,.controls select{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.5rem .7rem;max-width:100%}.controls input{width:300px}.casebutton{font-size:.8rem;border:0;background:transparent;color:var(--accent);padding:0;text-align:left;text-decoration:underline;text-underline-offset:.2em}.casegrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.casegrid pre{margin:.4rem 0}.casegrid h4{font-size:.8rem}.legend{display:flex;flex-wrap:wrap;gap:.7rem;font-size:.75rem}.pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:.65rem;margin:1.3rem 0}.pipeline div{padding:.8rem .45rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:var(--card);font-weight:650;font-size:.8rem;position:relative}.pipeline div:not(:last-child):after{content:'→';position:absolute;right:-.6rem;z-index:1;color:var(--accent)}.pipeline small{display:block;font-weight:400;font-size:.7rem;color:var(--muted)}.branch{display:flex;gap:2.5rem;justify-content:center;text-align:center;font-family:ui-monospace,Consolas,monospace}.node{border:1px solid #648f83;border-radius:8px;display:inline-block;padding:.25rem .8rem;background:#1b3941;color:#c4edd8}.tree{display:flex;flex-direction:column;align-items:center;gap:.4rem;padding:1rem}.tree .line{height:20px;width:1px;background:#789b91}.sources{font-size:.82rem}.sources li{margin:.55rem 0}details{border:1px solid var(--line);border-radius:10px;padding:.7rem 1rem;margin:1rem 0;background:var(--card)}summary{cursor:pointer;font-weight:650}footer{border-top:1px solid var(--line);padding:1.5rem 0;font-size:.78rem;color:var(--muted)}.download{background:var(--accent);color:white;border-color:var(--accent);margin-right:.5rem}.rule{border-top:1px solid var(--line);padding-top:1rem}.tiny{font-size:.72rem}.screenreader{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.casegrid>div,.columns>div{min-width:0}#zip-hash{overflow-wrap:anywhere}#ast-output{max-height:520px}#case-output{max-height:400px}
+@media(prefers-color-scheme:dark){:root{--paper:#122029;--card:#182a33;--ink:#e0eae8;--muted:#b2c1c3;--line:#3b5159;--accent:#8bdbc0;--wash:#20346f;--code:#0b171e}.download{background:#195f55;color:white}.note.warning{background:#3c2d23;color:#f0d7b5}.hero{background:#0c1a22}}
+body.reading .toc{display:none}body.reading .layout{grid-template-columns:minmax(0,840px);justify-content:center}body.reading main p{font-size:1.13rem}
+@media(max-width:960px){.layout{grid-template-columns:minmax(0,1fr);max-width:880px;gap:1rem}.toc{position:static;max-height:none;display:flex;flex-wrap:wrap;gap:.15rem .7rem;margin-bottom:1rem}.toc strong{width:100%}.toc a{padding:.15rem .3rem}.hero{padding-top:3rem}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.hero{padding:2.4rem 1.2rem}.hero h1{font-size:2.8rem}.layout{padding:1.5rem 1rem}.columns,.casegrid{grid-template-columns:1fr}.pipeline{grid-template-columns:1fr}.pipeline div:not(:last-child):after{content:'↓';right:50%;bottom:-1.1rem}.box{padding:1rem}.topbar{padding:.65rem 1rem}.brand{max-width:190px}.stats{gap:.5rem}.stat{padding:.7rem}.controls label{width:100%}.controls input,.controls select{width:100%}.hero .lead{font-size:1rem}h2{font-size:1.85rem}pre{font-size:.75rem}.download{margin-bottom:.7rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.topbar,.toc,.controls,.codehead button,.download{display:none}.layout{display:block;max-width:none;padding:0}.hero{padding:1rem;background:white;color:black}.hero h1,.hero em,.hero .lead,.hero .byline{color:black}.box,pre,table{break-inside:avoid}body{background:white;color:black}pre{white-space:pre-wrap}.pill{color:black}a{color:inherit}section{margin-bottom:1.5rem}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+<header class="topbar"><a class="brand" href="../index.html">BUT DOES IT DO ANYTHING?</a><button id="reading-mode" aria-pressed="false">Reading mode</button></header>
+<div class="hero">
+<div class="eyebrow">Library field notes · C# / language design · 31 October 2026</div>
+<h1>A language hiding in<br>your <em>C# attributes.</em></h1>
+<p class="lead">Sly turns token definitions and annotated methods into a parser. It removes much of the machinery. It does not remove the work of deciding what your language means—or proving that you recognize it correctly.</p>
+<div class="pills"><span class="pill">Sly 3.8.1</span><span class="pill">Real .NET evidence</span><span class="pill">Offline article + explorer</span><span class="pill">Downloadable C# laboratory</span></div>
+<p class="byline">A bounded study of expressions, XSPICE-shaped fragments and lexical modes. Our existing simulator keeps ANTLR.</p>
+</div>
+<div class="layout">
+<nav class="toc" aria-label="Article contents"><strong>Inside this deep dive</strong><a href="#problem">01 · When Split stops helping</a><a href="#mechanics">02 · How Sly works</a><a href="#grammar">03 · The grammar in C#</a><a href="#meaning">04 · Syntax before meaning</a><a href="#contexts">05 · Context changes everything</a><a href="#boundaries">06 · A model-name trap</a><a href="#lab">07 · Inspect a real syntax tree</a><a href="#evidence">08 · Explore the evidence</a><a href="#testing">09 · What the tests establish</a><a href="#choice">10 · Choosing a parser</a><a href="#sources">Sources & reproduction</a></nav>
+<main id="main">
+<section id="problem"><div class="number">01 / The concrete problem</div><h2>It starts as a few words in a string.</h2>
+<p class="intro">An application accepts a formula, a command, a filter, or a small configuration language. The first implementation splits on spaces or punctuation. That can be exactly the right amount of engineering.</p>
+<div class="columns"><div class="box"><h3>The first version</h3><pre><code>gain 2.5
+offset 0.1</code></pre><p>Two words, no nesting, no quoting, no ambiguity. A short validation routine may be all you need.</p></div><div class="box"><h3>The change request</h3><pre><code>gain (base + trim) * 2.5
+label "rack 2 / channel A"</code></pre><p>Now spaces can belong inside a value. Parentheses nest. Operators have precedence. Error locations matter.</p></div></div>
+<p>The awkward part is no longer finding separators. It is recognizing <em>structure</em>. Splitting <code>(1+2)*3</code> on plus signs loses the fact that the addition is a group. Treating <code>1+2*3</code> as a left-to-right operation sequence gives the wrong arithmetic structure.</p>
+<p>A parser earns its place when the input has a language contract worth making explicit: commands should be composable, invalid input should be explainable, and changes should be testable without executing the application.</p>
+<div class="note"><strong>More parsers, fewer accidental languages.</strong>That does not mean inventing a DSL for every setting. Reuse JSON, TOML, an existing query language, or a domain parser when it fits. Reach for a grammar when your input really has syntax that those formats do not express well.</div>
+</section>
+<section id="mechanics"><div class="number">02 / The machinery</div><h2>A lexer finds words.<br>A grammar finds relationships.</h2>
+<div class="pipeline" aria-label="Text becomes tokens, then syntax, then validated meaning, then application behavior"><div>Text<small>original characters</small></div><div>Tokens<small>numbers, names, signs</small></div><div>Syntax tree<small>groups & operators</small></div><div>Validation<small>names, units, rules</small></div><div>Application<small>typed operations</small></div></div>
+<p>For <code>1+2*3</code>, the lexer identifies five tokens. The parser groups them so that multiplication sits below addition in the tree. The tree records a relationship; evaluation is another operation.</p>
+<p>Sly is a NuGet library. You describe lexical rules with attributes on an enum and grammar productions with attributes on C# methods. <code>ParserBuilder</code> reads that metadata and constructs the recognizer. Your methods are the typed actions called when a production matches.</p>
+<div class="tablewrap"><table><thead><tr><th>You supply</th><th>Sly supplies</th><th>You still own</th></tr></thead><tbody><tr><td>Token patterns, symbols and modes</td><td>The lexer implementation</td><td>Which characters are legal in each context</td></tr><tr><td>BNF/EBNF production attributes</td><td>Grammar construction and recognition</td><td>Ambiguity, acceptance boundaries and coverage</td></tr><tr><td>Typed production methods</td><td>Dispatch into those methods</td><td>Syntax nodes and application semantics</td></tr><tr><td>Operator attributes</td><td>Generated expression rules</td><td>Precedence, associativity and their tests</td></tr></tbody></table></div>
+<p>This is different from writing a recursive-descent parser by hand. It is also different from a Roslyn source generator: the ordinary Sly <code>ParserBuilder</code> path builds a parser from attributes in your .NET process. ANTLR’s normal tool instead emits source from a separate grammar before compilation.</p>
+<p>The distinction matters operationally. A compact .NET application can use Sly without installing a Java generator. It still needs a defined grammar, runtime initialization, dependency management and qualification for its intended inputs.</p>
+</section>
+<section id="grammar"><div class="number">03 / The annotated implementation</div><h2>The interesting code is the language.</h2>
+<p>A small expression grammar can stay close to the C# that consumes it. Here are representative pieces from the downloadable laboratory.</p>
+<div class="codehead"><span>01 · Token rules</span><button data-copy="tokens-code">Copy</button></div>
+<pre id="tokens-code"><code><span class="kw">internal enum</span> ExprToken
+{
+    <span class="at">[Lexeme(@"[ \t\r\n]+", true)]</span> Space = 1,
+    <span class="at">[Lexeme(@"(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?[A-Za-z]*")]</span> Number,
+    <span class="at">[Lexeme(@"[A-Za-z_@$][A-Za-z_0-9.$]*")]</span> Name,
+    <span class="at">[Lexeme(@"\+")]</span> Plus,
+    <span class="at">[Lexeme(@"\*")]</span> Times
+    <span class="comment">// The complete source also declares grouping, calls and other operators.</span>
+}</code></pre>
+<p>The first rule skips whitespace. The number rule recognizes spelling, including engineering-style suffixes; it does not establish that a suffix is meaningful or that a value has the right unit. Those are semantic decisions.</p>
+<div class="codehead"><span>02 · Operator rules and an AST action</span><button data-copy="operators-code">Copy</button></div>
+<pre id="operators-code"><code><span class="at">[Operation((int)ExprToken.Plus,  Affix.InFix, Associativity.Left, 10)]</span>
+<span class="at">[Operation((int)ExprToken.Times, Affix.InFix, Associativity.Left, 20)]</span>
+<span class="kw">public</span> Node Binary(Node left, Token&lt;ExprToken&gt; op, Node right)
+    =&gt; <span class="kw">new</span>(op.Value, left.Start, right.End, [left, right]);</code></pre>
+<p>Higher precedence makes multiplication bind more tightly in this definition. The method creates a node with two children and a physical source range. It does not multiply anything.</p>
+<div class="codehead"><span>03 · Grouping is a production</span><button data-copy="group-code">Copy</button></div>
+<pre id="group-code"><code><span class="at">[Operand]</span>
+<span class="at">[Production("group : Open ExprGrammar_expressions Close")]</span>
+<span class="kw">public</span> Node Group(Token&lt;ExprToken&gt; first, Node value, Token&lt;ExprToken&gt; last)
+    =&gt; <span class="kw">new</span>(<span class="st">"group"</span>, first.Position.Index, last.Position.Index + 1, [value]);</code></pre>
+<p><code>ExprGrammar_expressions</code> is Sly’s generated expression-rule name for this class. The production says which token/nonterminal sequence matches. Its method says what syntax object to construct. A missing closing parenthesis is a grammar rejection before any evaluator or simulator is involved.</p>
+<details><summary>What is a “production,” exactly?</summary><p>A production is one grammar rule: a name on the left and an allowed sequence on the right. In <code>group : Open expression Close</code>, a group consists of an opening token, an expression and a closing token. EBNF adds concise repetition and optionality: <code>item+</code>, <code>item*</code> and <code>item?</code>. Concise does not mean ambiguity disappears.</p></details>
+</section>
+<section id="meaning"><div class="number">04 / The architectural boundary</div><h2>Parsing should not turn things on.</h2>
+<p>A command may be syntactically valid while referring to a missing instrument. A circuit may parse while using an unsupported model. An expression may be well formed while referencing an unknown variable.</p>
+<p>Keep these outcomes separate. A useful frontend produces located syntax. A binder resolves names. A validator checks the domain contract. Only a later application operation performs I/O, changes state, or asks a numerical solver to work.</p>
+<div class="columns"><div class="box"><h3>Syntax asks</h3><p>Is the differential pair closed? Are there two nodes? Does an expression have an operand after <code>+</code>? Is the control block terminated?</p></div><div class="box"><h3>Semantics asks</h3><p>Does the model exist? Does that port type match it? Are the units compatible? Is this command authorized? Can this analysis actually run?</p></div></div>
+<p>The laboratory’s control test feeds a shell-looking command to the parser and checks that no marker file is created. Recognition retains command text; it does not execute it. That is evidence about this implementation path, not a general security sandbox or a guarantee about arbitrary semantic actions.</p>
+<div class="note"><strong>The reusable pattern</strong>A UI, command palette, CLI and automation endpoint can share the same typed application operations. A text parser is an adapter into that system. It should not become a second, less-tested implementation of the application.</div>
+</section>
+<section id="contexts"><div class="number">05 / Where the interesting work begins</div><h2>The same character can change its job.</h2>
+<pre><code>a1 in-node out/name gain
+B1 out 0 V={v(in)-0.3}</code></pre>
+<p>In the first line, a hyphen or slash can belong to a node name. In the expression, those characters are operators. One globally permissive identifier regex can swallow subtraction; one globally arithmetic lexer can break legitimate node spellings.</p>
+<p>Sly has built-in lexer modes. The generic-mode probe uses attributes such as these:</p>
+<div class="codehead"><span>Enter and leave an expression context</span><button data-copy="modes-code">Copy</button></div>
+<pre id="modes-code"><code><span class="at">[Mode("default")][Sugar("{")][Push("expression")]</span> Begin,
+<span class="at">[Mode("expression")][Sugar("}")][Pop]</span> End,
+<span class="at">[Mode("expression")][Sugar("-")]</span> Minus</code></pre>
+<p>The executed probe tokenizes <code>in-node {v(g)-1} out-node</code>. Both hyphenated names remain intact outside the braces; the minus becomes an operator inside. This corrects an easy misconception: modes are not an ANTLR-only capability.</p>
+<div class="note warning"><strong>Important scope boundary</strong>The experiment has separate regex-based fragment grammars and a generic-lexer mode probe. It has not integrated them into one complete deck lexer. Showing that each mechanism works is not proof that the combined frontend is finished.</div>
+<h3>Source offsets are the durable anchor</h3>
+<p>A continuation can join a logical statement across physical lines and comments. The original characters should remain available for diagnostics, editing and reproducibility. Prefer absolute offsets into the original text over reconstructing source from normalized tokens.</p>
+<pre><code>a1 [first
+* comment
++ second] model</code></pre>
+<p>In the measured Sly regex probe, <code>second</code> keeps the correct absolute UTF-16 index, 24 in the CRLF test string. Its reported zero-based line is 1, while the physical line is 2. The skipped multiline lexeme’s line accounting needs an adapter or a different lexical definition. Our ANTLR wrapper also uses a physical-position map for its own newline conventions.</p>
+<p>That is useful engineering evidence. It is not a verdict that either library “cannot do locations.” It identifies where the integration boundary must do more work.</p>
+</section>
+<section id="boundaries"><div class="number">06 / A grammar earns its shape</div><h2>The last name was not another port.</h2>
+<p>An XSPICE-shaped fragment ends in a model reference. Consider <code>a1 in out gain</code>: two named ports followed by the model <code>gain</code>. The straightforward first rule looked like this:</p>
+<pre><code>card : Name port+ Name</code></pre>
+<p>In the initial Sly implementation, the repeated port production consumed the final name. The test run had 14 passes and six failures. The current ANTLR grammar handles that shape with its recognition machinery; the candidate needed a more explicit boundary.</p>
+<pre><code>card : Name port tail
+tail : Name tail?
+tail : Number tail
+tail : compound tail</code></pre>
+<p>The first port is required. For a named tail element, another tail makes this name a port; the final named element becomes the model reference. The C# action constructs the corresponding nodes. The library still recognizes the structure—there is no handwritten token-walking parser.</p>
+<p>This named-model fragment is intentionally limited. The numeric-model-reference challenge exposes a missing production. A complete port grammar also needs typed vectors and other forms that are already covered by the simulator’s ANTLR frontend.</p>
+<h3>A terminator is not always a prefix</h3>
+<pre><code>.control
+.endc_extra
+.endc</code></pre>
+<p>The generic control probe uses a sugar token for <code>.endc</code>. It rejects the example above, while the ANTLR baseline keeps the longer command name as a control record and recognizes the real terminator. The candidate needs a better token boundary rule.</p>
+<p>These cases explain why parser work can be substantial even with a good library. The package removes the recognition engine you would otherwise write. You still have to define the language’s boundaries and test their consequences.</p>
+</section>
+<section id="lab"><div class="number">07 / Look inside the result</div><h2>Inspect a tree produced by real C#.</h2>
+<p>The records below were generated by the downloadable Sly laboratory. Changing this selector switches between recorded executions. It does not compile or run C# in your browser.</p>
+<div class="box"><div class="controls"><label for="ast-choice">Recorded expression<select id="ast-choice"></select></label><span class="status good">Recorded .NET execution</span></div><div class="casegrid"><div><h4>Input</h4><pre id="ast-input"></pre><h4>Result</h4><p id="ast-status" aria-live="polite"></p><p class="caption">A successful result is syntax. No numeric evaluator ran.</p></div><div><h4>Syntax tree / diagnostic</h4><pre id="ast-output"></pre></div></div></div>
+<p>For <code>1+2*3</code>, the top node is addition and its right child is multiplication. For <code>(1+2)*3</code>, multiplication is at the top and its left child is a group. A precedence test checks tree shape independently of whether a later calculator happens to return the right number.</p>
+<p><a class="button download" id="lab-download" download="sly-csharp-lab.zip" href="data:application/zip;base64,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">Download the C# laboratory</a><a href="#reproduce">Run it locally →</a></p>
+<p class="caption">Source-only ZIP · .NET 10 SDK · Sly 3.8.1 restored from NuGet · no Java or ANTLR dependency in this laboratory. SHA-256: <code id="zip-hash">d2308acc33657862fee794c2c8e9a39b43045af800a97615bdf1c68a2b3e0930</code></p>
+<noscript><p>The archive link works without JavaScript. The syntax-tree selector needs JavaScript; all explanations and the fixed evidence table remain readable.</p></noscript>
+</section>
+<section id="evidence"><div class="number">08 / Evidence, not framework enthusiasm</div><h2>A small comparison you can interrogate.</h2>
+<div class="stats"><div class="stat"><b>30</b><span>passing unit tests</span></div><div class="stat"><b>256</b><span>seeded property cases</span></div><div class="stat"><b>23 / 23</b><span>shared fixed expectations met</span></div><div class="stat"><b>2</b><span>observed integration gaps</span></div></div>
+<p>The comparison uses explicit fragment wrappers for ANTLR’s whole-deck API. Neither parser invokes a simulator. The shared cases include both valid inputs and correct rejections. Five challenges deliberately use productions omitted from the little Sly grammar; another tests the end-marker boundary.</p>
+<div class="legend"><span class="status good">Match</span><span>shared expectation met</span><span class="status gap">Omitted</span><span>production outside the trial</span><span class="status bad">Boundary gap</span><span>implemented boundary needs work</span></div>
+<div class="controls"><label for="case-search">Find a case<input id="case-search" type="search" placeholder="Try differential, quoted, ternary…" maxlength="160"></label><label for="case-scope">Scope<select id="case-scope"><option value="all">All recorded cases</option><option value="shared">Shared expectations</option><option value="unimplemented-production">Omitted productions</option><option value="boundary-challenge">Boundary challenge</option></select></label><span id="case-count" class="caption" aria-live="polite">29 recorded cases</span></div>
+<div class="tablewrap"><table id="case-table"><caption class="screenreader">Recorded Sly and ANTLR fragment outcomes. Select a case for its input and diagnostic.</caption><thead><tr><th>Case</th><th>Family</th><th>Sly</th><th>ANTLR</th><th>Meaning</th></tr></thead><tbody id="case-body"><tr><td>scalar</td><td>port</td><td>Accepted</td><td>Accepted</td><td><span class="status good">Match</span></td></tr>
+<tr><td>vector</td><td>port</td><td>Accepted</td><td>Accepted</td><td><span class="status good">Match</span></td></tr>
+<tr><td>differential</td><td>port</td><td>Accepted</td><td>Accepted</td><td><span class="status good">Match</span></td></tr>
+<tr><td>custom-type</td><td>port</td><td>Accepted</td><td>Accepted</td><td><span class="status good">Match</span></td></tr>
+<tr><td>continuation</td><td>port</td><td>Accepted</td><td>Accepted</td><td><span class="status good">Match</span></td></tr>
+<tr><td>hyphen-node</td><td>port</td><td>Accepted</td><td>Accepted</td><td><span class="status good">Match</span></td></tr>
+<tr><td>missing-vector-close</td><td>port</td><td>Rejected</td><td>Rejected</td><td><span class="status good">Match</span></td></tr>
+<tr><td>missing-differential-node</td><td>port</td><td>Rejected</td><td>Rejected</td><td><span class="status good">Match</span></td></tr>
+<tr><td>extra-differential-node</td><td>port</td><td>Rejected</td><td>Rejected</td><td><span class="status good">Match</span></td></tr>
+<tr><td>empty-vector</td><td>port</td><td>Rejected</td><td>Rejected</td><td><span class="status good">Match</span></td></tr>
+<tr><td>missing-port</td><td>port</td><td>Rejected</td><td>Rejected</td><td><span class="status good">Match</span></td></tr>
+<tr><td>precedence</td><td>expression</td><td>Accepted</td><td>Accepted</td><td><span class="status good">Match</span></td></tr>
+<tr><td>unary</td><td>expression</td><td>Accepted</td><td>Accepted</td><td><span class="status good">Match</span></td></tr>
+<tr><td>probe</td><td>expression</td><td>Accepted</td><td>Accepted</td><td><span class="status good">Match</span></td></tr>
+<tr><td>nested-call</td><td>expression</td><td>Accepted</td><td>Accepted</td><td><span class="status good">Match</span></td></tr>
+<tr><td>multiple-arguments</td><td>expression</td><td>Accepted</td><td>Accepted</td><td><span class="status good">Match</span></td></tr>
+<tr><td>missing-operand</td><td>expression</td><td>Rejected</td><td>Rejected</td><td><span class="status good">Match</span></td></tr>
+<tr><td>missing-group-close</td><td>expression</td><td>Rejected</td><td>Rejected</td><td><span class="status good">Match</span></td></tr>
+<tr><td>extra-close</td><td>expression</td><td>Rejected</td><td>Rejected</td><td><span class="status good">Match</span></td></tr>
+<tr><td>trailing-garbage</td><td>expression</td><td>Rejected</td><td>Rejected</td><td><span class="status good">Match</span></td></tr>
+<tr><td>inert-control</td><td>control</td><td>Accepted</td><td>Accepted</td><td><span class="status good">Match</span></td></tr>
+<tr><td>quoted-end-marker</td><td>control</td><td>Accepted</td><td>Accepted</td><td><span class="status good">Match</span></td></tr>
+<tr><td>missing-end-marker</td><td>control</td><td>Rejected</td><td>Rejected</td><td><span class="status good">Match</span></td></tr>
+<tr><td>typed-vector</td><td>port</td><td>Rejected</td><td>Accepted</td><td><span class="status gap">Omitted</span></td></tr>
+<tr><td>wrapped-vector</td><td>port</td><td>Rejected</td><td>Accepted</td><td><span class="status gap">Omitted</span></td></tr>
+<tr><td>numeric-model-reference</td><td>port</td><td>Rejected</td><td>Accepted</td><td><span class="status gap">Omitted</span></td></tr>
+<tr><td>ternary</td><td>expression</td><td>Rejected</td><td>Accepted</td><td><span class="status gap">Omitted</span></td></tr>
+<tr><td>boolean</td><td>expression</td><td>Rejected</td><td>Accepted</td><td><span class="status gap">Omitted</span></td></tr>
+<tr><td>end-marker-prefix</td><td>control</td><td>Rejected</td><td>Accepted</td><td><span class="status bad">Boundary gap</span></td></tr>
+</tbody></table></div>
+<div class="box" id="case-detail"><h3 id="case-title">Select a case</h3><div class="casegrid"><div><h4>Original fragment</h4><pre id="case-input"></pre></div><div><h4>Recorded outcome</h4><pre id="case-output"></pre></div></div></div>
+<div class="note warning"><strong>Do not turn 23 into 916.</strong>The simulator’s ANTLR acceptance gate covers 916 declared valid inputs from a 924-input inventory. This Sly study compares a small fragment subset. Those scopes cannot be compared as compatibility percentages, and the small study does not justify replacing the qualified frontend.</div>
+</section>
+<section id="testing"><div class="number">09 / Testing the claims</div><h2>A green result is the beginning of an explanation.</h2>
+<p>The tests check malformed delimiters, missing operands, extra differential nodes, source offsets, precedence, lexical modes and inert control text. FsCheck adds 128 generated differential pairs with replay seed <code>551,20261031</code> and 128 malformed-string cases with <code>552,20261031</code>. Malformed strings are bounded to 128 UTF-16 characters.</p>
+<p>These are finite, reproducible property checks. They are not an exhaustive input search, a coverage-guided fuzz campaign, an adversarial-depth qualification or evidence that every SPICE dialect is supported.</p>
+<div class="tablewrap"><table><thead><tr><th>Original study measurement</th><th>Line coverage</th><th>Branch coverage</th><th>Scope</th></tr></thead><tbody><tr><td>Unit collector: whole experiment assembly</td><td>36.22%</td><td>28.26%</td><td>Includes unexecuted CLI and report-fixture catalogue</td></tr><tr><td>Unit collector: candidate API class</td><td>100%</td><td>90%</td><td>Only <code>Trial</code>, not the complete assembly or language</td></tr><tr><td>Separate CLI collector</td><td>91.04%</td><td>74.29%</td><td>Comparison executable run, not the same unit-test scope</td></tr></tbody></table></div>
+<p>A low aggregate can expose a scope mismatch: unit tests do not run the reporting CLI. A high API-class number still says little about whether the grammar recognizes every intended sentence. Attribute strings and third-party recognition behavior need their own acceptance evidence.</p>
+<h3>Mutation testing found a real weakness in the tests</h3>
+<p>The first focused Stryker.NET run on <code>Trial.cs</code> killed 12 mutants, with three survivors and four uncovered. Stronger lexical-diagnostic and failed-result assertions improved the final result to <strong>15 killed, two survivors, two uncovered and three ignored</strong>.</p>
+<p>The remaining survivors alter an error-list separator and a defensive failure-result null guard. The observed inputs do not distinguish them; that is not a general proof of equivalence. The two uncovered mutants concern construction failure of fixed valid grammars.</p>
+<details><summary>What was excluded from the mutation score?</summary><p>The tool reported 79 compile-error mutants in the excluded CLI source and 148 ignored mutants in the excluded fixture/grammar files. These are not kills. The campaign did not mutate the third-party parser machine or grammar productions. The evidence preserves those distinctions instead of reporting a flattering combined score.</p></details>
+<p>The downloadable lab’s parser and test source are the same implementation files, with a smaller dependency graph and a dedicated CLI. Its fresh test run also passed all 30 tests. The historical coverage and mutation figures above still describe the original study, not an invented measurement of the browser or a new full mutation campaign on this page.</p>
+</section>
+<section id="choice"><div class="number">10 / Does the complexity earn its place?</div><h2>Choose the maintenance boundary you want.</h2>
+<div class="tablewrap"><table><thead><tr><th>Approach</th><th>Grammar lives in</th><th>Attractive when</th><th>Cost to keep visible</th></tr></thead><tbody><tr><td><strong>Sly</strong></td><td>C# enums, production and operator attributes</td><td>A compact .NET DSL benefits from a typed, annotated definition</td><td>Grammar factoring, context integration, diagnostics and runtime construction</td></tr><tr><td><strong>ANTLR</strong></td><td>Separate grammar files; generated target-language source</td><td>A substantial language, existing grammar or cross-language ecosystem fits the tool</td><td>Generator setup, grammar/target integration and version qualification</td></tr><tr><td><strong>Parlot</strong></td><td>C# parser composition; generation facilities also exist</td><td>The team likes composable C# parsing APIs</td><td>Executable grammar composition and the selected generation/runtime path</td></tr><tr><td><strong>Superpower</strong></td><td>C# tokenizers and parser combinators</td><td>Explicit tokenization and diagnostic-oriented composition fit the application</td><td>More of the language definition is assembled in C# code</td></tr></tbody></table></div>
+<p>This table describes approaches. It is not a speed benchmark, completeness ranking or proof that one package is universally easier to maintain. We executed the bounded Sly study; Parlot and Superpower are primary-source comparisons here.</p>
+<h3>Why we kept ANTLR</h3>
+<p>The simulator already has a working generated frontend, resource policies, source mapping, regression evidence and a complete declared-sample gate. Sly showed that a C# package is credible, not that replacing the current parser would buy enough benefit to justify requalification.</p>
+<p>Java is needed for our pinned ANTLR generator, not for the generated C# parser at runtime. <a href="https://github.com/antlr-ng/antlr-ng">antlr-ng</a> also provides a TypeScript-based generator with C# output. Changing generators would still need compatibility evidence; removing Java alone is not a behavioral qualification.</p>
+<div class="columns"><div class="box"><h3>Sly is worth trying when…</h3><p>You have a genuinely small language, a .NET team, clear examples and a desire to keep grammar rules close to typed syntax actions. Start with the hardest ambiguous and malformed inputs.</p></div><div class="box"><h3>Skip the custom language when…</h3><p>A standard format or complete existing parser meets the need. Do not create a new grammar simply because its annotations look elegant. Reuse should be tested against real inputs first.</p></div></div>
+<p>The durable lesson is broader than a package choice: make textual boundaries explicit, preserve syntax independently of execution, and keep the evidence strong enough that a future engineer can change the language without guessing.</p>
+</section>
+<section id="reproduce"><div class="number">Reproduce / Actual tools required</div><h2>Run the real parser on a new input.</h2>
+<p>The browser explorer is recorded evidence. To run Sly on arbitrary inputs, download and extract the source laboratory. It needs the .NET SDK pinned by its <code>global.json</code> (10.0.402 with latest-patch roll-forward) and first-time NuGet access.</p>
+<div class="codehead"><span>PowerShell · from the extracted laboratory directory</span><button data-copy="run-code">Copy</button></div>
+<pre id="run-code"><code>$root = (Get-Location).Path
+if (!(Test-Path -LiteralPath (Join-Path $root 'SlyTrial') -PathType Container)) {
+    throw 'Run from extracted laboratory root'
+}
+$artifacts = $env:CODEX_ARTIFACT_ROOT
+if (!$artifacts -or !(Test-Path -LiteralPath $artifacts -PathType Container)) {
+    throw 'Set CODEX_ARTIFACT_ROOT to an existing writable directory'
+}
+$artifacts = Join-Path $artifacts ('sly-lab-'+[guid]::NewGuid().ToString('N'))
+if (!(Test-Path -LiteralPath $artifacts -PathType Container)) {
+    New-Item -ItemType Directory -Path $artifacts | Out-Null
+}
+dotnet test ./SlyTrial.Tests --artifacts-path $artifacts -p:RestoreLockedMode=true
+dotnet (Join-Path $artifacts 'bin/SlyTrial/debug/SlyTrial.dll') expression '1+2*3'</code></pre>
+<p>The CLI accepts <code>expression</code>, <code>port</code> or <code>control</code>, followed by a quoted fragment. Success returns exit code 0, rejected syntax returns 1 and invalid command-line arguments return 2. It prints syntax and diagnostics, never a simulation result. Package lock files travel with the source.</p>
+<details><summary>What this laboratory does not promise</summary><p>No full-deck grammar, complete SPICE semantics, production-grade hostile-depth guard, NativeAOT qualification, Linux execution matrix or performance ranking. The study was executed on Windows/.NET. Sly’s MIT-licensed package is restored separately; no SDK, package cache, third-party binary or live service is embedded in this page.</p></details>
+</section>
+<section id="sources"><div class="number">Sources / Scope / Provenance</div><h2>Follow the evidence back to its definition.</h2>
+<ul class="sources"><li><a href="https://github.com/b3b00/csly">Sly project and documentation</a> · source inspection pinned to <code>1bac89b338b2ed059b6f02eb39835bba32847120</code>. <a href="https://www.nuget.org/packages/sly/3.8.1">NuGet 3.8.1</a> is the executed version.</li><li><a href="https://github.com/b3b00/csly/blob/1bac89b338b2ed059b6f02eb39835bba32847120/src/sly/lexer/attributes/ModeAttribute.cs">Mode attributes</a> and <a href="https://github.com/b3b00/csly/blob/1bac89b338b2ed059b6f02eb39835bba32847120/tests/ParserTests/lexer/LexerModesTest.cs">mode tests</a> · the capability exists in Sly; it is not an ANTLR-exclusive feature.</li><li><a href="https://github.com/b3b00/csly/blob/1bac89b338b2ed059b6f02eb39835bba32847120/src/samples/SimpleExpressionParser/SimpleExpressionParser.cs">Annotated expression example</a> · reference for the attribute-based approach; the laboratory’s syntax actions are its own educational implementation.</li><li><a href="https://github.com/antlr/antlr4">ANTLR</a> and <a href="https://github.com/antlr-ng/antlr-ng">antlr-ng</a> · distinguish the generator implementation from the generated target-language runtime.</li><li><a href="https://github.com/sebastienros/parlot">Parlot</a> and <a href="https://github.com/datalust/superpower">Superpower</a> · primary documentation for the approach comparison; no comparative performance run is claimed.</li><li><a href="https://github.com/jeffadickson/Spice/blob/5808f08ece504edb133b66ba2bf9310426bb7356/docs/parser-gap-results.md">Simulator baseline and qualification limits</a> · a different, larger acceptance scope than this fragment trial.</li><li><a href="https://github.com/jeffadickson/but-does-it-do-anything/tree/main/docs/sly-deep-dive">This report’s source, evidence and laboratory</a> · original study recorded at local simulator revision <code>bc48c64</code>. The source bundle here makes the candidate independently reproducible without that unpublished revision.</li></ul>
+<p class="caption">All charts, layout and browser controls are original to this report. No third-party logos, fonts, runtime binaries or remote scripts are loaded. Public visibility does not establish a collection-wide redistribution license; preserve dependency licenses when packaging your own application.</p>
+</section>
+<footer><p><strong>But Does It Do Anything?</strong> · Explanations with working evidence.</p><p><a href="../index.html">Back to the collection</a> · <a href="../lessons/software-design/dsl-adventures/index.html">Explore the collection’s Parlot DSL lesson</a></p><p>Reading this page requires a browser. Running the downloaded C# laboratory requires local tools. The browser does not execute Sly, ANTLR or the simulator.</p></footer>
+</main></div>
+<script type="application/json" id="evidence-data">{
+  "comparison": {
+    "status": "bounded_experiment_completed",
+    "package": "sly",
+    "package_version": "3.8.1",
+    "baseline": "ANTLR generator/runtime 4.13.1",
+    "runtime": ".NET 10.0.14",
+    "platform": "Microsoft Windows 10.0.26300",
+    "elapsed_seconds": 1.7471775,
+    "source_sha256": {
+      "experiments/SlyTrial/Cases.cs": "92a8acdd014549ef13bdc8b5c75a428e64c2920e4a91d99df3392d160ee20369",
+      "experiments/SlyTrial/Grammars.cs": "dd919865bf5053321386f6e57e56312442215b8b098d67600169360cbbc5cc5e",
+      "experiments/SlyTrial/packages.lock.json": "22d6658a8fba160088a6173af229dc15a79a7e24c437242394540840d70f2d1d",
+      "experiments/SlyTrial/Program.cs": "c5bc398f0fd6951a1f7abed8669bbbb400cd30d21541ed96b62a1e88ae3568f2",
+      "experiments/SlyTrial/SlyTrial.csproj": "82924d66a95cba743b7d7cdef2ef14ded7b85e808c25e561d785014a513db3f4",
+      "experiments/SlyTrial/Trial.cs": "84afc65b52aa483230c4825742c1e7446b3d9577cbcfa63ad4b9c2dfe601cd60"
+    },
+    "baseline_binary_sha256": "e53a9585b76d60bdf0df0c1bc7f944d4d2e8dd9109f70a1ae157102ff13acba9",
+    "shared_cases": 23,
+    "shared_expectations_met": 23,
+    "construction_failures": 0,
+    "rows": [
+      {
+        "Id": "scalar",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "A1 in out gain",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "vector",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 [~in out] gate",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "differential",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 %vd(in 0) out diff",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "custom-type",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 %my_udn(input) out custom",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "continuation",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 [in\n\u002B out] gate",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "hyphen-node",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 in-node out/name gain",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "missing-vector-close",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 [in out model",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected end of stream. Expecting Name, Number, Invert, OpenVector, Differential, Type, CloseVector, ."
+      },
+      {
+        "Id": "missing-differential-node",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 %vd(in) out diff",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected Close (\u0027) (line 0, column 10)\u0027). Expecting Name, Number, ."
+      },
+      {
+        "Id": "extra-differential-node",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 %vd(in 0 extra) out diff",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected Name (\u0027extra (line 0, column 13)\u0027). Expecting Close, ."
+      },
+      {
+        "Id": "empty-vector",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 [] out gate",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected CloseVector (\u0027] (line 0, column 5)\u0027). Expecting Name, Number, Invert, OpenVector, Differential, Type, ."
+      },
+      {
+        "Id": "missing-port",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 model",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected end of stream. Expecting Name, Number, Invert, OpenVector, Differential, Type, ."
+      },
+      {
+        "Id": "precedence",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "1\u002B2*3",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "unary",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "-(1\u002B2)/3",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "probe",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "v(in)-0.3",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "nested-call",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "exp(v(in)/vt)-1",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "multiple-arguments",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "max(v(in),1)",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "missing-operand",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "1\u002B",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected end of stream. Expecting Minus, Plus, Number, Name, Quoted, Open, OpenBrace, ."
+      },
+      {
+        "Id": "missing-group-close",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "(1\u002B2",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected end of stream. Expecting Close, ."
+      },
+      {
+        "Id": "extra-close",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "v(in))",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected Close (\u0027) (line 0, column 6)\u0027). Expecting Power, Divide, Times, Minus, Plus, ."
+      },
+      {
+        "Id": "trailing-garbage",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "1 garbage",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected Name (\u0027garbage (line 0, column 3)\u0027). Expecting Power, Divide, Times, Minus, Plus, ."
+      },
+      {
+        "Id": "inert-control",
+        "Family": "control",
+        "Scope": "shared",
+        "input": ".control\nshell echo forbidden\n.endc",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "quoted-end-marker",
+        "Family": "control",
+        "Scope": "shared",
+        "input": ".control\necho \u0022.endc\u0022\n.endc",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "missing-end-marker",
+        "Family": "control",
+        "Scope": "shared",
+        "input": ".control\nquit",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected end of stream. Expecting Raw, EndControl, ."
+      },
+      {
+        "Id": "typed-vector",
+        "Family": "port",
+        "Scope": "unimplemented-production",
+        "input": "a1 %i[1 2] out model",
+        "expected": true,
+        "candidate_accepted": false,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": false,
+        "diagnostic": "unexpected OpenVector (\u0027[ (line 0, column 6)\u0027). Expecting Open, Name, Number, ."
+      },
+      {
+        "Id": "wrapped-vector",
+        "Family": "port",
+        "Scope": "unimplemented-production",
+        "input": "a1 %vd([out1 0]) filesrc",
+        "expected": true,
+        "candidate_accepted": false,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": false,
+        "diagnostic": "unexpected OpenVector (\u0027[ (line 0, column 8)\u0027). Expecting Name, Number, ."
+      },
+      {
+        "Id": "numeric-model-reference",
+        "Family": "port",
+        "Scope": "unimplemented-production",
+        "input": "a1 in out 1",
+        "expected": true,
+        "candidate_accepted": false,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": false,
+        "diagnostic": "unexpected 1 (line 0, column 11) Number."
+      },
+      {
+        "Id": "ternary",
+        "Family": "expression",
+        "Scope": "unimplemented-production",
+        "input": "v(1)\u003E0 ? 1 : 0",
+        "expected": true,
+        "candidate_accepted": false,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": false,
+        "diagnostic": "Lexical Error, line 0, column 5 : Unrecognized symbol \u0027\u003E\u0027 (62)"
+      },
+      {
+        "Id": "boolean",
+        "Family": "expression",
+        "Scope": "unimplemented-production",
+        "input": "a \u0026 b",
+        "expected": true,
+        "candidate_accepted": false,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": false,
+        "diagnostic": "Lexical Error, line 0, column 3 : Unrecognized symbol \u0027\u0026\u0027 (38)"
+      },
+      {
+        "Id": "end-marker-prefix",
+        "Family": "control",
+        "Scope": "boundary-challenge",
+        "input": ".control\n.endc_extra\n.endc",
+        "expected": true,
+        "candidate_accepted": false,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": false,
+        "diagnostic": "Lexical Error, line 2, column 1 : Unrecognized symbol \u0027e\u0027 (101)"
+      }
+    ],
+    "physical_positions": [
+      {
+        "input": "a1 [first\r\n\u002B second] model",
+        "token": {
+          "Text": "second",
+          "Start": 13,
+          "Line": 1,
+          "Column": 2
+        },
+        "expected_index": 13,
+        "expected_zero_based_line": 1,
+        "offset_correct": true,
+        "line_correct": true
+      },
+      {
+        "input": "a1 [first\r\n* comment\r\n\u002B second] model",
+        "token": {
+          "Text": "second",
+          "Start": 24,
+          "Line": 1,
+          "Column": 2
+        },
+        "expected_index": 24,
+        "expected_zero_based_line": 2,
+        "offset_correct": true,
+        "line_correct": false
+      }
+    ],
+    "limitations": [
+      "Independent bounded fragment grammars, not a transferred complete SPICE frontend or a 924-input corpus replay.",
+      "Challenge cases distinguish omitted productions from implemented contract boundaries; they are not a framework failure score.",
+      "The candidate regex grammars and generic-mode probe are separate experiments, not a single integrated deck lexer.",
+      "No numerical evaluation, command execution, include loading, model resolution, performance ranking, Linux or NativeAOT qualification.",
+      "No production parser switch or Sly dependency outside the experiment."
+    ]
+  },
+  "study_commit": "bc48c64",
+  "decision": "Keep ANTLR in the simulator; retain Sly as bounded research",
+  "mutations": [
+    {
+      "selected_file": "Trial.cs",
+      "run": "mutations",
+      "report_sha256": "9e7e1c6d89255a534015d4907ea69f8dceacee28b9384d2e4af5ec62bb9e3add",
+      "files": [
+        {
+          "file": "Cases.cs",
+          "counts": [
+            {
+              "count": 122,
+              "status": "Ignored"
+            }
+          ],
+          "remaining": []
+        },
+        {
+          "file": "Grammars.cs",
+          "counts": [
+            {
+              "count": 26,
+              "status": "Ignored"
+            }
+          ],
+          "remaining": []
+        },
+        {
+          "file": "Program.cs",
+          "counts": [
+            {
+              "count": 79,
+              "status": "CompileError"
+            }
+          ],
+          "remaining": []
+        },
+        {
+          "file": "Trial.cs",
+          "counts": [
+            {
+              "count": 3,
+              "status": "Ignored"
+            },
+            {
+              "count": 12,
+              "status": "Killed"
+            },
+            {
+              "count": 4,
+              "status": "NoCoverage"
+            },
+            {
+              "count": 3,
+              "status": "Survived"
+            }
+          ],
+          "remaining": [
+            {
+              "id": "232",
+              "status": "NoCoverage",
+              "mutatorName": "Statement mutation",
+              "replacement": ";",
+              "location": {
+                "start": {
+                  "line": 26,
+                  "column": 26
+                },
+                "end": {
+                  "line": 26,
+                  "column": 89
+                }
+              }
+            },
+            {
+              "id": "233",
+              "status": "NoCoverage",
+              "mutatorName": "String mutation",
+              "replacement": "\u0022\u0022",
+              "location": {
+                "start": {
+                  "line": 26,
+                  "column": 54
+                },
+                "end": {
+                  "line": 26,
+                  "column": 73
+                }
+              }
+            },
+            {
+              "id": "238",
+              "status": "Survived",
+              "mutatorName": "String mutation",
+              "replacement": "\u0022\u0022",
+              "location": {
+                "start": {
+                  "line": 35,
+                  "column": 54
+                },
+                "end": {
+                  "line": 35,
+                  "column": 73
+                }
+              }
+            },
+            {
+              "id": "242",
+              "status": "NoCoverage",
+              "mutatorName": "Statement mutation",
+              "replacement": ";",
+              "location": {
+                "start": {
+                  "line": 41,
+                  "column": 26
+                },
+                "end": {
+                  "line": 41,
+                  "column": 94
+                }
+              }
+            },
+            {
+              "id": "243",
+              "status": "NoCoverage",
+              "mutatorName": "String mutation",
+              "replacement": "\u0022\u0022",
+              "location": {
+                "start": {
+                  "line": 41,
+                  "column": 74
+                },
+                "end": {
+                  "line": 41,
+                  "column": 78
+                }
+              }
+            },
+            {
+              "id": "244",
+              "status": "Survived",
+              "mutatorName": "Conditional (true) mutation",
+              "replacement": "(true?parsed.Result:null)",
+              "location": {
+                "start": {
+                  "line": 45,
+                  "column": 27
+                },
+                "end": {
+                  "line": 45,
+                  "column": 57
+                }
+              }
+            },
+            {
+              "id": "248",
+              "status": "Survived",
+              "mutatorName": "String mutation",
+              "replacement": "\u0022\u0022",
+              "location": {
+                "start": {
+                  "line": 45,
+                  "column": 85
+                },
+                "end": {
+                  "line": 45,
+                  "column": 89
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "selected_file": "Trial.cs",
+      "run": "mutations-final",
+      "report_sha256": "f08418191f9ed044d1da9ff2a62364950b3a95ed579e8cdfa7955717e63e7ff8",
+      "files": [
+        {
+          "file": "Cases.cs",
+          "counts": [
+            {
+              "count": 122,
+              "status": "Ignored"
+            }
+          ],
+          "remaining": []
+        },
+        {
+          "file": "Grammars.cs",
+          "counts": [
+            {
+              "count": 26,
+              "status": "Ignored"
+            }
+          ],
+          "remaining": []
+        },
+        {
+          "file": "Program.cs",
+          "counts": [
+            {
+              "count": 79,
+              "status": "CompileError"
+            }
+          ],
+          "remaining": []
+        },
+        {
+          "file": "Trial.cs",
+          "counts": [
+            {
+              "count": 3,
+              "status": "Ignored"
+            },
+            {
+              "count": 15,
+              "status": "Killed"
+            },
+            {
+              "count": 2,
+              "status": "NoCoverage"
+            },
+            {
+              "count": 2,
+              "status": "Survived"
+            }
+          ],
+          "remaining": [
+            {
+              "id": "242",
+              "status": "NoCoverage",
+              "mutatorName": "Statement mutation",
+              "replacement": ";",
+              "location": {
+                "start": {
+                  "line": 41,
+                  "column": 26
+                },
+                "end": {
+                  "line": 41,
+                  "column": 94
+                }
+              }
+            },
+            {
+              "id": "243",
+              "status": "NoCoverage",
+              "mutatorName": "String mutation",
+              "replacement": "\u0022\u0022",
+              "location": {
+                "start": {
+                  "line": 41,
+                  "column": 74
+                },
+                "end": {
+                  "line": 41,
+                  "column": 78
+                }
+              }
+            },
+            {
+              "id": "244",
+              "status": "Survived",
+              "mutatorName": "Conditional (true) mutation",
+              "replacement": "(true?parsed.Result:null)",
+              "location": {
+                "start": {
+                  "line": 45,
+                  "column": 27
+                },
+                "end": {
+                  "line": 45,
+                  "column": 57
+                }
+              }
+            },
+            {
+              "id": "248",
+              "status": "Survived",
+              "mutatorName": "String mutation",
+              "replacement": "\u0022\u0022",
+              "location": {
+                "start": {
+                  "line": 45,
+                  "column": 85
+                },
+                "end": {
+                  "line": 45,
+                  "column": 89
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tests": {
+    "failed": 0,
+    "passed": 30,
+    "property_cases": 256,
+    "seeds": [
+      "551,20261031",
+      "552,20261031"
+    ]
+  },
+  "coverage": [
+    {
+      "report_sha256": "db484ec2deab8d319059217fae37804a6def2c5c171a0cd790a3dab292145829",
+      "classes": [
+        {
+          "line_rate": 0.0,
+          "file": "experiments/SlyTrial/Program.cs",
+          "branch_rate": 0.0,
+          "name": "Program"
+        },
+        {
+          "line_rate": 0.0,
+          "file": "experiments/SlyTrial/Cases.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Fixture"
+        },
+        {
+          "line_rate": 0.0,
+          "file": "experiments/SlyTrial/Cases.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Cases"
+        },
+        {
+          "line_rate": 0.75,
+          "file": "experiments/SlyTrial/Grammars.cs",
+          "branch_rate": 0.5,
+          "name": "SlyTrial.PortGrammar"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "experiments/SlyTrial/Grammars.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.ContextGrammar"
+        },
+        {
+          "line_rate": 0.875,
+          "file": "experiments/SlyTrial/Grammars.cs",
+          "branch_rate": 0.0,
+          "name": "SlyTrial.ExprGrammar"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "experiments/SlyTrial/Trial.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Node"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "experiments/SlyTrial/Trial.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Outcome"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "experiments/SlyTrial/Trial.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.LocatedToken"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "experiments/SlyTrial/Trial.cs",
+          "branch_rate": 0.9,
+          "name": "SlyTrial.Trial"
+        }
+      ],
+      "branch_rate": 0.2826,
+      "assembly": "SlyTrial",
+      "line_rate": 0.36219999999999997,
+      "scope": "unit"
+    },
+    {
+      "report_sha256": "5f92f6063f67c95f3b8a532e9aaa87189aa38f93465206fa84564e87fbec89ed",
+      "classes": [
+        {
+          "line_rate": 0.9523809523809523,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Program.cs",
+          "branch_rate": 0.8181818181818182,
+          "name": "Program"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Cases.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Fixture"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Cases.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Cases"
+        },
+        {
+          "line_rate": 0.7333333333333333,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Grammars.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.PortGrammar"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Grammars.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.ContextGrammar"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Grammars.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.ExprGrammar"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Trial.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Node"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Trial.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Outcome"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Trial.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.LocatedToken"
+        },
+        {
+          "line_rate": 0.7727272727272727,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Trial.cs",
+          "branch_rate": 0.5555555555555556,
+          "name": "SlyTrial.Trial"
+        },
+        {
+          "line_rate": 0.9565217391304348,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Program.cs",
+          "branch_rate": 0.7857142857142857,
+          "name": "Program.\u003C\u003Ec"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Program.cs",
+          "branch_rate": 1.0,
+          "name": "Program.\u003C\u003Ec__DisplayClass0_0"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Grammars.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.PortGrammar.\u003C\u003Ec__DisplayClass1_0"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Grammars.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.ContextGrammar.\u003C\u003Ec"
+        },
+        {
+          "line_rate": 0.8,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Trial.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Trial.\u003C\u003Ec"
+        }
+      ],
+      "branch_rate": 0.7428571428571429,
+      "assembly": "SlyTrial",
+      "line_rate": 0.9104477611940298,
+      "scope": "cli"
+    }
+  ],
+  "package": "sly",
+  "version": "3.8.1",
+  "date": "2026-10-31",
+  "limitations": [
+    "Full experiment unit coverage includes the unexecuted CLI and fixture catalogue; CLI coverage is a separate execution.",
+    "Historical initial development runs used uncommitted intermediate sources; only a partial naive-grammar snapshot and raw logs were retained.",
+    "Mutation scopes exclude grammar productions and the third-party parser machine; compile errors, survivors and uncovered mutants are not kills.",
+    "No complete sample inventory replay, numerical qualification, performance ranking, NativeAOT or Linux execution for this candidate.",
+    "No production parser selection or dependency was changed."
+  ]
+}</script>
+<script type="application/json" id="ast-data">[
+  {
+    "family": "expression",
+    "input": "1\u002B2*3",
+    "result": {
+      "Accepted": true,
+      "Node": {
+        "Kind": "\u002B",
+        "Start": 0,
+        "End": 5,
+        "Children": [
+          {
+            "Kind": "1",
+            "Start": 0,
+            "End": 1,
+            "Children": []
+          },
+          {
+            "Kind": "*",
+            "Start": 2,
+            "End": 5,
+            "Children": [
+              {
+                "Kind": "2",
+                "Start": 2,
+                "End": 3,
+                "Children": []
+              },
+              {
+                "Kind": "3",
+                "Start": 4,
+                "End": 5,
+                "Children": []
+              }
+            ]
+          }
+        ]
+      },
+      "Diagnostic": null
+    }
+  },
+  {
+    "family": "expression",
+    "input": "(1\u002B2)*3",
+    "result": {
+      "Accepted": true,
+      "Node": {
+        "Kind": "*",
+        "Start": 0,
+        "End": 7,
+        "Children": [
+          {
+            "Kind": "group",
+            "Start": 0,
+            "End": 5,
+            "Children": [
+              {
+                "Kind": "\u002B",
+                "Start": 1,
+                "End": 4,
+                "Children": [
+                  {
+                    "Kind": "1",
+                    "Start": 1,
+                    "End": 2,
+                    "Children": []
+                  },
+                  {
+                    "Kind": "2",
+                    "Start": 3,
+                    "End": 4,
+                    "Children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "Kind": "3",
+            "Start": 6,
+            "End": 7,
+            "Children": []
+          }
+        ]
+      },
+      "Diagnostic": null
+    }
+  },
+  {
+    "family": "expression",
+    "input": "-(1\u002B2)/3",
+    "result": {
+      "Accepted": true,
+      "Node": {
+        "Kind": "/",
+        "Start": 0,
+        "End": 8,
+        "Children": [
+          {
+            "Kind": "unary-",
+            "Start": 0,
+            "End": 6,
+            "Children": [
+              {
+                "Kind": "group",
+                "Start": 1,
+                "End": 6,
+                "Children": [
+                  {
+                    "Kind": "\u002B",
+                    "Start": 2,
+                    "End": 5,
+                    "Children": [
+                      {
+                        "Kind": "1",
+                        "Start": 2,
+                        "End": 3,
+                        "Children": []
+                      },
+                      {
+                        "Kind": "2",
+                        "Start": 4,
+                        "End": 5,
+                        "Children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "Kind": "3",
+            "Start": 7,
+            "End": 8,
+            "Children": []
+          }
+        ]
+      },
+      "Diagnostic": null
+    }
+  },
+  {
+    "family": "expression",
+    "input": "2**3**2",
+    "result": {
+      "Accepted": true,
+      "Node": {
+        "Kind": "**",
+        "Start": 0,
+        "End": 7,
+        "Children": [
+          {
+            "Kind": "2",
+            "Start": 0,
+            "End": 1,
+            "Children": []
+          },
+          {
+            "Kind": "**",
+            "Start": 3,
+            "End": 7,
+            "Children": [
+              {
+                "Kind": "3",
+                "Start": 3,
+                "End": 4,
+                "Children": []
+              },
+              {
+                "Kind": "2",
+                "Start": 6,
+                "End": 7,
+                "Children": []
+              }
+            ]
+          }
+        ]
+      },
+      "Diagnostic": null
+    }
+  },
+  {
+    "family": "expression",
+    "input": "v(in)-0.3",
+    "result": {
+      "Accepted": true,
+      "Node": {
+        "Kind": "-",
+        "Start": 0,
+        "End": 9,
+        "Children": [
+          {
+            "Kind": "call:v",
+            "Start": 0,
+            "End": 5,
+            "Children": [
+              {
+                "Kind": "in",
+                "Start": 2,
+                "End": 4,
+                "Children": []
+              }
+            ]
+          },
+          {
+            "Kind": "0.3",
+            "Start": 6,
+            "End": 9,
+            "Children": []
+          }
+        ]
+      },
+      "Diagnostic": null
+    }
+  },
+  {
+    "family": "expression",
+    "input": "1\u002B",
+    "result": {
+      "Accepted": false,
+      "Node": null,
+      "Diagnostic": "unexpected end of stream. Expecting Minus, Plus, Number, Name, Quoted, Open, OpenBrace, ."
+    }
+  }
+]</script>
+<script id="sly-report-script">
+(function(){
+'use strict';
+function classify(row){
+  if(row.candidate_accepted===null||row.baseline_accepted===null)return {text:'Unavailable',kind:'gap'};
+  if(row.Scope==='unimplemented-production')return {text:'Omitted',kind:'gap'};
+  if(row.Scope==='boundary-challenge'&&row.candidate_accepted!==row.expected)return {text:'Boundary gap',kind:'bad'};
+  return row.candidate_accepted===row.expected&&row.baseline_accepted===row.expected?{text:'Match',kind:'good'}:{text:'Mismatch',kind:'bad'};
+}
+function selectRows(rows,query,scope){
+  const term=String(query).trim().toLocaleLowerCase('en');
+  return rows.filter(r=>(scope==='all'||r.Scope===scope)&&[r.Id,r.Family,r.input,r.Scope].some(v=>String(v).toLocaleLowerCase('en').includes(term)));
+}
+function acceptance(value){return value===true?'Accepted':value===false?'Rejected':'Unavailable';}
+if(typeof module!=='undefined'&&module.exports)module.exports={classify,selectRows,acceptance};
+if(typeof document==='undefined')return;
+const data=JSON.parse(document.getElementById('evidence-data').textContent);
+const ast=JSON.parse(document.getElementById('ast-data').textContent);
+const rows=data.comparison.rows;
+const search=document.getElementById('case-search'),scope=document.getElementById('case-scope');
+function showCase(row){
+ document.getElementById('case-title').textContent=row.Id;
+ document.getElementById('case-input').textContent=row.input;
+ document.getElementById('case-output').textContent=JSON.stringify({scope:row.Scope,expected:acceptance(row.expected),sly:acceptance(row.candidate_accepted),antlr:acceptance(row.baseline_accepted),meaning:classify(row).text,diagnostic:row.diagnostic},null,2);
+}
+function render(){
+ const filtered=selectRows(rows,search.value,scope.value),body=document.getElementById('case-body');
+ body.replaceChildren();
+ for(const row of filtered){
+  const tr=document.createElement('tr'),name=document.createElement('td'),button=document.createElement('button');
+  button.className='casebutton';button.textContent=row.Id;button.addEventListener('click',()=>showCase(row));name.append(button);tr.append(name);
+  for(const text of [row.Family,acceptance(row.candidate_accepted),acceptance(row.baseline_accepted)]){const td=document.createElement('td');td.textContent=text;tr.append(td);}
+  const td=document.createElement('td'),badge=document.createElement('span'),state=classify(row);badge.className='status '+state.kind;badge.textContent=state.text;td.append(badge);tr.append(td);body.append(tr);
+ }
+ document.getElementById('case-count').textContent=filtered.length+' of '+rows.length+' recorded cases';
+}
+search.addEventListener('input',render);scope.addEventListener('change',render);render();showCase(rows.find(r=>r.Id==='precedence')||rows[0]);
+const choices=document.getElementById('ast-choice');
+for(let i=0;i<ast.length;i++){const option=document.createElement('option');option.value=String(i);option.textContent=ast[i].input;choices.append(option);}
+function showAst(){const record=ast[Number(choices.value)];document.getElementById('ast-input').textContent=record.input;document.getElementById('ast-status').textContent=record.result.Accepted?'Recognized: syntax tree produced.':'Rejected: malformed expression.';document.getElementById('ast-output').textContent=JSON.stringify(record.result.Node||{diagnostic:record.result.Diagnostic},null,2);}
+choices.addEventListener('change',showAst);showAst();
+document.getElementById('reading-mode').addEventListener('click',function(){const on=document.body.classList.toggle('reading');this.setAttribute('aria-pressed',String(on));});
+for(const button of document.querySelectorAll('[data-copy]'))button.addEventListener('click',async()=>{const original=button.textContent;try{await navigator.clipboard.writeText(document.getElementById(button.dataset.copy).textContent);button.textContent='Copied';}catch{button.textContent='Select code to copy';}setTimeout(()=>{button.textContent=original;},1800);});
+})();
+</script>
+</body></html>

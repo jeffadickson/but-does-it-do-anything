@@ -28,6 +28,8 @@ jobs:
       - run: node --test lessons/software-design/facade/tests/*.cjs
       - name: Validate shared C# runner integration
         run: node --test shared/components/csharp-runner.test.cjs
+      - name: Validate Sly deep-dive evidence and offline interactions
+        run: node --test tests/sly-deep-dive.test.cjs
       - run: node --test lessons/software-testing/checkout-testing-lab/tests/browser-model.test.cjs
       - run: node lessons/mathematics/algebra-adventure/task.cjs build
       - run: git diff --exit-code -- lessons/mathematics/algebra-adventure/app

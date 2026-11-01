@@ -16,6 +16,10 @@ dotnet run --project tools/Catalog -- serve
 
 Open http://localhost:8000. The server binds only to localhost. Rebuild/restart after edits; this is not a hot-reload server.
 
+## Sly parser deep dive
+
+Read [A language hiding in your C# attributes](DeepDives/2026-10-31-sly-csharp-parser-deep-dive.html): annotated grammars, recorded syntax trees, searchable trial evidence, and a downloadable C# laboratory. [Sources and reproduction](docs/sly-deep-dive/README.md) retain the scope and limitations.
+
 ## Reusable prompts
 
 Start with [generic](prompts/generic.md) to develop a lesson on any topic. Change its first line, `TOPIC: xxx`, then follow its outline, implementation, review, and delivery stages. See the [prompt collection](prompts/README.md) for usage and versions.

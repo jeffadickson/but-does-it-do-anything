@@ -1,0 +1,13 @@
+[DOCUMENT]
+TITLE: Sly educational deep dive
+
+[REQUIREMENT]
+UID: SLY-HTML-001
+STATUS: Draft
+TITLE: Honest self-contained exploration
+STATEMENT: >>>
+The Sly deep dive shall be a self-contained HTML report that explains tokenization, attribute-defined productions, expression precedence, syntax trees, validation boundaries and framework tradeoffs. It shall distinguish recorded .NET evidence from browser UI execution, identify measurement scopes and unmeasured capabilities, preserve the decision to retain ANTLR, and provide a source-only reproducible laboratory with pinned dependencies. Interactive filtering shall treat input as literal text and shall not execute user-supplied source or commands.
+<<<
+COMMENT: >>>
+Implementation: DeepDives/2026-10-31-sly-csharp-parser-deep-dive.html; tools/BuildSlyDeepDive.cs; docs/sly-deep-dive. Verification: tests/sly-deep-dive.test.cjs, local C# laboratory tests, catalog checks and browser inspection recorded in verification.json. Draft describes the educational slice rather than complete Sly/SPICE qualification.
+<<<

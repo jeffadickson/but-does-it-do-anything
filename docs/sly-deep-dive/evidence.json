@@ -1,0 +1,897 @@
+{
+  "comparison": {
+    "status": "bounded_experiment_completed",
+    "package": "sly",
+    "package_version": "3.8.1",
+    "baseline": "ANTLR generator/runtime 4.13.1",
+    "runtime": ".NET 10.0.14",
+    "platform": "Microsoft Windows 10.0.26300",
+    "elapsed_seconds": 1.7471775,
+    "source_sha256": {
+      "experiments/SlyTrial/Cases.cs": "92a8acdd014549ef13bdc8b5c75a428e64c2920e4a91d99df3392d160ee20369",
+      "experiments/SlyTrial/Grammars.cs": "dd919865bf5053321386f6e57e56312442215b8b098d67600169360cbbc5cc5e",
+      "experiments/SlyTrial/packages.lock.json": "22d6658a8fba160088a6173af229dc15a79a7e24c437242394540840d70f2d1d",
+      "experiments/SlyTrial/Program.cs": "c5bc398f0fd6951a1f7abed8669bbbb400cd30d21541ed96b62a1e88ae3568f2",
+      "experiments/SlyTrial/SlyTrial.csproj": "82924d66a95cba743b7d7cdef2ef14ded7b85e808c25e561d785014a513db3f4",
+      "experiments/SlyTrial/Trial.cs": "84afc65b52aa483230c4825742c1e7446b3d9577cbcfa63ad4b9c2dfe601cd60"
+    },
+    "baseline_binary_sha256": "e53a9585b76d60bdf0df0c1bc7f944d4d2e8dd9109f70a1ae157102ff13acba9",
+    "shared_cases": 23,
+    "shared_expectations_met": 23,
+    "construction_failures": 0,
+    "rows": [
+      {
+        "Id": "scalar",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "A1 in out gain",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "vector",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 [~in out] gate",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "differential",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 %vd(in 0) out diff",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "custom-type",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 %my_udn(input) out custom",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "continuation",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 [in\n+ out] gate",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "hyphen-node",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 in-node out/name gain",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "missing-vector-close",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 [in out model",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected end of stream. Expecting Name, Number, Invert, OpenVector, Differential, Type, CloseVector, ."
+      },
+      {
+        "Id": "missing-differential-node",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 %vd(in) out diff",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected Close (') (line 0, column 10)'). Expecting Name, Number, ."
+      },
+      {
+        "Id": "extra-differential-node",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 %vd(in 0 extra) out diff",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected Name ('extra (line 0, column 13)'). Expecting Close, ."
+      },
+      {
+        "Id": "empty-vector",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 [] out gate",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected CloseVector ('] (line 0, column 5)'). Expecting Name, Number, Invert, OpenVector, Differential, Type, ."
+      },
+      {
+        "Id": "missing-port",
+        "Family": "port",
+        "Scope": "shared",
+        "input": "a1 model",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected end of stream. Expecting Name, Number, Invert, OpenVector, Differential, Type, ."
+      },
+      {
+        "Id": "precedence",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "1+2*3",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "unary",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "-(1+2)/3",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "probe",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "v(in)-0.3",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "nested-call",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "exp(v(in)/vt)-1",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "multiple-arguments",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "max(v(in),1)",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "missing-operand",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "1+",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected end of stream. Expecting Minus, Plus, Number, Name, Quoted, Open, OpenBrace, ."
+      },
+      {
+        "Id": "missing-group-close",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "(1+2",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected end of stream. Expecting Close, ."
+      },
+      {
+        "Id": "extra-close",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "v(in))",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected Close (') (line 0, column 6)'). Expecting Power, Divide, Times, Minus, Plus, ."
+      },
+      {
+        "Id": "trailing-garbage",
+        "Family": "expression",
+        "Scope": "shared",
+        "input": "1 garbage",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected Name ('garbage (line 0, column 3)'). Expecting Power, Divide, Times, Minus, Plus, ."
+      },
+      {
+        "Id": "inert-control",
+        "Family": "control",
+        "Scope": "shared",
+        "input": ".control\nshell echo forbidden\n.endc",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "quoted-end-marker",
+        "Family": "control",
+        "Scope": "shared",
+        "input": ".control\necho \".endc\"\n.endc",
+        "expected": true,
+        "candidate_accepted": true,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": true,
+        "diagnostic": null
+      },
+      {
+        "Id": "missing-end-marker",
+        "Family": "control",
+        "Scope": "shared",
+        "input": ".control\nquit",
+        "expected": false,
+        "candidate_accepted": false,
+        "baseline_accepted": false,
+        "baseline_status": "syntax_rejected",
+        "candidate_matches_expectation": true,
+        "diagnostic": "unexpected end of stream. Expecting Raw, EndControl, ."
+      },
+      {
+        "Id": "typed-vector",
+        "Family": "port",
+        "Scope": "unimplemented-production",
+        "input": "a1 %i[1 2] out model",
+        "expected": true,
+        "candidate_accepted": false,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": false,
+        "diagnostic": "unexpected OpenVector ('[ (line 0, column 6)'). Expecting Open, Name, Number, ."
+      },
+      {
+        "Id": "wrapped-vector",
+        "Family": "port",
+        "Scope": "unimplemented-production",
+        "input": "a1 %vd([out1 0]) filesrc",
+        "expected": true,
+        "candidate_accepted": false,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": false,
+        "diagnostic": "unexpected OpenVector ('[ (line 0, column 8)'). Expecting Name, Number, ."
+      },
+      {
+        "Id": "numeric-model-reference",
+        "Family": "port",
+        "Scope": "unimplemented-production",
+        "input": "a1 in out 1",
+        "expected": true,
+        "candidate_accepted": false,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": false,
+        "diagnostic": "unexpected 1 (line 0, column 11) Number."
+      },
+      {
+        "Id": "ternary",
+        "Family": "expression",
+        "Scope": "unimplemented-production",
+        "input": "v(1)>0 ? 1 : 0",
+        "expected": true,
+        "candidate_accepted": false,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": false,
+        "diagnostic": "Lexical Error, line 0, column 5 : Unrecognized symbol '>' (62)"
+      },
+      {
+        "Id": "boolean",
+        "Family": "expression",
+        "Scope": "unimplemented-production",
+        "input": "a & b",
+        "expected": true,
+        "candidate_accepted": false,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": false,
+        "diagnostic": "Lexical Error, line 0, column 3 : Unrecognized symbol '&' (38)"
+      },
+      {
+        "Id": "end-marker-prefix",
+        "Family": "control",
+        "Scope": "boundary-challenge",
+        "input": ".control\n.endc_extra\n.endc",
+        "expected": true,
+        "candidate_accepted": false,
+        "baseline_accepted": true,
+        "baseline_status": "accepted_structure",
+        "candidate_matches_expectation": false,
+        "diagnostic": "Lexical Error, line 2, column 1 : Unrecognized symbol 'e' (101)"
+      }
+    ],
+    "physical_positions": [
+      {
+        "input": "a1 [first\r\n+ second] model",
+        "token": {
+          "Text": "second",
+          "Start": 13,
+          "Line": 1,
+          "Column": 2
+        },
+        "expected_index": 13,
+        "expected_zero_based_line": 1,
+        "offset_correct": true,
+        "line_correct": true
+      },
+      {
+        "input": "a1 [first\r\n* comment\r\n+ second] model",
+        "token": {
+          "Text": "second",
+          "Start": 24,
+          "Line": 1,
+          "Column": 2
+        },
+        "expected_index": 24,
+        "expected_zero_based_line": 2,
+        "offset_correct": true,
+        "line_correct": false
+      }
+    ],
+    "limitations": [
+      "Independent bounded fragment grammars, not a transferred complete SPICE frontend or a 924-input corpus replay.",
+      "Challenge cases distinguish omitted productions from implemented contract boundaries; they are not a framework failure score.",
+      "The candidate regex grammars and generic-mode probe are separate experiments, not a single integrated deck lexer.",
+      "No numerical evaluation, command execution, include loading, model resolution, performance ranking, Linux or NativeAOT qualification.",
+      "No production parser switch or Sly dependency outside the experiment."
+    ]
+  },
+  "study_commit": "bc48c64",
+  "decision": "Keep ANTLR in the simulator; retain Sly as bounded research",
+  "mutations": [
+    {
+      "selected_file": "Trial.cs",
+      "run": "mutations",
+      "report_sha256": "9e7e1c6d89255a534015d4907ea69f8dceacee28b9384d2e4af5ec62bb9e3add",
+      "files": [
+        {
+          "file": "Cases.cs",
+          "counts": [
+            {
+              "count": 122,
+              "status": "Ignored"
+            }
+          ],
+          "remaining": []
+        },
+        {
+          "file": "Grammars.cs",
+          "counts": [
+            {
+              "count": 26,
+              "status": "Ignored"
+            }
+          ],
+          "remaining": []
+        },
+        {
+          "file": "Program.cs",
+          "counts": [
+            {
+              "count": 79,
+              "status": "CompileError"
+            }
+          ],
+          "remaining": []
+        },
+        {
+          "file": "Trial.cs",
+          "counts": [
+            {
+              "count": 3,
+              "status": "Ignored"
+            },
+            {
+              "count": 12,
+              "status": "Killed"
+            },
+            {
+              "count": 4,
+              "status": "NoCoverage"
+            },
+            {
+              "count": 3,
+              "status": "Survived"
+            }
+          ],
+          "remaining": [
+            {
+              "id": "232",
+              "status": "NoCoverage",
+              "mutatorName": "Statement mutation",
+              "replacement": ";",
+              "location": {
+                "start": {
+                  "line": 26,
+                  "column": 26
+                },
+                "end": {
+                  "line": 26,
+                  "column": 89
+                }
+              }
+            },
+            {
+              "id": "233",
+              "status": "NoCoverage",
+              "mutatorName": "String mutation",
+              "replacement": "\"\"",
+              "location": {
+                "start": {
+                  "line": 26,
+                  "column": 54
+                },
+                "end": {
+                  "line": 26,
+                  "column": 73
+                }
+              }
+            },
+            {
+              "id": "238",
+              "status": "Survived",
+              "mutatorName": "String mutation",
+              "replacement": "\"\"",
+              "location": {
+                "start": {
+                  "line": 35,
+                  "column": 54
+                },
+                "end": {
+                  "line": 35,
+                  "column": 73
+                }
+              }
+            },
+            {
+              "id": "242",
+              "status": "NoCoverage",
+              "mutatorName": "Statement mutation",
+              "replacement": ";",
+              "location": {
+                "start": {
+                  "line": 41,
+                  "column": 26
+                },
+                "end": {
+                  "line": 41,
+                  "column": 94
+                }
+              }
+            },
+            {
+              "id": "243",
+              "status": "NoCoverage",
+              "mutatorName": "String mutation",
+              "replacement": "\"\"",
+              "location": {
+                "start": {
+                  "line": 41,
+                  "column": 74
+                },
+                "end": {
+                  "line": 41,
+                  "column": 78
+                }
+              }
+            },
+            {
+              "id": "244",
+              "status": "Survived",
+              "mutatorName": "Conditional (true) mutation",
+              "replacement": "(true?parsed.Result:null)",
+              "location": {
+                "start": {
+                  "line": 45,
+                  "column": 27
+                },
+                "end": {
+                  "line": 45,
+                  "column": 57
+                }
+              }
+            },
+            {
+              "id": "248",
+              "status": "Survived",
+              "mutatorName": "String mutation",
+              "replacement": "\"\"",
+              "location": {
+                "start": {
+                  "line": 45,
+                  "column": 85
+                },
+                "end": {
+                  "line": 45,
+                  "column": 89
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "selected_file": "Trial.cs",
+      "run": "mutations-final",
+      "report_sha256": "f08418191f9ed044d1da9ff2a62364950b3a95ed579e8cdfa7955717e63e7ff8",
+      "files": [
+        {
+          "file": "Cases.cs",
+          "counts": [
+            {
+              "count": 122,
+              "status": "Ignored"
+            }
+          ],
+          "remaining": []
+        },
+        {
+          "file": "Grammars.cs",
+          "counts": [
+            {
+              "count": 26,
+              "status": "Ignored"
+            }
+          ],
+          "remaining": []
+        },
+        {
+          "file": "Program.cs",
+          "counts": [
+            {
+              "count": 79,
+              "status": "CompileError"
+            }
+          ],
+          "remaining": []
+        },
+        {
+          "file": "Trial.cs",
+          "counts": [
+            {
+              "count": 3,
+              "status": "Ignored"
+            },
+            {
+              "count": 15,
+              "status": "Killed"
+            },
+            {
+              "count": 2,
+              "status": "NoCoverage"
+            },
+            {
+              "count": 2,
+              "status": "Survived"
+            }
+          ],
+          "remaining": [
+            {
+              "id": "242",
+              "status": "NoCoverage",
+              "mutatorName": "Statement mutation",
+              "replacement": ";",
+              "location": {
+                "start": {
+                  "line": 41,
+                  "column": 26
+                },
+                "end": {
+                  "line": 41,
+                  "column": 94
+                }
+              }
+            },
+            {
+              "id": "243",
+              "status": "NoCoverage",
+              "mutatorName": "String mutation",
+              "replacement": "\"\"",
+              "location": {
+                "start": {
+                  "line": 41,
+                  "column": 74
+                },
+                "end": {
+                  "line": 41,
+                  "column": 78
+                }
+              }
+            },
+            {
+              "id": "244",
+              "status": "Survived",
+              "mutatorName": "Conditional (true) mutation",
+              "replacement": "(true?parsed.Result:null)",
+              "location": {
+                "start": {
+                  "line": 45,
+                  "column": 27
+                },
+                "end": {
+                  "line": 45,
+                  "column": 57
+                }
+              }
+            },
+            {
+              "id": "248",
+              "status": "Survived",
+              "mutatorName": "String mutation",
+              "replacement": "\"\"",
+              "location": {
+                "start": {
+                  "line": 45,
+                  "column": 85
+                },
+                "end": {
+                  "line": 45,
+                  "column": 89
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tests": {
+    "failed": 0,
+    "passed": 30,
+    "property_cases": 256,
+    "seeds": [
+      "551,20261031",
+      "552,20261031"
+    ]
+  },
+  "coverage": [
+    {
+      "report_sha256": "db484ec2deab8d319059217fae37804a6def2c5c171a0cd790a3dab292145829",
+      "classes": [
+        {
+          "line_rate": 0.0,
+          "file": "experiments/SlyTrial/Program.cs",
+          "branch_rate": 0.0,
+          "name": "Program"
+        },
+        {
+          "line_rate": 0.0,
+          "file": "experiments/SlyTrial/Cases.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Fixture"
+        },
+        {
+          "line_rate": 0.0,
+          "file": "experiments/SlyTrial/Cases.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Cases"
+        },
+        {
+          "line_rate": 0.75,
+          "file": "experiments/SlyTrial/Grammars.cs",
+          "branch_rate": 0.5,
+          "name": "SlyTrial.PortGrammar"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "experiments/SlyTrial/Grammars.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.ContextGrammar"
+        },
+        {
+          "line_rate": 0.875,
+          "file": "experiments/SlyTrial/Grammars.cs",
+          "branch_rate": 0.0,
+          "name": "SlyTrial.ExprGrammar"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "experiments/SlyTrial/Trial.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Node"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "experiments/SlyTrial/Trial.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Outcome"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "experiments/SlyTrial/Trial.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.LocatedToken"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "experiments/SlyTrial/Trial.cs",
+          "branch_rate": 0.9,
+          "name": "SlyTrial.Trial"
+        }
+      ],
+      "branch_rate": 0.2826,
+      "assembly": "SlyTrial",
+      "line_rate": 0.36219999999999997,
+      "scope": "unit"
+    },
+    {
+      "report_sha256": "5f92f6063f67c95f3b8a532e9aaa87189aa38f93465206fa84564e87fbec89ed",
+      "classes": [
+        {
+          "line_rate": 0.9523809523809523,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Program.cs",
+          "branch_rate": 0.8181818181818182,
+          "name": "Program"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Cases.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Fixture"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Cases.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Cases"
+        },
+        {
+          "line_rate": 0.7333333333333333,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Grammars.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.PortGrammar"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Grammars.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.ContextGrammar"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Grammars.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.ExprGrammar"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Trial.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Node"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Trial.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Outcome"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Trial.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.LocatedToken"
+        },
+        {
+          "line_rate": 0.7727272727272727,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Trial.cs",
+          "branch_rate": 0.5555555555555556,
+          "name": "SlyTrial.Trial"
+        },
+        {
+          "line_rate": 0.9565217391304348,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Program.cs",
+          "branch_rate": 0.7857142857142857,
+          "name": "Program.<>c"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Program.cs",
+          "branch_rate": 1.0,
+          "name": "Program.<>c__DisplayClass0_0"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Grammars.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.PortGrammar.<>c__DisplayClass1_0"
+        },
+        {
+          "line_rate": 1.0,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Grammars.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.ContextGrammar.<>c"
+        },
+        {
+          "line_rate": 0.8,
+          "file": "C:\\Users\\jeffd\\Documents\\Codex\\2026-10-24\\how\\outputs\\rust-circuit-simulator\\experiments\\SlyTrial\\Trial.cs",
+          "branch_rate": 1.0,
+          "name": "SlyTrial.Trial.<>c"
+        }
+      ],
+      "branch_rate": 0.7428571428571429,
+      "assembly": "SlyTrial",
+      "line_rate": 0.9104477611940298,
+      "scope": "cli"
+    }
+  ],
+  "package": "sly",
+  "version": "3.8.1",
+  "date": "2026-10-31",
+  "limitations": [
+    "Full experiment unit coverage includes the unexecuted CLI and fixture catalogue; CLI coverage is a separate execution.",
+    "Historical initial development runs used uncommitted intermediate sources; only a partial naive-grammar snapshot and raw logs were retained.",
+    "Mutation scopes exclude grammar productions and the third-party parser machine; compile errors, survivors and uncovered mutants are not kills.",
+    "No complete sample inventory replay, numerical qualification, performance ranking, NativeAOT or Linux execution for this candidate.",
+    "No production parser selection or dependency was changed."
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "status": "verified within stated scope",
+  "platform": "Windows",
+  "dotnet_sdk": "10.0.402",
+  "node": "24.20.0",
+  "sly": "3.8.1",
+  "catalog_regression": "passed",
+  "catalog_check": "passed",
+  "catalog_build": "passed; report discovered and copied",
+  "lab_tests": {
+    "skipped": 0,
+    "passed": 30,
+    "fscheck_cases": 256,
+    "failed": 0,
+    "replays": [
+      "551,20261031",
+      "552,20261031"
+    ]
+  },
+  "published_zip_tests": {
+    "skipped": 0,
+    "passed": 30,
+    "restore": "locked",
+    "failed": 0
+  },
+  "javascript_tests": {
+    "passed": 6,
+    "failed": 0
+  },
+  "strictdoc": {
+    "result": "parsed requirements.sdoc using SDReader.read",
+    "version": "0.30.4"
+  },
+  "fresh_lab_coverage": {
+    "lines_covered": 46,
+    "scope": "Current standalone SlyTrial assembly; third-party Sly engine excluded. CLI is not exercised by unit coverage. Historical comparison measurements in article have different scopes.",
+    "branch_percent": 36.11,
+    "lines_valid": 58,
+    "branches_covered": 13,
+    "line_percent": 79.31,
+    "branches_valid": 36
+  },
+  "source_zip_sha256": "d2308acc33657862fee794c2c8e9a39b43045af800a97615bdf1c68a2b3e0930",
+  "html_sha256": "594c5d485cb821b3647ed810bb5a07e040e664724c1c751b507cfda858cfd18c",
+  "limits": [
+    "No new mutation campaign for HTML/build helpers; historical trial Stryker evidence is separate.",
+    "Node experimental coverage emitted no per-file rows for VM-extracted script; JS line/branch coverage unavailable, aggregate 100% not used.",
+    "Catalog and generator coverage not measured in this run.",
+    "Browser service initialization failed; headless Edge screenshots substituted. No manual keyboard, screen-reader, or real-device mobile qualification.",
+    "Windows execution only; no comparative speed, Native AOT, adversarial-depth or full Sly deck-parser qualification."
+  ],
+  "visual_review": {
+    "browser": "Headless Edge 156.0.4314.50",
+    "inspected": [
+      "Desktop 1440x1100 hero, contents, opening cards",
+      "Narrow 500x1000 hero, wrapped navigation, opening text"
+    ],
+    "limits": "Requested 390px capture was clipped by headless browser minimum viewport, so it is not claimed as a 390px layout pass. No automated DOM interaction coverage."
+  }
+}
