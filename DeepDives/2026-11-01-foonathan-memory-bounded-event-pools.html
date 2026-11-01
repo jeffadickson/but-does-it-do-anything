@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="November 1, 2026 engineering deep dive: foonathan/memory, fixed-capacity pools, explicit allocation failures, C++20 code and a live pool simulator.">
+<title>Memory You Can Count On — foonathan/memory | Engineering Deep Dives</title>
+<style>
+:root{--bg:#071521;--surface:#102434;--surface2:#163246;--ink:#f5fafc;--sub:#c3d9e5;--teal:#4fe3c1;--sky:#89cfff;--gold:#ffc56f;--line:#416178;--danger:#ff9eaa;--success:#98efd0;--shadow:0 16px 46px rgba(0,0,0,.25)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:1.3rem}
+body{margin:0;color:var(--ink);background:radial-gradient(circle at 86% 0,#1a4457 0,transparent 28rem),linear-gradient(180deg,#091b2b,var(--bg) 40%);font:17px/1.67 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--sky);text-underline-offset:.19em}a:hover{color:var(--teal)}a:focus-visible,button:focus-visible{outline:3px solid var(--gold);outline-offset:4px}::selection{background:var(--teal);color:#061b26}
+.skip{position:absolute;top:-5rem;left:1rem;background:#fff;color:#102433;padding:.7rem 1rem;z-index:99}.skip:focus{top:1rem}
+.wrap{width:min(1120px,calc(100% - 2.2rem));margin-inline:auto}.hero{padding:3.7rem 0 2.4rem;border-bottom:1px solid var(--line)}
+.eyebrow{font-weight:800;text-transform:uppercase;letter-spacing:.16em;color:var(--teal);font-size:.78rem}.hero h1{font-size:clamp(2.25rem,5.4vw,4.8rem);line-height:1.06;letter-spacing:-.047em;max-width:870px;margin:.55rem 0 1.2rem}.hero h1 span{color:var(--teal)}.lede{font-size:clamp(1.07rem,2.1vw,1.31rem);max-width:820px;color:var(--sub);line-height:1.55;margin-bottom:1.5rem}
+.badges{display:flex;flex-wrap:wrap;gap:.55rem}.badge{font-size:.79rem;font-weight:750;letter-spacing:.02em;padding:.26rem .72rem;border:1px solid #5a8294;border-radius:99px;background:#14344a;color:#e4f5fb}
+main{padding:2.5rem 0 4rem}h2{font-size:clamp(1.48rem,3vw,2.2rem);letter-spacing:-.02em;line-height:1.22;margin:0 0 .88rem}h3{font-size:1.16rem;line-height:1.35;margin:0 0 .7rem}p{margin:.65rem 0 1.05rem}ul,ol{padding-left:1.4rem}li{padding-left:.2rem;margin:.24rem 0}.two{display:grid;grid-template-columns:275px minmax(0,1fr);gap:2.15rem;align-items:start}
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:17px;padding:1.25rem 1.3rem;position:sticky;top:1rem}nav.toc h2{font-size:1.05rem;margin:0 0 .7rem;color:var(--teal)}nav.toc ol{padding-left:1.2rem;margin:0}nav.toc a{display:inline-block;padding:.15rem 0;color:var(--ink);font-size:.91rem}
+.article section{margin:0 0 2.1rem;scroll-margin-top:1rem}.card{background:linear-gradient(145deg,var(--surface2),var(--surface));border:1px solid var(--line);border-radius:17px;padding:clamp(1rem,2.3vw,1.65rem);box-shadow:var(--shadow)}
+.callout{border-left:4px solid var(--teal);background:rgba(79,227,193,.075);padding:1rem 1.25rem;border-radius:0 11px 11px 0}.callout.warn{border-color:var(--gold);background:rgba(255,197,111,.075)}.callout.danger{border-color:var(--danger);background:rgba(255,158,170,.065)}
+.metricgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;margin:1.1rem 0}.metric{background:#0d2c3d;border:1px solid #45667b;padding:.9rem;border-radius:11px;text-align:center}.metric strong{display:block;font-size:1.75rem;color:var(--teal);line-height:1.2}.metric span{color:var(--sub);font-size:.82rem}
+.flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:.45rem;margin:1.25rem 0}.flow div:not(.arrow){padding:.8rem;background:#17384b;border:1px solid #527186;border-radius:11px;text-align:center;font-weight:700;font-size:.87rem}.flow small{display:block;color:var(--sub);font-weight:400}.arrow{display:flex;align-items:center;color:var(--gold);font-size:1.4rem;font-weight:900}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:550px}th,td{text-align:left;padding:.78rem .9rem;vertical-align:top;border-bottom:1px solid #33576c}th{background:#1d4155;color:#fff}tr:last-child td{border-bottom:none}tbody tr:nth-child(even){background:#102c40}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.92em}p code,li code,td code{color:#a6f4e0;background:#153d4b;padding:.1rem .33rem;border-radius:5px;overflow-wrap:anywhere}pre{background:#03131e;border:1px solid #41687c;border-radius:12px;padding:1.1rem;overflow:auto;line-height:1.5;tab-size:2;color:#e3f5fb;font-size:.84rem}pre code{color:inherit;white-space:pre}
+.kicker{display:inline-block;font-weight:800;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.45rem;color:var(--teal)}.kicker.proposal{color:var(--gold)}.tag{font-size:.75rem;padding:.16rem .5rem;border:1px solid var(--line);border-radius:6px;white-space:nowrap}
+.sim{background:linear-gradient(160deg,#11384b,#071c2c);border:1px solid #6c93a1;border-radius:18px;padding:1.15rem}
+.sim-controls{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}button{font:inherit;cursor:pointer;border-radius:9px;border:1px solid #8be1cb;background:#42d4b0;color:#061921;padding:.62rem .95rem;font-weight:800}button:hover:not(:disabled){filter:brightness(1.09)}button.secondary{background:#193c4e;border-color:#628ba0;color:var(--ink)}button:disabled{opacity:.43;cursor:not-allowed}
+select{font:inherit;background:#082635;border:1px solid #7193a3;border-radius:9px;color:var(--ink);padding:.62rem}label{font-weight:700}.sim-status{min-height:2.15rem;color:var(--success);font-weight:650}
+.slots{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:.38rem;margin:1rem 0}.slot{aspect-ratio:1;min-width:0;border:1px solid #5e8196;background:#1b4357;color:#d0e9f3;display:grid;place-items:center;font-size:clamp(.65rem,1.4vw,.9rem);padding:0;border-radius:7px}.slot.used{background:#ffbd70;color:#2b1a06;border-color:#ffe0a7}.slot:hover:not(:disabled){outline:2px solid var(--teal);outline-offset:1px}.slot:disabled{opacity:.68}
+.stacks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem}.stacks div{background:#113245;border:1px solid #496d81;border-radius:10px;padding:.65rem;text-align:center}.stacks output{display:block;font-size:1.55rem;font-weight:800;color:var(--teal)}
+.sim small,.muted{color:var(--sub)}.exercise{counter-increment:step;margin-bottom:.7rem}.exercise:before{content:"STEP " counter(step);font-size:.72rem;font-weight:850;color:var(--gold);display:block;letter-spacing:.13em}#experiments{counter-reset:step}
+details{border:1px solid var(--line);border-radius:11px;margin:.6rem 0;background:#102a3e;padding:.8rem 1rem}summary{cursor:pointer;font-weight:750;color:var(--sky)}details p{margin-bottom:0}
+.sources li{overflow-wrap:anywhere}footer{border-top:1px solid var(--line);background:#091e2c;padding:1.8rem 0 3rem;color:var(--sub);font-size:.9rem}.footnav{display:flex;gap:1rem;flex-wrap:wrap}
+@media(max-width:830px){.two{display:block}nav.toc{position:static;margin-bottom:2rem}.flow{grid-template-columns:1fr;gap:.35rem}.flow .arrow{justify-content:center;transform:rotate(90deg)}.metricgrid{grid-template-columns:1fr 1fr 1fr}.slots{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media(max-width:460px){body{font-size:16px}.hero{padding:2.3rem 0 1.7rem}.wrap{width:min(100% - 1.2rem,1120px)}.metricgrid{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}.slots{grid-template-columns:repeat(4,minmax(0,1fr))}.stacks{grid-template-columns:1fr 1fr}.stacks div:last-child{grid-column:1/-1}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media print{body{background:#fff;color:#111}nav.toc,.sim-controls,.slots{display:none}.two{display:block}.card{box-shadow:none}a{color:#153d67}pre{color:#111;background:#eee}section{break-inside:avoid}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to article</a>
+<header class="hero">
+<div class="wrap">
+<div class="eyebrow">Engineering Deep Dive / 01 November 2026 / C++20 &amp; bounded memory</div>
+<h1>Memory you can <span>count on.</span></h1>
+<p class="lede">A real-time task should not discover at the worst possible moment that it needs more heap. Meet <strong>foonathan/memory</strong>: allocator building blocks that can turn a fixed byte budget into reusable event slots—and make exhaustion an explicit design decision.</p>
+<div class="badges"><span class="badge">foonathan/memory v0.7-4</span><span class="badge">Zlib license</span><span class="badge">C++ / CMake + Ninja</span><span class="badge">Interactive pool lab</span><span class="badge">Primary sources checked</span></div>
+</div>
+</header>
+<main id="main" class="wrap">
+<div class="two"><nav class="toc" aria-label="Table of contents">
+<h2>Explore this deep dive</h2>
+<ol>
+<li><a href="#decision">The engineering verdict</a></li>
+<li><a href="#problem">The hidden heap problem</a></li>
+<li><a href="#mechanics">How it actually works</a></li>
+<li><a href="#models">Choose the right allocator</a></li>
+<li><a href="#code">C++20 bounded-pool example</a></li>
+<li><a href="#lab">Interactive pool laboratory</a></li>
+<li><a href="#experiments">Experiments &amp; expected results</a></li>
+<li><a href="#evidence">Verified real-world adoption</a></li>
+<li><a href="#architecture">RISCue &amp; VeloSim fit</a></li>
+<li><a href="#integration">CMake / Ninja integration</a></li>
+<li><a href="#pitfalls">Constraints &amp; tradeoffs</a></li>
+<li><a href="#tests">Verification plan</a></li>
+<li><a href="#license">Licensing &amp; provenance</a></li>
+<li><a href="#sources">Primary references</a></li>
+</ol></nav>
+<article class="article">
+<section id="decision">
+<span class="kicker">Assessment · proposed for your projects</span>
+<h2>Worth prototyping, not adopting blindly</h2>
+<div class="card"><p><strong>Hypothesis:</strong> a dedicated fixed-block memory pool per active-object class could bound memory consumption for RISCue event records while allowing reuse after deallocation. Its <code>try_allocate_node()</code> path is especially interesting: when the pool's free list is empty, it returns <code>nullptr</code> rather than growing the pool.</p><div class="metricgrid"><div class="metric"><strong>0</strong><span>intended heap growth after setup</span></div><div class="metric"><strong>1</strong><span>explicit exhaustion branch</span></div><div class="metric"><strong>?</strong><span>target worst-case latency, unmeasured</span></div></div><div class="callout warn"><strong>Critical distinction:</strong> a fixed backing store is not a proof that the whole system never allocates, never blocks, or meets its deadline. The <em>calling code</em>, diagnostics, synchronization, compiler settings, and all other components must also be audited.</div></div>
+</section>
+<section id="problem">
+<h2>The hidden heap problem</h2>
+<p>Consider an event-driven flight-style task processing 64 messages per cycle. Each record needs a predictable amount of storage. Ordinary dynamic allocation may be perfectly suitable in desktop tools, but it complicates the safety argument when an allocation can fail, block, contend with another task, or take data-dependent time.</p>
+<p>The design goal is not necessarily “never use an allocator.” It is <strong>allocate from a known budget, predict what happens when it fills, and keep the result testable</strong>. That includes memory required by bookkeeping, alignment and debugging guards—not just <code>N × sizeof(Event)</code>.</p>
+<div class="callout"><strong>Useful mental model:</strong> imagine a parking lot with exactly 24 marked spaces. A car can park in a free space and leave it for reuse. A 25th car gets an explicit “full” response; the lot does not secretly construct another level.</div>
+</section>
+<section id="mechanics">
+<h2>How foonathan/memory works</h2>
+<p>The library distinguishes a <code>RawAllocator</code> that hands out appropriately aligned memory from a <code>BlockAllocator</code> that obtains larger backing blocks. The <code>memory_pool</code> divides blocks into equal-sized nodes and maintains a free list. A <code>static_block_allocator</code> can obtain those blocks from caller-owned <code>static_allocator_storage&lt;Size&gt;</code> instead of the heap.</p>
+<div class="flow" role="img" aria-label="Application requests an event node from the pool. The pool obtains space from fixed backing storage and reuses freed nodes.">
+<div>Event processor<small>requests a node</small></div><div class="arrow" aria-hidden="true">→</div><div>Fixed-size pool<small>free-list allocation</small></div><div class="arrow" aria-hidden="true">→</div><div>Backing storage<small>caller-owned bytes</small></div>
+</div>
+<p><strong>Two allocation paths matter:</strong> <code>allocate_node()</code> is permitted to request an additional backing block when the free list is empty. <code>try_allocate_node()</code> will <em>not</em> request a new block and returns <code>nullptr</code> when none is available. For a hard bound, pair a fixed backing allocator with the non-growing path and a deliberate failure policy. See the <a href="https://github.com/foonathan/memory/blob/v0.7-4/include/foonathan/memory/memory_pool.hpp">upstream header contract</a>.</p>
+<div class="callout warn"><strong>Subtle but important:</strong> <code>static_allocator</code> is monotonic: its deallocation operation does nothing. The <em>pool</em> recycles individual event nodes; the <code>static_block_allocator</code> supplies fixed backing blocks. Do not confuse those lifetimes.</div>
+</section>
+<section id="models">
+<h2>Which allocator is appropriate?</h2>
+<div class="tablewrap"><table><caption class="sr" style="position:absolute;clip:rect(0,0,0,0)">Comparison of allocation strategies</caption><thead><tr><th>Strategy</th><th>Strength</th><th>Important limitation</th></tr></thead><tbody>
+<tr><td><strong><code>memory_pool&lt;&gt;</code> default</strong></td><td>Fast reusable fixed-size nodes.</td><td>Its default backing allocator may obtain more heap memory as needed; not a bounded-memory guarantee.</td></tr>
+<tr><td><strong>Pool + <code>static_block_allocator</code></strong></td><td>Caller-supplied finite storage; pool nodes can be reused.</td><td>Backing storage lifetime, sizing, alignment, thread access and exhaustion still need design.</td></tr>
+<tr><td><strong><code>static_allocator</code></strong></td><td>Simple fixed-storage bump allocation.</td><td>Individual deallocations do not recover space.</td></tr>
+<tr><td><strong><code>std::pmr::monotonic_buffer_resource</code></strong></td><td>Standard-library alternative for phase-oriented allocation.</td><td>By default can ask an upstream resource for more memory; use <code>null_memory_resource()</code> to forbid fallback.</td></tr>
+<tr><td><strong>Specialized fixed ring / array</strong></td><td>Often simplest for FIFO events with fixed lifetime.</td><td>Less flexible than arbitrary-order pool allocation; may be preferable for RISCue queues.</td></tr>
+</tbody></table></div>
+<p>For immutable lookup tables, the earlier <a href="https://jeffadickson.github.io/but-does-it-do-anything/DeepDives/2026-10-27-frozen-constexpr-containers.html">Frozen</a> edition offers a different solution: create constant data rather than allocate at runtime. Choose the simplest tool that solves the actual allocation problem.</p>
+</section>
+<section id="code">
+<span class="kicker">Upstream-informed example · review only, not compiled against the library</span>
+<h2>A bounded event pool in C++20</h2>
+<p>This adaptation uses names and behavior checked against the v0.7-4 public headers. Its fixed storage is declared before the pool so it outlives the pool; the pool gets one 4096-byte block and <code>try_allocate_node()</code> never grows it. Each <code>Event</code> is constructed into the returned raw storage and explicitly destroyed before node recycling.</p>
+<pre aria-label="C++20 bounded event-pool example"><code>#include &lt;cstdint&gt;
+#include &lt;cstdio&gt;
+#include &lt;new&gt;
+#include &lt;foonathan/memory/memory_pool.hpp&gt;
+#include &lt;foonathan/memory/static_allocator.hpp&gt;
+
+namespace fm = foonathan::memory;
+
+struct Event {
+    std::uint32_t id;
+    std::uint32_t argument;
+};
+
+int main() {
+    fm::static_allocator_storage&lt;4096&gt; backing{};
+    using Pool =
+        fm::memory_pool&lt;fm::node_pool,
+                        fm::static_block_allocator&gt;;
+
+    // One 4096-byte backing block; no heap fallback.
+    Pool pool(sizeof(Event), 4096, backing);
+
+    // This path never expands the free list.
+    void* slot = pool.try_allocate_node();
+    if (slot == nullptr) {
+        std::puts("event-pool exhausted");
+        return 1;
+    }
+
+    Event* event = ::new (slot) Event{42u, 7u};
+    std::printf("Event %u: %u\n",
+                event-&gt;id, event-&gt;argument);
+
+    event-&gt;~Event();
+    pool.deallocate_node(slot);
+}</code></pre>
+<div class="callout"><strong>Object lifetime is not optional.</strong> A raw node is not automatically an <code>Event</code>. Placement construction and destruction are required for non-trivial objects. In a real event API, hide this pairing in a carefully reviewed owner type and test every early-return path.</div>
+<p><strong>Capacity is not 4096 / sizeof(Event).</strong> Free-list metadata, alignment and optional debug fences consume space. Use the upstream <code>memory_pool::min_block_size(node_size, count)</code> helper and measure actual <code>capacity_left()</code> under each build configuration. The example demonstrates API flow, not a certified count of event slots.</p>
+</section>
+<section id="lab">
+<span class="kicker">Interactive concept model · entirely in this HTML file</span>
+<h2>Live laboratory: fill, exhaust, free, reuse</h2>
+<div class="sim" aria-describedby="simnote">
+<div class="sim-controls">
+<label for="mode">Memory policy</label>
+<select id="mode"><option value="fixed">Fixed: 24 slots</option><option value="grow">Growing: add slots</option></select>
+<button id="allocate" type="button">Allocate one</button>
+<button id="fill" type="button" class="secondary">Try 25</button>
+<button id="reset" type="button" class="secondary">Reset</button>
+</div>
+<div class="stacks" aria-label="Pool metrics"><div><span>Slots in use</span><output id="used">0</output></div><div><span>Total capacity</span><output id="capacity">24</output></div><div><span>Rejected requests</span><output id="failures">0</output></div></div>
+<div id="slots" class="slots" role="group" aria-label="Memory slots. Activate an occupied slot to free it."></div>
+<p id="status" class="sim-status" role="status" aria-live="polite">Pool ready. Allocate an event.</p>
+<p id="simnote"><small>Occupied amber buttons represent live events. Select an occupied slot to free it. This is a <strong>JavaScript educational model</strong>, not foonathan/memory running in the browser. JavaScript itself may allocate memory even in the “fixed” setting; we are illustrating policy, not measuring real heap use, latency or fragmentation.</small></p>
+</div>
+</section>
+<section id="experiments">
+<h2>Three experiments worth running</h2>
+<div class="exercise card"><h3>Fill the parking lot</h3><p>Choose <strong>Fixed</strong>, press <strong>Try 25</strong>. Expected: 24 occupied spaces, one rejected request. This is the policy you can reason about when event bursts exceed the allocated budget.</p></div>
+<div class="exercise card"><h3>Reuse one slot</h3><p>Activate any occupied amber slot, then press <strong>Allocate one</strong>. Expected: the freed slot is reused and the capacity remains 24. An individual node can be recycled without enlarging the backing store.</p></div>
+<div class="exercise card"><h3>Contrast hidden growth</h3><p>Reset, choose <strong>Growing</strong>, then press <strong>Try 25</strong>. Expected: capacity rises from 24 to 25. An unbounded growth policy may be useful for tools, but it violates a fixed memory budget.</p></div>
+<details><summary>Stretch challenge: what if a producer is faster than a consumer?</summary><p>Define a queue bound, arrival burst limit and overflow action (reject, overwrite, backpressure, or recover safely). Record dropped-event counts. Merely having a memory pool does not prove queue correctness or scheduling fairness.</p></details>
+</section>
+<section id="evidence">
+<h2>Verified adoption, not just a plausible use case</h2>
+<div class="card"><span class="kicker">Documented third-party usage</span><h3>eProsima Fast DDS</h3><p>Fast DDS explicitly documents <code>foonathan_memory</code> as an external dependency, explains why it was selected, and publishes the actual APIs it uses, including <code>memory_pool</code>, <code>node_pool</code>, container node-size helpers and allocator wrappers. Its separate <code>foonathan_memory_vendor</code> repository builds and installs the dependency. These are primary-source indications of actual adoption—not a claim that RISCue uses it today.</p>
+<p>Read the <a href="https://github.com/eProsima/Fast-DDS/blob/master/Quality_Declaration_foonathan_memory.md">Fast DDS dependency quality declaration</a>, <a href="https://github.com/eProsima/Fast-DDS/blob/master/Public_API_foonathan_memory.md">actual API inventory</a> and <a href="https://github.com/eProsima/foonathan_memory_vendor">vendor package</a>.</p>
+<p><strong>Boundary:</strong> Fast DDS's use does not prove memory boundedness, hard real-time suitability or flight certification. Its published declaration makes more modest, context-specific quality claims.</p></div>
+</section>
+<section id="architecture">
+<h2>Where this might fit your codebase</h2>
+<div class="tablewrap"><table><thead><tr><th>System</th><th>Proposed integration (not verified existing usage)</th><th>What would prove value?</th></tr></thead><tbody>
+<tr><td><strong>RISCue RTOS</strong></td><td>Pre-sized per-active-object event record pools; explicit overflow branch; no allocator activity during dispatch.</td><td>Worst-case allocation latency, event burst capacity, high-water marks, ISR/task rules, allocator ownership.</td></tr>
+<tr><td><strong>VeloSim</strong></td><td>Deterministic run-time allocation policy for dynamically created simulated events; snapshot and replay counts.</td><td>Byte-for-byte replay and consistent event order under a fixed allocation schedule.</td></tr>
+<tr><td><strong>TinyTMR</strong></td><td>Bounded command/telemetry objects in build or sweep agents if a C++ runtime is involved.</td><td>Is memory pressure real? Compare a fixed array or ring first.</td></tr>
+<tr><td><strong>BenchForge / C# tools</strong></td><td>Only a design comparison: .NET's <code>Span&lt;T&gt;</code>, <code>ArrayPool&lt;T&gt;</code> and inline arrays have different semantics; this C++ library is not a drop-in managed .NET component.</td><td>Measured allocation profile and Native AOT compatibility for the selected managed approach.</td></tr>
+</tbody></table></div>
+<div class="callout warn"><strong>Suggested RISCue architecture:</strong> an event class owns or receives one appropriately sized pool; enqueue accepts an already constructed event handle; dequeue returns it through an RAII owner; exhaustion increments a telemetry counter and executes a specified policy. Do not share a non-thread-safe pool across tasks or ISRs without a separately validated synchronization strategy.</div>
+</section>
+<section id="integration">
+<h2>Reproducible CMake / Ninja trial</h2>
+<p>Pin the reviewed release rather than silently tracking <code>main</code>. As of <strong>November 1, 2026</strong>, GitHub reports <a href="https://github.com/foonathan/memory/releases/tag/v0.7-4">v0.7-4 (published May 2, 2025)</a> as the latest release.</p>
+<pre aria-label="Clone the pinned upstream release"><code>mkdir -p external
+git clone --depth 1 --branch v0.7-4 \
+  https://github.com/foonathan/memory.git external/memory</code></pre>
+<p>Create <code>CMakeLists.txt</code> alongside the <code>main.cpp</code> above:</p>
+<pre aria-label="CMake configuration"><code>cmake_minimum_required(VERSION 3.20)
+project(bounded_event_pool LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(FOONATHAN_MEMORY_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(FOONATHAN_MEMORY_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+add_subdirectory(external/memory)
+
+add_executable(bounded_event_pool main.cpp)
+target_link_libraries(bounded_event_pool
+  PRIVATE foonathan_memory)</code></pre>
+<pre aria-label="Build commands"><code>cmake -S . -B build -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+./build/bounded_event_pool</code></pre>
+<p>Windows PowerShell: use the same CMake/Ninja commands after installing a compatible C++ toolchain; run <code>.\build\bounded_event_pool.exe</code>. The library is not purely header-only: CMake builds and links its target. The project's own <a href="https://memory.foonathan.net/md_doc_installation.html">installation guide</a> describes <code>add_subdirectory()</code>, <code>foonathan_memory</code> and <code>find_package()</code>. For cross-builds, supply your target toolchain file before configuring.</p>
+</section>
+<section id="pitfalls">
+<h2>Tradeoffs and failure modes</h2>
+<div class="tablewrap"><table><thead><tr><th>Risk</th><th>Engineering response</th></tr></thead><tbody>
+<tr><td><strong>Wrong node size or alignment</strong></td><td>Use <code>sizeof</code>, <code>alignof</code>, upstream node-size helpers for STL containers, and debug builds; do not guess container node bytes.</td></tr>
+<tr><td><strong>Exhaustion</strong></td><td>Explicit <code>nullptr</code> handling; specify whether to reject, drop, backpressure or transition to safe mode. Never silently overwrite.</td></tr>
+<tr><td><strong>Thread contention</strong></td><td>Pool instances are not automatically thread-safe. The upstream v0.7 release notes call out <code>thread_safe_allocator</code> when synchronization is required.</td></tr>
+<tr><td><strong>Stack consumption</strong></td><td>A local 4 KiB backing array consumes task stack; move backing storage to a carefully owned static region for RTOS integration.</td></tr>
+<tr><td><strong>Unexpected growth</strong></td><td>Use fixed backing storage and <code>try_allocate_node()</code>; audit constructors and every alternate allocation path.</td></tr>
+<tr><td><strong>No-exceptions targets</strong></td><td>Review error handlers, configuration macros, exhaust paths and toolchain flags. Never assume the default throw/abort behavior is acceptable.</td></tr>
+<tr><td><strong>Debug-versus-release difference</strong></td><td>Fence, fill and assertion options change overhead. Characterize both and reserve conservative capacity.</td></tr>
+<tr><td><strong>Certifiability</strong></td><td>Open source and downstream use are not substitute evidence for your target, safety case, code analysis or test campaign.</td></tr>
+</tbody></table></div>
+<p>A fixed-node pool is not appropriate for every allocation shape. Large variable-sized arrays may be a poor fit; separate size classes or a simple arena may work better. A ring buffer remains an excellent baseline for event queues with FIFO lifetime.</p>
+</section>
+<section id="tests">
+<h2>Exit criteria for a serious proof-of-value</h2>
+<ol>
+<li><strong>Allocation audit:</strong> instrument global <code>operator new</code>, <code>malloc</code> and any platform allocator; warm up once, then exercise a million event operations. Expected steady-state external allocations: zero.</li>
+<li><strong>Exhaustion:</strong> fill every pool, request one more event, and verify the specified outcome with no memory corruption or hidden fallback.</li>
+<li><strong>Latency:</strong> time allocation/deallocation high-water percentiles and worst observed latency under realistic preemption, not only an average benchmark.</li>
+<li><strong>Ownership:</strong> ASan/UBSan on a hosted build; static analysis and target-specific checks for double-return, use-after-free, lifetime and ISR misuse.</li>
+<li><strong>Determinism:</strong> replay the exact same inputs and allocation/free order; compare traces, failures and high-water counters.</li>
+<li><strong>Footprint:</strong> inspect <code>.bss</code>, task stack, debug fence overhead, linked binary size and static storage occupancy across GCC, Clang and your flight compiler.</li>
+<li><strong>Requirements:</strong> trace each overflow, maximum burst, runtime heap ban and synchronization rule to automated tests and code.</li>
+</ol>
+<div class="callout"><strong>Review status for this edition:</strong> documented API signatures, release metadata, licensing and Fast DDS adoption were checked against primary upstream repositories. The HTML's educational simulator is independently testable. The C++ sample and Ninja build are provided as reproducible instructions but were <em>not</em> compiled against the pinned library in this publication environment; no WCET or memory-allocation benchmarks are claimed.</div>
+</section>
+<section id="license">
+<h2>Zlib license: permissive, with source-notice duties</h2>
+<p>foonathan/memory is <strong>Zlib-licensed</strong>, not MIT-licensed. Its upstream LICENSE permits commercial use and modification, disallows misrepresenting origin, requires modified source versions to be plainly marked, and requires preserving the license notice in source distributions. An acknowledgment in product documentation is appreciated but not required. See the exact <a href="https://github.com/foonathan/memory/blob/main/LICENSE">upstream license</a>; check dependencies and your distribution package separately.</p>
+<p>Pin the release or commit SHA in your manifest and record your build switches, compiler version, target architecture and patches. Downstream eProsima's <code>foonathan_memory_vendor</code> package has its <em>own</em> license; do not confuse a packaging project's license with the underlying library.</p>
+</section>
+<section id="sources">
+<h2>Primary sources and audit trail</h2>
+<ol class="sources">
+<li><a href="https://github.com/foonathan/memory">foonathan/memory upstream repository &amp; README</a> — features, allocator concepts, example usage.</li>
+<li><a href="https://github.com/foonathan/memory/releases/tag/v0.7-4">Upstream v0.7-4 release (May 2, 2025)</a> — reviewed release/version and fixes.</li>
+<li><a href="https://github.com/foonathan/memory/blob/v0.7-4/include/foonathan/memory/memory_pool.hpp">v0.7-4 <code>memory_pool.hpp</code></a> — <code>try_allocate_node()</code>, growth and capacity contract.</li>
+<li><a href="https://github.com/foonathan/memory/blob/v0.7-4/include/foonathan/memory/static_allocator.hpp">v0.7-4 <code>static_allocator.hpp</code></a> — backing storage and deallocation semantics.</li>
+<li><a href="https://memory.foonathan.net/md_doc_installation.html">Official installation guide</a> — CMake target and subproject integration.</li>
+<li><a href="https://github.com/foonathan/memory/blob/main/LICENSE">Upstream Zlib LICENSE</a> — actual license conditions.</li>
+<li><a href="https://github.com/eProsima/Fast-DDS/blob/master/Quality_Declaration_foonathan_memory.md">Fast DDS quality declaration</a> — actual dependency rationale and limited quality claims.</li>
+<li><a href="https://github.com/eProsima/Fast-DDS/blob/master/Public_API_foonathan_memory.md">Fast DDS public API inventory</a> — concrete APIs used downstream.</li>
+<li><a href="https://github.com/eProsima/foonathan_memory_vendor">eProsima vendor package</a> — verified packaging and integration.</li>
+<li><a href="https://github.com/foonathan/memory/releases/tag/v0.7">v0.7 release notes</a> — <code>thread_safe_allocator</code> caution and compatibility changes.</li>
+</ol>
+<p class="muted"><strong>Publication:</strong> November 1, 2026. <strong>Evidence labeling:</strong> “Verified” refers only to behavior/docs demonstrable in the cited upstream material or vendor repository; RISCue, VeloSim and the other project proposals remain unimplemented hypotheses. <strong>Review limitation:</strong> no native library compilation or real-time timing measurement was completed in this edition.</p>
+</section>
+</article></div></main>
+<footer><div class="wrap"><div class="footnav"><a href="https://jeffadickson.github.io/but-does-it-do-anything/">Deep Dive Library</a><a href="https://github.com/jeffadickson/but-does-it-do-anything/tree/main/DeepDives">All engineering editions</a><a href="#main">Back to article</a></div><p>Engineering Deep Dives · A practical research series focused on evidence, bounded behavior and reproducibility.</p></div></footer>
+<script>
+"use strict";
+function createState(policy) {
+  return {policy:policy, cells:Array(24).fill(null), next:1, rejected:0};
+}
+function take(s) {
+  let at=s.cells.indexOf(null);
+  if(at===-1 && s.policy==="grow") {
+    at=s.cells.length;
+    s.cells.push(null);
+  }
+  if(at===-1) {
+    s.rejected++;
+    return {ok:false,index:-1};
+  }
+  s.cells[at]=s.next++;
+  return {ok:true,index:at};
+}
+function giveBack(s,index) {
+  if(!Number.isInteger(index) || index<0 || index>=s.cells.length || s.cells[index]===null) return false;
+  s.cells[index]=null;
+  return true;
+}
+function modelSelfTest(){
+  const f=createState("fixed");
+  for(let i=0;i<24;i++) if(!take(f).ok) return false;
+  if(take(f).ok||f.rejected!==1) return false;
+  if(!giveBack(f,7)||!take(f).ok||f.cells.length!==24) return false;
+  const g=createState("grow");
+  for(let i=0;i<25;i++) if(!take(g).ok) return false;
+  return g.cells.length===25&&g.rejected===0;
+}
+const grid=document.getElementById("slots");
+const status=document.getElementById("status");
+const used=document.getElementById("used");
+const capacity=document.getElementById("capacity");
+const failures=document.getElementById("failures");
+const mode=document.getElementById("mode");
+const allocateButton=document.getElementById("allocate");
+let state=createState("fixed");
+function announce(message){status.textContent=message;}
+function render(){
+  used.textContent=String(state.cells.filter(x=>x!==null).length);
+  capacity.textContent=String(state.cells.length);
+  failures.textContent=String(state.rejected);
+  const fragment=document.createDocumentFragment();
+  state.cells.forEach((value,index)=>{
+    const button=document.createElement("button");
+    button.type="button";
+    button.className="slot"+(value===null?"":" used");
+    button.textContent=value===null?"·":"#"+value;
+    button.disabled=value===null;
+    button.dataset.index=String(index);
+    button.setAttribute("aria-label",value===null?"Slot "+(index+1)+": free":"Slot "+(index+1)+": event "+value+". Activate to release.");
+    fragment.appendChild(button);
+  });
+  grid.replaceChildren(fragment);
+}
+function allocateOne() {
+  const result=take(state);
+  announce(result.ok?"Allocated event to slot "+(result.index+1)+".":"Pool exhausted: request rejected, no hidden expansion.");
+  render();
+}
+allocateButton.addEventListener("click",allocateOne);
+document.getElementById("fill").addEventListener("click",()=>{
+  let accepted=0, rejected=0;
+  for(let i=0;i<25;i++){if(take(state).ok) accepted++;else rejected++;}
+  render();
+  announce("25 requests: "+accepted+" accepted, "+rejected+" rejected. Capacity is "+state.cells.length+".");
+});
+function reset(){
+  state=createState(mode.value);
+  render();
+  announce("Reset to 24 empty slots. Policy: "+(mode.value==="fixed"?"fixed capacity.":"growing capacity."));
+}
+document.getElementById("reset").addEventListener("click",()=>{reset();allocateButton.focus();});
+mode.addEventListener("change",reset);
+grid.addEventListener("click",(event)=>{
+  const target=event.target.closest("button[data-index]");
+  if(!target||!grid.contains(target))return;
+  const index=Number(target.dataset.index);
+  if(giveBack(state,index)){
+    render();
+    announce("Released slot "+(index+1)+". The next allocation can reuse it.");
+    allocateButton.focus();
+  }
+});
+if(!modelSelfTest()){
+  announce("An internal simulator self-test failed; do not rely on the lab.");
+  allocateButton.disabled=true;
+  document.getElementById("fill").disabled=true;
+}else{
+  render();
+}
+</script>
+</body>
+</html>
