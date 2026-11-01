@@ -1,0 +1,278 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="Make a sixfold snowflake, discover how real snow crystals grow, and try an interactive offline art-and-code experiment for nine-year-olds."><title>Snowflake Symmetry Studio! | DeepDivesKids · 1 November 2026</title><style>
+:root{--ink:#19213c;--muted:#495674;--purple:#653ec1;--orange:#f89c25;--cream:#fff8eb;--line:#d9dff0;--good:#126344;--focus:#ffb200;--radius:22px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#f5f6ff;color:var(--ink);font:17px/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:#4831a5;text-underline-offset:.18em}a:hover{text-decoration-thickness:3px}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:4px solid var(--focus);outline-offset:4px}
+.skip{position:absolute;left:12px;top:-100px;padding:12px;background:#fff;z-index:20}.skip:focus{top:8px}
+.wrap{width:min(1100px,calc(100% - 32px));margin:auto}
+.hero{background:radial-gradient(circle at 78% 12%,#a78aff 0,transparent 25%),linear-gradient(125deg,#271c57,#5834a1 63%,#a24e8e);color:white;padding:48px 0 66px;position:relative;overflow:hidden}
+.hero:after{content:"✦  ✧  ✦";position:absolute;right:6%;bottom:10px;color:#ffc766;font-size:4rem;opacity:.35;transform:rotate(-15deg);pointer-events:none}
+.hero p{max-width:740px}.hero h1{font-size:clamp(2.3rem,6vw,4.6rem);line-height:1.06;letter-spacing:-.055em;margin:.28em 0}
+.eyebrow{font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:.84rem;color:#ffdf88}
+.hero .lead{font-size:clamp(1.15rem,2.4vw,1.42rem);line-height:1.55}
+.badges{display:flex;gap:10px;flex-wrap:wrap;margin:26px 0}
+.badges span{background:#ffffff21;border:1px solid #ffffff66;border-radius:100px;padding:6px 13px;font-weight:700;font-size:.89rem}
+.hero a{color:#fff; font-weight:800}
+main{position:relative;margin-top:-30px}
+.section{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:clamp(20px,3vw,34px);box-shadow:0 8px 30px #28305a0c;margin:0 0 24px}
+.section h2{font-size:clamp(1.5rem,3vw,2rem);line-height:1.2;margin:.15em 0 .55em;color:#32226f}
+.section h3{color:#473491;margin:1.2em 0 .3em;font-size:1.2rem}
+.section p{margin:.7em 0}.section :first-child{margin-top:0}
+.toc ol{columns:2;padding-left:24px;margin-bottom:0}.toc li{break-inside:avoid;padding:4px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.card{background:var(--cream);border:1px solid #f1dcac;border-radius:16px;padding:20px}
+.card.purple{background:#f3eeff;border-color:#ded1fb}
+.card.teal{background:#e9fcf5;border-color:#b9e5d6}
+.callout{background:#f0f3ff;border-left:5px solid #7657de;border-radius:0 14px 14px 0;padding:15px 18px;margin:18px 0}
+.warning{background:#fff4e4;border-left-color:#e28912}
+.kicker{font-size:.84rem;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:#7650bd}
+.fun{font-size:1.15rem;font-weight:700}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field{display:block;background:#fff;padding:16px;border:1px solid #d9dff0;border-radius:14px}
+.field span{display:flex;justify-content:space-between;gap:10px;font-weight:700}
+output{color:#5527aa;font-variant-numeric:tabular-nums;white-space:nowrap}
+input[type="range"]{display:block;width:100%;height:24px;accent-color:#6846c8;margin:15px 0 6px;cursor:pointer}
+.controlhelp{font-size:.86rem;color:var(--muted);line-height:1.35}
+.lab{background:linear-gradient(#fffaf1,#f5f0ff);border:2px solid #dfd5f5;border-radius:20px;padding:20px;margin-top:18px}
+.scene{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:14px}
+.viewport{background:#15122d;border-radius:16px;overflow:hidden;min-width:0}
+.viewport svg{display:block;width:100%;height:auto}
+.viewcaption{font-size:.89rem;color:#33405d;margin:8px 0 0}
+.live-number{font-size:clamp(1.7rem,4vw,2.7rem);font-weight:900;line-height:1.2;color:#3a258b}
+.readout{background:white;border:1px solid #d9dff0;border-radius:14px;padding:14px 16px;margin-top:16px}
+.readout strong{font-variant-numeric:tabular-nums}
+code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,Monaco,monospace;font-size:.92em}
+pre{white-space:pre;overflow-x:auto;background:#17152f;color:#f8f5ff;border-radius:14px;padding:18px;line-height:1.6}
+pre code{font-size:.9em}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{padding:10px 11px;text-align:left;border-bottom:1px solid #d7ddeb}
+th{background:#f0edff;color:#35207f}
+.table-scroll{overflow-x:auto}
+.missions{display:flex;flex-wrap:wrap;gap:10px}
+button{font:inherit;font-weight:800;cursor:pointer;background:#6340c2;border:2px solid #6340c2;border-radius:12px;color:white;padding:10px 14px;min-height:44px}
+button:hover{background:#4729a6}
+button[aria-pressed="true"]{background:#ffdf8c;color:#321963;border-color:#b8750e}
+button.secondary{background:#fff;color:#5536aa}
+button.secondary:hover{background:#eee7ff}
+.status{padding:14px 16px;background:#fff;border-radius:12px;border:1px dashed #aaa1d0;min-height:58px}
+.status.pass{background:#e8fbf1;border-color:#3a956a;color:#154a36;font-weight:800}
+.predictrow{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.predictrow label{font-weight:700}
+.predictrow input{display:block;width:170px;font:inherit;padding:10px;border:2px solid #a8a2c6;border-radius:10px}
+.small{font-size:.9rem;color:var(--muted)}
+.factgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.fact{border-radius:14px;padding:17px;background:#eef5ff;border:1px solid #cfddf4}
+.fact .icon{font-size:1.8rem}
+.fact strong{display:block}
+footer{padding:18px 0 60px;text-align:center;color:#47536e}
+footer a{margin:0 .3em}
+summary{cursor:pointer;font-weight:800}
+.license{font-size:.86rem;white-space:pre-wrap;background:#f3f4fa;padding:16px;border-radius:12px}
+:target{scroll-margin-top:16px}
+@media(max-width:760px){.grid,.scene,.controls{grid-template-columns:1fr}.toc ol{columns:1}.factgrid{grid-template-columns:1fr}.hero{padding-top:32px}.section{margin-bottom:16px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media print{body{background:#fff}.hero{color:#1e2055;background:#f3efff;padding:20px 0}.section{box-shadow:none;break-inside:avoid}button,input{display:none}.hero a{color:#4831a5}}
+</style><style>
+:root{--ink:#142e49;--muted:#486075;--purple:#155b9c;--orange:#e8aa2e;--cream:#eaf8ff;--line:#cbdfea;--good:#126344;--focus:#f5a900}
+.hero{background:radial-gradient(circle at 85% 15%,#8fe8ff66 0,transparent 33%),linear-gradient(128deg,#082a52,#165d9b 63%,#17858c)}
+.hero:after{content:"❄";font-size:13rem;bottom:-50px;right:4%;opacity:.27}
+.hero .eyebrow{color:#bbf6fc}.section h2{color:#15568e}.section h3{color:#146b7b}
+.lab{background:linear-gradient(145deg,#eaf9ff,#f4f0ff);border-color:#b8dbe8}
+.studio{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(275px,.85fr);gap:16px}
+.stage{border-radius:18px;overflow:hidden;background:#0b2341;border:3px solid #2c5478}
+#art{display:block;width:100%;height:auto;aspect-ratio:1/1;cursor:crosshair;touch-action:none}
+.fields{background:#fff;border:1px solid #d6e6ef;border-radius:16px;padding:16px}
+.fields label{display:block;font-weight:800;margin:0 0 13px}.fields label select,.fields label input[type=range]{display:block;width:100%;margin:5px 0}
+.fields select{border:2px solid #9cbfd6;border-radius:10px;padding:8px;background:white;color:#162e46;font:inherit}
+.fields input[type=range],.fields input[type=checkbox]{accent-color:#157789}
+.fieldcheck{display:flex!important;gap:12px;align-items:center}.fieldcheck input{width:20px;height:20px}
+.toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px}.toolbar button{min-width:0}
+button{background:#145c9c;border-color:#145c9c}button:hover{background:#0c4a85}
+button.secondary{color:#155a91;border-color:#8cb2ce;background:#fff}
+#status{padding:13px 15px;border:1px dashed #a3c0d3;border-radius:12px;background:white;min-height:58px}
+#readout{color:#31536f;font-size:.9rem;font-weight:750;margin:6px 0}
+.answergroup{border:1px solid #c9dfea;border-radius:15px;padding:17px;margin:15px 0}
+.answergroup legend{font-weight:800}.answers{display:flex;flex-wrap:wrap;gap:8px}
+.answergroup p{margin:10px 0 0;font-weight:750;color:#165c7c}
+pre{white-space:pre;overflow-x:auto}
+.tag{font-size:.78rem;font-weight:850;border-radius:100px;display:inline-block;padding:3px 10px;background:#dff6ec;color:#145e4c}
+.tag.idea{background:#fff0d1;color:#805113}
+.narrow{max-width:68ch}
+@media(max-width:790px){.studio{grid-template-columns:1fr}}
+</style></head><body>
+<a class="skip" href="#main">Skip to lesson</a>
+<header class="hero"><div class="wrap">
+<p class="eyebrow">DeepDivesKids · Nature, art &amp; computing · November 1, 2026</p>
+<h1>❄ Snowflake<br>Symmetry Studio</h1>
+<p class="lead">Quinn and Reagan: can you tell a computer to make a six-armed snowflake? Draw one little line and watch it appear six times! Discover why real snow crystals have a hexagonal secret—and why real snow is rarely perfectly symmetrical.</p>
+<div class="badges"><span>Age 9+</span><span>20–30 minutes</span><span>Offline &amp; interactive</span><span>Touch, mouse &amp; keyboard</span></div>
+<p><a href="#studio">Open the snowflake-making lab ↓</a></p>
+</div></header>
+<main id="main" class="wrap">
+<section class="section toc" aria-labelledby="toc"><h2 id="toc">Your expedition map</h2>
+<ol><li><a href="#mystery">The six-direction mystery</a></li><li><a href="#science">How snow crystals really grow</a></li><li><a href="#studio">Interactive symmetry studio</a></li><li><a href="#code">The computer's 60° trick</a></li><li><a href="#challenge">Three creative missions</a></li><li><a href="#paper">Try it with paper</a></li><li><a href="#evidence">Scientists really do this</a></li><li><a href="#quiz">Crystal detective quiz</a></li><li><a href="#connections">Hockey, winter &amp; Dad's projects</a></li><li><a href="#limits">What the model gets wrong</a></li><li><a href="#sources">Primary sources &amp; licensing</a></li></ol></section>
+<section id="mystery" class="section"><h2>1. Six directions hide inside a snowflake 🔍</h2>
+<p>Think about the prettiest snowflake you've seen. It might have six branches, like a tiny frozen star. If a full turn is <strong>360 degrees</strong>, six equal turns are <strong>360 ÷ 6 = 60 degrees each</strong>. A shape that matches itself after a 60° turn has <strong>six-fold rotational symmetry</strong>.</p>
+<div class="grid"><div class="card"><span class="kicker">Six directions</span><p class="live-number">6</p><p>Many star-shaped ice crystals grow outward in six main directions.</p></div><div class="card teal"><span class="kicker">One step of the pattern</span><p class="live-number">60°</p><p>A computer can rotate one drawing five more times to make all six directions.</p></div></div>
+<div class="callout warning"><strong>Careful, scientist:</strong> Not all snow is a six-pointed star. Real snow includes plates, needles, columns and clumps. Caltech crystal researcher Kenneth Libbrecht explains that most real crystals are not perfectly symmetrical.</div></section>
+<section id="science" class="section"><h2>2. How snow crystals really grow</h2>
+<div class="grid"><div><h3>Step 1: A tiny seed</h3><p>In a cloud, water vapor can change directly into solid ice on a tiny particle. Water molecules arrange themselves in an orderly, hexagonal crystal structure. <em>Hexagonal</em> means six-sided.</p><h3>Step 2: More molecules arrive</h3><p>The tiny ice crystal grows. Some conditions favor flat plates; others favor columns, needles, or branched forms.</p></div><div><h3>Step 3: Corners can branch</h3><p>Water vapor collects on a growing crystal. Small protrusions can grow faster and form branches. When six arms experience similar conditions, they often grow into similar shapes.</p><h3>Step 4: The weather changes</h3><p>As the crystal travels through different temperatures and humidity, its shape changes. The arms do <em>not</em> communicate: they simply experience similar weather. Small differences make them uneven.</p></div></div>
+<p><strong>Important distinction:</strong> Our drawing repeats the exact same line using math. Real crystals grow molecule by molecule, with many imperfections.</p></section>
+<section class="section" id="studio"><h2>3. Try the Snowflake Symmetry Studio 🎨</h2><p><strong>Draw on the dark square</strong> with a finger, mouse, or stylus. Or use the buttons. Your computer repeats every stroke in a circle. Change to eight directions to invent a fantasy flake; come back to six for the famous ice-crystal pattern.</p>
+<div class="lab"><div class="studio">
+<div><div class="stage"><canvas id="art" width="700" height="700" tabindex="0" role="group" aria-describedby="canvas-help" aria-label="Interactive snowflake maker. Use pointer to draw or arrow keys to position a cursor and Enter or Space to stamp a dot. The buttons are an accessible alternative.">Your browser does not support Canvas. Try the paper experiment instead.</canvas></div>
+<p class="viewcaption" id="canvas-help"><strong>Keyboard:</strong> Focus the canvas, use arrow keys to move a crosshair, then Enter or Space to stamp a dot. The buttons build complete designs without needing the canvas.</p>
+<p id="readout">Six arms • loading design</p></div>
+<div class="fields">
+<label for="arms">Number of repeated directions
+<select id="arms"><option value="3">3: triangle art</option><option value="4">4: square art</option><option value="6" selected>6: usual snow-crystal pattern</option><option value="8">8: fantasy art</option></select></label>
+<label for="radius">Twig distance from center <output id="radiusOut" for="radius">145</output>
+<input type="range" id="radius" min="55" max="230" value="145" step="5"></label>
+<label for="length">Twig length <output id="lengthOut" for="length">35</output>
+<input type="range" id="length" min="15" max="60" value="35" step="5"></label>
+<label for="width">Brush width <output id="widthOut" for="width">4</output>
+<input type="range" id="width" min="2" max="12" value="4"></label>
+<label for="ink">Ice color
+<select id="ink"><option value="#b4f5ff">Ice blue</option><option value="#ffffff">Snow white</option><option value="#ffda8d">Sunset gold</option><option value="#ffb3dc">Berry pink</option></select></label>
+<label class="fieldcheck" for="mirror"><input id="mirror" type="checkbox" checked> Mirror each arm's two sides</label>
+<p class="small">Mirror ON creates exact left/right copies. Real ice is generally less perfect.</p>
+<div class="toolbar"><button id="preset" type="button">❄ Lacy crystal</button><button id="branch" type="button">↗ Add twigs</button><button id="tips" type="button">✦ Add arm tips</button><button id="center" type="button">⬡ Add center</button><button id="odd" class="secondary" type="button">↝ Odd arm</button><button id="undo" class="secondary" type="button">↶ Undo</button><button id="clear" class="secondary" type="button">✕ Clear</button><button id="download" class="secondary" type="button">↓ Save PNG</button></div>
+<p id="status" role="status" aria-live="polite">Your crystal is ready.</p>
+</div></div></div>
+<p class="small"><strong>Privacy:</strong> The page sends no drawing information over the network. It can be opened as one standalone HTML file without installing a library.</p></section>
+<section class="section" id="code"><h2>4. One tiny loop, six beautiful directions 💻</h2><p>Imagine a robot artist: <em>draw this line, rotate, repeat</em>. In computer science, repeated instructions are called a <strong>loop</strong>. Here is a working JavaScript pattern using the browser's Canvas 2D API:</p>
+<pre><code>function drawSixCopies(ctx, points, center) {
+  for (let arm = 0; arm &lt; 6; arm++) {
+    ctx.save();
+    ctx.translate(center, center);
+    ctx.rotate(arm * Math.PI / 3); // 60 degrees
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i &lt; points.length; i++) {
+      ctx.lineTo(points[i].x, points[i].y);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+}</code></pre>
+<p><strong>Try changing the rule:</strong> Four equally spaced directions use a quarter-circle turn: <code>2 * Math.PI / 4</code>. Six directions use <code>2 * Math.PI / 6</code>. The studio itself uses this rotation trick, plus Undo and optional mirror copies. The angles are in <em>radians</em>, another way to measure turns.</p>
+<div class="callout"><strong>Why <code>save()</code> and <code>restore()</code>?</strong> Each copy should begin from the same center. These commands prevent one turn from accidentally piling onto the next turn.</div></section>
+<section class="section" id="challenge"><h2>5. Three creative missions</h2><div class="grid">
+<div class="card"><h3>Mission A: A winter star</h3><p>Select <strong>six</strong> directions and Mirror ON. Press <strong>Lacy crystal</strong>. Add twigs at three different distances. Can you count the main arms?</p></div>
+<div class="card purple"><h3>Mission B: Invent something impossible</h3><p>Switch to <strong>eight</strong> directions. Admire the shape. Explain why eight repeating arms are fun geometric art, but not the normal symmetry of an ice crystal.</p></div>
+<div class="card teal"><h3>Mission C: Become nature</h3><p>Go back to six. Press <strong>Odd arm</strong>. Find the golden branch that appears only once. Which drawing looks more like an imperfect, real snow crystal?</p></div>
+<div class="card"><h3>Bonus: A Tahoe postcard</h3><p>Draw another pattern, save a PNG, and caption it “Six times 60° is one full circle.” Make a snowflake for each person in the family.</p></div></div></section>
+<section class="section" id="paper"><h2>6. Try it without a computer ✂️</h2><p>Gather one piece of paper, a ruler, pencil and crayons. A protractor helps, but you can estimate the spacing.</p>
+<ol><li>Draw a dot in the center of the page.</li><li>Draw six straight lines pointing outward, with approximately <strong>60° between neighboring lines</strong>.</li><li>Add three little branches to one arm. Copy the same branches onto the other five arms.</li><li>Make a second drawing, but change one branch on one arm.</li><li>Compare your exact-copy artwork to your not-quite-symmetric drawing. Which took more careful work?</li></ol>
+<p class="callout warning"><strong>Prediction:</strong> Which is faster: copying the twigs by hand or letting the computer repeat them? This activity models the symmetry, <em>not</em> how water molecules actually freeze.</p></section>
+<section class="section" id="evidence"><h2>7. Evidence: what real scientists do</h2><div class="grid"><div class="card teal"><span class="tag">Documented real science</span><h3>NASA measures snowstorms</h3><p>NASA's Global Precipitation Measurement mission studies rain and snow. NASA explains how observing the size and shape of snow particles can help improve weather predictions. It does <strong>not</strong> use our art painter as its mission software.</p><p><a href="https://gpm.nasa.gov/education/videos/gpm-gets-flake-y">NASA GPM: Gets Flake-y ↗</a></p></div><div class="card teal"><span class="tag">Documented real science</span><h3>Caltech grows snow crystals</h3><p>Professor Kenneth Libbrecht studies crystal growth in the laboratory and photographs the many forms that ice can take. Temperature and humidity influence which shapes develop. His experiments are real; our repeated-line game is not a physical simulation.</p><p><a href="https://www.snowcrystals.com/science/science.html">Caltech researcher's snowflake guide ↗</a></p></div></div>
+<p class="callout"><span class="tag idea">Imagined application</span> A snowflake-identifying camera on a hockey rink, or a space robot that paints snowflake patterns, could be fun project ideas. They are <em>not</em> documented uses of this lesson.</p></section>
+<section class="section" id="quiz"><h2>8. Crystal detective quiz 🧠</h2>
+<fieldset class="answergroup"><legend>Why do many star-shaped snow crystals have six arms?</legend><div class="answers"><button type="button" data-right="0" data-explain="Wind shapes snow too, but the six-part structure comes from the arrangement of water molecules.">Wind always blows in six directions</button><button type="button" data-right="1" data-explain="Yes! Water molecules form a hexagonal structure in ordinary ice.">Ice molecules make a hexagonal structure</button></div><p class="feedback" aria-live="polite"></p></fieldset>
+<fieldset class="answergroup"><legend>What is 360° divided by six?</legend><div class="answers"><button type="button" data-right="1" data-explain="Correct: 60° for each turn.">60°</button><button type="button" data-right="0" data-explain="Not quite. Divide 360 by six equal parts.">90°</button><button type="button" data-right="0" data-explain="Not quite. Divide 360 by six equal parts.">120°</button></div><p class="feedback" aria-live="polite"></p></fieldset>
+<fieldset class="answergroup"><legend>Are most natural snow crystals perfect copies of their arms?</legend><div class="answers"><button type="button" data-right="0" data-explain="Look at the Caltech science page: most crystals are actually imperfect.">Yes, always perfect</button><button type="button" data-right="1" data-explain="Exactly. Six directions are common, but actual arms often differ.">No, many are imperfect</button></div><p class="feedback" aria-live="polite"></p></fieldset></section>
+<section class="section" id="connections"><h2>9. Hockey, Tahoe and Dad's engineering</h2><div class="grid"><div class="card"><h3>🏒 Your winter world</h3><p>On a future trip near Lake Tahoe, look for ice, frost, powdery snow and snow clumps. The smooth ice that hockey players skate on is produced and maintained differently from a crystal growing in a cold cloud. Draw a rink beside a snowflake. Where can you see symmetry in each?</p></div><div class="card purple"><h3>🛰️ Your father's projects</h3><p>In <strong>VeloSim</strong>, repeating the same instructions can produce predictable results. Your little rotation loop is an example of deterministic behavior. In <strong>RISCue</strong>, code also follows explicit rules to keep things organized. These are comparisons for learning—not claims that either project already draws snowflakes.</p></div></div></section>
+<section class="section" id="limits"><h2>10. What this model gets right—and wrong</h2><div class="grid"><div class="card teal"><h3>✅ What is real</h3><p>Six evenly spaced directions are 60° apart. A computer can exactly rotate and repeat a drawing. Hexagonal molecular ordering helps explain classic six-fold ice crystals. Snow crystal shapes change with conditions.</p></div><div class="card"><h3>⚠️ What is simplified</h3><p>Our studio does not model humidity, air currents, temperature, microscopic molecules, growth speed or three-dimensional forms. Perfect mirroring is an artist's shortcut, not the usual result of real crystal growth. Six-pointed stars are not the only kinds of snow.</p></div></div></section>
+<section class="section" id="sources"><h2>11. Primary sources &amp; licensing</h2><p>These are the actual scientific and technical references for the claims above. They are not proof that our small art program is used by NASA or Caltech.</p><ol>
+<li><a href="https://www.nesdis.noaa.gov/about/k-12-education/ice-snow/how-do-snowflakes-form">NOAA NESDIS, “How Do Snowflakes Form?” (August 27, 2025)</a> — six-fold symmetry, vapor deposition, facets, branches.</li>
+<li><a href="https://www.noaa.gov/stories/how-do-snowflakes-form-science-behind-snow">NOAA, “How do snowflakes form?” (updated December 21, 2022)</a> — molecular order and weather effects.</li>
+<li><a href="https://www.snowcrystals.com/science/science.html">Ken Libbrecht, Snowflake Science</a> — Caltech researcher's explanation of symmetry and imperfections.</li>
+<li><a href="https://www.snowcrystals.com/morphology/morphology.html">Snow Crystal Morphology Guide</a> — laboratory observations of crystal shapes.</li>
+<li><a href="https://gpm.nasa.gov/education/videos/gpm-gets-flake-y">NASA Global Precipitation Measurement, “GPM Gets Flake-y”</a> — observing falling snow.</li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D">MDN, Canvas 2D API</a> — the browser drawing methods used here.</li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob">MDN, Canvas toBlob</a> — exporting a drawing as PNG.</li>
+</ol><h3>Install, licenses and integration</h3><p>This page is a complete, self-contained HTML file with plain JavaScript and CSS. It depends only on the standard browser Canvas 2D API. <strong>There are no external JavaScript packages, downloads, API keys or network requirements.</strong> Canvas is a built-in browser API rather than an independently licensed MIT package. No external photos are bundled; original illustrations are drawn by the code. Linked primary sources retain their own terms. Check this repository's license before redistributing modified pages.</p></section>
+</main>
+<footer class="wrap"><strong>DeepDivesKids • November 1, 2026</strong><br>Curious minds make beautiful patterns. ❄ <a href="#toc">Back to contents ↑</a></footer><script>
+'use strict';
+(() => {
+  const canvas=document.getElementById('art'),ctx=canvas.getContext('2d');
+  if(!ctx){document.querySelector('.fields').hidden=true;return;}
+  const C=350,W=700,$=id=>document.getElementById(id);
+  const arms=$('arms'),mirror=$('mirror'),radius=$('radius'),length=$('length'),width=$('width'),ink=$('ink');
+  const status=$('status');let marks=[],active=null,cursor={x:0,y:-160},showCursor=false;
+  const n=()=>+arms.value,colour=()=>ink.value,thick=()=>+width.value;
+  function note(s){status.textContent=s;}
+  function line(points,col=colour(),w=thick(),ref=mirror.checked){return {kind:'line',points,col,w,ref};}
+  function add(m,s){marks.push(m);if(marks.length>160)marks.shift();render();note(s);}
+  function trace(points){ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);
+    if(points.length===1){ctx.arc(points[0].x,points[0].y,Math.max(2,ctx.lineWidth/2),0,Math.PI*2);ctx.fill();}
+    else {for(let i=1;i<points.length;i++)ctx.lineTo(points[i].x,points[i].y);ctx.stroke();}
+  }
+  function drawMark(m){
+    ctx.save();ctx.translate(C,C);ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.strokeStyle=ctx.fillStyle=m.col;ctx.lineWidth=m.w||4;
+    if(m.kind==='core'){ctx.beginPath();for(let k=0;k<=n();k++){let a=2*Math.PI*k/n(),x=34*Math.cos(a),y=34*Math.sin(a);if(k===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();}
+    else if(m.kind==='odd'){trace([{x:146,y:0},{x:170,y:25},{x:183,y:19}]);}
+    else {for(let k=0;k<n();k++){ctx.save();ctx.rotate(2*Math.PI*k/n());trace(m.points);if(m.ref){ctx.scale(1,-1);trace(m.points);}ctx.restore();}}
+    ctx.restore();
+  }
+  function render(){
+    ctx.clearRect(0,0,W,W);
+    const bg=ctx.createRadialGradient(C,C,30,C,C,460);bg.addColorStop(0,'#1c527d');bg.addColorStop(1,'#081b34');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,W);
+    ctx.save();ctx.translate(C,C);ctx.strokeStyle='#d2ebff28';ctx.lineWidth=1;
+    for(const r of [80,160,240,310]){ctx.beginPath();ctx.arc(0,0,r,0,2*Math.PI);ctx.stroke();}
+    for(let k=0;k<n();k++){let a=k*2*Math.PI/n();ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(315*Math.cos(a),315*Math.sin(a));ctx.stroke();}
+    ctx.restore();
+    for(const m of marks)drawMark(m);
+    if(showCursor){ctx.strokeStyle='#ffda8e';ctx.lineWidth=2;let x=C+cursor.x,y=C+cursor.y;
+      ctx.beginPath();ctx.moveTo(x-10,y);ctx.lineTo(x+10,y);ctx.moveTo(x,y-10);ctx.lineTo(x,y+10);ctx.stroke();}
+    ctx.fillStyle='#defaff';ctx.beginPath();ctx.arc(C,C,4,0,2*Math.PI);ctx.fill();
+    $('readout').textContent=n()+' directions • '+marks.length+' steps • mirror '+(mirror.checked?'on':'off')+(n()!==6?' • fantasy symmetry':' • ice-crystal symmetry');
+    $('radiusOut').textContent=radius.value;$('lengthOut').textContent=length.value;$('widthOut').textContent=width.value;
+  }
+  function preset(){
+    arms.value='6';mirror.checked=true;marks=[{kind:'core',col:'#ceefff',w:4},line([{x:34,y:0},{x:262,y:0}],'#efffff',5,true)];
+    for(const r of [80,140,204]){
+      let a=r===204?35:43;
+      marks.push(line([{x:r,y:0},{x:r+a,y:-a*.78}],'#a8edff',4,true));
+      marks.push(line([{x:r+a*.5,y:-a*.39},{x:r+a*.83,y:-a*.66}],'#d6fcff',2.5,true));
+    }
+    marks.push(line([{x:266,y:0}],'#ffffff',7,false));
+    render();note('A six-direction snowflake is ready. Draw a line or add twigs!');
+  }
+  function undo(){if(marks.length){marks.pop();render();note('Undid one drawing step.');}else note('Nothing to undo.');}
+  $('preset').addEventListener('click',preset);
+  $('branch').addEventListener('click',()=>{let r=+radius.value,l=+length.value;add(line([{x:r,y:0},{x:r+l*.85,y:-l}]),'Added matching side branches.');});
+  $('tips').addEventListener('click',()=>add(line([{x:265,y:0}],colour(),thick()+4,false),'Added an icy tip to each arm.'));
+  $('center').addEventListener('click',()=>add({kind:'core',col:colour(),w:thick()},'Added a '+n()+'-sided center.'));
+  $('odd').addEventListener('click',()=>add({kind:'odd',col:'#ffcd70',w:7},'A golden branch appears on only one arm. Perfect symmetry is broken!'));
+  $('undo').addEventListener('click',undo);
+  $('clear').addEventListener('click',()=>{marks=[];render();note('Blank canvas. Draw a stroke to start!');});
+  for(const id of ['arms','mirror','radius','length','width','ink'])$(id).addEventListener('input',()=>{
+    render();
+    if(id==='arms')note(n()===6?'Six directions: the familiar ice-crystal symmetry.':'Now '+n()+' directions: imaginative art, not the normal ice-crystal pattern.');
+    if(id==='mirror')note('Mirroring changed for new strokes; old strokes keep their earlier choice.');
+  });
+  function position(e){const r=canvas.getBoundingClientRect();return {x:(e.clientX-r.left)*W/r.width-C,y:(e.clientY-r.top)*W/r.height-C};}
+  canvas.addEventListener('pointerdown',e=>{e.preventDefault();canvas.focus({preventScroll:true});active=line([position(e)]);marks.push(active);if(marks.length>160)marks.shift();canvas.setPointerCapture(e.pointerId);render();});
+  canvas.addEventListener('pointermove',e=>{if(!active)return;let p=position(e),last=active.points[active.points.length-1];if(Math.hypot(p.x-last.x,p.y-last.y)>3&&active.points.length<350)active.points.push(p);render();});
+  function end(){if(active){active=null;render();note('Your mark was copied into '+n()+' directions.');}}
+  canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);canvas.addEventListener('lostpointercapture',end);
+  canvas.addEventListener('focus',()=>{showCursor=true;render();});canvas.addEventListener('blur',()=>{showCursor=false;render();});
+  canvas.addEventListener('keydown',e=>{
+    const move={ArrowUp:[0,-12],ArrowDown:[0,12],ArrowLeft:[-12,0],ArrowRight:[12,0]};
+    if(move[e.key]){e.preventDefault();cursor.x=Math.max(-310,Math.min(310,cursor.x+move[e.key][0]));cursor.y=Math.max(-310,Math.min(310,cursor.y+move[e.key][1]));render();note('Moved the crosshair. Press Enter to stamp a dot.');}
+    else if(e.key==='Enter'||e.key===' '){e.preventDefault();add(line([{x:cursor.x,y:cursor.y}]),'Stamped '+n()+' dots with the keyboard.');}
+    else if(e.key.toLowerCase()==='u'){e.preventDefault();undo();}
+  });
+  $('download').addEventListener('click',()=>{
+    let prior=showCursor;showCursor=false;render();
+    canvas.toBlob(blob=>{
+      if(!blob){note('PNG export is unavailable; try a screenshot.');showCursor=prior;render();return;}
+      const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='my-snowflake.png';
+      document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
+      showCursor=prior;render();note('Your PNG snowflake is ready to save.');
+    },'image/png');
+  });
+  document.querySelectorAll('.answergroup').forEach(group=>{
+    const feedback=group.querySelector('.feedback');
+    group.querySelectorAll('[data-right]').forEach(button=>button.addEventListener('click',()=>{
+      feedback.textContent=(button.dataset.right==='1'?'✓ ':'↻ ')+button.dataset.explain;
+    }));
+  });
+  preset();
+})();</script></body></html>
