@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="A colorful, interactive science lesson for nine-year-olds: make a space seesaw balance using mass, distance, and torque. Includes NASA examples and a hands-on experiment.">
+<title>Balance the Spaceship! — DeepDivesKids · November 2, 2026</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#17263c;background:#f3f8ff;line-height:1.64;--ink:#17263c;--blue:#1962c9;--navy:#153e7b;--violet:#7034b8;--coral:#ee6254;--mint:#0c806e;--gold:#a45d09;--line:#d7e4f4;--paper:#fff;--soft:#eff6ff}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:1rem}
+body{margin:0;min-width:320px}
+a{color:var(--blue);text-underline-offset:.18em}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:4px solid #d35400;outline-offset:4px}
+.skip{position:absolute;top:-100px;left:12px;z-index:50;background:#fff;color:#17263c;padding:10px 16px;border-radius:12px}.skip:focus{top:12px}
+.hero{background:radial-gradient(circle at 85% 12%,#8154d9 0,transparent 28%),linear-gradient(120deg,#113c77,#17518e 54%,#2b5b82);color:#fff;position:relative;overflow:hidden}
+.hero:before{content:"✦       ✧        ✦          ✧";position:absolute;top:12%;left:13%;font-size:2rem;letter-spacing:1.5rem;opacity:.4;pointer-events:none}
+.hero-inner{max-width:1100px;margin:auto;display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:2rem;padding:4.7rem 1.5rem 4.3rem}
+.kicker{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800}
+.hero .kicker{color:#e4ddff}
+h1{font-size:clamp(2.5rem,6vw,5rem);line-height:1.05;letter-spacing:-.045em;margin:.7rem 0 1rem}
+.hero p{font-size:clamp(1rem,1.7vw,1.28rem);max-width:43rem;color:#f1f7ff}
+.hero-art{font-size:clamp(5rem,12vw,9rem);text-align:center;line-height:1.2;filter:drop-shadow(0 22px 10px #081b4d55);transform:rotate(-7deg)}
+.pills{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.5rem}
+.pills span{display:inline-block;padding:.4rem .8rem;border-radius:99px;background:#ffffff25;border:1px solid #ffffff50;font-weight:700;font-size:.85rem}
+nav.toc{max-width:1080px;margin:-1.7rem auto 2.5rem;position:relative;background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 12px 25px #133b7020;padding:1.3rem 1.5rem}
+.toc strong{display:block;margin-bottom:.5rem;font-size:1rem}
+.toc ul{list-style:none;display:flex;gap:.45rem .9rem;flex-wrap:wrap;padding:0;margin:0}
+.toc a{display:inline-block;padding:.22rem .35rem;font-weight:650}
+main{max-width:1080px;margin:auto;padding:0 1.15rem 5rem}
+section{margin:2.9rem 0;scroll-margin-top:2rem}
+h2{font-size:clamp(1.65rem,3.5vw,2.4rem);letter-spacing:-.03em;line-height:1.2;margin:0 0 .8rem;color:#153e7b}
+h3{color:#263e62;font-size:1.19rem;margin:.1rem 0 .5rem}
+p{margin:.7rem 0 1rem}
+.lede{font-size:1.2rem;max-width:65ch}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.card{background:#fff;border:1px solid var(--line);border-radius:19px;padding:1.25rem;box-shadow:0 6px 20px #24486a0d}
+.card p:last-child{margin-bottom:0}
+.badge{display:inline-block;border-radius:99px;padding:.18rem .55rem;font-weight:850;font-size:.77rem;background:#e9f0fc;color:#244b84}
+.badge.fact{background:#e6f7ef;color:#126044}
+.badge.idea{background:#ffefd4;color:#73490b}
+.badge.model{background:#f3eaff;color:#6636a0}
+.callout{border-radius:18px;padding:1.15rem 1.3rem;margin:1rem 0;background:#e7f9f3;border-left:7px solid #16896f}
+.callout.warn{background:#fff2df;border-color:#db891d}
+.callout.blue{background:#eaf2ff;border-color:#2369c8}
+.callout p:last-child{margin-bottom:0}
+.formula{border-radius:19px;border:2px dashed #d2bcff;background:#f7f0ff;padding:1.3rem;text-align:center;margin:1.2rem auto}
+.formula strong{font-size:clamp(1.2rem,3.2vw,1.65rem);display:block;color:#542f90}
+.formula small{display:block;margin-top:.6rem}
+.lab{background:#fff;border:1px solid var(--line);border-radius:23px;overflow:hidden;box-shadow:0 18px 40px #10345b15}
+.lab-head{padding:1.4rem 1.5rem;background:#edebff}
+.lab-head h3{font-size:1.5rem;margin-bottom:.2rem}
+.lab-head p{margin:0}
+.scene-wrap{padding:.6rem 1rem 0;background:linear-gradient(#dbeaff,#f6faff)}
+.scene{display:block;width:100%;height:auto;max-height:380px}
+.meter{text-align:center;padding:1rem 1.5rem 1.3rem;background:#f3f8ff;border-top:1px solid #d5e5f7}
+.status{font-size:clamp(1.08rem,2.5vw,1.45rem);font-weight:850;color:#173f7e;margin:0}
+.readout{display:flex;flex-wrap:wrap;justify-content:center;gap:.7rem;margin:.8rem 0 .2rem}
+.readout strong{display:inline-block;border:1px solid #ccdff6;background:#fff;border-radius:13px;padding:.42rem .8rem}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;padding:1.5rem}
+.control-panel{background:#f8faff;border:1px solid #e0eaf7;border-radius:17px;padding:1.1rem}
+.control-panel.left{border-top:6px solid #f46d57}
+.control-panel.right{border-top:6px solid #2665db}
+.control-panel h4{font-size:1.18rem;margin:.1rem 0 1rem}
+label{font-weight:750;display:block}
+label output{display:inline-block;font-weight:850;color:#0b4b8f;min-width:2em}
+input[type="range"]{display:block;width:100%;min-height:35px;accent-color:#2965cb;cursor:pointer;margin:.3rem 0 .95rem}
+.control-panel.left input{accent-color:#c34e36}
+.hint{font-size:.89rem;color:#445c7b;margin:-.4rem 0 .3rem}
+.lab-actions{padding:0 1.5rem 1.5rem;display:flex;flex-wrap:wrap;gap:.65rem}
+button{font:inherit;font-weight:800;border:0;border-radius:12px;padding:.72rem 1rem;cursor:pointer;min-height:44px;background:#255dc4;color:white;box-shadow:0 3px 0 #123e8e}
+button:hover{background:#184ca8}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 #123e8e}
+button.secondary{background:#e7f0ff;box-shadow:0 3px 0 #c3d5ef;color:#194a8e}
+button.secondary:hover{background:#cfdef5}
+.challenge-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem;margin:1rem 0}
+.challenge-grid button{background:#6240a6;box-shadow:0 3px 0 #412675;text-align:left}
+.challenge-grid button:hover{background:#4d2d94}
+.challenge-grid button span{display:block;font-size:.82rem;font-weight:500;opacity:.95}
+.feedback{padding:.8rem 1rem;border-radius:13px;background:#f6f0ff;border:1px solid #e0d7f9;min-height:3rem}
+.steps{counter-reset:step;list-style:none;padding:0;display:grid;gap:.85rem}
+.steps li{counter-increment:step;background:#fff;border:1px solid var(--line);border-radius:15px;padding:1rem 1rem 1rem 3.7rem;position:relative}
+.steps li:before{content:counter(step);position:absolute;left:.95rem;top:1rem;border-radius:50%;width:2rem;height:2rem;display:grid;place-items:center;color:white;background:#2365cf;font-weight:900}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0e1f35;color:#e4f2ff;padding:1.2rem;border-radius:14px;font-size:.93rem;line-height:1.5;tab-size:2}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,Monaco,monospace}
+:not(pre)>code{background:#e9effb;border-radius:.3rem;padding:.08rem .28rem;color:#183e70}
+details{background:#fff;border:1px solid #cfdded;border-radius:15px;padding:.8rem 1rem;margin:.65rem 0}
+summary{cursor:pointer;font-weight:850;color:#21569e}
+details p{margin:.8rem 0 .3rem}
+.sources{padding-left:1.2rem}
+.sources li{margin-bottom:.9rem}
+footer{background:#123a70;color:#f0f5ff;padding:2.4rem 1.2rem;text-align:center}
+footer a{color:#fff}
+.mini{font-size:.9rem;color:#445b79}
+footer .mini{color:#dae7f8}
+.vh{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:740px){.hero-inner{grid-template-columns:1fr;padding:3.5rem 1.2rem 3.8rem;gap:.5rem}.hero-art{font-size:5.5rem}.controls,.grid{grid-template-columns:1fr}.challenge-grid{grid-template-columns:1fr}.toc{margin:-1.6rem .85rem 2rem}main{padding:0 .85rem 3rem}.scene-wrap{padding:.2rem}.lab-actions{padding:0 1rem 1.2rem}.controls{padding:1rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button:active{transform:none}}
+@media print{.hero{color:#000;background:#fff}.hero-inner{padding:1.2rem}.hero-art{display:none}.toc,.lab-actions,.controls,.challenge-grid{display:none}.card,.lab,details{box-shadow:none;break-inside:avoid}footer{background:#fff;color:#000}footer a{color:#000}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the adventure</a>
+<header class="hero">
+ <div class="hero-inner">
+  <div>
+   <div class="kicker">DeepDivesKids · 02 November 2026 · Engineering + Space + Hockey</div>
+   <h1>Balance the<br>Spaceship! 🚀</h1>
+   <p>Can you balance a giant space rover with a tiny weight? Yes—if you put it in the right place! Become a NASA-style balance detective and test the secret of the seesaw.</p>
+   <div class="pills"><span>🧪 Ages 9+</span><span>⏱ About 20 minutes</span><span>🎮 Interactive lab</span><span>🖨 Printable experiment</span></div>
+  </div>
+  <div class="hero-art" aria-hidden="true">🪐<br>⚖️<br>🛰️</div>
+ </div>
+</header>
+<nav class="toc" aria-label="On this page">
+<strong>🧭 Your adventure map</strong>
+<ul>
+<li><a href="#mission">1. The mission</a></li><li><a href="#secret">2. The secret rule</a></li><li><a href="#lab">3. Balance simulator</a></li><li><a href="#challenges">4. Challenges</a></li><li><a href="#real">5. Real NASA examples</a></li><li><a href="#experiment">6. Kitchen-table test</a></li><li><a href="#code">7. The computer code</a></li><li><a href="#quiz">8. Quiz</a></li><li><a href="#notes">9. Limits & credits</a></li>
+</ul>
+</nav>
+<main id="main">
+<section id="mission">
+ <h2>🕵️ 1. The mystery of the tiny weight</h2>
+ <p class="lede">Picture a seesaw. Quinn sits close to the middle. Reagan sits farther away. Can the two sides balance even if one person is heavier?</p>
+ <div class="grid">
+  <div class="card"><h3>🛝 The playground clue</h3><p>The <strong>distance from the middle</strong> matters, not just how heavy something is. Moving out toward the end gives a weight more turning power.</p></div>
+  <div class="card"><h3>🛰️ The space clue</h3><p>A spacecraft has fuel tanks, batteries, instruments, and equipment in different places. Engineers must understand where its weight acts so it can be controlled.</p></div>
+ </div>
+ <div class="callout blue"><strong>Today's question:</strong> Could two small blocks on a long arm balance six blocks on a short arm? Make a prediction. Then use the lab below to find out!</div>
+</section>
+<section id="secret">
+ <h2>🔑 2. The secret: weight × distance</h2>
+ <p>Imagine the center of the seesaw is a <strong>pivot</strong>—the point it turns around. A force can twist a seesaw around its pivot. Engineers call that twisting effect <strong>torque</strong> (pronounced “tork”).</p>
+ <div class="formula"><strong>Turning power = weight × distance from pivot</strong><small>For this Earth-based toy, use identical blocks for weight and equally spaced marks for distance.</small></div>
+ <p>Suppose the left side has <strong>2 blocks, 6 steps away</strong>. Its turning score is 2 × 6 = <strong>12</strong>. The right side has <strong>3 blocks, 4 steps away</strong>. Its turning score is 3 × 4 = <strong>12</strong>. Both sides pull equally hard at turning the seesaw, so it balances!</p>
+ <div class="callout"><strong>Big discovery:</strong> A lighter load farther away can balance a heavier load closer in. That is why “the heavier side always wins” is not the whole story.</div>
+ <p class="mini"><strong>Science note:</strong> The real physical quantity is torque = force × perpendicular distance. On the same planet, equal-mass blocks experience the same gravity per block, so we can compare the simpler block × step scores. Our simulator assumes a weightless beam, one pivot, and forces pulling straight down.</p>
+</section>
+<section id="lab">
+ <h2>🎛️ 3. Mission Control: live balance lab</h2>
+ <p>Move the four sliders or use the arrow keys while a slider is focused. Watch the seesaw tilt and see both turning scores. The drawing is a <strong>teaching illustration</strong>, not a realistic moving physics engine.</p>
+ <div class="lab">
+  <div class="lab-head"><h3>⚖️ The Space Seesaw</h3><p>Orange team on the left. Blue team on the right. Goal: make both turning scores match!</p></div>
+  <div class="scene-wrap">
+   <svg id="seesaw" class="scene" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 335" role="img" aria-labelledby="svgtitle svgdesc">
+    <title id="svgtitle">Interactive seesaw balance illustration</title>
+    <desc id="svgdesc">A seesaw pivoted at its center, with orange blocks on the left and blue blocks on the right. The beam tilts toward the side with greater turning power. Read the text status below for the exact result.</desc>
+    <defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#d3eaff"/><stop offset="1" stop-color="#f9fcff"/></linearGradient></defs>
+    <rect width="920" height="335" fill="url(#sky)"/>
+    <g opacity=".4" fill="#fff"><circle cx="90" cy="54" r="5"/><circle cx="820" cy="67" r="7"/><circle cx="270" cy="36" r="4"/><circle cx="680" cy="28" r="3"/></g>
+    <path d="M0 285H920" stroke="#90b5da" stroke-width="4"/>
+    <text x="22" y="31" fill="#a44426" font-size="23" font-weight="800">ORANGE</text>
+    <text x="898" y="31" fill="#1a58a5" font-size="23" text-anchor="end" font-weight="800">BLUE</text>
+    <g id="beam" transform="translate(460 155) rotate(0)">
+     <line x1="-373" y1="0" x2="373" y2="0" stroke="#7a509c" stroke-width="22" stroke-linecap="round"/>
+     <line x1="-373" y1="-7" x2="373" y2="-7" stroke="#d5afe9" stroke-width="5" stroke-linecap="round"/>
+     <g id="ticks" aria-hidden="true"></g>
+     <g id="leftLoad" transform="translate(-270 -43)">
+      <rect x="-43" y="-33" width="86" height="55" rx="13" fill="#f46d57" stroke="#ad3a27" stroke-width="3"/>
+      <text id="leftLoadText" x="0" y="3" text-anchor="middle" font-size="24" fill="#fff" font-weight="900">2</text>
+     </g>
+     <g id="rightLoad" transform="translate(180 -43)">
+      <rect x="-43" y="-33" width="86" height="55" rx="13" fill="#2b6ddd" stroke="#164998" stroke-width="3"/>
+      <text id="rightLoadText" x="0" y="3" text-anchor="middle" font-size="24" fill="#fff" font-weight="900">3</text>
+     </g>
+     <circle cx="0" cy="0" r="15" fill="#34295c" stroke="white" stroke-width="4"/>
+    </g>
+    <path d="M460 172L414 277H506Z" fill="#3c5680" stroke="#172e50" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="460" cy="159" r="10" fill="#fff" stroke="#2b416a" stroke-width="4"/>
+    <text x="460" y="313" text-anchor="middle" font-size="19" font-weight="850" fill="#20466f">PIVOT</text>
+   </svg>
+  </div>
+  <div class="meter">
+   <p class="status" id="status" aria-live="polite" aria-atomic="true">⚖️ Perfectly balanced!</p>
+   <div class="readout" aria-label="Turning power scores"><strong id="leftScore">🟠 Left: 2 × 6 = 12</strong><strong id="rightScore">🔵 Right: 3 × 4 = 12</strong></div>
+   <p id="explanation" class="mini">Both turning scores match. Great engineering!</p>
+  </div>
+  <div class="controls">
+   <div class="control-panel left">
+    <h4>🟠 Orange: left side</h4>
+    <label for="lm">How many blocks? <output id="lmValue" for="lm">2</output></label>
+    <input type="range" id="lm" min="1" max="8" step="1" value="2">
+    <label for="ld">How many steps from the middle? <output id="ldValue" for="ld">6</output></label>
+    <input type="range" id="ld" min="1" max="8" step="1" value="6">
+    <p class="hint">A bigger distance gives the same blocks more turning power.</p>
+   </div>
+   <div class="control-panel right">
+    <h4>🔵 Blue: right side</h4>
+    <label for="rm">How many blocks? <output id="rmValue" for="rm">3</output></label>
+    <input type="range" id="rm" min="1" max="8" step="1" value="3">
+    <label for="rd">How many steps from the middle? <output id="rdValue" for="rd">4</output></label>
+    <input type="range" id="rd" min="1" max="8" step="1" value="4">
+    <p class="hint">Arrow keys change the active slider one step at a time.</p>
+   </div>
+  </div>
+  <div class="lab-actions">
+   <button id="solve" type="button">✨ Find blue's balance spot</button>
+   <button id="reset" type="button" class="secondary">↺ Reset to a perfect balance</button>
+  </div>
+  <p id="actionFeedback" class="feedback" aria-live="polite" aria-atomic="true" style="margin:0 1.5rem 1.5rem">Ready! Try changing the orange blocks.</p>
+ </div>
+</section>
+<section id="challenges">
+ <h2>🏆 4. Three balance challenges</h2>
+ <p>Pick a mission to load its starting values. Can you balance it <strong>before</strong> pressing the “Find blue's balance spot” button?</p>
+ <div class="challenge-grid" aria-label="Challenge presets">
+  <button type="button" data-preset="easy">🌟 Mission 1: Easy <span>A big orange load near the pivot.</span></button>
+  <button type="button" data-preset="medium">🪐 Mission 2: Space cargo <span>A tricky long-arm problem.</span></button>
+  <button type="button" data-preset="impossible">🧠 Mission 3: Impossible? <span>Sometimes the perfect distance isn't on the ruler!</span></button>
+ </div>
+ <div class="grid">
+  <div class="card"><h3>❓ Detective question</h3><p>Orange holds 4 blocks at 3 steps. Blue holds 2 blocks. Where should blue go?</p><details><summary>Reveal the answer</summary><p>Orange: 4 × 3 = 12. Blue needs 2 × 6 = 12. Put blue <strong>6 steps</strong> from the pivot!</p></details></div>
+  <div class="card"><h3>🌙 Bonus: On the Moon</h3><p>Would the <em>same</em> two stacks balance if you moved the entire seesaw to the Moon?</p><details><summary>Reveal the answer</summary><p>Yes, in this simplified setup. Both sides weigh less, but both are reduced by the same factor. The balance stays the same if the pivot, distances, and masses do not change.</p></details></div>
+ </div>
+</section>
+<section id="real">
+ <h2>🛰️ 5. Real engineers use this idea</h2>
+ <p>These are documented examples—not inventions made up for our game. Real spacecraft and airplanes are more complicated than a seesaw, but they use the same family of ideas about weight, forces, and turning.</p>
+ <div class="grid">
+  <article class="card"><span class="badge fact">Verified · NASA Glenn</span><h3>🚀 Model rocket stability</h3><p>NASA explains how rocket designers find a rocket's <strong>center of gravity</strong> from the weights and positions of its parts. NASA also teaches how the center of gravity and center of pressure help explain a model rocket's stability. <a href="https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/rocket-center-of-gravity/">NASA: Rocket Center of Gravity</a> and <a href="https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/rocket-stability/">Rocket Stability</a>.</p></article>
+  <article class="card"><span class="badge fact">Verified · NASA education</span><h3>✈️ Balancing an airplane</h3><p>NASA's “Weight and Balance: Lesson 2” shows how engineers locate an aircraft's center of gravity and explains that fuel distribution can help keep an aircraft in a safe balance range. It explicitly connects seesaws to airplanes. <a href="https://www.nasa.gov/stem-content/weight-and-balance-lesson-2/">NASA lesson video and description</a>.</p></article>
+  <article class="card"><span class="badge fact">Verified · NIST</span><h3>🔧 Measuring real torque</h3><p>At the U.S. National Institute of Standards and Technology, researchers have developed instruments to measure torque for accurate tool calibration. Grown-up engineers use <strong>newton-meters</strong>, not our toy “block-steps.” <a href="https://www.nist.gov/noac/technology/mass-force-and-acceleration/torque-realization">NIST: Torque Realization</a>.</p></article>
+  <article class="card"><span class="badge idea">Imagine · Not a verified project feature</span><h3>🎮 A balance checker in Dad's code</h3><p>Imagine Dad adding a “will this robot tip?” check to a VeloSim model, or using RISCue to run a tiny controller that repositions cargo. Those are <strong>ideas for future projects</strong>, not claims that these programs already do it.</p></article>
+ </div>
+ <div class="callout blue"><strong>Hockey connection:</strong> Moving your hands on a hockey stick changes your leverage around a turning point. It isn't exactly a playground seesaw, because your hands apply forces and the stick bends—but torque is part of the story. A goalie and a skater both learn how small position changes can matter.</div>
+</section>
+<section id="experiment">
+ <h2>🧪 6. Try it at your kitchen table</h2>
+ <p>You need a ruler, a pencil or marker to act as a pivot, and several <strong>identical coins or small blocks</strong>. Work on a low table so nothing falls far. No sharp tools or heavy weights are needed.</p>
+ <ol class="steps">
+  <li><strong>Build a seesaw.</strong> Place the ruler across the pencil. Find its center and balance the empty ruler first. Keep the pivot there.</li>
+  <li><strong>Start equal.</strong> Put one coin 5 cm left of the pivot and one matching coin 5 cm right. Does it stay balanced? Record your result.</li>
+  <li><strong>Move one load.</strong> Put <strong>two</strong> identical coins together 3 cm left of center. On the right, put <strong>one</strong> matching coin 6 cm from center. Predict what happens, then test.</li>
+  <li><strong>Change one thing.</strong> Move only the right-hand coin to 4 cm. Which side dips now? Why?</li>
+  <li><strong>Make a lab note.</strong> Draw two columns: “My prediction” and “What happened.” If the real ruler behaves differently, investigate friction, coin placement, and whether the ruler was centered.</li>
+ </ol>
+ <div class="callout warn"><strong>Be a careful scientist:</strong> A ruler has its own weight and the pencil adds friction. Coin stacks must be centered at their marks. Your real experiment may not balance perfectly. That is a <em>measurement clue</em>, not a failure.</div>
+</section>
+<section id="code">
+ <h2>💻 7. The secret inside the computer</h2>
+ <p>Our interactive lab uses a few lines of <strong>JavaScript</strong>, the language that can run right inside a web browser. Here is the heart of its calculation:</p>
+ <pre><code>function turningScore(blocks, steps) {
+  return blocks * steps;
+}
+function isBalanced(leftBlocks, leftSteps,
+                    rightBlocks, rightSteps) {
+  return turningScore(leftBlocks, leftSteps) ===
+         turningScore(rightBlocks, rightSteps);
+}
+console.log(isBalanced(2, 6, 3, 4)); // true
+console.log(isBalanced(2, 3, 3, 4)); // false</code></pre>
+ <p>The program calculates a score for each side and compares them. The drawing <em>shows</em> the answer. Just like an engineer's simulation, the program follows rules we chose—it cannot magically know about every detail of the real world.</p>
+ <div class="grid">
+  <div class="card"><h3>🔩 No downloads required</h3><p>This page uses standard HTML, CSS, inline SVG, and JavaScript. It works offline after you have saved the page. No frameworks, external packages, accounts, or network requests are needed for the lab itself.</p></div>
+  <div class="card"><h3>🧑‍🚀 Want to build more?</h3><p>Try extending the code to add a third weight on the orange side. Its turning score would add to the scores of the other orange weights. Test that the sums still balance.</p></div>
+ </div>
+</section>
+<section id="quiz">
+ <h2>❔ 8. Space engineer quiz</h2>
+ <details><summary>1. Which has more turning power: 2 blocks at 8 steps, or 4 blocks at 3 steps?</summary><p>2 × 8 = 16, while 4 × 3 = 12. The <strong>two blocks farther away</strong> have more turning power!</p></details>
+ <details><summary>2. If a weight is placed right on the pivot, what is its turning score?</summary><p>Zero. It has no distance from the pivot, so it does not twist the beam in this simple model.</p></details>
+ <details><summary>3. Does the simulator tell you exactly how fast a real seesaw would move?</summary><p>No. It draws a tilt based on the difference between turning scores, but does not calculate acceleration, time, friction, beam mass, or bouncing.</p></details>
+ <details><summary>4. What is one real reason aerospace engineers care about center of gravity?</summary><p>NASA's rocket lessons explain that center of gravity matters for <strong>flight stability</strong>; NASA's aircraft lesson describes safe airplane balance.</p></details>
+</section>
+<section id="notes">
+ <h2>📚 9. Scientist's notebook: limitations, sources &amp; credit</h2>
+ <div class="grid">
+  <div class="card"><span class="badge model">A model, not a full simulator</span><h3>What our game leaves out</h3><p>The beam is treated as weightless and rigid, gravity acts vertically, all blocks have equal mass, and the pivot is frictionless. The visible tilt is <strong>illustrative</strong>; it does not solve the equations of motion. A real object can also rotate in three dimensions.</p></div>
+  <div class="card"><span class="badge model">Licensing &amp; integration</span><h3>How this page works</h3><p>There are <strong>no third-party software libraries</strong>, so there are no external library licenses or installation steps. All demo HTML, CSS, SVG, and JavaScript are embedded in this file. The repository did not expose a root LICENSE file during preparation, so no general MIT permission is asserted for repository materials. External NASA and NIST pages remain under their own terms.</p></div>
+ </div>
+ <p><strong>Primary-source reading:</strong> These references come from the organizations performing the research or teaching the engineering. They support the specific real-world examples; our game scenarios are educational inventions.</p>
+ <ol class="sources">
+  <li><a href="https://www.grc.nasa.gov/www/k-12/airplane/torque.html">NASA Glenn — Torque (Moment)</a>. Why force and perpendicular distance determine turning effect.</li>
+  <li><a href="https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/rocket-center-of-gravity/">NASA Glenn — Rocket Center of Gravity</a>. Finding the balance point from component weights and positions.</li>
+  <li><a href="https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/rocket-stability/">NASA Glenn — Rocket Stability</a>. Why center of gravity and center of pressure matter to a model rocket.</li>
+  <li><a href="https://www.nasa.gov/stem-content/weight-and-balance-lesson-2/">NASA — Weight and Balance: Lesson 2</a>. Flight-test education and airplane weight distribution.</li>
+  <li><a href="https://www.nist.gov/noac/technology/mass-force-and-acceleration/torque-realization">NIST — Torque Realization</a>. Modern torque measurement and calibration.</li>
+ </ol>
+ <p class="mini">Created for DeepDivesKids · November 2, 2026 · Based on sources checked November 2, 2026. Interactive simulation is original educational code. An independent laboratory measurement or NASA engineering verification of this toy model has not been performed.</p>
+</section>
+</main>
+<footer>
+ <strong>✨ End of mission—what will you balance next? ✨</strong>
+ <p>Science is more fun when you predict, try, measure, and ask why.</p>
+ <p><a href="https://jeffadickson.github.io/but-does-it-do-anything/">↩ Back to the Deep Dive Library</a></p>
+ <p class="mini">DeepDivesKids · November 2, 2026 · Accessible, responsive, self-contained HTML</p>
+</footer>
+<script>
+(function () {
+  "use strict";
+  var ids = ["lm", "ld", "rm", "rd"];
+  var input = {};
+  ids.forEach(function (id) { input[id] = document.getElementById(id); });
+  var $ = function (id) { return document.getElementById(id); };
+  function values() {
+    return {
+      lm: Number(input.lm.value), ld: Number(input.ld.value),
+      rm: Number(input.rm.value), rd: Number(input.rd.value)
+    };
+  }
+  function turningScore(blocks, steps) { return blocks * steps; }
+  function isBalanced(lm, ld, rm, rd) {
+    return turningScore(lm, ld) === turningScore(rm, rd);
+  }
+  function render() {
+    var v = values();
+    ids.forEach(function (id) { $(id + "Value").textContent = String(v[id]); });
+    var left = turningScore(v.lm, v.ld);
+    var right = turningScore(v.rm, v.rd);
+    var angle = Math.max(-18, Math.min(18, (right - left) * 1.1));
+    $("beam").setAttribute("transform", "translate(460 155) rotate(" + angle.toFixed(2) + ")");
+    $("leftLoad").setAttribute("transform", "translate(" + (-45 * v.ld) + " -44)");
+    $("rightLoad").setAttribute("transform", "translate(" + (45 * v.rd) + " -44)");
+    $("leftLoadText").textContent = String(v.lm);
+    $("rightLoadText").textContent = String(v.rm);
+    $("leftScore").textContent = "🟠 Left: " + v.lm + " × " + v.ld + " = " + left;
+    $("rightScore").textContent = "🔵 Right: " + v.rm + " × " + v.rd + " = " + right;
+    if (isBalanced(v.lm, v.ld, v.rm, v.rd)) {
+      $("status").textContent = "⚖️ Perfectly balanced!";
+      $("explanation").textContent = "Both turning scores are " + left + ". Neither side has more turning power.";
+    } else if (left > right) {
+      $("status").textContent = "🟠 Orange wins: the LEFT side tips!";
+      $("explanation").textContent = "Orange leads by " + (left - right) + " block-steps. Try moving blue farther out.";
+    } else {
+      $("status").textContent = "🔵 Blue wins: the RIGHT side tips!";
+      $("explanation").textContent = "Blue leads by " + (right - left) + " block-steps. Try moving blue closer in.";
+    }
+  }
+  function setValues(v) {
+    ids.forEach(function (id) { input[id].value = String(v[id]); });
+    render();
+  }
+  ids.forEach(function (id) {
+    input[id].addEventListener("input", function () {
+      render();
+      $("actionFeedback").textContent = "You changed a number. Read the new turning scores above!";
+    });
+  });
+  var tickRoot = $("ticks");
+  for (var n = -8; n <= 8; n += 1) {
+    if (n === 0) continue;
+    var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", String(n * 45));
+    line.setAttribute("x2", String(n * 45));
+    line.setAttribute("y1", "-3");
+    line.setAttribute("y2", "16");
+    line.setAttribute("stroke", "#413667");
+    line.setAttribute("stroke-width", "2");
+    tickRoot.appendChild(line);
+    var label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", String(n * 45));
+    label.setAttribute("y", "36");
+    label.setAttribute("text-anchor", "middle");
+    label.setAttribute("font-size", "16");
+    label.setAttribute("font-weight", "750");
+    label.setAttribute("fill", "#2a3d5c");
+    label.textContent = String(Math.abs(n));
+    tickRoot.appendChild(label);
+  }
+  $("reset").addEventListener("click", function () {
+    setValues({lm:2,ld:6,rm:3,rd:4});
+    $("actionFeedback").textContent = "Reset: 2 × 6 and 3 × 4 both equal 12!";
+  });
+  $("solve").addEventListener("click", function () {
+    var v = values();
+    var target = turningScore(v.lm, v.ld) / v.rm;
+    if (Number.isInteger(target) && target >= 1 && target <= 8) {
+      input.rd.value = String(target);
+      render();
+      $("actionFeedback").textContent = "Found it! Blue needs " + target + " steps: " + v.rm + " × " + target + " = " + turningScore(v.lm, v.ld) + ".";
+    } else {
+      $("actionFeedback").textContent = "No exact blue distance from 1 to 8 whole steps works with these block counts. The math asks for " + (Math.round(target * 100) / 100) + " steps. Try changing the number of blue blocks!";
+    }
+  });
+  var presets = {
+    easy: {lm:6,ld:2,rm:2,rd:3},
+    medium: {lm:3,ld:8,rm:4,rd:3},
+    impossible: {lm:7,ld:5,rm:6,rd:4}
+  };
+  Array.prototype.forEach.call(document.querySelectorAll("[data-preset]"), function (button) {
+    button.addEventListener("click", function () {
+      var key = button.getAttribute("data-preset");
+      setValues(presets[key]);
+      var messages = {
+        easy: "Mission 1: Make the blue side equal 12. Can you move its load to the correct mark?",
+        medium: "Mission 2: Orange scores 24. Where should four blue blocks go?",
+        impossible: "Mission 3: Orange scores 35 and blue has six blocks. Can you make a perfect balance with whole-number steps?"
+      };
+      $("actionFeedback").textContent = messages[key];
+      $("status").focus && null;
+    });
+  });
+  render();
+})();
+</script>
+</body>
+</html>
