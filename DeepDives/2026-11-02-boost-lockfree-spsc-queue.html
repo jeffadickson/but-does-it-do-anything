@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="November 2, 2026 engineering deep dive: Boost.Lockfree's fixed-capacity SPSC queue, C++20 tests, RISCue design choices, verified users and a hands-on ring-buffer simulator.">
+  <title>One writer. One reader. No surprises. — Boost.Lockfree SPSC Queue | Engineering Deep Dive</title>
+  <style>
+    :root {color-scheme:light; --ink:#12253b; --muted:#486179; --faint:#667d90; --navy:#0c2037; --navy2:#183958; --aqua:#117f91; --teal:#0e6276; --paper:#f5f9fb; --line:#d6e4ec; --white:#fff; --amber:#995405; --yellow:#fff4d9; --red:#933b42; --red-bg:#fff1f0; --green:#116852; --green-bg:#e8f8ee; --shadow:0 15px 48px rgba(18,48,75,.09); --radius:20px;}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:var(--paper);color:var(--ink);font:16.5px/1.72 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;}
+    a{color:#075e7a;text-decoration-thickness:1.5px;text-underline-offset:3px} a:hover{color:#a75d08} a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #ecad2c;outline-offset:3px}
+    .skip{position:absolute;top:-70px;left:18px;z-index:20;padding:12px;background:#fff;color:#123}.skip:focus{top:12px}
+    .mast{background:linear-gradient(119deg,#081729,#10344e 66%,#0b6376);color:#fff;overflow:hidden;position:relative}
+    .mast:before{content:"";position:absolute;inset:-145px -100px auto auto;width:580px;height:580px;border:1px solid rgba(135,246,231,.17);border-radius:50%;box-shadow:0 0 0 58px rgba(98,217,204,.055),0 0 0 116px rgba(98,217,204,.04);pointer-events:none}
+    .mast-inner{max-width:1140px;padding:25px 28px 77px;margin:auto;position:relative}
+    .topline{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.23);padding-bottom:14px;margin-bottom:50px;font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800}
+    .topline span:nth-child(2){color:#b4e7e9} .eyebrow{color:#9ae6e3;font-size:.86rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
+    h1{font-size:clamp(2.4rem,5.4vw,5.2rem);line-height:1.08;max-width:920px;letter-spacing:-.055em;margin:14px 0 25px;font-weight:860} .mast p.intro{color:#dbe9f3;max-width:800px;font-size:clamp(1.05rem,2vw,1.34rem);line-height:1.65;margin:0 0 29px}
+    .tags{display:flex;gap:10px;flex-wrap:wrap} .tags span{background:rgba(219,255,251,.11);border:1px solid rgba(214,255,250,.32);padding:7px 11px;border-radius:100px;color:#e6faff;font-size:.86rem;font-weight:700}
+    .hero-strip{max-width:1140px;margin:-43px auto 0;padding:0 28px;position:relative;z-index:1}.hero-grid{background:#fff;box-shadow:var(--shadow);border:1px solid var(--line);border-radius:var(--radius);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:hidden}
+    .stat{padding:22px 24px}.stat + .stat{border-left:1px solid var(--line)}.stat strong{display:block;font-size:1.42rem;letter-spacing:-.035em;color:#0d5264}.stat span{font-size:.85rem;line-height:1.5;color:var(--muted)}
+    .layout{max-width:1140px;margin:36px auto 90px;padding:0 28px;display:grid;grid-template-columns:235px minmax(0,1fr);gap:37px;align-items:start}
+    .toc{position:sticky;top:18px;align-self:start;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 16px 18px 20px;box-shadow:0 3px 20px rgba(19,52,77,.035)}.toc h2{margin:0 0 10px;font-size:.74rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}.toc ol{padding:0;margin:0;list-style:none;counter-reset:toc}.toc li{margin:1px 0;counter-increment:toc}.toc a{display:block;padding:6px 5px;border-radius:7px;color:#36546b;text-decoration:none;font-size:.88rem;line-height:1.38}.toc a:hover{background:#edf7f8;color:#075d6f}.toc a:before{content:counter(toc,decimal-leading-zero)"  ";color:#1e8593;font-weight:800;font-size:.75rem}
+    main{min-width:0}.section{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:30px 34px;margin-bottom:23px;box-shadow:0 4px 22px rgba(18,48,75,.028);scroll-margin-top:20px}
+    .number{color:var(--aqua);font-size:.79rem;font-weight:850;letter-spacing:.14em;text-transform:uppercase}.section h2{font-size:clamp(1.48rem,2.6vw,2.15rem);line-height:1.19;letter-spacing:-.033em;margin:8px 0 18px}.section h3{font-size:1.2rem;line-height:1.35;margin:28px 0 10px;letter-spacing:-.02em}.section p{margin:11px 0 14px}.lead{font-size:1.09rem;color:#36556a}.section ul,.section ol{padding-left:24px}.section li{padding:3px 0}.section li::marker{color:#0b8193}.small{font-size:.85rem;color:var(--muted)}
+    .callout{border-left:4px solid var(--aqua);border-radius:0 12px 12px 0;background:#eaf7f8;padding:15px 20px;margin:20px 0}.callout.warning{border-color:#e6a334;background:#fff8e7}.callout.danger{border-color:#c76b6b;background:var(--red-bg)}.callout strong{display:inline-block;margin-right:5px}
+    .twocol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.note-card{border:1px solid var(--line);border-radius:14px;padding:20px;background:#fafdff}.note-card h3{margin:0 0 8px;font-size:1.05rem}.note-card p{margin:0;font-size:.96rem}.note-card.positive{background:var(--green-bg);border-color:#bddfce}.note-card.caution{background:var(--yellow);border-color:#efdca7}
+    .pill{display:inline-block;border-radius:100px;padding:1px 9px;font-size:.75rem;font-weight:800;white-space:nowrap}.pill.real{color:#0e614e;background:#d9f3e4}.pill.proposed{color:#8a4a04;background:#fff0d0}.pill.test{color:#165a8d;background:#e8f2ff}
+    .flow{width:100%;height:auto;border-radius:14px;background:#eff8f9;margin:8px 0 12px}.flow text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+    pre{position:relative;background:#0e2238;color:#dcecf5;overflow:auto;border-radius:13px;padding:21px 22px;font-size:.835rem;line-height:1.6;tab-size:4;max-width:100%;white-space:pre}code{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace} :not(pre)>code{background:#eaf2f6;color:#235775;padding:2px 5px;border-radius:5px;font-size:.91em;overflow-wrap:anywhere} .code-title{background:#183c54;color:#ddedf8;border-radius:11px 11px 0 0;font-size:.76rem;font-weight:700;letter-spacing:.08em;padding:9px 16px;text-transform:uppercase;margin:16px 0 -14px} .code-title + pre{border-radius:0 0 11px 11px}
+    .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:13px;margin:20px 0}table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:510px}th{background:#eaf4f7;text-align:left;font-size:.78rem;letter-spacing:.04em;color:#244f67;text-transform:uppercase}td,th{padding:12px 14px;border-bottom:1px solid #dce9ef;vertical-align:top}tbody tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#f9fcfd}
+    .lab{border:1px solid #b6dee0;border-radius:18px;overflow:hidden;background:#f3fbfb}.lab-top{padding:22px 22px 15px;background:linear-gradient(135deg,#e2f7f5,#effaff)}.lab h3{margin:0 0 6px;color:#0e5d69;font-size:1.32rem}.lab-top p{margin:0;color:#345a6c}.lab-body{padding:22px}.lab-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin:0 0 18px}.lab-controls label{display:flex;flex-direction:column;font-size:.81rem;font-weight:750;gap:3px;letter-spacing:.02em;color:#29536b}.lab-controls input{width:115px;padding:9px 11px;border:2px solid #afcbd1;border-radius:8px;font:inherit;color:var(--ink);background:white;min-height:44px}
+    button{border:1px solid transparent;border-radius:9px;padding:11px 15px;font:inherit;font-weight:800;cursor:pointer;min-height:44px}button.primary{background:#066f80;color:#fff}button.secondary{background:#dfedf3;color:#183e54;border-color:#bfd8e2}button.tertiary{background:#fff;border-color:#bbd7dd;color:#155b6d}button:hover{filter:brightness(.92)}button:disabled{opacity:.47;cursor:not-allowed}
+    .slots{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:7px;list-style:none;padding:0;margin:13px 0 10px}.slot{min-width:0;min-height:76px;border-radius:11px;border:2px solid #b8ceda;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;padding:6px 2px}.slot.has{border-color:#188a8f;background:#e2f8ee}.slot .value{font-size:1.16rem;font-weight:850;color:#145568;overflow-wrap:anywhere}.slot .idx{font-size:.64rem;color:#657a8c}.slot .cursor{font-size:.66rem;font-weight:800;min-height:1.3em;color:#8c4c05}.slot.read{box-shadow:inset 0 0 0 2px #d99d33}.slot.write{outline:2px dotted #3794bb;outline-offset:1px}
+    .meter{height:11px;background:#d9e5eb;border-radius:100px;overflow:hidden;margin:11px 0 4px}.meter-fill{height:100%;background:linear-gradient(90deg,#1c8d90,#f0bd4e);width:0%;transition:width .2s ease}.readouts{display:flex;flex-wrap:wrap;justify-content:space-between;gap:7px;font-size:.83rem;font-weight:730;color:#2e5668}.lab-status{padding:12px 14px;border-radius:10px;background:#e1f3f3;color:#164f60;min-height:50px;margin:18px 0 13px}.lab-status.warn{background:#fff0d3;color:#764c05}.lab-log{margin:0;padding:12px 12px 12px 32px;background:#fff;border:1px solid var(--line);border-radius:10px;max-height:156px;overflow:auto;font-size:.81rem;color:#3b5e74}.lab-log li{padding:2px 0}.legend{margin:12px 0 0;font-size:.78rem;color:var(--muted)}.legend strong{color:#114d5a}
+    .sources{list-style:none;padding:0!important;counter-reset:ref}.sources li{counter-increment:ref;padding:9px 0 10px 32px;position:relative;border-bottom:1px solid #e5edf3;overflow-wrap:anywhere}.sources li:last-child{border:0}.sources li:before{content:counter(ref);position:absolute;left:0;top:10px;display:grid;place-items:center;width:22px;height:22px;background:#e1f0f1;color:#115b6a;border-radius:50%;font-weight:800;font-size:.75rem}.sources .desc{display:block;color:var(--muted);font-size:.87rem;margin-top:3px}
+    .foot{background:#0d2438;color:#d8e7f0;padding:35px 25px;text-align:center;font-size:.89rem}.foot strong{color:#a7ebe0}.foot a{color:#b3e9ee}.foot p{max-width:760px;margin:5px auto}
+    @media(max-width:930px){.layout{grid-template-columns:minmax(0,1fr);gap:18px}.toc{position:static}.toc ol{columns:2;column-gap:14px}.section{padding:26px 26px}.topline{margin-bottom:32px}}
+    @media(max-width:570px){.mast-inner{padding:20px 18px 66px}.hero-strip{padding:0 15px}.hero-grid{grid-template-columns:1fr}.stat{padding:13px 19px}.stat + .stat{border-left:0;border-top:1px solid var(--line)}.layout{margin:26px auto 70px;padding:0 14px}.toc ol{columns:1}.section{padding:24px 18px;border-radius:15px}.twocol{grid-template-columns:1fr}.slots{grid-template-columns:repeat(4,minmax(0,1fr))}.slot{min-height:69px}.lab-top,.lab-body{padding:17px}.mast h1{letter-spacing:-.04em}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.meter-fill{transition:none}}
+    @media print{body{background:#fff;color:#000}.mast{background:#fff;color:#000}.mast h1,.mast p.intro,.mast .eyebrow,.mast .topline{color:#000}.mast:before,.toc,.lab-controls,.foot{display:none!important}.hero-strip{margin:0}.hero-grid,.section{box-shadow:none}.layout{display:block;margin:10px}.section{break-inside:avoid}.flow{max-height:160px}.lab{break-inside:avoid}a{color:#000!important}pre{white-space:pre-wrap}}
+  </style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<header class="mast">
+ <div class="mast-inner">
+  <div class="topline"><span>But Does It Do Anything? / Engineering Deep Dives</span><span>November 2, 2026 · Daily edition</span></div>
+  <div class="eyebrow">Library investigation • C++20 / predictable concurrency</div>
+  <h1>One writer.<br>One reader.<br>No surprises.</h1>
+  <p class="intro">A bounded, wait-free handoff between two execution contexts — and the engineering discipline required before trusting it in RISCue. Today's subject: <strong>Boost.Lockfree's <code>spsc_queue</code></strong>.</p>
+  <div class="tags"><span>Fixed capacity</span><span>Single producer / single consumer</span><span>Boost Software License 1.0</span><span>Header-first integration</span></div>
+ </div>
+</header>
+<div class="hero-strip"><div class="hero-grid" aria-label="Report highlights"><div class="stat"><strong>8 slots</strong><span>Compile-time capacity in the runnable example; overflow is explicit.</span></div><div class="stat"><strong>200,000</strong><span>Cross-thread records passed FIFO checks on each of two host compilers.</span></div><div class="stat"><strong>144 bytes</strong><span><code>sizeof(EventQueue)</code> measured on one x86-64 / Boost 1.83 host; not a target guarantee.</span></div></div></div>
+<div class="layout">
+ <nav class="toc" aria-label="Contents"><h2>In this deep dive</h2><ol>
+   <li><a href="#decision">The decision</a></li><li><a href="#architecture">Mechanism</a></li><li><a href="#contract">The actual contract</a></li><li><a href="#experiment">Try the ring</a></li><li><a href="#code">C++20 example</a></li><li><a href="#build">CMake / Ninja</a></li><li><a href="#measurements">What passed</a></li><li><a href="#adoption">Verified use in the wild</a></li><li><a href="#riscue">RISCue / VeloSim ideas</a></li><li><a href="#requirements">Traceable requirements</a></li><li><a href="#alternatives">Alternatives / tradeoffs</a></li><li><a href="#licensing">License &amp; distribution</a></li><li><a href="#verdict">Verdict</a></li><li><a href="#sources">Primary sources</a></li>
+ </ol></nav>
+ <main id="main">
+  <section class="section" id="decision"><span class="number">01 · Executive brief</span><h2>Why this library deserves a bench test</h2>
+   <p class="lead">Imagine one interrupt or dedicated producer task generating events, and one consumer task processing them. You want to pass an event without acquiring a mutex, allocating a node, or waiting for another thread to release a lock.</p>
+   <div class="twocol"><div class="note-card positive"><h3>✅ A genuinely useful narrow primitive</h3><p><code>boost::lockfree::spsc_queue&lt;T, capacity&lt;N&gt;&gt;</code> places its bounded storage in the queue object. With a simple fixed-size <code>T</code>, push and pop have explicit success/failure paths and no growing heap buffer.</p></div><div class="note-card caution"><h3>⚠️ Not an active-object message bus</h3><p>Exactly <strong>one</strong> concurrent producer and <strong>one</strong> concurrent consumer may use a given instance. Two tasks plus an ISR all posting into one queue violates the central contract.</p></div></div>
+   <p><strong>Recommendation:</strong> prototype it for dedicated 1:1 channels, not as a universal RISCue event mailbox. Its strongest feature is not maximum benchmark throughput; it is a restricted concurrency model simple enough to budget and test. The Boost documentation calls these operations <em>wait-free</em>, subject to hardware atomics and the behavior of <code>T</code> itself. <a href="#source-1">[1]</a> <a href="#source-2">[2]</a></p>
+   <div class="callout"><strong>Evidence labels in this report:</strong> <span class="pill real">SOURCE VERIFIED</span> means upstream documentation or inspected real project code; <span class="pill test">HOST TESTED</span> means a test actually ran here; <span class="pill proposed">PROPOSED</span> means an integration or engineering hypothesis, not adoption.</div>
+  </section>
+
+  <section class="section" id="architecture"><span class="number">02 · Architecture</span><h2>The ring is small. The concurrency contract is not.</h2>
+   <svg class="flow" viewBox="0 0 740 240" role="img" aria-labelledby="flow-title flow-desc"><title id="flow-title">Single-producer single-consumer queue</title><desc id="flow-desc">One producer writes events into a finite ring. One consumer reads them in order. The queue reports failure when it is full or empty.</desc>
+    <defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1591a1"/></marker></defs>
+    <rect x="19" y="54" width="163" height="129" rx="17" fill="#153f59"/><text x="100" y="90" fill="#fff" text-anchor="middle" font-size="20" font-weight="750">Producer</text><text x="100" y="115" fill="#cceaf2" text-anchor="middle" font-size="13">exactly one</text><text x="100" y="143" fill="#cceaf2" text-anchor="middle" font-size="13">event writer</text>
+    <path d="M188 118 H259" fill="none" stroke="#1591a1" stroke-width="5" marker-end="url(#arr)"/><text x="226" y="97" fill="#0c5967" text-anchor="middle" font-size="13" font-weight="760">push</text>
+    <rect x="270" y="54" width="220" height="129" rx="17" fill="#fff" stroke="#94bdc7" stroke-width="3"/><text x="380" y="85" fill="#164b5d" text-anchor="middle" font-size="18" font-weight="780">Bounded ring</text>
+    <g font-size="13" font-weight="800" text-anchor="middle" fill="#14606a"><rect x="294" y="110" width="37" height="39" rx="8" fill="#d7f2e6" stroke="#219b85"/><rect x="339" y="110" width="37" height="39" rx="8" fill="#d7f2e6" stroke="#219b85"/><rect x="384" y="110" width="37" height="39" rx="8" fill="#d7f2e6" stroke="#219b85"/><rect x="429" y="110" width="37" height="39" rx="8" fill="#edf1f4" stroke="#b9ced9"/><text x="312" y="135">1</text><text x="357" y="135">2</text><text x="403" y="135">3</text><text x="447" y="135">·</text></g>
+    <path d="M498 118 H561" fill="none" stroke="#1591a1" stroke-width="5" marker-end="url(#arr)"/><text x="527" y="97" fill="#0c5967" text-anchor="middle" font-size="13" font-weight="760">pop</text>
+    <rect x="571" y="54" width="152" height="129" rx="17" fill="#153f59"/><text x="647" y="90" fill="#fff" text-anchor="middle" font-size="20" font-weight="750">Consumer</text><text x="647" y="115" fill="#cceaf2" text-anchor="middle" font-size="13">exactly one</text><text x="647" y="143" fill="#cceaf2" text-anchor="middle" font-size="13">event reader</text>
+    <text x="370" y="218" fill="#315769" text-anchor="middle" font-size="13">Queue full → push returns false. Queue empty → pop returns false.</text>
+   </svg>
+   <p>Each successful <code>push</code> publishes the next element at the producer's write position; each successful <code>pop</code> consumes the oldest element at the consumer's read position. Both positions wrap around. Boost's implementation uses atomic indices and acquire/release synchronization so the consumer sees a completely published event. There is no per-operation lock or node allocation for a compile-time-sized queue. <a href="#source-1">[1]</a> <a href="#source-3">[3]</a></p>
+   <p><strong>Important distinction:</strong> Boost's internal ring can reserve a sentinel position to distinguish full from empty. The public capacity remains the requested <code>N</code>; it does <em>not</em> promise <code>sizeof(queue) == N * sizeof(T)</code>. Cache-line separation, indices, and platform layout cost memory.</p>
+  </section>
+
+  <section class="section" id="contract"><span class="number">03 · API &amp; correctness</span><h2>Know precisely what is guaranteed</h2>
+   <div class="tablewrap"><table><thead><tr><th>Operation / choice</th><th>Behavior</th><th>Engineering implication</th></tr></thead><tbody>
+     <tr><td><code>capacity&lt;N&gt;</code></td><td>Storage capacity chosen at compile time.</td><td>Static memory budgeting; no queue-buffer growth at runtime.</td></tr>
+     <tr><td><code>push(event)</code></td><td><code>true</code> if inserted, <code>false</code> when full.</td><td>Explicit backpressure policy required. No automatic overwrite.</td></tr>
+     <tr><td><code>pop(out)</code></td><td><code>true</code> if one oldest item delivered; <code>false</code> when empty.</td><td>Consumer must handle empty without treating it as a fault.</td></tr>
+     <tr><td><code>read_available()</code></td><td>Snapshot of occupancy.</td><td>Useful diagnostics; do not use as a reservation or synchronization barrier.</td></tr>
+     <tr><td><code>reset()</code></td><td>Clears ring state; documented as <strong>not thread-safe</strong>.</td><td>Stop both contexts before resetting.</td></tr>
+     <tr><td><code>is_lock_free()</code></td><td>Queries implementation's lock-free status.</td><td>Necessary platform check, not proof of system-wide WCET.</td></tr>
+   </tbody></table></div>
+   <div class="callout danger"><strong>Three ways to accidentally defeat the real-time story:</strong> (1) use <code>std::string</code> or another allocating <code>T</code>; (2) spin on a full queue inside a high-priority ISR; (3) use the same queue from multiple producers. “Wait-free queue operations” does not make arbitrary copy constructors, callbacks, logging, or scheduler behavior wait-free.</div>
+   <p>For the minimal example, <code>Event</code> is trivially copyable and has no dynamic members. The host compiler checks that property. The exact type and platform require review against the targeted Boost version: Boost 1.92 documents default-constructible, copyable-or-movable element requirements. <a href="#source-2">[2]</a></p>
+  </section>
+
+  <section class="section" id="experiment"><span class="number">04 · Interactive learning</span><h2>Can you make the queue overflow?</h2>
+   <p>Use the browser simulator to rehearse the <em>public semantics</em> of an eight-event ring. It is a small JavaScript model, <strong>not</strong> the Boost implementation and <strong>not</strong> a concurrency or performance benchmark. The simulated slots use an occupancy counter for clarity.</p>
+   <div class="lab" aria-label="Interactive bounded ring buffer experiment">
+    <div class="lab-top"><h3>Ring buffer laboratory</h3><p>Push events in. Pop them in FIFO order. Fill the ring and observe the rejected ninth event.</p></div>
+    <div class="lab-body"><div class="lab-controls"><label for="event-number">Event sequence<input id="event-number" type="number" min="0" max="999999" step="1" value="1" inputmode="numeric"></label><button type="button" class="primary" id="push">Push →</button><button type="button" class="secondary" id="pop">← Pop</button><button type="button" class="secondary" id="fill">Fill remaining</button><button type="button" class="tertiary" id="reset">Reset</button></div>
+    <div id="slots" class="slots" role="list" aria-label="Eight queue slots"></div>
+    <div class="meter" role="progressbar" aria-label="Queue occupancy" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0" id="meter"><div class="meter-fill" id="meter-fill"></div></div>
+    <div class="readouts"><span id="occupancy">0 / 8 occupied</span><span id="read-pointer">Read index: 0</span><span id="write-pointer">Write index: 0</span></div>
+    <p class="lab-status" id="status" role="status" aria-live="polite">Queue empty. Push an event to begin.</p>
+    <h4>Recent operations</h4><ol class="lab-log" id="log" aria-label="Recent queue operations"><li>Ready.</li></ol>
+    <p class="legend"><strong>Gold border:</strong> next read position. <strong>Blue dotted border:</strong> next write position. When empty, both pointers may coincide.</p>
+    </div>
+   </div>
+   <div class="callout warning"><strong>Challenge:</strong> Push events 1…8, then attempt 9. Pop three and push three more. If event 4 is not the next value popped, your FIFO model is broken. Reset after testing; a real concurrent <code>reset()</code> is unsafe.</div>
+  </section>
+
+  <section class="section" id="code"><span class="number">05 · Tested C++20</span><h2>A runnable capacity, wraparound and cross-thread probe</h2>
+   <p>This is the exact source compiled in the local Linux validation environment. It makes no side-effecting calls inside standard <code>assert</code> macros, so its checks still execute under a Release build with <code>NDEBUG</code>. The threaded portion is a <strong>host stress smoke test</strong>; its retry-with-<code>yield</code> policy is intentionally unsuitable for a hard real-time ISR.</p>
+   <div class="code-title">main.cpp · C++20 · tested on Boost 1.83</div><pre><code class="language-cpp">#include &lt;boost/lockfree/spsc_queue.hpp&gt;
+#include &lt;atomic&gt;
+#include &lt;cstdint&gt;
+#include &lt;iostream&gt;
+#include &lt;thread&gt;
+#include &lt;type_traits&gt;
+
+struct Event {
+    std::uint32_t sequence{};
+    std::uint16_t signal{};
+    std::uint16_t value{};
+};
+
+static_assert(std::is_trivially_copyable_v&lt;Event&gt;);
+using EventQueue = boost::lockfree::spsc_queue&lt;
+    Event, boost::lockfree::capacity&lt;8&gt;&gt;;
+
+#define REQUIRE(expr) do { \
+    if (!(expr)) { std::cerr &lt;&lt; "FAILED: " &lt;&lt; #expr &lt;&lt; '\n'; return 1; } \
+} while (false)
+
+int main() {
+    EventQueue q;                       // Storage is fixed at construction.
+    REQUIRE(q.is_lock_free());          // Check the tested host configuration.
+    for (std::uint32_t i = 0; i &lt; 8; ++i)
+        REQUIRE(q.push(Event{i, 7, 42}));
+    REQUIRE(!q.push(Event{99, 7, 42})); // Full: no growth, no overwrite.
+
+    Event out{};
+    for (std::uint32_t i = 0; i &lt; 5; ++i) {
+        REQUIRE(q.pop(out));
+        REQUIRE(out.sequence == i);
+    }
+    for (std::uint32_t i = 8; i &lt; 13; ++i)
+        REQUIRE(q.push(Event{i, 7, 42})); // Wrap around.
+    for (std::uint32_t i = 5; i &lt; 13; ++i) {
+        REQUIRE(q.pop(out));
+        REQUIRE(out.sequence == i);
+    }
+    REQUIRE(!q.pop(out));                // Empty: explicit failure.
+
+    // Host-only concurrency validation (not an RTOS integration example).
+    EventQueue shared;
+    constexpr std::uint32_t count = 200'000;
+    std::atomic&lt;bool&gt; done{false};
+    std::atomic&lt;bool&gt; ordered{true};
+    std::atomic&lt;std::uint32_t&gt; received{0};
+    std::thread consumer([&amp;] {
+        Event e{};
+        std::uint32_t expected = 0;
+        while (!done.load(std::memory_order_acquire) || !shared.empty()) {
+            if (shared.pop(e)) {
+                if (e.sequence != expected) ordered.store(false);
+                ++expected;
+            } else {
+                std::this_thread::yield();
+            }
+        }
+        received.store(expected, std::memory_order_release);
+    });
+    for (std::uint32_t i = 0; i &lt; count; ++i) {
+        while (!shared.push(Event{i, 7, 42}))
+            std::this_thread::yield(); // TEST ONLY: not an ISR/flight policy.
+    }
+    done.store(true, std::memory_order_release);
+    consumer.join();
+    REQUIRE(ordered.load());
+    REQUIRE(received.load() == count);
+    std::cout &lt;&lt; "PASS: capacity 8, overflow, wrap, FIFO, "
+              &lt;&lt; count &lt;&lt; " cross-thread events; sizeof(queue)="
+              &lt;&lt; sizeof(EventQueue) &lt;&lt; " bytes\n";
+}</code></pre>
+   <p><strong>Design nuance:</strong> The queue has one thread performing <em>all</em> pushes, and a distinct thread performing <em>all</em> pops. The initial sequential checks are conducted before either thread starts; they exercise the public FIFO semantics without pretending to validate cross-core synchronization on their own.</p>
+  </section>
+
+  <section class="section" id="build"><span class="number">06 · Integration</span><h2>CMake + Ninja without a hand-written compiler command</h2>
+   <p>Boost.Lockfree's SPSC header can be used without linking a separate Lockfree binary library. Here, <code>Boost::headers</code> supplies Boost headers and <code>Threads::Threads</code> supports the <em>host test</em>. Using <code>CONFIG</code> selects Boost's package configuration rather than relying on older <code>FindBoost</code> behavior in newer CMake versions. <a href="#source-6">[6]</a></p>
+   <div class="code-title">CMakeLists.txt</div><pre><code class="language-cmake">cmake_minimum_required(VERSION 3.21)
+project(boost_spsc_probe LANGUAGES CXX)
+find_package(Boost 1.70 CONFIG REQUIRED)
+find_package(Threads REQUIRED)
+add_executable(boost_spsc_probe main.cpp)
+target_compile_features(boost_spsc_probe PRIVATE cxx_std_20)
+target_link_libraries(boost_spsc_probe PRIVATE Boost::headers Threads::Threads)
+enable_testing()
+add_test(NAME boost_spsc_probe COMMAND boost_spsc_probe)</code></pre>
+   <div class="code-title">Configure, build, test</div><pre><code>cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
+ctest --test-dir build --output-on-failure</code></pre>
+   <p>For embedded deployment: add the Boost headers as an audited dependency, use the cross-compiler/toolchain file, and test your actual hardware's atomics, ABI, interrupt model, stack budget, linker map, latency and failure handling. This host test does <strong>not</strong> establish bare-metal compatibility.</p>
+  </section>
+
+  <section class="section" id="measurements"><span class="number">07 · Evidence ledger</span><h2>What was actually tested, and what was not</h2>
+   <div class="tablewrap"><table><thead><tr><th>Check</th><th>Result</th><th>Scope / limitation</th></tr></thead><tbody>
+     <tr><td>GCC 14.2, C++20, Release, Ninja/CTest</td><td><span class="pill test">PASS</span></td><td>Boost 1.83 headers, x86-64 Linux host.</td></tr>
+     <tr><td>Clang 17, C++20, Debug, Ninja/CTest</td><td><span class="pill test">PASS</span></td><td>Same host and installed Boost.</td></tr>
+     <tr><td>GCC <code>-fno-exceptions -fno-rtti</code></td><td><span class="pill test">PASS</span></td><td>Host-only manual compile/run; no target assertion.</td></tr>
+     <tr><td>Capacity / full rejection / empty rejection</td><td><span class="pill test">PASS</span></td><td>Queue with exactly 8 usable entries.</td></tr>
+     <tr><td>Wraparound + FIFO order</td><td><span class="pill test">PASS</span></td><td>Sequence verification across 13 inserts.</td></tr>
+     <tr><td>Two-thread handoff, 200,000 events</td><td><span class="pill test">PASS</span></td><td>Both compilers; not a timing proof or systematic race exploration.</td></tr>
+     <tr><td><code>sizeof(EventQueue)</code></td><td><span class="pill test">144 bytes</span></td><td>Measured ABI/layout only, not portable or a dynamic allocation audit.</td></tr>
+     <tr><td>Boost 1.92.0 compatibility</td><td><span class="pill proposed">NOT BUILT</span></td><td>1.92 official API reviewed; no 1.92 toolchain test.</td></tr>
+     <tr><td>Embedded target / WCET / ISR suitability</td><td><span class="pill proposed">NOT TESTED</span></td><td>Requires RTOS, board and workload-specific work.</td></tr>
+   </tbody></table></div>
+   <p>No benchmark throughput, instruction count, CPU cycle budget, or end-to-end allocation-zero claim is made. A 200,000-event smoke test demonstrates functional behavior under the tested conditions but does not prove absence of concurrency bugs on all architectures.</p>
+  </section>
+
+  <section class="section" id="adoption"><span class="number">08 · Actual source-code adoption</span><h2>Used for real problems, not just a benchmark slide</h2>
+   <p>These examples were checked against primary project source files. Source presence establishes a concrete dependency in that version; it <strong>does not prove</strong> which binary artifacts shipped, where they were deployed, or whether a particular runtime code path executes today.</p>
+   <div class="tablewrap"><table><thead><tr><th>Project</th><th>Inspected implementation</th><th>What it establishes</th></tr></thead><tbody>
+    <tr><td><strong>SuperCollider</strong><br><span class="pill real">SOURCE VERIFIED</span></td><td><code>PyrSerialPrim.cpp</code> declares a fixed <code>spsc_queue&lt;uint8_t, capacity&lt;8192&gt;&gt;</code>, pushes serial input bytes, and pops from the receive FIFO. <a href="#source-7">[7]</a></td><td>A real audio/software project's serial receiving path uses this exact queue type, with a bounded receive buffer.</td></tr>
+    <tr><td><strong>Alibaba CicadaPlayer</strong><br><span class="pill real">SOURCE VERIFIED</span></td><td><code>framework/base/media/spsc_queue.h</code> derives a <code>SpscQueue&lt;T&gt;</code> wrapper from <code>boost::lockfree::spsc_queue&lt;T&gt;</code>. <a href="#source-8">[8]</a></td><td>A production-oriented media player codebase integrates the queue as a reusable adapter; deployment details not verified.</td></tr>
+    <tr><td><strong>Mapnik</strong><br><span class="pill real">SOURCE VERIFIED</span></td><td>Its XYZ tile input plugin declares <code>spsc_queue&lt;tile_data&gt;</code> and pushes tile data. <a href="#source-9">[9]</a></td><td>A tile-fetching pipeline uses a runtime-sized queue. This does not demonstrate zero allocations for that consumer.</td></tr>
+   </tbody></table></div>
+  </section>
+
+  <section class="section" id="riscue"><span class="number">09 · Suggested engineering applications</span><h2>Where the pattern might pay for itself</h2>
+   <div class="twocol"><div class="note-card"><h3>RISCue: dedicated diagnostic channel <span class="pill proposed">PROPOSED</span></h3><p>A single event producer feeds one diagnostic consumer. Start with a fixed POD event, an explicit drop counter, a named capacity and a test demonstrating full/empty conditions. Do not repurpose it when many active objects share the producer role.</p></div><div class="note-card"><h3>VeloSim: traced handoff <span class="pill proposed">PROPOSED</span></h3><p>Connect one simulation event stream to one recorder. Record sequence numbers and drops, then replay the resulting stream deterministically. <em>Arrival timing</em> between host threads is not itself deterministic.</p></div></div>
+   <h3>A tiny interface for a flight-friendly policy</h3>
+   <div class="code-title">Design sketch — illustrative, not compiled as part of the probe</div><pre><code class="language-cpp">bool post_from_single_producer(const Event&amp; e) noexcept {
+    if (queue_.push(e)) return true;
+    ++producer_local_drop_count_; // A single owner writes this counter.
+    return false;                 // Never block inside an ISR.
+}</code></pre>
+   <p>That sketch assumes <code>queue_</code> and its producer-local counter are suitably initialized and exclusively owned; it is not a turnkey interrupt-safe wrapper. If the actual design has several independent posters, consider one queue per producer feeding an arbiter, or a queue specifically designed for multiple producers. Avoid attaching a lock around the queue and then advertising the resulting path as wait-free.</p>
+   <div class="callout warning"><strong>Flight software review gate:</strong> analyze queue placement and cache effects, atomics on the exact MCU, interrupt nesting, push/pop WCET, synchronization ordering, lost-event handling, overflow telemetry, reset/quiescence, object lifetimes, and traceability from requirements to tests.</div>
+  </section>
+
+  <section class="section" id="requirements"><span class="number">10 · Requirements &amp; verification</span><h2>Turn library selection into testable claims</h2>
+   <div class="tablewrap"><table><thead><tr><th>ID</th><th>Candidate requirement</th><th>Verification approach</th></tr></thead><tbody>
+    <tr><td>RQ-SPSC-001</td><td>A queue instance shall have exactly one designated producer and one designated consumer.</td><td>Architecture review; thread/ISR ownership analysis; negative misuse test where feasible.</td></tr>
+    <tr><td>RQ-SPSC-002</td><td>Full queues shall reject additional events without changing earlier entries.</td><td>Fill at capacity; attempt another push; verify FIFO contents.</td></tr>
+    <tr><td>RQ-SPSC-003</td><td>No runtime heap allocation shall occur in the approved post/pop path.</td><td>Static inspect element type, instrument allocators, trace on target.</td></tr>
+    <tr><td>RQ-SPSC-004</td><td>Event delivery shall preserve producer sequence order, including wraparound.</td><td>Sequence-based stress and forced wraparound tests.</td></tr>
+    <tr><td>RQ-SPSC-005</td><td>Overflow shall be observable and shall follow a documented loss policy.</td><td>Force saturation; verify counter, telemetry and severity handling.</td></tr>
+    <tr><td>RQ-SPSC-006</td><td>Worst-case post/pop execution time shall meet target timing budgets.</td><td>Target-specific instrumented timing under competing load and interrupt conditions.</td></tr>
+    <tr><td>RQ-SPSC-007</td><td>Queue reset shall be permitted only after both contexts are quiescent.</td><td>State-machine review; shutdown/restart integration test.</td></tr>
+   </tbody></table></div>
+   <p>These are <em>proposed project requirements</em>, not promises made by Boost. For every candidate, map the eventual test artifact to the actual RISCue software requirements specification and the configured hardware platform.</p>
+  </section>
+
+  <section class="section" id="alternatives"><span class="number">11 · Deliberate tradeoffs</span><h2>Choose the topology before the container</h2>
+   <div class="tablewrap"><table><thead><tr><th>Option</th><th>Suitable when</th><th>Watch for</th></tr></thead><tbody>
+     <tr><td><strong>Boost.Lockfree SPSC</strong></td><td>Precisely one producer / consumer, bounded queue, low-overhead handoff.</td><td>No intrinsic blocking wait; explicit overflow and target validation.</td></tr>
+     <tr><td><strong>Boost.Lockfree queue</strong></td><td>Several producers/consumers need a general concurrent queue.</td><td>Different progress guarantee; boundedness and allocation policies require separate analysis.</td></tr>
+     <tr><td><strong>RTOS mailbox / event queue</strong></td><td>Scheduler wakeups, priorities and explicit blocking are central.</td><td>Scheduler latency, critical sections, priority handling, certification evidence.</td></tr>
+     <tr><td><strong>Mutex + bounded ring</strong></td><td>Simplicity and low traffic matter more than nonblocking progress.</td><td>Blocking, priority inversion policy, lock hold times.</td></tr>
+     <tr><td><strong>Dedicated SPSCQueue library</strong></td><td>You want a smaller standalone dependency.</td><td>Audit alternative capacity semantics and blocking vs try-APIs separately. <a href="#source-10">[10]</a></td></tr>
+   </tbody></table></div>
+   <p>Boost's own documentation cautions that nonblocking containers are <em>not always the fastest</em> choice and recommends workload-specific benchmarking. “Wait-free” describes operation-level progress, not end-to-end delivery when the application retries indefinitely on full. <a href="#source-1">[1]</a></p>
+  </section>
+
+  <section class="section" id="licensing"><span class="number">12 · Licensing &amp; dependency management</span><h2>Permissive, but not MIT</h2>
+   <p><strong>License:</strong> <code>BSL-1.0</code> — Boost Software License, Version 1.0. This is a permissive open-source license, <em>not</em> the MIT license. It permits use, modification, distribution and commercial integration. Redistributed source or derived-source copies must carry the copyright notices and full license; the text contains an exception for purely machine-executable object code. <a href="#source-4">[4]</a></p>
+   <p><strong>Integration hygiene:</strong> pin the Boost distribution version, retain its original license and third-party notices where required, record the provenance/SBOM entry, and run license scanning as part of CI. Treat bundled Boost dependencies as a dependency tree rather than assuming the single header is the entire source-redistribution obligation.</p>
+   <p><strong>Compatibility:</strong> documented current APIs were reviewed in Boost <strong>1.92.0</strong>, while executable tests used the locally available <strong>1.83.0</strong>. The example deliberately uses APIs available in both. <em>No claim of binary equivalence, embedded deployment, or a 1.92 build is made.</em> <a href="#source-5">[5]</a></p>
+  </section>
+
+  <section class="section" id="verdict"><span class="number">13 · Adoption decision</span><h2>Worth prototyping — with a sharply bounded scope</h2>
+   <p>For a single diagnostic producer feeding one recorder, <code>spsc_queue</code> is a credible foundation: finite capacity, explicit failure, FIFO semantics and a widely reviewed upstream codebase. The test here also demonstrates that a small fixed-capacity event type can use the queue with no dynamic data members and with functioning threaded handoff on the tested host.</p>
+   <p>For RISCue's general active-object mailboxes, the design likely requires <strong>multiple producers</strong>. That is where this library's defining restriction becomes an architectural problem rather than an optimization opportunity. Evaluate an RTOS-native mailbox or a separately verified MPSC/MPMC queue instead.</p>
+   <div class="callout"><strong>Next practical experiment:</strong> instrument a single-producer queue on the intended board, run the saturation and interrupt-preemption tests, measure maximum observed push/pop cycles and memory footprint, and compare with RISCue's existing message path under identical workload and priority settings. Do not select from desktop throughput rankings.</div>
+  </section>
+
+  <section class="section" id="sources"><span class="number">14 · Sources &amp; reproducibility</span><h2>Primary sources, not unsupported claims</h2>
+   <p class="small">Inspected November 2, 2026. Upstream links below are official Boost/CMake sources or first-party project repositories. Version-pinned links and exact source files make claims auditable.</p>
+   <ol class="sources">
+    <li id="source-1"><a href="https://www.boost.org/doc/libs/1_92_0/doc/html/lockfree.html" target="_blank" rel="noopener noreferrer">Boost.Lockfree 1.92 documentation — motivation, progress guarantees, configuration</a><span class="desc">Primary reference for wait-free/lock-free terminology, topology and atomics caveats.</span></li>
+    <li id="source-2"><a href="https://www.boost.org/doc/libs/1_92_0/doc/html/doxygen/classboost_1_1lockfree_1_1spsc__queue.html" target="_blank" rel="noopener noreferrer">Boost 1.92 <code>spsc_queue</code> reference</a><span class="desc">API methods, element requirements, full/empty return values and reset warning.</span></li>
+    <li id="source-3"><a href="https://github.com/boostorg/lockfree/blob/develop/include/boost/lockfree/spsc_queue.hpp" target="_blank" rel="noopener noreferrer">Boost.Lockfree implementation header</a><span class="desc">First-party source for ring layout and atomic index implementation; develop may evolve.</span></li>
+    <li id="source-4"><a href="https://www.boost.org/users/license.html" target="_blank" rel="noopener noreferrer">Boost Software License 1.0 — official text and FAQ</a><span class="desc">Copyright retention and object-code exception.</span></li>
+    <li id="source-5"><a href="https://www.boost.org/releases/1.92.0/" target="_blank" rel="noopener noreferrer">Boost release 1.92.0</a><span class="desc">Version identity and release documentation; not evidence of a local build.</span></li>
+    <li id="source-6"><a href="https://cmake.org/cmake/help/latest/command/find_package.html" target="_blank" rel="noopener noreferrer">CMake <code>find_package</code> official documentation</a><span class="desc">Config mode and imported targets; integration shown was compiled locally.</span></li>
+    <li id="source-7"><a href="https://github.com/supercollider/supercollider/blob/64c3b4f8e2d6e6017cf287086afa512bc5a30bee/lang/LangPrimSource/PyrSerialPrim.cpp" target="_blank" rel="noopener noreferrer">SuperCollider — serial FIFO implementation</a><span class="desc">Direct use of a <code>capacity&lt;8192&gt;</code> Boost SPSC queue in source.</span></li>
+    <li id="source-8"><a href="https://github.com/alibaba/CicadaPlayer/blob/f259a7f2f9a58b64787b927e5cd5ead7fbd35de0/framework/base/media/spsc_queue.h" target="_blank" rel="noopener noreferrer">Alibaba CicadaPlayer — SPSC wrapper</a><span class="desc">Direct inheritance from a Boost queue with runtime capacity.</span></li>
+    <li id="source-9"><a href="https://github.com/mapnik/mapnik/blob/d45615d52544159ae7649631ad60382279ea3576/plugins/input/tiles/xyz_tiles.hpp" target="_blank" rel="noopener noreferrer">Mapnik — XYZ tile plugin queue</a><span class="desc">Primary source using Boost SPSC in a data-loading path.</span></li>
+    <li id="source-10"><a href="https://github.com/rigtorp/SPSCQueue" target="_blank" rel="noopener noreferrer">rigtorp/SPSCQueue — alternative implementation</a><span class="desc">First-party README makes its blocking and try-operation APIs explicit.</span></li>
+    <li id="source-11"><a href="https://www.boost.org/doc/libs/1_92_0/doc/html/lockfree/examples.html" target="_blank" rel="noopener noreferrer">Boost.Lockfree official SPSC example</a><span class="desc">Cross-thread example and API usage from Boost itself.</span></li>
+   </ol>
+   <p class="small"><strong>Reproduction note:</strong> C++ code was compiled using locally installed Boost 1.83, GCC 14.2.0 and Clang 17 on Linux, CMake 3.31.6 and Ninja 1.12.1. Tests were executed, not inferred from source review. Browser simulation is a separate JavaScript model; its semantics and DOM behavior were validated independently. No Windows PC synchronization or hardware-in-the-loop test is implied.</p>
+  </section>
+ </main>
+</div>
+<footer class="foot"><p><strong>But Does It Do Anything?</strong> · Engineering Deep Dive · November 2, 2026</p><p>An independent technical review. Documented behavior, measured host results, and proposed architecture are kept separate.</p></footer>
+<script id="ring-lab">
+"use strict";
+class QueueModel {
+  constructor(capacity = 8) {
+    if (!Number.isSafeInteger(capacity) || capacity < 1) throw new RangeError("capacity");
+    this.capacity = capacity;
+    this.reset();
+  }
+  reset() {
+    this.slots = Array(this.capacity).fill(null);
+    this.read = 0;
+    this.write = 0;
+    this.size = 0;
+  }
+  push(value) {
+    if (!Number.isSafeInteger(value) || value < 0) throw new RangeError("event");
+    if (this.size === this.capacity) return false;
+    this.slots[this.write] = value;
+    this.write = (this.write + 1) % this.capacity;
+    this.size += 1;
+    return true;
+  }
+  pop() {
+    if (this.size === 0) return null;
+    const value = this.slots[this.read];
+    this.slots[this.read] = null;
+    this.read = (this.read + 1) % this.capacity;
+    this.size -= 1;
+    return value;
+  }
+}
+const model = new QueueModel(8);
+const get = (id) => document.getElementById(id);
+const slotsNode = get("slots");
+const input = get("event-number");
+const status = get("status");
+const log = get("log");
+function note(message, warning = false) {
+  status.textContent = message;
+  status.classList.toggle("warn", warning);
+  const item = document.createElement("li");
+  item.textContent = message;
+  log.prepend(item);
+  while (log.children.length > 10) log.lastElementChild.remove();
+}
+function render() {
+  slotsNode.replaceChildren();
+  model.slots.forEach((value, i) => {
+    const item = document.createElement("div");
+    item.className = "slot" + (value !== null ? " has" : "") + (model.size > 0 && i === model.read ? " read" : "") + (i === model.write ? " write" : "");
+    item.setAttribute("role", "listitem");
+    item.setAttribute("aria-label", `Slot ${i}: ${value === null ? "empty" : "event " + value}${i === model.read ? ", read position" : ""}${i === model.write ? ", write position" : ""}`);
+    const index = document.createElement("span"); index.className = "idx"; index.textContent = `SLOT ${i}`;
+    const content = document.createElement("span"); content.className = "value"; content.textContent = value === null ? "·" : String(value);
+    const cursor = document.createElement("span"); cursor.className = "cursor";
+    cursor.textContent = (i === model.read ? "R" : "") + (i === model.write ? "W" : "");
+    item.append(index, content, cursor);
+    slotsNode.append(item);
+  });
+  get("occupancy").textContent = `${model.size} / ${model.capacity} occupied`;
+  get("read-pointer").textContent = `Read index: ${model.read}`;
+  get("write-pointer").textContent = `Write index: ${model.write}`;
+  get("meter").setAttribute("aria-valuenow", String(model.size));
+  get("meter-fill").style.width = `${(model.size / model.capacity) * 100}%`;
+}
+function parsedEvent() {
+  const n = Number(input.value);
+  if (!input.value.trim() || !Number.isSafeInteger(n) || n < 0 || n > 999999) {
+    note("Enter a whole-number event between 0 and 999999.", true);
+    input.focus();
+    return null;
+  }
+  return n;
+}
+get("push").addEventListener("click", () => {
+  const n = parsedEvent(); if (n === null) return;
+  if (model.push(n)) {
+    note(`PUSH ${n}: accepted. ${model.size} of ${model.capacity} slots used.`);
+    input.value = String(Math.min(999999, n + 1));
+  } else note(`PUSH ${n}: rejected — queue full. Old events were preserved.`, true);
+  render();
+});
+get("pop").addEventListener("click", () => {
+  const n = model.pop();
+  note(n === null ? "POP: no event — queue empty." : `POP: delivered event ${n}. Next-oldest event remains first.`, n === null);
+  render();
+});
+get("fill").addEventListener("click", () => {
+  const start = parsedEvent(); if (start === null) return;
+  const space = model.capacity - model.size;
+  if (space === 0) { note("FILL: queue already full; no changes.", true); return; }
+  let added = 0;
+  for (let i = 0; i < space; i++) {
+    if (start + i > 999999) break;
+    if (model.push(start + i)) added++;
+  }
+  note(`FILL: queued ${added} event${added === 1 ? "" : "s"} without overwriting existing data.`);
+  input.value = String(Math.min(999999, start + added));
+  render();
+});
+get("reset").addEventListener("click", () => {
+  model.reset(); input.value = "1"; note("RESET: model cleared. In actual Boost, reset requires quiescence."); render();
+});
+render();
+</script>
+</body>
+</html>
