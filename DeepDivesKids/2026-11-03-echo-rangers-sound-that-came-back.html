@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="Echo Rangers: an interactive, kid-friendly lab for discovering how bats and sonar measure distance with returning sound. A self-contained lesson with mysteries, experiments and real science.">
+<title>Echo Rangers: The Sound That Came Back! — DeepDivesKids · November 3, 2026</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#17263c;background:#f5f9ff;line-height:1.65;--ink:#17263c;--navy:#17355d;--blue:#195eaf;--teal:#086f72;--gold:#9b580a;--line:#d9e5f3;--paper:#fff}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:1rem}
+body{margin:0;min-width:320px}
+a{color:#185aa8;text-underline-offset:.2em}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:4px solid #e68b24;outline-offset:3px}
+.skip{position:absolute;top:-100px;left:12px;z-index:99;background:white;padding:12px 16px;border:2px solid #185aa8;border-radius:12px}.skip:focus{top:12px}
+.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 82% 19%,#197f88 0,transparent 32%),linear-gradient(125deg,#122c51,#184870 62%,#195c72);color:#fff}
+.hero:before{content:"✦";position:absolute;left:8%;top:9%;font-size:3.5rem;color:#9be9e3;opacity:.35}
+.hero-inner{max-width:1100px;margin:auto;display:grid;grid-template-columns:1.18fr .82fr;align-items:center;gap:2rem;padding:4.5rem 1.4rem 4rem}
+.kicker{letter-spacing:.14em;text-transform:uppercase;font-size:.84rem;font-weight:850;color:#b7f7ea}
+h1{font-size:clamp(2.65rem,6vw,5.25rem);line-height:1.04;letter-spacing:-.055em;margin:.65rem 0 1rem}
+.subtitle{font-size:clamp(1.08rem,1.85vw,1.33rem);max-width:47ch;color:#f1f9ff}
+.pills{display:flex;gap:.6rem;flex-wrap:wrap;margin:1.4rem 0 0}
+.pill{border:1px solid #cceeed8c;background:#ffffff22;padding:.35rem .75rem;border-radius:99px;font-size:.84rem;font-weight:750}
+.hero-art{position:relative;min-height:245px;display:grid;place-items:center}
+.hero-art svg{display:block;width:100%;height:auto;max-width:440px;filter:drop-shadow(0 10px 16px #071b3180)}
+.toc{position:relative;max-width:1060px;margin:-1.5rem auto 2rem;background:#fff;border:1px solid var(--line);border-radius:20px;padding:1rem 1.35rem;box-shadow:0 12px 30px #234b7320}
+.toc strong{display:block;margin-bottom:.5rem}
+.toc ul{display:flex;gap:.3rem .7rem;list-style:none;flex-wrap:wrap;padding:0;margin:0}
+.toc a{display:inline-block;padding:.3rem .4rem;font-weight:700}
+main{max-width:1060px;margin:auto;padding:0 1.15rem 4rem}
+section{margin:2.7rem 0;scroll-margin-top:1.25rem}
+h2{color:var(--navy);font-size:clamp(1.7rem,3.4vw,2.55rem);letter-spacing:-.03em;line-height:1.2;margin:0 0 .9rem}
+h3{color:#234a72;font-size:1.25rem;margin:.2rem 0 .6rem}
+p{margin:.75rem 0}
+.lede{font-size:1.2rem;max-width:67ch}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{border-radius:20px;border:1px solid var(--line);background:#fff;padding:1.25rem;box-shadow:0 8px 20px #163b6810}
+.card p:last-child{margin-bottom:0}
+.card strong{color:#123d71}
+.card .big-icon{font-size:2.5rem;line-height:1.3;display:block;margin-bottom:.4rem}
+.badge{display:inline-block;padding:.16rem .6rem;margin-bottom:.55rem;border-radius:99px;background:#dff5e7;color:#175437;font-weight:850;font-size:.77rem}
+.badge.idea{background:#fff1d6;color:#7c4a08}
+.badge.model{background:#e8e6ff;color:#453c8f}
+.callout{padding:1.05rem 1.25rem;border-radius:18px;border-left:7px solid #179b8d;background:#e7f9f5;margin:1.2rem 0}
+.callout.warning{background:#fff1d9;border-color:#d28a18}
+.callout.blue{background:#eaf3ff;border-color:#2771b8}
+.formula{background:#f2eeff;border:2px dashed #c6b7f7;padding:1.4rem;border-radius:22px;text-align:center;margin:1.3rem 0}
+.formula strong{display:block;font-size:clamp(1.3rem,3.2vw,1.75rem);color:#48328a}
+.formula p{margin:.45rem 0}
+.steps{counter-reset:step;list-style:none;padding:0;display:grid;gap:.7rem}
+.steps li{position:relative;background:#fff;border:1px solid var(--line);padding:.9rem 1.05rem .9rem 3.7rem;border-radius:14px}
+.steps li:before{counter-increment:step;content:counter(step);position:absolute;left:.9rem;top:.82rem;background:#116d76;color:#fff;font-weight:800;width:2rem;height:2rem;border-radius:50%;display:grid;place-items:center}
+.lab{border:1px solid #bbdbe5;border-radius:24px;background:#fff;overflow:hidden;box-shadow:0 17px 45px #17446917}
+.lab-top{background:linear-gradient(105deg,#d9fbf0,#e6f2ff);padding:1.4rem 1.5rem;border-bottom:1px solid #c2dce4}
+.lab-top h3{font-size:1.55rem;color:#123e61}
+.lab-top p{max-width:75ch}
+.lab-svg-wrap{background:#0d2e4e;padding:.7rem}
+.lab-svg{display:block;width:100%;height:auto;max-height:320px}
+.lab-caption{color:#eafcff;font-size:.85rem;text-align:center;margin:.35rem 0 .5rem}
+.dashboard{padding:1.15rem 1.45rem;background:#f1f8fd}
+.readouts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem}
+.readout{border:1px solid #ccdfee;background:#fff;border-radius:14px;padding:.65rem .8rem}
+.readout dt{font-size:.79rem;font-weight:800;color:#455e79}
+.readout dd{margin:.05rem 0 0;font-size:clamp(1.02rem,2vw,1.3rem);font-weight:900;color:#174879}
+.ruler{height:48px;position:relative;border-radius:12px;border:1px solid #bed4e9;background:linear-gradient(180deg,#e5f0ff,#fff);margin:1rem 0 .15rem;overflow:hidden}
+.ruler:before{content:"";position:absolute;left:0;right:0;top:12px;height:5px;background:linear-gradient(90deg,#86b4ef,#4b8ad4)}
+.tick{position:absolute;top:23px;color:#314e74;font-weight:750;font-size:.76rem;transform:translateX(-50%);white-space:nowrap}
+.tick.first{transform:none}.tick.last{transform:translateX(-100%)}
+.marker{position:absolute;left:0;top:3px;width:3px;height:22px;background:#b54117;border-radius:2px;display:none;box-shadow:0 0 0 3px #ffcfb3}
+.trace-caption{font-size:.87rem;color:#334c69;margin:.3rem 0 0}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding:1.3rem}
+.control-card{padding:1rem;border-radius:16px;background:#f6faff;border:1px solid #dce9f8}
+.control-card h4{font-size:1.15rem;margin:0 0 .65rem;color:#204c76}
+fieldset{border:0;padding:0;margin:0 0 .7rem}
+legend,label{font-weight:750}
+.choice{display:block;padding:.22rem 0;font-weight:600;cursor:pointer}
+.choice input{accent-color:#086f72;transform:scale(1.15);margin-right:.48rem}
+input[type=range]{width:100%;min-height:35px;display:block;accent-color:#0b7783;margin:.45rem 0}
+input[type=number]{font:inherit;width:100%;max-width:155px;padding:.65rem;border:2px solid #aec5db;border-radius:10px}
+output{font-weight:850;color:#104e76}
+.button-row{display:flex;flex-wrap:wrap;gap:.6rem;margin:.9rem 0}
+button{font:inherit;font-weight:800;background:#116b79;color:white;border:2px solid transparent;border-radius:12px;padding:.64rem 1rem;cursor:pointer;min-height:44px}
+button:hover{background:#0b5360}
+button.secondary{background:#fff;border:2px solid #236ba2;color:#1a5786}
+button.secondary:hover{background:#e7f2ff}
+button.danger{background:#fff3e4;border-color:#b66e14;color:#765012}
+button.danger:hover{background:#ffe3bd}
+button:disabled{cursor:not-allowed;opacity:.65}
+.status{background:#e3f6f1;color:#164f49;font-weight:750;padding:.8rem 1rem;border-radius:12px;min-height:3.5rem;margin:.5rem 0}
+.status.answer{background:#fff3e0;color:#754711}
+.small{font-size:.88rem;color:#35526c}
+.quiz{display:flex;flex-wrap:wrap;gap:.55rem;margin:.8rem 0}
+.quiz button{background:#e7efff;border-color:#4e78b3;color:#153d75}
+.quiz button:hover{background:#cee0ff}
+.result{font-weight:750;color:#155e53;min-height:1.6rem}
+pre{overflow-x:auto;white-space:pre;border:1px solid #b9d1ea;border-radius:16px;padding:1rem;background:#102945;color:#e4f8ff;tab-size:2}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.93em}
+:not(pre)>code{background:#eaf0fa;border-radius:5px;padding:.12rem .32rem;color:#173e6c}
+details{background:#fff;border:1px solid var(--line);padding:.8rem 1rem;border-radius:13px;margin:.7rem 0}
+summary{cursor:pointer;font-weight:800;color:#174879}
+.refs li{margin:.55rem 0;overflow-wrap:anywhere}
+footer{padding:2rem 1rem 3rem;text-align:center;background:#142f4e;color:#e4f8ff}
+footer a{color:#bcf7ff}
+@media(max-width:780px){.hero-inner{grid-template-columns:1fr;padding:3rem 1.25rem 3.5rem;gap:0}.hero-art{min-height:0}.hero-art svg{max-width:310px}.grid,.grid.three,.controls{grid-template-columns:1fr}.toc{margin:-1.5rem 1rem 1.7rem}.readouts{grid-template-columns:1fr 1fr}.readout:last-child{grid-column:1/-1}.controls{padding:.8rem}.lab-top,.dashboard{padding:1rem}}
+@media(max-width:410px){.readouts{grid-template-columns:1fr}.readout:last-child{grid-column:auto}.tick{font-size:.65rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media print{.hero{background:#173e5e!important;color:white!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.toc,.button-row{display:none}section{break-inside:avoid}.lab{box-shadow:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the adventure</a>
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="kicker">DeepDivesKids · November 3, 2026 · Nature + code + physics</div>
+      <h1>Echo Rangers:<br>The Sound That Came Back!</h1>
+      <p class="subtitle">A bat, a research ship, and a hockey player all have a surprising question: <strong>How far away is that thing?</strong> Become an echo detective and solve it with sound.</p>
+      <div class="pills"><span class="pill">Ages 9+</span><span class="pill">15–25 minutes</span><span class="pill">Hands-on mystery lab</span><span class="pill">Works offline</span></div>
+    </div>
+    <div class="hero-art">
+      <svg viewBox="0 0 450 310" role="img" aria-labelledby="heroTitle heroDesc">
+        <title id="heroTitle">A smiling bat sends bright sound rings toward a cave wall</title>
+        <desc id="heroDesc">Orange and turquoise waves travel outward from the bat and return as an echo.</desc>
+        <defs><linearGradient id="batWing" x1="0" x2="1"><stop stop-color="#9dd8ff"/><stop offset="1" stop-color="#6a9bcf"/></linearGradient></defs>
+        <path d="M46 147 Q4 95 16 190 Q37 172 58 199 Q81 165 105 186 L145 178 Q179 134 207 175 Q233 134 274 176 L305 190 Q327 166 350 199 Q369 169 401 191 Q419 111 365 141 L314 155 Q261 102 216 149 L190 149 Q139 103 98 155Z" fill="url(#batWing)" stroke="#ecf9ff" stroke-width="4"/>
+        <path d="M152 143 L145 90 L194 118 L229 117 L275 92 L266 146 Q300 195 250 230 Q199 245 153 217 Q122 182 152 143Z" fill="#dcecff" stroke="#0a3158" stroke-width="5"/>
+        <ellipse cx="181" cy="170" rx="8" ry="10" fill="#143a66"/><ellipse cx="242" cy="170" rx="8" ry="10" fill="#143a66"/>
+        <path d="M195 194 Q213 207 231 194" fill="none" stroke="#143a66" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="276" cy="183" r="35" fill="none" stroke="#f9be66" stroke-width="5" opacity=".92"/>
+        <circle cx="276" cy="183" r="57" fill="none" stroke="#f9be66" stroke-width="4" opacity=".66"/>
+        <circle cx="276" cy="183" r="78" fill="none" stroke="#f9be66" stroke-width="3" opacity=".45"/>
+        <path d="M379 60 L413 90 L413 246 L379 266" fill="none" stroke="#60ecd7" stroke-width="15" stroke-linecap="round"/>
+        <path d="M352 115 Q318 150 350 183 Q320 217 354 245" fill="none" stroke="#72ffe4" stroke-width="5" stroke-linecap="round"/>
+        <text x="70" y="278" font-size="19" font-weight="800" fill="#ffffff">PING!</text>
+        <text x="329" y="297" font-size="19" font-weight="800" fill="#b3fff2">...echo!</text>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Table of contents">
+  <strong>Choose your adventure</strong>
+  <ul>
+    <li><a href="#mission">The mission</a></li>
+    <li><a href="#secret">How echoes work</a></li>
+    <li><a href="#real-world">Real science</a></li>
+    <li><a href="#lab">Interactive lab</a></li>
+    <li><a href="#experiment">Try it yourself</a></li>
+    <li><a href="#code">Meet the code</a></li>
+    <li><a href="#connections">Your world</a></li>
+    <li><a href="#truth">What the model misses</a></li>
+    <li><a href="#sources">Sources + license</a></li>
+  </ul>
+</nav>
+
+<main id="main">
+<section id="mission" aria-labelledby="mission-heading">
+  <h2 id="mission-heading">🎯 Mission: Find the invisible wall</h2>
+  <p class="lede">Imagine standing in a huge, dark ice rink. You hear a sharp <strong>CLAP!</strong> and then — a quieter <strong>clap</strong>. That second sound is an <em>echo</em>. Sound traveled to a surface, bounced, and came back.</p>
+  <p>Quinn and Reagan, here is your challenge: if you know how quickly sound travels, can you use the time between a ping and its echo to find an object you cannot see?</p>
+  <div class="grid three">
+    <div class="card"><span class="big-icon" aria-hidden="true">🦇</span><h3>The bat</h3><p>Calls into the dark and listens for returning echoes.</p></div>
+    <div class="card"><span class="big-icon" aria-hidden="true">🚢</span><h3>The ocean scientist</h3><p>Sends a sound pulse into water to find the seafloor.</p></div>
+    <div class="card"><span class="big-icon" aria-hidden="true">🏒</span><h3>The hockey detective</h3><p>Uses the same bounce-and-return idea to reason about a puck striking the boards or sounds in a large rink. That is an analogy, not an actual puck-tracking method!</p></div>
+  </div>
+</section>
+
+<section id="secret" aria-labelledby="secret-heading">
+  <h2 id="secret-heading">🧠 The secret: The sound takes a round trip</h2>
+  <ol class="steps">
+    <li><strong>Send a ping.</strong> A vibration travels through air or water as a sound wave.</li>
+    <li><strong>Meet an object.</strong> Some of the wave reflects off a wall, insect, or seafloor.</li>
+    <li><strong>Listen for the echo.</strong> The reflection travels back to the listener.</li>
+    <li><strong>Do the detective math.</strong> Time tells you the <em>total</em> travel distance. Divide by two to find the one-way distance.</li>
+  </ol>
+  <div class="formula" aria-label="Distance equals speed of sound times echo round-trip time divided by two">
+    <strong>Distance = (speed × echo time) ÷ 2</strong>
+    <p>Why ÷ 2? The ping went <strong>there</strong> and came <strong>back</strong>.</p>
+  </div>
+  <div class="callout blue">
+    <strong>Try the 17-meter riddle.</strong> In our simple air model, sound travels at 340 meters per second. To get to a wall 17 meters away and return, it travels 34 meters. The round trip takes <strong>34 ÷ 340 = 0.10 seconds = 100 milliseconds</strong>. One millisecond is one-thousandth of a second.
+  </div>
+  <p>Sound travels at different speeds in different materials. NOAA gives useful rounded examples: about <strong>340 meters/second in air</strong> and <strong>1,500 meters/second in seawater</strong>. Real speed varies with conditions — especially temperature in air and temperature, pressure, and saltiness in seawater. <a href="https://oceanservice.noaa.gov/facts/sound.html">Read NOAA's explanation.</a></p>
+</section>
+
+<section id="real-world" aria-labelledby="real-heading">
+  <h2 id="real-heading">🌎 This is real — not just a video-game trick</h2>
+  <div class="grid">
+    <article class="card">
+      <span class="badge">DOCUMENTED REAL USE</span>
+      <h3>🦇 Bats hunting insects</h3>
+      <p>The U.S. National Park Service explains that bats make high-frequency calls and listen for returning echoes to locate objects and prey. Some bats speed up their calls as they close in on a snack. The calls often use <em>ultrasound</em>, too high-pitched for people to hear.</p>
+      <p><a href="https://www.nps.gov/subjects/bats/echolocation.htm">National Park Service: Echolocation</a></p>
+    </article>
+    <article class="card">
+      <span class="badge">DOCUMENTED REAL USE</span>
+      <h3>🚢 Ships mapping the ocean</h3>
+      <p>NOAA ships use sonar equipment that sends sound down toward the seafloor and listens for echoes. The return time helps researchers calculate depth. Some sonar systems send many beams to create maps of underwater terrain.</p>
+      <p><a href="https://oceanservice.noaa.gov/facts/sonar.html">NOAA: What is sonar?</a> · <a href="https://oceanservice.noaa.gov/facts/backscatter.html">NOAA: Seafloor echoes</a></p>
+    </article>
+    <article class="card">
+      <span class="badge idea">IMAGINED APPLICATION</span>
+      <h3>🥅 An echo-measuring hockey robot</h3>
+      <p>Could a rink robot send sound pulses to estimate how far it is from the boards? That is a <em>possible design idea</em>, not a claim that your team uses one. A real robot would have to solve noise, obstacles, and sensor accuracy problems.</p>
+    </article>
+    <article class="card">
+      <span class="badge model">LEARNING MODEL</span>
+      <h3>🧪 Our mini sonar machine</h3>
+      <p>The lab below uses the same basic travel-time equation, but with one perfect wall, one perfectly detected echo, and fixed example speeds. It is a <strong>teaching simulation</strong>, not a full sonar or bat simulator.</p>
+    </article>
+  </div>
+</section>
+
+<section id="lab" aria-labelledby="lab-heading">
+  <h2 id="lab-heading">🎮 Interactive lab: Echo Rangers Control Room</h2>
+  <p>First explore an ordinary echo. Then press <strong>Start mystery</strong>: the wall distance will be hidden. Send a ping, read the returned time, and calculate the distance. You can solve it with the formula above!</p>
+  <div class="lab">
+    <div class="lab-top">
+      <h3>⚡ Send a ping. Catch an echo.</h3>
+      <p>The moving dot is a <strong>slow-motion cartoon</strong> of an extremely fast sound wave. The wall's picture position never changes: this diagram is <strong>not to scale</strong>. The time readout is the calculated physics result.</p>
+    </div>
+    <div class="lab-svg-wrap">
+      <svg id="echoScene" class="lab-svg" viewBox="0 0 900 260" role="img" aria-labelledby="sceneTitle sceneDesc">
+        <title id="sceneTitle">Cartoon echo path from source to wall and back</title>
+        <desc id="sceneDesc">A point on the left sends a pulse toward a wall on the right. Animation is slowed for clarity and wall placement is not to scale. Numeric results are available below.</desc>
+        <defs>
+          <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#194f73"/><stop offset="1" stop-color="#0e3453"/></linearGradient>
+          <pattern id="waves" width="52" height="24" patternUnits="userSpaceOnUse"><path d="M0 13 Q13 3 26 13 T52 13" fill="none" stroke="#79d3e5" stroke-width="2" opacity=".15"/></pattern>
+        </defs>
+        <rect width="900" height="260" rx="18" fill="url(#sea)"/>
+        <rect width="900" height="260" fill="url(#waves)"/>
+        <circle cx="105" cy="140" r="36" fill="#a7f5ee" stroke="#fff" stroke-width="5"/>
+        <circle cx="105" cy="140" r="12" fill="#144b72"/>
+        <path d="M145 140 H746" stroke="#a9c5e5" stroke-width="5" stroke-dasharray="12 12"/>
+        <rect x="770" y="52" width="34" height="170" rx="8" fill="#f4b46f" stroke="#ffe0ae" stroke-width="5"/>
+        <path d="M755 90 L727 70 M755 140 L720 140 M755 192 L727 213" stroke="#ffc47d" stroke-width="4"/>
+        <circle id="pulse" cx="145" cy="140" r="16" fill="#ffdb80" stroke="#fff" stroke-width="4" visibility="hidden"/>
+        <text x="105" y="205" text-anchor="middle" font-size="21" fill="#fff" font-weight="800">SOURCE</text>
+        <text x="787" y="245" text-anchor="middle" font-size="19" fill="#fff" font-weight="800">WALL</text>
+        <text x="452" y="75" text-anchor="middle" font-size="23" fill="#d1f6f6" font-weight="800">out →   ← back</text>
+        <text x="452" y="241" text-anchor="middle" font-size="17" fill="#c0e9f4">SCHEMATIC • NOT TO SCALE</text>
+      </svg>
+      <p class="lab-caption">A wave travels out, reflects, and returns. The on-screen animation is slowed down.</p>
+    </div>
+    <div class="dashboard">
+      <dl class="readouts">
+        <div class="readout"><dt>Speed used in the model</dt><dd id="speedReadout">340 m/s</dd></div>
+        <div class="readout"><dt>Measured round-trip time</dt><dd id="timeReadout">—</dd></div>
+        <div class="readout"><dt>One-way distance</dt><dd id="distReadout">17 m</dd></div>
+      </dl>
+      <div class="ruler" id="ruler" role="img" aria-label="Timeline: press Send a ping to reveal when the echo returns.">
+        <span class="tick first" style="left:0">0</span>
+        <span class="tick" id="tick1" style="left:25%">100</span>
+        <span class="tick" id="tick2" style="left:50%">200</span>
+        <span class="tick" id="tick3" style="left:75%">300</span>
+        <span class="tick last" id="tick4" style="left:100%">400 ms</span>
+        <span class="marker" id="echoMarker" aria-hidden="true"></span>
+      </div>
+      <p id="traceCaption" class="trace-caption">Timeline shows echo travel time (not animation time).</p>
+    </div>
+    <div class="controls">
+      <div class="control-card">
+        <h4>1. Choose your world</h4>
+        <fieldset>
+          <legend>Where is the ping traveling?</legend>
+          <label class="choice"><input type="radio" name="medium" id="air" value="air" checked> Open air (340 m/s)</label>
+          <label class="choice"><input type="radio" name="medium" id="water" value="water"> Seawater (1,500 m/s)</label>
+        </fieldset>
+        <label for="wallDistance">One-way wall distance: <output id="distanceValue" for="wallDistance">17 m</output></label>
+        <input id="wallDistance" type="range" min="5" max="60" step="1" value="17">
+        <p class="small">In mystery mode, the slider locks and the number is hidden. The cartoon wall still looks the same.</p>
+        <div class="button-row">
+          <button id="sendPing" type="button">📣 Send a ping</button>
+          <button id="newMystery" type="button" class="secondary">🕵️ Start mystery</button>
+        </div>
+        <p id="liveStatus" class="status" role="status" aria-live="polite">Ready! Send your first ping to measure an echo.</p>
+      </div>
+      <div class="control-card">
+        <h4>2. Solve the hidden wall</h4>
+        <p>After starting a mystery, use the speed and the echo time:</p>
+        <p><strong>Distance = speed × (time in seconds) ÷ 2.</strong></p>
+        <form id="guessForm">
+          <label for="distanceGuess">My wall-distance guess (meters)</label><br>
+          <input id="distanceGuess" name="distanceGuess" type="number" inputmode="numeric" min="5" max="60" step="1" required>
+          <button type="submit">Check guess</button>
+        </form>
+        <p id="guessStatus" class="status answer" role="status" aria-live="polite">Start a mystery, send a ping, then make your guess.</p>
+        <div class="button-row">
+          <button id="reveal" type="button" class="secondary">👀 Reveal answer</button>
+          <button id="reset" type="button" class="danger">↺ Reset lab</button>
+        </div>
+        <p class="small">A guess within 1 meter counts. Real sensors have measurement error too!</p>
+      </div>
+    </div>
+  </div>
+  <div class="callout">
+    <strong>Three mini-missions:</strong> (1) In air, set 17 m and find a 100 ms echo. (2) In seawater, set 30 m — is the echo faster? (3) Start mystery and see if you can find the hidden wall. For a hint: 1,000 milliseconds = 1 second.
+  </div>
+</section>
+
+<section id="experiment" aria-labelledby="experiment-heading">
+  <h2 id="experiment-heading">🧰 Try it in the real world</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Paper detective: The double journey</h3>
+      <p><strong>You need:</strong> paper, a pencil, a ruler, and an optional calculator.</p>
+      <ol>
+        <li>Draw yourself and a pretend cave wall 17 boxes apart.</li>
+        <li>Draw 17 arrows toward the wall, then 17 back to yourself.</li>
+        <li>Count all 34 boxes. That is the sound's <em>total</em> trip.</li>
+        <li>Calculate 34 ÷ 340 = 0.1 second. Why does the one-way distance stay 17?</li>
+      </ol>
+      <p><strong>Extension:</strong> If an echo takes 0.2 second in air, what is the one-way distance? (Check your answer below.)</p>
+      <details><summary>Reveal the extension answer</summary><p>340 × 0.2 ÷ 2 = <strong>34 meters</strong>.</p></details>
+    </div>
+    <div class="card">
+      <h3>Listen for an echo (with an adult)</h3>
+      <ol>
+        <li>Find a safe, open, quiet place with a distant hard wall, such as a large gym. Ask permission first.</li>
+        <li>Clap once, then listen. Try moving farther away and compare what you hear.</li>
+        <li>Explain why a nearer wall's echo can blend into the original clap.</li>
+      </ol>
+      <p><strong>Safety:</strong> No shouting near other people's ears, climbing, or entering restricted spaces. You may not hear a clear echo, and that is normal: rooms absorb and scatter sound.</p>
+      <p><strong>Important:</strong> A hand stopwatch cannot reliably measure a 100-millisecond echo. Use the computer lab for the numbers, and your ears for the experience.</p>
+    </div>
+  </div>
+  <h3>Quick brain check</h3>
+  <p>If the echo takes longer to get back, but the sound speed stays the same, is the object usually <strong>closer</strong> or <strong>farther</strong> away?</p>
+  <div class="quiz">
+    <button type="button" data-quiz="wrong">Closer</button>
+    <button type="button" data-quiz="right">Farther</button>
+    <button type="button" data-quiz="wrong">Time cannot tell us anything</button>
+  </div>
+  <p id="quizResult" class="result" role="status" aria-live="polite">Choose your answer.</p>
+</section>
+
+<section id="code" aria-labelledby="code-heading">
+  <h2 id="code-heading">💻 Meet the tiny program inside the lab</h2>
+  <p>Every time the sliders change, JavaScript uses one simple calculation. The program stores speed in <em>meters per second</em>, distance in <em>meters</em>, and converts seconds into milliseconds for display.</p>
+<pre><code>// The echo travels to the wall AND back.
+function echoTimeMs(distanceMeters, speedMetersPerSecond) {
+  return (2 * distanceMeters / speedMetersPerSecond) * 1000;
+}
+
+function distanceFromEcho(timeMs, speedMetersPerSecond) {
+  return (timeMs / 1000) * speedMetersPerSecond / 2;
+}
+
+// Open air, 17-meter wall:
+echoTimeMs(17, 340);        // 100 milliseconds
+distanceFromEcho(100, 340); // 17 meters
+
+// Seawater, 30-meter wall:
+echoTimeMs(30, 1500);       // 40 milliseconds
+</code></pre>
+  <p><strong>Computer-science idea:</strong> The simulation separates the <em>model</em> (a math equation) from the <em>picture</em> (an animated dot). That means the animation can be slowed down without changing the real calculated echo time.</p>
+  <div class="callout blue">
+    <strong>What software is this?</strong> Plain HTML, CSS, SVG, and JavaScript built into modern web browsers. No third-party library, account, downloads, or network connection is needed to run the experiment. Save this single HTML file and open it in a browser. External science links require internet access.
+  </div>
+</section>
+
+<section id="connections" aria-labelledby="connections-heading">
+  <h2 id="connections-heading">🏒 From your adventures to Dad's engineering work</h2>
+  <div class="grid">
+    <div class="card">
+      <span class="badge idea">IMAGINED CONNECTION</span>
+      <h3>Quinn's slap shot, Reagan's save</h3>
+      <p>The sound of a puck hitting the boards travels through the rink and can reflect from walls and the ceiling. Our lab does <em>not</em> locate hockey pucks with sound, but it gives you a new way to wonder why big rooms echo differently.</p>
+    </div>
+    <div class="card">
+      <span class="badge idea">PROPOSED SOFTWARE IDEA</span>
+      <h3>RISCue: Listen, then react</h3>
+      <p>In Dad's RISCue project, software reacts to events. You could imagine a robot sending a ping and placing an <strong>EchoReceived</strong> event into an event queue. Its state machine would switch from <em>Waiting</em> to <em>Measured</em>. This is a suggestion, not a verified RISCue feature.</p>
+    </div>
+    <div class="card">
+      <span class="badge idea">PROPOSED SOFTWARE IDEA</span>
+      <h3>VeloSim: Test before touching hardware</h3>
+      <p>A computer simulator could pretend a sensor hears an echo at 40 milliseconds and check whether the distance calculation is correct. That is why engineers simulate: to find mistakes before building a real device. This is an example design, not an existing VeloSim integration.</p>
+    </div>
+    <div class="card">
+      <span class="badge">REAL WORLD PRINCIPLE</span>
+      <h3>Ships and scientists</h3>
+      <p>Echo timing is used in sonar. NOAA documents how real survey equipment uses reflected sound to measure seafloor depth. Your lab uses the same core idea, but the ocean's physics and real instruments are much more complicated.</p>
+    </div>
+  </div>
+</section>
+
+<section id="truth" aria-labelledby="truth-heading">
+  <h2 id="truth-heading">🧭 A good scientist notices what the model misses</h2>
+  <div class="grid">
+    <div class="card"><h3>What our model gets right</h3><p>A reflected wave must travel out and back. Distance depends on wave speed and return time. Sound is much faster in seawater than in air, using NOAA's rounded example speeds.</p></div>
+    <div class="card"><h3>What our model leaves out</h3><p>Real echoes may be quiet, delayed by many obstacles, scattered, or not detected at all. Weather, water conditions, surface shape, direction, motion, and equipment accuracy matter. Bats also interpret complex sound patterns, not just one perfect wall echo.</p></div>
+  </div>
+  <div class="callout warning"><strong>Careful!</strong> Sound is <em>not</em> the same as radar or laser light. They can all use travel time to estimate distance, but radar and lidar use electromagnetic waves rather than sound waves. This lesson is about <strong>sound</strong>.</div>
+</section>
+
+<section id="sources" aria-labelledby="sources-heading">
+  <h2 id="sources-heading">📚 Primary sources, licensing, and integration</h2>
+  <p>These are the original organizations describing the real science. They are sources for the facts, <strong>not claims that they use this teaching page</strong>. References checked November 3, 2026.</p>
+  <ol class="refs">
+    <li><strong>National Park Service</strong> — <a href="https://www.nps.gov/subjects/bats/echolocation.htm">Echolocation: Bats</a>. Official explanation of calls, echoes, ultrasound, and hunting.</li>
+    <li><strong>NOAA National Ocean Service</strong> — <a href="https://oceanservice.noaa.gov/facts/sonar.html">What is sonar?</a>. Official description of underwater sound pulses and sonar mapping.</li>
+    <li><strong>NOAA National Ocean Service</strong> — <a href="https://oceanservice.noaa.gov/facts/sound.html">How far does sound travel in the ocean?</a>. Rounded speeds of approximately 340 m/s in air and 1,500 m/s in ocean water, with real-world variability.</li>
+    <li><strong>NOAA National Ocean Service</strong> — <a href="https://oceanservice.noaa.gov/facts/backscatter.html">How does backscatter help us understand the seafloor?</a>. Echo return time and depth measurements aboard NOAA ships.</li>
+    <li><strong>National Park Service</strong> — <a href="https://www.nps.gov/elma/learn/nature/bats.htm">Bats at El Malpais</a>. Notes that bats use echolocation and also have usable eyesight.</li>
+  </ol>
+  <h3>License and offline instructions</h3>
+  <p>The original <strong>calculator, interactive lab JavaScript, and inline SVG artwork</strong> created for this lesson are offered under the <strong>MIT License</strong>. You may copy and adapt that original code, including for a school project, provided you include the copyright and license notice. This is not a license to republish third-party material. The page includes no bundled third-party software, photographs, fonts, or audio. It only links to the government sources above.</p>
+  <details>
+    <summary>Read the MIT License for this lesson's original code</summary>
+    <p>Copyright (c) 2026 DeepDivesKids contributors</p>
+    <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+    <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+    <p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+  </details>
+  <p><strong>Integration:</strong> Commit this single HTML file to <code>DeepDivesKids/</code> and open it as a static web page (including GitHub Pages), or save it to a computer and double-click it to use offline. No package manager, API keys, or build step. Only the optional external reference links use the network.</p>
+</section>
+</main>
+
+<footer>
+  <p><strong>DeepDivesKids · November 3, 2026</strong></p>
+  <p>Curiosity sends out a ping. Science listens for what comes back. 🦇</p>
+  <p><a href="#main">Back to the top</a></p>
+</footer>
+<script>
+"use strict";
+(function () {
+  const $ = id => document.getElementById(id);
+  const range = $("wallDistance");
+  const distanceValue = $("distanceValue");
+  const status = $("liveStatus");
+  const guessStatus = $("guessStatus");
+  const speedReadout = $("speedReadout");
+  const timeReadout = $("timeReadout");
+  const distReadout = $("distReadout");
+  const marker = $("echoMarker");
+  const ruler = $("ruler");
+  const pulse = $("pulse");
+  const traceCaption = $("traceCaption");
+  const speed = { air: 340, water: 1500 };
+  const mysteryDistances = [12, 29, 43, 55, 18, 36];
+  let nextMysteryIndex = 0;
+  let secret = 17;
+  let hidden = false;
+  let revealed = false;
+  let measured = false;
+  let frame = 0;
+  let animationSerial = 0;
+  const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // These two functions are pure math and do not depend on the page.
+  function echoTimeMs(distanceMeters, speedMetersPerSecond) {
+    return 2 * distanceMeters / speedMetersPerSecond * 1000;
+  }
+  function distanceFromEcho(timeMs, speedMetersPerSecond) {
+    return (timeMs / 1000) * speedMetersPerSecond / 2;
+  }
+  function selectedMedium() {
+    return $("water").checked ? "water" : "air";
+  }
+  function actualDistance() {
+    return hidden ? secret : Number(range.value);
+  }
+  function echoMs() {
+    return echoTimeMs(actualDistance(), speed[selectedMedium()]);
+  }
+  function cancelAnimation() {
+    animationSerial++;
+    if (frame) cancelAnimationFrame(frame);
+    frame = 0;
+    pulse.setAttribute("visibility", "hidden");
+  }
+  function paint() {
+    const s = speed[selectedMedium()];
+    const d = actualDistance();
+    const ms = echoMs();
+    const max = selectedMedium() === "air" ? 400 : 100;
+    speedReadout.textContent = s.toLocaleString("en-US") + " m/s";
+    range.disabled = hidden;
+    distanceValue.textContent = hidden && !revealed ? "MYSTERY" : d + " m";
+    distReadout.textContent = hidden && !revealed ? "?? m" : d + " m";
+    timeReadout.textContent = measured ? ms.toFixed(1) + " ms" : "—";
+    marker.style.display = measured ? "block" : "none";
+    marker.style.left = (Math.min(100, ms / max * 100)) + "%";
+    $("tick1").textContent = String(max / 4);
+    $("tick2").textContent = String(max / 2);
+    $("tick3").textContent = String(3 * max / 4);
+    $("tick4").textContent = max + " ms";
+    ruler.setAttribute("aria-label", measured
+      ? "Echo timeline: return measured at " + ms.toFixed(1) + " milliseconds on a 0-to-" + max + "-millisecond scale."
+      : "Echo timeline, 0 to " + max + " milliseconds. No echo measured yet. Press Send a ping.");
+    traceCaption.textContent = measured
+      ? "The marker shows the measured round-trip time: " + ms.toFixed(1) + " milliseconds. Timeline scale ends at " + max + " ms."
+      : "Timeline shows echo travel time, not animation time. Press Send a ping.";
+  }
+  function readyForNewMeasurement() {
+    cancelAnimation();
+    measured = false;
+    paint();
+  }
+  function completePing() {
+    frame = 0;
+    pulse.setAttribute("visibility", "hidden");
+    measured = true;
+    paint();
+    status.textContent = "Echo returned after " + echoMs().toFixed(1) + " ms! " +
+      (hidden && !revealed ? "The wall distance is still a secret. Solve it using speed × time ÷ 2." :
+       "One-way distance: " + actualDistance() + " meters.");
+  }
+  function sendPing() {
+    cancelAnimation();
+    measured = false;
+    paint();
+    status.textContent = "Ping launched! Watch the slowed-down cartoon wave go out and back.";
+    if (reducedMotion) {
+      completePing();
+      return;
+    }
+    const serial = animationSerial;
+    let start = null;
+    pulse.setAttribute("visibility", "visible");
+    function step(now) {
+      if (serial !== animationSerial) return;
+      if (start === null) start = now;
+      const progress = Math.min(1, (now - start) / 1400);
+      const travel = progress <= 0.5 ? progress * 2 : (1 - progress) * 2;
+      pulse.setAttribute("cx", String(145 + travel * 600));
+      pulse.setAttribute("fill", progress < 0.5 ? "#ffdb80" : "#82ffdc");
+      if (progress < 1) {
+        frame = requestAnimationFrame(step);
+      } else {
+        completePing();
+      }
+    }
+    frame = requestAnimationFrame(step);
+  }
+
+  document.querySelectorAll('input[name="medium"]').forEach(function (radio) {
+    radio.addEventListener("change", function () {
+      readyForNewMeasurement();
+      status.textContent = selectedMedium() === "air"
+        ? "Now using air: 340 meters per second. Send another ping."
+        : "Now using seawater: 1,500 meters per second. Send another ping.";
+      guessStatus.textContent = hidden ? "The medium changed. Send another ping before guessing." : "Start a mystery when you're ready.";
+    });
+  });
+  range.addEventListener("input", function () {
+    readyForNewMeasurement();
+    status.textContent = "Wall set to " + Number(range.value) + " meters. Send a ping to measure.";
+  });
+  $("sendPing").addEventListener("click", sendPing);
+  $("newMystery").addEventListener("click", function () {
+    cancelAnimation();
+    secret = mysteryDistances[nextMysteryIndex % mysteryDistances.length];
+    nextMysteryIndex++;
+    hidden = true;
+    revealed = false;
+    measured = false;
+    $("distanceGuess").value = "";
+    paint();
+    status.textContent = "Mystery started! The distance is hidden. Send a ping and use its return time.";
+    guessStatus.textContent = "No measurement yet. Press Send a ping, then enter your guess.";
+    $("distanceGuess").focus();
+  });
+  $("reveal").addEventListener("click", function () {
+    if (!hidden) {
+      guessStatus.textContent = "Start a mystery first to get a hidden answer!";
+      return;
+    }
+    cancelAnimation();
+    revealed = true;
+    paint();
+    guessStatus.textContent = "The wall was " + secret + " meters away. Try another mystery!";
+    status.textContent = "Answer revealed: " + secret + " meters. You can compare it with the echo time.";
+  });
+  $("reset").addEventListener("click", function () {
+    cancelAnimation();
+    $("air").checked = true;
+    range.value = "17";
+    hidden = false;
+    revealed = false;
+    measured = false;
+    secret = 17;
+    $("distanceGuess").value = "";
+    paint();
+    status.textContent = "Lab reset. Air, 17 meters. Ready to send a ping!";
+    guessStatus.textContent = "Start a mystery, send a ping, then make your guess.";
+  });
+  $("guessForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+    if (!hidden) {
+      guessStatus.textContent = "Start a mystery before guessing.";
+      return;
+    }
+    if (!measured) {
+      guessStatus.textContent = "First send a ping and wait for its echo.";
+      return;
+    }
+    const guess = Number($("distanceGuess").value);
+    if (!Number.isInteger(guess) || guess < 5 || guess > 60) {
+      guessStatus.textContent = "Enter a whole number from 5 to 60 meters.";
+      return;
+    }
+    if (Math.abs(guess - secret) <= 1) {
+      revealed = true;
+      paint();
+      guessStatus.textContent = "🎉 Correct! The wall was " + secret + " m away. Nice detective work!";
+    } else {
+      guessStatus.textContent = guess < secret
+        ? "Not quite — your guess is a little too close. Try a larger distance."
+        : "Not quite — your guess is too far away. Try a smaller distance.";
+    }
+  });
+  document.querySelectorAll("[data-quiz]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      $("quizResult").textContent = button.getAttribute("data-quiz") === "right"
+        ? "✅ That's right! At a fixed speed, a longer round trip means a farther-away object."
+        : "Try again! Remember, sound has to travel to the object AND back.";
+    });
+  });
+  paint();
+  // A future contributor can test the math in isolation with these exact values:
+  // echoTimeMs(17, 340) === 100; echoTimeMs(30, 1500) === 40;
+  // distanceFromEcho(100, 340) === 17.
+})();
+</script>
+</body>
+</html>
