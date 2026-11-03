@@ -1,0 +1,194 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><meta name="description" content="November 3, 2026 engineering deep dive on fast_float v8.3.3: bounded, exact decimal parsing, C++20 sample, CMake/Ninja, real adoption, interactive laboratory and honest verification limits."><title>fast_float — Exact Decimal Boundaries | Engineering Deep Dive, 2026-11-03</title><style>
+:root{color-scheme:dark;--bg:#0b1723;--surface:#132a3a;--other:#19394a;--line:#355565;--fg:#e9f7f7;--muted:#b4d0da;--mint:#7be6bf;--cyan:#8bdfff;--gold:#ffd49a;--red:#ffb3bf}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:1.5rem}
+body{margin:0;font:17px/1.7 system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--fg);background:radial-gradient(ellipse 80% 32rem at 90% 0,#184055,transparent),var(--bg)}
+a{color:var(--cyan);text-underline-offset:.2em}a:hover{color:#b5f1ff}:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.skip{position:absolute;top:-7rem;left:1rem;background:var(--gold);color:#111;padding:.5rem 1rem;z-index:4}.skip:focus{top:1rem}
+.wrap{width:min(1160px,calc(100% - 2rem));margin:auto}
+.sitehead{border-bottom:1px solid var(--line);padding:1rem 0}.brand{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-size:.82rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:var(--mint)}
+.hero{display:grid;grid-template-columns:1.5fr 1fr;gap:3rem;padding:4.5rem 0 3.3rem;align-items:center}
+.eyebrow{color:var(--gold);letter-spacing:.14em;text-transform:uppercase;font-weight:800;font-size:.8rem}
+h1,h2,h3{line-height:1.15;letter-spacing:-.035em}h1{font-size:clamp(3.5rem,7vw,6.7rem);margin:.35rem 0}h1 em{font-style:normal;color:var(--mint)}
+h2{font-size:clamp(1.65rem,3.1vw,2.35rem);margin:.35rem 0 1rem}h3{font-size:1.2rem;margin:.3rem 0 .4rem}
+.subtitle{color:#c8e1e8;font-size:clamp(1.1rem,2vw,1.35rem);max-width:52ch}
+.pills{display:flex;flex-wrap:wrap;gap:.6rem}.pill{border:1px solid #507185;border-radius:99px;padding:.28rem .75rem;font-size:.8rem;color:#d8eaed}
+.visual{border:1px solid #3c7484;border-radius:22px;background:linear-gradient(140deg,#153a4c,#102533);padding:1.4rem;box-shadow:0 18px 48px #01080d99}
+.visual svg{width:100%;height:auto}.caption,.small{font-size:.87rem;color:var(--muted)}
+.layout{display:grid;grid-template-columns:232px minmax(0,1fr);gap:3.2rem;align-items:start}
+nav.toc{position:sticky;top:1rem;padding:1.1rem;background:#102533;border:1px solid var(--line);border-radius:15px}
+nav.toc strong{color:var(--gold);text-transform:uppercase;letter-spacing:.12em;font-size:.81rem}
+nav.toc ol{padding-left:1.4rem;margin:.5rem 0 0;font-size:.82rem}nav.toc li{margin:.4rem 0}
+main{min-width:0}section{padding:2rem 0;border-bottom:1px solid var(--line)}section:last-child{border:0}
+.label{font-weight:800;font-size:.75rem;color:var(--mint);letter-spacing:.16em;text-transform:uppercase}
+p{margin:.8rem 0 1.15rem}strong{color:#fff}
+.callout{background:linear-gradient(90deg,#17433f,#143042);border-left:4px solid var(--mint);border-radius:0 12px 12px 0;padding:1rem 1.3rem;margin:1.45rem 0}
+.warn{border-left-color:var(--gold);background:linear-gradient(90deg,#3b3028,#172d3b)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;margin:1.2rem 0}
+.card{border:1px solid var(--line);background:var(--surface);padding:1.2rem;border-radius:13px}
+.flag{display:inline-block;background:var(--mint);color:#05231d;border-radius:99px;padding:.15rem .6rem;font-size:.69rem;font-weight:850;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.5rem}
+.flag.proposed{background:var(--gold)}
+.tablebox{border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+table{min-width:510px;width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{padding:.85rem;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}th{background:#1b3d4d;color:var(--mint)}
+tr:nth-child(even) td{background:#112b39}
+code,pre,.mono{font-family:ui-monospace,SFMono-Regular,Consolas,Monaco,monospace}
+:not(pre)>code{background:#244656;color:#d7fff1;border-radius:4px;padding:.07rem .27rem;overflow-wrap:anywhere}
+pre{background:#071b27;border:1px solid #406476;border-radius:13px;overflow:auto;padding:1.1rem;font-size:.83rem;line-height:1.55;tab-size:2}
+pre code{color:#bff6e4}
+.lab{border:1px solid #547d8e;background:linear-gradient(135deg,#163a50,#102936);border-radius:18px;padding:1.5rem;margin:1.3rem 0}
+.labcols{display:grid;grid-template-columns:2fr 1fr;gap:1rem}
+label{display:block;font-size:.87rem;color:#e0f4f9;font-weight:800;margin-bottom:.35rem}
+input,select{width:100%;min-height:46px;background:#071c27;border:1px solid #7797a9;border-radius:8px;color:#f1ffff;padding:.55rem;font:1rem ui-monospace,Consolas,monospace}
+select{font-family:inherit}.examples{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0}
+button{background:#275163;border:1px solid #6593a5;color:#f2ffff;border-radius:99px;cursor:pointer;padding:.42rem .72rem;font-weight:700}button:hover{background:#3d7083}
+.result{border:1px solid #446779;background:#0b222f;border-radius:12px;padding:1rem}
+.result strong{font-size:1.1rem;color:var(--mint)}#verdict[data-status="range"],#verdict[data-status="invalid"],#verdict[data-status="trailing"]{color:var(--red)}
+.readouts{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}.readouts p{font:1rem ui-monospace,monospace;overflow-wrap:anywhere;margin:.25rem 0;color:var(--gold)}
+.refs{padding-left:1.4rem}.refs li{margin:.85rem 0;overflow-wrap:anywhere}
+footer{border-top:1px solid var(--line);padding:2rem 0;margin-top:3rem;color:var(--muted);font-size:.86rem}
+@media(max-width:900px){.layout{display:block}nav.toc{position:static;margin-bottom:1.4rem}nav.toc ol{columns:2}}
+@media(max-width:680px){.hero{grid-template-columns:1fr;padding:2.6rem 0}.visual{max-width:480px}.labcols,.grid{grid-template-columns:1fr}nav.toc ol{columns:1}pre{font-size:.75rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:white;color:#111}.sitehead,nav.toc,.lab{display:none}.layout{display:block}.hero{padding:0}.card,pre{color:#111;background:#eee}a{color:#035}}
+</style></head><body>
+<a class="skip" href="#main">Skip to article</a>
+<header class="sitehead"><div class="wrap brand"><span>Field Notes / Engineering Deep Dives</span><a href="https://github.com/jeffadickson/but-does-it-do-anything/tree/main/DeepDives" target="_blank" rel="noopener noreferrer">↗ Read the archive</a></div></header>
+<div class="wrap hero"><div><div class="eyebrow">2026.11.03 · C++20 · Bounded numeric parsing</div><h1>fast_<em>float</em></h1><p class="subtitle">What happens when a decimal string becomes an engineering value? A precise conversion boundary, fast enough to investigate, strict enough to review.</p><div class="pills"><span class="pill">v8.3.3 · Oct 31 release</span><span class="pill">Header-only</span><span class="pill">No heap in conversion</span><span class="pill">MIT / Apache-2.0 / BSL-1.0</span></div></div><div class="visual"><svg viewBox="0 0 440 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration of decimal telemetry turning into three checked floating-point values"><rect x="12" y="20" width="416" height="70" rx="13" fill="#071d28" stroke="#527a89"/><text x="29" y="44" font-size="13" fill="#9fc8d5" font-family="monospace">ASCII INPUT · 15 BYTES</text><text x="29" y="71" font-size="25" fill="#7be6bf" font-family="monospace">-12.5,0.003,1e2</text><path d="M220 100v40m-9-9 9 10 9-10" fill="none" stroke="#ffd49a" stroke-width="3"/><rect x="127" y="149" width="186" height="42" rx="10" fill="#275567" stroke="#7be6bf"/><text x="220" y="175" text-anchor="middle" font-size="16" fill="#fff" font-weight="700">PARSE + VALIDATE</text><g fill="#184438" stroke="#7be6bf"><rect x="10" y="210" width="128" height="36" rx="7"/><rect x="156" y="210" width="128" height="36" rx="7"/><rect x="302" y="210" width="128" height="36" rx="7"/></g><g fill="#e1fff3" font-family="monospace" text-anchor="middle" font-size="18"><text x="74" y="235">-12.5</text><text x="220" y="235">0.003</text><text x="366" y="235">100</text></g></svg><p class="caption">Illustrative telemetry message, not measured hardware.</p></div></div>
+<div class="wrap layout"><nav class="toc" aria-label="Table of contents"><strong>On this page</strong><ol><li><a href="#decision">The verdict</a></li><li><a href="#why">The problem</a></li><li><a href="#mechanics">API contract</a></li><li><a href="#adoption">Verified adopters</a></li><li><a href="#code">C++20 parser</a></li><li><a href="#lab">Interactive lab</a></li><li><a href="#cmake">CMake / Ninja</a></li><li><a href="#boundedness">Realtime</a></li><li><a href="#tradeoffs">Alternatives</a></li><li><a href="#testing">Benchmark plan</a></li><li><a href="#license">Licensing</a></li><li><a href="#projects">Project fit</a></li><li><a href="#sources">Primary sources</a></li></ol></nav><main id="main"><section id="decision"><div class="label">01 / Executive assessment</div><h2>An exact decimal boundary — and a dependency decision</h2><p><strong>fast_float</strong> is a header-only C++ library implementing <code>from_chars</code>-style numeric text conversion for <code>float</code>, <code>double</code>, and integers. It avoids dynamic allocations and exceptions inside the conversion routine, does not use the process locale, and targets correct nearest-even binary rounding. It supports C++11 onward; this edition focuses on C++20.</p><div class="grid"><div class="card"><span class="flag">Worth evaluating</span><h3>Input of bounded decimals</h3><p>Telemetry logs, deterministic replay traces, CSV-style measurements, numerical test vectors and device responses.</p></div><div class="card"><span class="flag proposed">Benchmark first</span><h3>Standard <code>from_chars</code> exists</h3><p>GCC's library already vendors fast_float for relevant conversions. A separate library may offer little improvement over your target standard library.</p></div></div><div class="callout"><strong>Recommendation:</strong> start with an allocation-audited parsing façade, compare <code>std::from_chars</code> against fast_float on the actual target, and only add the dependency for a verified benefit or required grammar.</div></section><section id="why"><div class="label">02 / Problem</div><h2>A decimal string is not a floating-point value</h2><p>In a text trace, <code>-12.5,0.003,1e2</code> comprises fifteen ASCII bytes. Before it is meaningful simulation data, software must recognize three tokens, handle exponent notation, choose binary values, validate separators, reject invalid numbers and ensure no extra characters remain.</p><p>Most decimal fractions are not exactly representable in a binary <code>double</code>: the familiar <code>0.1</code> is an approximation. Correct conversion chooses the nearest binary value, resolving exact midpoints with ties-to-even. A naive multiply-and-divide conversion can be inaccurate; the upstream library builds on specialized conversion algorithms and research.</p><p>Its pointer-and-length API is attractive for allocation-free systems: read directly from a bounded slice <code>[first,last)</code>, without constructing a zero-terminated copy. However, <strong>nonallocating conversion is not proof of a nonallocating entire application</strong> or bounded worst-case execution time.</p></section><section id="mechanics"><div class="label">03 / Semantics</div><h2>The cursor is as important as the number</h2><p>The documented result includes <code>ptr</code> (where parsing stopped) and <code>ec</code> (an error code). Successful recognition of a prefix is not equivalent to validation of a whole record. The default format rejects leading whitespace and a leading plus sign. The caller must check <code>r.ptr == end</code> when the whole field must be numeric.</p><div class="tablebox"><table><thead><tr><th>Input</th><th>Parser behavior</th><th>Caller action</th></tr></thead><tbody>
+<tr><td><code>3.25,OK</code></td><td>Numeric prefix <code>3.25</code> is recognized; cursor at comma.</td><td>Validate allowed separator or reject suffix.</td></tr>
+<tr><td><code>+3.25</code></td><td>Leading plus is disallowed by default.</td><td>Reject or select an explicit permissive format.</td></tr>
+<tr><td><code> 3.25</code></td><td>Leading whitespace is not skipped by default.</td><td>Reject or perform bounded preprocessing.</td></tr>
+<tr><td><code>nan</code> / <code>inf</code></td><td>Default floating parser can recognize them.</td><td>Use <code>std::isfinite</code> for finite-only domains.</td></tr>
+<tr><td><code>1e9999</code></td><td>Out of range; can write infinity.</td><td>Do not use the output after an error.</td></tr>
+<tr><td><code>1e-9999</code></td><td>Out of range; can write zero.</td><td>Reject underflow when loss of nonzero magnitude matters.</td></tr></tbody></table></div>
+<div class="callout warn"><strong>Scope:</strong> The upstream library does not parse hexadecimal floating-point syntax or <code>long double</code>. It assumes <code>FE_TONEAREST</code> for correct rounding. Optional <code>from_chars_advanced</code> supports stricter JSON/JavaScript syntax, Fortran-style exponents and custom decimal separators. These are documented extension features, not claims about the default grammar. <a href="https://github.com/fastfloat/fast_float/blob/v8.3.3/README.md" target="_blank" rel="noopener noreferrer">Official API and format details</a></div></section><section id="adoption"><div class="label">04 / Evidence</div><h2>Real integrations verified in actual source</h2><p>These are direct downstream file observations, not hypothetical uses or inferred adoption from star counts.</p>
+<div class="grid"><div class="card"><span class="flag">Verified source</span><h3>GCC libstdc++</h3><p><code>floating_from_chars.cc</code> conditionally includes <code>fast_float/fast_float.h</code>; the repository also contains vendored sources. This does not imply every compiler/target always selects that path. <a href="https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/src/c%2B%2B17/floating_from_chars.cc" target="_blank" rel="noopener noreferrer">Inspect GCC source</a></p></div>
+<div class="card"><span class="flag">Verified source</span><h3>DuckDB</h3><p><code>double_cast_operator.hpp</code> includes fast_float and calls the project's <code>duckdb_fast_float::from_chars</code> wrapper for conversions. <a href="https://github.com/duckdb/duckdb/blob/main/src/include/duckdb/common/operator/double_cast_operator.hpp" target="_blank" rel="noopener noreferrer">Inspect DuckDB source</a></p></div>
+<div class="card"><span class="flag">Verified source</span><h3>Apache Arrow</h3><p>Arrow's vendored fast_float README names upstream tag <code>v8.1.0</code>; actual vendored sources are present. This establishes integration, not use of the newest version. <a href="https://github.com/apache/arrow/blob/main/cpp/src/arrow/vendored/fast_float/README.md" target="_blank" rel="noopener noreferrer">Inspect Arrow vendor record</a></p></div>
+<div class="card"><span class="flag">Verified source</span><h3>ClickHouse</h3><p><code>src/IO/readFloatText.cpp</code> directly includes and uses fast_float components for numeric text input. <a href="https://github.com/ClickHouse/ClickHouse/blob/master/src/IO/readFloatText.cpp" target="_blank" rel="noopener noreferrer">Inspect ClickHouse source</a></p></div></div>
+<p><span class="flag proposed">Suggested, unverified</span> RISCue event parsing, VeloSim replay ingestion and BenchForge SCPI responses are candidate applications only. No existing project integration is asserted.</p></section><section id="code"><div class="label">05 / Working pattern</div><h2>A strict three-value telemetry record</h2><p>This C++20 example does <strong>whole-record validation</strong>: no dynamic strings, no allocations in the parser, exactly three comma-separated finite doubles, no stray suffixes, and no partial publication. The scratch array prevents an out-of-range or malformed later field from corrupting a previously valid output record.</p><pre><code class="language-cpp">// main.cpp — C++20
+#include &lt;array&gt;
+#include &lt;cmath&gt;
+#include &lt;cstddef&gt;
+#include &lt;string_view&gt;
+#include &lt;system_error&gt;
+#include &quot;fast_float/fast_float.h&quot;
+
+// Three finite comma-separated numbers; failure leaves out unchanged.
+// Fixed local array, no dynamic strings or allocations in this function.
+[[nodiscard]] bool parse_triplet(std::string_view wire,
+                                 std::array&lt;double, 3&gt;&amp; out) noexcept {
+  if (wire.empty()) return false;
+  const char* cursor = wire.data();
+  const char* const end = cursor + wire.size();
+  std::array&lt;double, 3&gt; candidate{};
+
+  for (std::size_t i = 0; i &lt; candidate.size(); ++i) {
+    if (cursor == end) return false;
+    const auto r = fast_float::from_chars(cursor, end, candidate[i]);
+    if (r.ec != std::errc{} || r.ptr == cursor ||
+        !std::isfinite(candidate[i])) return false;
+    cursor = r.ptr;
+    if (i + 1 &lt; candidate.size()) {
+      if (cursor == end || *cursor != ',') return false;
+      ++cursor;
+    }
+  }
+  if (cursor != end) return false; // reject trailing bytes
+  out = candidate;                // atomic publish after full check
+  return true;
+}
+
+int main() {
+  std::array&lt;double, 3&gt; out{99, 99, 99};
+  if (!parse_triplet(&quot;-12.5,0.003,1e2&quot;, out)) return 1;
+  if (out != std::array&lt;double, 3&gt;{-12.5, 0.003, 100.0}) return 2;
+  const auto baseline = out;
+  for (const char* bad : {&quot;1,2,3junk&quot;, &quot;+1,2,3&quot;, &quot;nan,2,3&quot;,
+                          &quot;1e9999,2,3&quot;, &quot;1,2&quot;}) {
+    if (parse_triplet(bad, out) || out != baseline) return 3;
+  }
+  return 0;
+}</code></pre><p class="small">Review and verification: uses the v8.3.3 documented <code>fast_float::from_chars</code> API. The same ordinary C++20 sample compiled and ran successfully against a temporary <code>std::from_chars</code> API substitute using GCC 14.2, with warnings treated as errors. That <strong>is not</strong> a compilation against fast_float v8.3.3 itself.</p></section><section id="lab"><div class="label">06 / Explore</div><h2>An interactive pointer-and-prefix laboratory</h2><p>Change the input and contract. Watch how a valid prefix can still leave unaccepted bytes. The browser model teaches token consumption rather than benchmarking or implementing the C++ library.</p>
+<div class="lab"><div class="labcols"><div><label for="sample">Text input (max 160 characters)</label><input id="sample" maxlength="160" value="-12.5,OK" autocomplete="off" spellcheck="false">
+<div class="examples"><button type="button" data-example="-12.5,OK" data-rule="prefix">Comma-delimited</button><button type="button" data-example="1e9999" data-rule="whole">Overflow</button><button type="button" data-example="+3.4" data-rule="whole">Leading plus</button><button type="button" data-example="01" data-rule="json">JSON leading zero</button><button type="button" data-example="1e+" data-rule="prefix">Incomplete exponent</button></div></div><div><label for="mode">Validation policy</label><select id="mode"><option value="prefix">Accept prefix</option><option value="whole">Require entire numeric field</option><option value="json">Strict JSON entire field</option></select><p class="small">Full-field modes reject trailing text, even after a valid prefix.</p></div></div>
+<div class="result" aria-live="polite" aria-atomic="true"><strong id="verdict" data-status="ok">PASS</strong><p id="detail">Valid numeric prefix.</p><div class="readouts"><div><span>Parsed prefix</span><p id="prefix">-12.5</p></div><div><span>Unconsumed suffix</span><p id="rest">,OK</p></div></div><small id="cursor">5 / 8 characters consumed</small><p>JavaScript numeric estimate: <span id="num">-12.5</span></p></div></div>
+<p class="small"><strong>Important:</strong> this model uses JavaScript <code>Number()</code> and a simplified finite-decimal grammar. It is <em>not fast_float</em>, is not an exact-rounding comparison, and intentionally does not implement <code>nan</code>/<code>inf</code> or every C++ grammar detail. Tested with 13 focused token/status cases.</p></section><section id="cmake"><div class="label">07 / Integration</div><h2>Pin the release in CMake / Ninja</h2><p>The upstream <code>CMakeLists.txt</code> declares an interface target <code>FastFloat::fast_float</code> and options <code>FASTFLOAT_TEST</code> and <code>FASTFLOAT_BENCHMARKS</code>. Pin a tag rather than tracking the default branch. The latest release checked here was <strong>v8.3.3, published October 31, 2026</strong>. <a href="https://github.com/fastfloat/fast_float/releases/tag/v8.3.3" target="_blank" rel="noopener noreferrer">Release notes</a> · <a href="https://github.com/fastfloat/fast_float/blob/v8.3.3/CMakeLists.txt" target="_blank" rel="noopener noreferrer">Build target definition</a></p><pre><code class="language-cmake">cmake_minimum_required(VERSION 3.24)
+project(BoundedFloatParser LANGUAGES CXX)
+include(FetchContent)
+set(FASTFLOAT_TEST OFF CACHE BOOL &quot;&quot; FORCE)
+set(FASTFLOAT_BENCHMARKS OFF CACHE BOOL &quot;&quot; FORCE)
+FetchContent_Declare(fast_float
+  GIT_REPOSITORY https://github.com/fastfloat/fast_float.git
+  GIT_TAG v8.3.3
+  GIT_SHALLOW TRUE)
+FetchContent_MakeAvailable(fast_float)
+add_executable(bounded_parser main.cpp)
+target_compile_features(bounded_parser PRIVATE cxx_std_20)
+target_link_libraries(bounded_parser PRIVATE FastFloat::fast_float)
+include(CTest)
+add_test(NAME bounded_parser_contract COMMAND bounded_parser)</code></pre><pre><code class="language-bash">cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
+ctest --test-dir build --output-on-failure</code></pre><p>For mission-style reproducible builds, vendor the matching tag and record its exact commit SHA; remove build-time network dependence, keep license notices, and test under the target cross-compiler. The native CMake/Ninja target was <strong>not built in this run</strong> because the source was inaccessible to the local compiler environment.</p></section><section id="boundedness"><div class="label">08 / Real-time considerations</div><h2>Allocation-free does not mean bounded WCET</h2><div class="tablebox"><table><thead><tr><th>Engineering property</th><th>Evidence / limitation</th></tr></thead><tbody>
+<tr><td>Internal allocation and exceptions</td><td>Upstream documents neither heap allocation nor throws for conversion. Still inspect toolchain/runtime linkage.</td></tr>
+<tr><td>Nearest-even conversion</td><td>Documented for ordinary <code>float</code>/<code>double</code>, under nearest rounding mode.</td></tr>
+<tr><td>Fixed parser memory</td><td>Demonstration uses only stack-local <code>std::array</code> and caller-owned <code>string_view</code>. Upstream message length must itself be capped.</td></tr>
+<tr><td>Worst-case timing</td><td><strong>Not established.</strong> Analyze slow paths and test pathological lengths/exponents on flight-like CPU.</td></tr>
+<tr><td>Replay determinism</td><td>Correct conversion helps, but does not establish deterministic downstream floating arithmetic, FTZ/DAZ, ABI, compiler flags or scheduling.</td></tr>
+<tr><td>Thread safety</td><td>Parsing distinct caller-owned buffers/results avoids shared object state; caller must enforce buffer ownership and lifetime.</td></tr></tbody></table></div><p>For RISCue, keep hard-deadline active-object queues in compact typed or binary form; parse ASCII at the ingress boundary, where length and deadline budgets can be controlled. Check that logging and error formatting do not allocate.</p></section><section id="tradeoffs"><div class="label">09 / Alternatives</div><h2>Compare before replacing the standard library</h2><div class="tablebox"><table><thead><tr><th>Method</th><th>Advantages</th><th>Tradeoff</th></tr></thead><tbody>
+<tr><td><code>std::from_chars</code></td><td>Standard C++17, no new dependency, locale-independent, supports bounded ranges; may use vendored fast_float.</td><td>Implementations differ by compiler and library version; extensions vary.</td></tr>
+<tr><td><strong>fast_float</strong></td><td>Predictable documented error interface, header-only, optional strict JSON and Fortran parsing; C++20 constexpr support.</td><td>Adds code and maintenance; does not validate your entire protocol or guarantee hard realtime.</td></tr>
+<tr><td><code>strtod</code></td><td>Extremely widely available.</td><td>NUL-terminated input, potential locale effects, whole-record policy harder to enforce.</td></tr>
+<tr><td>Binary protocol</td><td>Can eliminate text parsing and simplify bounded ingress.</td><td>Must define endianness, versioning, physical units and compatibility.</td></tr>
+<tr><td>Fixed-point integers</td><td>Attractive for explicitly scaled telemetry and stable quantization.</td><td>Scale/range/overflow policy must be specified and tested.</td></tr></tbody></table></div>
+<div class="callout warn"><strong>Engineering caution:</strong> adopting a library that your current <code>std::from_chars</code> already uses internally could offer no improvement. Start from evidence, not upstream benchmark slogans.</div></section><section id="testing"><div class="label">10 / Test and measurement</div><h2>Acceptance criteria worth automating</h2><p>The maintainers publish throughput approaching <strong>1 GB/s</strong> on particular machines. That is their benchmark, not a local result and not a prediction for RISCue hardware. For a defensible decision, use identical corpora and checksums for native <code>std::from_chars</code> and fast_float, prevent dead-code elimination, and report throughput along with tail latency and code size.</p><div class="grid"><div class="card"><h3>Functional corpus</h3><p>Zero/sign, halfway rounding, subnormals, extreme exponents, invalid leading signs, whitespace, suffixes, malformed exponent, nonfinites, and exact end-pointer position.</p></div><div class="card"><h3>Boundedness corpus</h3><p>Instrument <code>new</code>/<code>malloc</code>; cap input length; vary alignment and buffer lifetime; test worst-case strings; run sanitizers and fuzz malformed records.</p></div><div class="card"><h3>Target evidence</h3><p>GCC/Clang/MSVC or cross-compiler versions; CPU/ABI; <code>FE_TONEAREST</code>; FTZ/DAZ; <code>-ffast-math</code> policy; binary size; max/p99 latency.</p></div><div class="card"><h3>Replay evidence</h3><p>Compare bit patterns and replay hashes across targets, and ensure failure leaves all output state unchanged.</p></div></div></section><section id="license"><div class="label">11 / Compliance</div><h2>Three permissive license options</h2><p>The project expressly offers recipients a choice of <strong>MIT</strong>, <strong>Apache License 2.0</strong>, or <strong>Boost Software License 1.0</strong>. Preserve the applicable notices and copyright information for source redistribution; Apache also contains patent and notice obligations. Upstream credits adapted Google Wuffs code. Check the exact files and institutional compliance process before flight-system adoption.</p><p><a href="https://github.com/fastfloat/fast_float/blob/v8.3.3/LICENSE-MIT" target="_blank" rel="noopener noreferrer">MIT</a> · <a href="https://github.com/fastfloat/fast_float/blob/v8.3.3/LICENSE-APACHE" target="_blank" rel="noopener noreferrer">Apache 2.0</a> · <a href="https://github.com/fastfloat/fast_float/blob/v8.3.3/LICENSE-BOOST" target="_blank" rel="noopener noreferrer">Boost 1.0</a></p><p>For strongly typed .NET 10 Native AOT applications, compare managed <code>Double.TryParse</code> with invariant culture and UTF-8 parsing facilities first. A native fast_float wrapper introduces interop overhead and deployment complexity; no performance benefit is established here.</p></section><section id="projects"><div class="label">12 / Applicability</div><h2>Project-specific hypotheses, not claimed deployments</h2><div class="grid"><div class="card"><span class="flag proposed">RISCue</span><p>Parse bounded human-readable configuration or diagnostics outside tight active-object deadlines; deliver already typed values to queues.</p></div><div class="card"><span class="flag proposed">VeloSim</span><p>Ingest ASCII trace vectors through a finite-only validated façade, then compare deterministic replay hashes across compilers.</p></div><div class="card"><span class="flag proposed">BenchForge</span><p>Convert SCPI numeric responses from caller-owned buffers after verifying units, separators, CR/LF and instrument-specific error strings.</p></div><div class="card"><span class="flag proposed">Native AOT C#</span><p>Use managed parsing baselines; consider native interop only if measured hot-path performance warrants the extra boundary.</p></div></div><p><strong>Adoption gate:</strong> the strict parser plus baseline <code>std::from_chars</code> is useful immediately; importing the standalone library should be contingent on a concrete target benefit.</p></section><section id="sources"><div class="label">13 / Evidence trail</div><h2>Primary documentation and traceability</h2><ol class="refs">
+<li><a href="https://github.com/fastfloat/fast_float/blob/v8.3.3/README.md" target="_blank" rel="noopener noreferrer">Pinned v8.3.3 README</a> — API, allocation contract, grammar, formats, performance and licensing.</li>
+<li><a href="https://github.com/fastfloat/fast_float/releases/tag/v8.3.3" target="_blank" rel="noopener noreferrer">Official v8.3.3 release notes (October 31, 2026)</a> — updates including invalid-input behavior for certain fixed-width types.</li>
+<li><a href="https://github.com/fastfloat/fast_float/blob/v8.3.3/CMakeLists.txt" target="_blank" rel="noopener noreferrer">Upstream CMakeLists.txt at v8.3.3</a> — interface target and build options.</li>
+<li><a href="https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/src/c%2B%2B17/floating_from_chars.cc" target="_blank" rel="noopener noreferrer">GCC libstdc++ floating_from_chars.cc</a> — direct conditional include.</li>
+<li><a href="https://github.com/duckdb/duckdb/blob/main/src/include/duckdb/common/operator/double_cast_operator.hpp" target="_blank" rel="noopener noreferrer">DuckDB double_cast_operator.hpp</a> — direct fast_float include/call.</li>
+<li><a href="https://github.com/apache/arrow/blob/main/cpp/src/arrow/vendored/fast_float/README.md" target="_blank" rel="noopener noreferrer">Apache Arrow vendored README</a> — versioned embedded source (v8.1.0).</li>
+<li><a href="https://github.com/ClickHouse/ClickHouse/blob/master/src/IO/readFloatText.cpp" target="_blank" rel="noopener noreferrer">ClickHouse readFloatText.cpp</a> — numeric text parsing use.</li>
+<li><a href="https://github.com/fastfloat/fast_float/blob/v8.3.3/include/fast_float/fast_float.h" target="_blank" rel="noopener noreferrer">Upstream public header</a> — declarations and contract.</li>
+<li><a href="https://arxiv.org/abs/2101.11408" target="_blank" rel="noopener noreferrer">Lemire, Number Parsing at a Gigabyte per Second (2021)</a> — original research.</li>
+</ol><div class="callout warn"><strong>Review limitations (2026-11-03):</strong> Current upstream release, CMake declarations and downstream source examples were checked. The sample passed GCC 14.2 C++20 warnings-as-errors compilation and behavior checks against a <code>std::from_chars</code> substitute; upstream fast_float v8.3.3 was not compiled. The browser lab's grammar/status logic passed 13 cases and JavaScript syntax verification. Rendering in a real browser, embedded-CPU WCET, allocator instrumentation and repo CI are not claimed. No existing RISCue/VeloSim/BenchForge adoption was established.</div></section></main></div>
+<footer><div class="wrap"><strong>Engineering Deep Dive · November 3, 2026</strong><br>Primary-source review for jeffadickson/but-does-it-do-anything. Proposed project applications are explicitly labeled as such. <a href="#main">Back to article ↑</a></div></footer>
+<script>// Teaching model only: JavaScript Number(), NOT fast_float.
+function analyze(input, mode) {
+  const normal = /^-?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?/;
+  const json = /^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/;
+  const m = (mode === 'json' ? json : normal).exec(input);
+  if (!m) return {status:'invalid',token:'',rest:input,
+                   detail:'No finite decimal starts at the first character.'};
+  const token=m[0],rest=input.slice(token.length),value=Number(token);
+  const nonzero=/[1-9]/.test(token.split(/[eE]/)[0]);
+  if (!Number.isFinite(value) || (value===0 && nonzero))
+    return {status:'range',token,rest,
+            detail:'Outside the browser double range; C++ reports out_of_range.'};
+  if (mode!=='prefix' && rest.length)
+    return {status:'trailing',token,rest,
+            detail:'Valid prefix, but the remainder violates this whole-field rule.'};
+  return {status:'ok',token,rest,value,
+          detail:rest?'Prefix accepted; remaining bytes still need protocol validation.':
+                      'All input consumed.'};
+}
+const byId=id=>document.getElementById(id);
+const input=byId('sample'),mode=byId('mode');
+function render() {
+  const s=input.value.slice(0,160),r=analyze(s,mode.value);
+  const v=byId('verdict');
+  const names={ok:'PASS',invalid:'REJECT — invalid start',
+               range:'REJECT — out of range',trailing:'REJECT — trailing bytes'};
+  v.textContent=names[r.status]; v.dataset.status=r.status;
+  byId('detail').textContent=r.detail;
+  byId('prefix').textContent=r.token||'∅';
+  byId('rest').textContent=r.rest||'∅';
+  byId('num').textContent=r.value===undefined?'—':String(r.value);
+  byId('cursor').textContent=r.token.length+' / '+s.length+' characters consumed';
+}
+input.addEventListener('input',render);
+mode.addEventListener('change',render);
+document.querySelectorAll('[data-example]').forEach(b=>b.addEventListener('click',()=>{
+  input.value=b.dataset.example;mode.value=b.dataset.rule;render();input.focus();
+}));
+render();</script></body></html>
