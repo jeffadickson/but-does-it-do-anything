@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="November 4 engineering deep dive: source-verified Boost.Intrusive ready queues, C++20 code, memory lifetime, adoption, RISCue qualification and licensing.">
+<title>Boost.Intrusive — Allocation-Free Ready Queues · 2026-11-04</title>
+<style>
+:root{--bg:#081625;--panel:#112a40;--line:#35556b;--ink:#e8f2fc;--muted:#b8cce1;--aqua:#77efe4;--yellow:#ffdc86;--red:#ffaf99}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:1rem}body{margin:0;color:var(--ink);background:radial-gradient(ellipse 80% 34rem at 10% 0,#185271,transparent),var(--bg);font:1rem/1.67 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+a{color:var(--aqua);text-decoration-thickness:1.5px;text-underline-offset:.2em}a:hover{text-decoration-thickness:3px}a:focus-visible,button:focus-visible{outline:3px solid var(--yellow);outline-offset:4px}
+.skip{position:absolute;top:-5rem;left:1rem;background:white;color:#162a3b;padding:.6rem 1rem;z-index:20}.skip:focus{top:1rem}
+.wrap{width:min(1110px,calc(100% - 2rem));margin-inline:auto}header{padding:3.3rem 0 2.3rem;border-bottom:1px solid var(--line)}h1,h2,h3{line-height:1.2;letter-spacing:-.035em}h1{font-size:clamp(2.25rem,6vw,4.7rem);margin:.3rem 0 1rem}h2{font-size:clamp(1.5rem,3.3vw,2.35rem);margin:0 0 1rem}h3{font-size:1.16rem;margin:1.3rem 0 .55rem}
+p{max-width:82ch}header .lead{font-size:1.21rem;max-width:66ch;color:var(--muted)}.eyebrow{color:var(--aqua);font-weight:850;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;margin:0 0 .6rem}.date{color:var(--yellow);font-weight:700}.chips{display:flex;flex-wrap:wrap;gap:.55rem}.chip{padding:.22rem .7rem;border:1px solid var(--line);border-radius:100px;background:var(--panel);font-size:.83rem;color:var(--muted)}
+.layout{display:grid;grid-template-columns:minmax(0,215px) minmax(0,1fr);gap:1.9rem;align-items:start}aside{position:sticky;top:1rem;margin-top:2rem;padding:1.1rem 1rem;border-radius:14px;background:var(--panel);border:1px solid var(--line);max-height:calc(100vh - 2rem);overflow:auto}aside h2{font-size:1rem;margin:.2rem 0 .6rem;color:var(--yellow);letter-spacing:0}aside ol{margin:0;padding-left:1.45rem}aside li{margin:.45rem 0;font-size:.9rem}
+main{min-width:0}section{padding:2rem 0;border-bottom:1px solid var(--line)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.card,.panel{padding:1.1rem;background:var(--panel);border:1px solid var(--line);border-radius:15px;min-width:0}.card h3{margin:0 0 .45rem;color:var(--aqua)}.card p{margin:.45rem 0}.badge{font-size:.76rem;color:var(--yellow);font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.notice{padding:1rem 1.2rem;margin:1.3rem 0;background:#17433f;border-left:5px solid var(--aqua);border-radius:0 13px 13px 0}.warning{background:#4a3723;border-color:var(--yellow)}.notice strong{color:white}
+pre{padding:1rem;overflow:auto;background:#05131d;border:1px solid var(--line);border-radius:12px;line-height:1.52;font-size:.86rem;tab-size:4}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#b0fff0}pre code{color:#e4f0ff}p code,li code,td code{background:#1a4054;border-radius:4px;padding:.07rem .24rem}
+.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{padding:.7rem;text-align:left;vertical-align:top;border:1px solid var(--line)}th{background:#1b4358}tbody tr:nth-child(odd){background:#0e273a}
+.slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.55rem}.slot{background:#082135;border:1px solid var(--line);padding:.6rem .45rem;text-align:center;border-radius:10px}.slot.queued{background:#16483f;border-color:var(--aqua)}.slot h3{margin:0;font-size:1rem}.slot .state{margin:.15rem 0;color:var(--muted);font-size:.83rem}
+button{font:inherit;border:1px solid var(--aqua);border-radius:8px;background:#15545e;color:white;cursor:pointer;padding:.6rem .7rem;font-weight:750}button:hover{background:#1b6973}button:disabled{opacity:.45;cursor:not-allowed}.slot button{font-size:.84rem;width:100%;padding:.45rem .15rem;margin:.15rem 0}.secondary{background:#375168;border-color:#a5bbcb}.danger{background:#64413a;border-color:var(--red)}
+.controls{display:flex;flex-wrap:wrap;gap:.5rem;margin:.85rem 0}.queue{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;min-height:4.1rem;margin:.6rem 0 1rem;padding:.7rem;background:#082135;border:1px dashed #819db0;border-radius:10px}.node{padding:.3rem .65rem;background:#365d65;border:1px solid var(--aqua);border-radius:999px;font-weight:750}
+.metrics{display:flex;flex-wrap:wrap;gap:.75rem;margin:.7rem 0}.metric{background:#081f32;border:1px solid var(--line);padding:.6rem .8rem;border-radius:10px;font-variant-numeric:tabular-nums}.metric strong{font-size:1.2rem;color:var(--yellow)}
+#status{background:#14434a;padding:.65rem .8rem;border-radius:8px;min-height:2.8rem}.trace{max-height:12rem;overflow-y:auto;color:var(--muted);font-family:ui-monospace,monospace;font-size:.88rem}
+small,.muted{color:var(--muted)}.sources li{margin:.85rem 0}.sources small{display:block}.foot{padding:2rem 0 3rem;color:var(--muted);font-size:.9rem}
+@media(max-width:810px){.layout{display:block}aside{position:static;max-height:none;margin:1rem 0}aside ol{columns:2}section{padding:1.6rem 0}}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.slots{grid-template-columns:repeat(2,minmax(0,1fr))}aside ol{columns:1}.wrap{width:calc(100% - 1.3rem)}header{padding:2rem 0}.panel{padding:.75rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media(prefers-color-scheme:light){:root{--bg:#f0f7fa;--panel:white;--line:#b0c5d2;--ink:#172a3e;--muted:#3f596c;--aqua:#006a62;--yellow:#775100}body{background:linear-gradient(#e1f2f0,#f3f7fa)}.chip{background:#e5f1f5}.notice{background:#d8f4e9}.notice.warning{background:#fff0d4}.notice strong{color:#152d3c}.card h3{color:#006c60}pre{background:#102234}p code,li code,td code{background:#dbedf3;color:#195060}th{background:#d7edf2}tbody tr:nth-child(odd){background:#edf5f8}.slot{background:#e6f1f6}.slot.queued{background:#cdf2e5}.queue,.metric{background:#eaf2f8}.node{background:#d0f0e7;color:#173847}#status{background:#def1e9}.slot .state{color:#3f596c}}
+</style></head><body>
+<a href="#main" class="skip">Skip to main content</a>
+<header><div class="wrap"><p class="eyebrow">Daily Library Deep Dive · 04 November 2026</p><p class="date"><time datetime="2026-11-04">Wednesday, November 4, 2026</time></p>
+<h1>Boost.Intrusive:<br>no separate nodes.<br>no surprise allocations.</h1>
+<p class="lead">A C++20 engineering assessment of allocation-free, single-owner ready queues, with real Boost production-code examples, an interactive event-queue microscope, and a concrete RISCue qualification plan.</p>
+<div class="chips"><span class="chip">C++20 compatible</span><span class="chip">Header-only</span><span class="chip">BSL-1.0 (not MIT)</span><span class="chip">No list-node allocation</span><span class="chip">RISCue prototype candidate</span></div></div></header>
+<div class="wrap layout"><aside aria-label="Contents"><nav><h2>Contents</h2><ol>
+<li><a href="#verdict">Executive verdict</a></li><li><a href="#model">How it works</a></li><li><a href="#complexity">Memory &amp; complexity</a></li><li><a href="#adoption">Verified real uses</a></li><li><a href="#example">C++20 example</a></li><li><a href="#lab">Interactive lab</a></li><li><a href="#tradeoffs">Risks and tradeoffs</a></li><li><a href="#riscue">RISCue qualification</a></li><li><a href="#build">CMake, license</a></li><li><a href="#sources">Primary sources</a></li></ol></nav></aside>
+<main id="main">
+<section id="verdict"><p class="eyebrow">01 / decision</p><h2>Verdict: prototype for a bounded ready list</h2><p><strong>Boost.Intrusive is a strong candidate for a single-owner list of preallocated RTOS task or event objects.</strong> Insertion, cancellation of a known item, and dispatch from the head do not need separate list-node allocations. Crucially, this is <em>not</em> proof that the application allocates nothing, that list operations synchronize between threads, or that measured worst-case timing is bounded.</p>
+<div class="grid"><div class="card"><span class="badge">Promising</span><h3>Scheduler-owned ready list</h3><p>Stable, preallocated task control blocks; one owner; constant-time insert and known-node erase. A clear, auditable resource model.</p></div><div class="card"><span class="badge">Wrong abstraction</span><h3>Cross-core mailbox</h3><p>Not a replacement for a lock-free SPSC channel. A concurrent sender and scheduler cannot safely mutate the same list without a synchronization policy.</p></div></div>
+<div class="notice"><strong>What makes it different:</strong> the Nov 2 Boost.Lockfree SPSC queue was a communication primitive. Boost.Intrusive is an <em>object organization</em> primitive. It addresses node storage and identity, not concurrency.</div></section>
+<section id="model"><p class="eyebrow">02 / mechanism</p><h2>Store pointers <em>inside</em> the event</h2><p>A conventional <code>std::list&lt;Event&gt;</code> ordinarily owns nodes and allocates separate node storage. An intrusive list embeds a <code>list_member_hook</code> in each application-owned event. The queue holds references to those objects through their hooks. Objects remain owned by the application and must outlive their list membership. This behavior is documented by the <a href="#src2">official list reference</a> and <a href="#src3">usage guide</a>.</p>
+<pre tabindex="0" aria-label="Illustrative memory layout diagram">preallocated Event 10: [id=10 | previous pointer | next pointer]
+preallocated Event 20: [id=20 | previous pointer | next pointer]
+                                 ↑
+                 intrusive ready list connects these hooks
+                  (no separate heap-allocated list nodes)</pre>
+<p class="muted">The diagram is conceptual: actual struct layout, padding, pointer representation and per-target memory footprint must be measured.</p><p><strong>The object may still allocate:</strong> a task payload with a dynamic <code>std::string</code>, heap-owning callback, or runtime-allocated task object defeats a whole-program “allocation-free” claim even though the list operations themselves do not allocate.</p></section>
+<section id="complexity"><p class="eyebrow">03 / bounded complexity</p><h2>Operation-level accounting</h2><div class="scroll"><table><thead><tr><th scope="col">Operation</th><th scope="col">Complexity</th><th scope="col">Precondition or detail</th></tr></thead><tbody>
+<tr><td><code>push_back(event)</code></td><td>O(1)</td><td>Event is alive, stable, unlinked for this hook.</td></tr><tr><td><code>front()</code>, <code>pop_front()</code></td><td>O(1)</td><td>Nonempty queue; removal does not destroy event.</td></tr><tr><td><code>erase(iterator_to(event))</code></td><td>O(1)</td><td>Event is known to be linked in <em>this</em> list.</td></tr><tr><td><code>size()</code></td><td>O(1) by default</td><td><code>constant_time_size&lt;true&gt;</code> counts nodes.</td></tr><tr><td>Search for highest priority</td><td>O(n)</td><td>Unsorted lists do not offer priority lookup.</td></tr><tr><td><code>clear()</code> (default safe hooks)</td><td>O(n)</td><td>Unlinks all nodes; does not delete objects.</td></tr></tbody></table></div>
+<div class="notice warning"><strong>Lifecycle invariant:</strong> one hook cannot belong to two lists simultaneously. Use separate hooks for separate memberships. The default <code>safe_link</code> mode helps detect double insertion in development, but safety depends on checked ownership and lifetime. Do not destroy or recycle a linked object.</div>
+<p>The official doubly linked list description specifies two pointers of overhead per node for its hook; object padding and other fields vary by ABI. Default safe-link assertions and cleanup behavior should be evaluated in the production build configuration. <code>auto_unlink</code> is a separate mode, incompatible with maintaining constant-time size: this report does <em>not</em> use it. O(1) is an asymptotic guarantee, not an end-to-end worst-case execution-time measurement. <a href="#src2">[2]</a> <a href="#src3">[3]</a></p></section>
+<section id="adoption"><p class="eyebrow">04 / evidence</p><h2>Real uses verified in primary source code</h2><p>These are concrete integrations inside other Boost components, verified from their own repositories; they demonstrate architectural precedent, <em>not</em> proof of RISCue suitability.</p>
+<div class="grid"><div class="card"><span class="badge">Verified source-level use</span><h3>Boost.Fiber</h3><p>The <a href="#src5">scheduler header</a> defines intrusive ready and worker lists; an intrusive multiset handles sleeping contexts, and another intrusive list handles terminated ones. This is the closest ready-queue precedent.</p></div>
+<div class="card"><span class="badge">Verified source-level use</span><h3>Boost.Cobalt</h3><p>The <a href="#src6">channel header</a> uses intrusive read and write operation lists with auto-unlink hooks and non-constant-time size options—a deliberately different lifetime policy.</p></div>
+<div class="card"><span class="badge">Verified source-level use</span><h3>Boost.Beast</h3><p><a href="#src7">HTTP field elements</a> use an intrusive list hook and a set hook, illustrating that one object can participate in multiple views with separate hooks. This does not imply a no-allocation HTTP parser.</p></div>
+<div class="card"><span class="badge">Proposed application only</span><h3>RISCue / VeloSim</h3><p>Preallocated active-object control blocks or deterministic event ownership lists are plausible <em>future prototypes</em>. No existing integration or deployed use in these projects is claimed.</p></div></div></section>
+<section id="example"><p class="eyebrow">05 / C++20 implementation</p><h2>Ready queue with explicit event identity</h2><p>Code follows the upstream documented <code>member_hook</code>, <code>safe_link</code>, <code>iterator_to</code> and list APIs. All events are constructed before the list, and cannot be copied. This avoids a common error: relocating a hooked event in a growing vector.</p>
+<pre tabindex="0"><code class="language-cpp">#include &lt;boost/intrusive/list.hpp&gt;
+#include &lt;cassert&gt;
+#include &lt;cstdint&gt;
+#include &lt;iostream&gt;
+
+namespace bi = boost::intrusive;
+
+struct Event {
+    explicit Event(std::uint16_t n) : id(n) {}
+    Event(const Event&amp;) = delete;
+    Event&amp; operator=(const Event&amp;) = delete;
+    std::uint16_t id;
+    bi::list_member_hook&lt;&gt; hook;  // default safe_link
+};
+using Ready = bi::list&lt;Event,
+    bi::member_hook&lt;Event, bi::list_member_hook&lt;&gt;, &amp;Event::hook&gt;&gt;;
+
+int main() {
+    // These events outlive the ready list and never move.
+    Event telemetry{10}, command{20}, watchdog{30};
+    Ready ready;
+    ready.push_back(telemetry);
+    ready.push_back(command);
+    ready.push_front(watchdog);
+    assert(ready.size() == 3 &amp;&amp; ready.front().id == 30);
+
+    ready.erase(ready.iterator_to(command)); // known node: O(1)
+    assert(!command.hook.is_linked());
+    Event&amp; first = ready.front();
+    ready.pop_front(); // detaches, does not destroy the Event
+    assert(first.id == 30 &amp;&amp; !first.hook.is_linked());
+    assert(ready.front().id == 10);
+
+    ready.clear(); // detach before object lifetime ends
+    assert(ready.empty() &amp;&amp; !telemetry.hook.is_linked());
+    std::cout &lt;&lt; &quot;ready queue invariants passed\n&quot;;
+}</code></pre>
+<p><strong>Expected sequence:</strong> after three insertions, <code>[30, 10, 20]</code>; after cancelling <code>20</code>, <code>[30, 10]</code>; after dispatching <code>30</code>, <code>[10]</code>; after clearing, empty. The example uses assertions for illustration, not a complete unit-test framework.</p><p class="muted"><strong>Verification boundary:</strong> APIs and lifetime rules were checked against official documentation, but this specific snippet has not been compiled or executed in this run.</p></section>
+<section id="lab"><p class="eyebrow">06 / interactive teaching tool</p><h2>Ready-queue microscope</h2><p>Four pre-created event identities. Enqueue them, cancel any linked event, or dispatch the oldest. Each one has a single conceptual hook, and it may be linked only once.</p>
+<div class="panel"><div class="slots">
+<div class="slot" data-id="0"><h3>Telemetry</h3><p class="state">unlinked</p><button data-add="0" type="button">Enqueue 10</button><button class="danger" data-cancel="0" type="button">Cancel</button></div>
+<div class="slot" data-id="1"><h3>Command</h3><p class="state">unlinked</p><button data-add="1" type="button">Enqueue 20</button><button class="danger" data-cancel="1" type="button">Cancel</button></div>
+<div class="slot" data-id="2"><h3>Watchdog</h3><p class="state">unlinked</p><button data-add="2" type="button">Enqueue 30</button><button class="danger" data-cancel="2" type="button">Cancel</button></div>
+<div class="slot" data-id="3"><h3>Trace</h3><p class="state">unlinked</p><button data-add="3" type="button">Enqueue 40</button><button class="danger" data-cancel="3" type="button">Cancel</button></div>
+</div><p><strong>Queue from front to back</strong></p><div id="queue" class="queue" role="group" aria-label="Current ready list order"><span>Empty — all hooks unlinked.</span></div>
+<div class="controls"><button id="dispatch" type="button">▶ Dispatch front</button><button id="demo" class="secondary" type="button">Load demonstration</button><button id="reset" class="secondary" type="button">↺ Reset</button></div>
+<p id="status" aria-live="polite" role="status">Queue ready. Enqueue an event.</p>
+<div class="metrics"><span class="metric">Linked nodes <strong id="count">0 / 4</strong></span><span class="metric">Conceptual list-node allocations <strong>0</strong></span><span class="metric">Operations <strong id="operations">0</strong></span></div>
+<h3>Trace</h3><ol class="trace" id="trace" aria-label="Queue operation history"><li>Reset: all hooks unlinked.</li></ol>
+<p class="muted">This JavaScript model is illustrative: browser JavaScript <em>does</em> allocate memory. The zero counter describes the conceptual C++ list-node policy, not measured JavaScript heap usage. This simulator does not model synchronization, interrupt masking, interrupts or actual nanosecond timing.</p></div>
+<h3>Three experiments</h3><ol><li>Enqueue Telemetry then Command; confirm the order. Attempt to enqueue Telemetry again: its add button becomes disabled while its one hook is linked.</li><li>Cancel Command in the middle. Re-enqueue it and observe that the same event identity returns to the tail.</li><li>Load the demonstration and repeatedly dispatch. Which one leaves first? Could priority inversion or missed deadlines arise from plain FIFO?</li></ol></section>
+<section id="tradeoffs"><p class="eyebrow">07 / costs</p><h2>What could go wrong?</h2>
+<div class="grid"><div class="card"><h3>Benefits</h3><p>Separate list-node allocation eliminated; identity-preserving removal; constant-time list maintenance for known nodes; no object copies; multiple distinct hooks can create multiple indexes.</p></div>
+<div class="card"><h3>Risks</h3><p>Strong ownership/lifetime coupling; embedded pointers cost RAM; hooked objects cannot be casually relocated; lists are not thread-safe; priority searches can be linear; accidental linked-object destruction is dangerous.</p></div></div>
+<div class="notice warning"><strong>Do not infer “lock-free.”</strong> A short list mutation is not a memory-ordering algorithm. If an ISR and scheduler both touch this container, you must design and qualify the synchronization and ownership protocol independently.</div>
+<p><strong>Allocation boundaries:</strong> allocating an Event at dispatch time, capturing a heap-owning callback, or storing a dynamic payload could still allocate. For a fixed-memory architecture, all object storage and payload capacity must be provisioned in advance.</p>
+<p><strong>WCET:</strong> O(1) insert and removal are helpful for proof obligations, but do not bound cache effects, critical-section contention, compiler changes or event-handler code. For deadline ordering, a fixed-capacity heap or intrusive ordered structure may be more appropriate.</p></section>
+<section id="riscue"><p class="eyebrow">08 / qualification</p><h2>RISCue: what to measure before adoption</h2><div class="scroll"><table><thead><tr><th scope="col">Requirement</th><th scope="col">Evidence to collect</th><th scope="col">Acceptance condition</th></tr></thead><tbody>
+<tr><td>RQ-1 / heap isolation</td><td>Instrument new/delete or heap and enqueue/dequeue/cancel after initialization.</td><td>Zero list-operation allocations in test matrix.</td></tr>
+<tr><td>RQ-2 / fixed capacity</td><td>Provision N events; simulate N+1 admissions; test duplicate hook insertion guard.</td><td>Bounded object admission and explicit overflow response.</td></tr>
+<tr><td>RQ-3 / lifetime</td><td>Test cancel, pool reuse, shutdown, double insert, linked-object release; use ASan/UBSan on host.</td><td>No dangling or doubly linked hooks.</td></tr>
+<tr><td>RQ-4 / replay</td><td>Feed identical event traces to the deterministic scheduler.</td><td>Identical dequeue order and event identity.</td></tr>
+<tr><td>RQ-5 / concurrency</td><td>Review mutation ownership; test ISR-to-scheduler handoff and data races.</td><td>Single owner or analyzed synchronization.</td></tr>
+<tr><td>RQ-6 / execution time</td><td>Measure target-board maxima, jitter and interrupt interference.</td><td>Budget passed under worst supported conditions.</td></tr></tbody></table></div>
+<p><strong>Suggested architecture, not existing implementation:</strong> use an independently qualified bounded SPSC mailbox to transfer IDs from the sole producer into the scheduler. Inside that one scheduler context, organize preallocated ready objects using Boost.Intrusive. This distinguishes inter-context transfer from ownership and scheduling.</p></section>
+<section id="build"><p class="eyebrow">09 / adoption mechanics</p><h2>CMake/Ninja, dependency policy, license</h2>
+<p>Boost.Intrusive is <strong>header-only</strong> but relies on other Boost headers. The official <a href="#src9">vcpkg package</a> lists version <strong>1.92.0</strong> as of the November 4, 2026 research and its transitive dependencies. Production CI should pin a vcpkg baseline and approved compiler/Boost versions.</p>
+<h3>Install and configure</h3><pre tabindex="0"><code>vcpkg add port boost-intrusive
+cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=&lt;vcpkg-root&gt;/scripts/buildsystems/vcpkg.cmake
+cmake --build build
+./build/ready_queue</code></pre>
+<p class="muted">Replace the placeholder with the actual path; on Windows use the produced executable filename and appropriate path separator. CMake toolchain selection must occur during configuration.</p>
+<h3>Minimal CMakeLists.txt</h3><pre tabindex="0"><code class="language-cmake">cmake_minimum_required(VERSION 3.20)
+project(intrusive_ready_queue LANGUAGES CXX)
+find_package(Boost REQUIRED)
+add_executable(ready_queue main.cpp)
+target_compile_features(ready_queue PRIVATE cxx_std_20)
+target_link_libraries(ready_queue PRIVATE Boost::headers)</code></pre>
+<p>The <code>Boost::headers</code> imported target is widely supported by CMake Boost packages, but verify the exact package and target exported by your toolchain. This example was not configured in a real local build during this run.</p>
+<h3>Licensing</h3><p>The license is <strong>Boost Software License 1.0 (BSL-1.0), not MIT</strong>. Commercial and source/binary redistribution are permitted under its requirements, including preservation of specified license text with covered source distributions. See the <a href="#src10">official license</a> for exact obligations; obtain your project's license review for delivered firmware or source packages.</p>
+<h3>Fair alternatives</h3><p>For simple FIFO without known-node cancellation, a fixed-size ring buffer may have smaller metadata overhead. For ownership semantics with no preallocated object pool, conventional <code>std::list</code> is simpler but normally allocates nodes. Boost.Lockfree SPSC solves a narrower concurrent transfer problem. A fixed-capacity heap is often better for deadline-based ordering. Pick based on requirements and measurements, not framework popularity.</p></section>
+<section id="sources"><p class="eyebrow">10 / provenance</p><h2>Primary sources &amp; review ledger</h2><ol class="sources"><li id="src1"><a href="https://www.boost.org/library/latest/intrusive/">Boost.Intrusive official overview</a><small>Module description, licensing and header-only property.</small></li><li id="src2"><a href="https://www.boost.org/latest/doc/html/intrusive/list.html">Official intrusive list documentation</a><small>Two-pointer hooks, member_hook, list configuration and examples.</small></li><li id="src3"><a href="https://www.boost.org/latest/doc/html/intrusive/usage.html">Official usage and object lifetime</a><small>Safe hooks, object lifetime and hook configuration.</small></li><li id="src4"><a href="https://www.boost.org/doc/libs/develop/doc/html/intrusive.html">Official detailed introduction</a><small>Container choices, their behavior and build notes.</small></li><li id="src5"><a href="https://github.com/boostorg/fiber/blob/c2cacd85a47bbc0952fedb0936973f800d228ae0/include/boost/fiber/scheduler.hpp">Boost.Fiber scheduler.hpp source</a><small>Uses intrusive ready and worker lists, ordered sleep queue and terminated list.</small></li><li id="src6"><a href="https://github.com/boostorg/cobalt/blob/d1b2045d62fba38b22e165239e2d83d24ae75927/include/boost/cobalt/channel.hpp">Boost.Cobalt channel.hpp source</a><small>Read and write operation lists with auto-unlink hooks.</small></li><li id="src7"><a href="https://github.com/boostorg/beast/blob/8322e205460d36fcc69690716e1a83c1e18a4359/include/boost/beast/http/fields.hpp">Boost.Beast HTTP fields source</a><small>Field elements use list and set hooks.</small></li><li id="src8"><a href="https://github.com/boostorg/intrusive">Upstream source and tests</a><small>Official code repository and example directory.</small></li><li id="src9"><a href="https://vcpkg.io/en/package/boost-intrusive.html">Official vcpkg boost-intrusive port</a><small>Versioned package, dependencies, install commands and licensing.</small></li><li id="src10"><a href="https://www.boost.org/LICENSE_1_0.txt">Boost Software License 1.0</a><small>Full permissive license text and notice requirement.</small></li></ol><div class="notice"><strong>Research notes (2026-11-04):</strong> Checked existing DeepDives/ filenames on repository main before selection. ETL, littlefs, Boost.Ext.SML, nanopb, mp-units, QP/C++, frozen, Vogen, magic_enum, Boost.StaticString, HFSM2, sly, foonathan/memory, Boost.Lockfree SPSC and fast_float were already covered. Verified actual uses from upstream Boost.Fiber, Boost.Cobalt and Boost.Beast source. The C++ snippet was reviewed but no compiler, runtime benchmark or embedded target was available. The proposed RISCue integration is explicitly hypothetical.</div></section>
+</main></div><footer class="wrap foot"><p>Engineering Deep Dive · November 4, 2026 · Self-contained HTML. No remote scripts, fonts, tracking pixels, or runtime library dependencies.</p><a href="#main">Back to top ↑</a></footer>
+<script>
+(function(){"use strict";
+const names=["Telemetry","Command","Watchdog","Trace"],numbers=[10,20,30,40];
+let q=[],ops=0,hist=["Reset: all hooks unlinked."];
+const view=document.getElementById("queue"),status=document.getElementById("status"),trace=document.getElementById("trace");
+function render(){
+ view.replaceChildren();
+ if(!q.length){const x=document.createElement("span");x.textContent="Empty — all hooks unlinked.";view.appendChild(x);}
+ q.forEach(function(i,n){const x=document.createElement("span");x.className="node";x.textContent=(n===0?"HEAD · ":"")+names[i]+" #"+numbers[i];view.appendChild(x);});
+ document.querySelectorAll("[data-id]").forEach(function(el){const i=Number(el.dataset.id),linked=q.includes(i);el.classList.toggle("queued",linked);el.querySelector(".state").textContent=linked?"ready / linked":"idle / unlinked";el.querySelector("[data-add]").disabled=linked;el.querySelector("[data-cancel]").disabled=!linked;});
+ document.getElementById("count").textContent=q.length+" / 4";
+ document.getElementById("operations").textContent=String(ops);
+ trace.replaceChildren();hist.forEach(function(t){const el=document.createElement("li");el.textContent=t;trace.appendChild(el);});
+}
+function say(t){status.textContent=t;hist.push(t);if(hist.length>12)hist.shift();render();}
+function add(i){ops++;if(q.includes(i)){say("Refused: "+names[i]+" hook is already linked.");return;}q.push(i);say("push_back("+names[i]+") → linked; "+q.length+" ready.");}
+function cancel(i){ops++;const at=q.indexOf(i);if(at===-1){say("Cannot cancel "+names[i]+": already unlinked.");return;}q.splice(at,1);say("erase("+names[i]+") → unlinked; event storage retained.");}
+document.querySelectorAll("[data-add]").forEach(function(b){b.addEventListener("click",function(){add(Number(b.dataset.add));});});
+document.querySelectorAll("[data-cancel]").forEach(function(b){b.addEventListener("click",function(){cancel(Number(b.dataset.cancel));});});
+document.getElementById("dispatch").addEventListener("click",function(){ops++;if(!q.length){say("Queue empty: nothing to dispatch.");return;}const i=q.shift();say("pop_front() → "+names[i]+" #"+numbers[i]+" dispatched and unlinked.");});
+document.getElementById("demo").addEventListener("click",function(){q=[2,0,1];ops=3;hist=[];say("Loaded Watchdog → Telemetry → Command. Dispatch from front.");});
+document.getElementById("reset").addEventListener("click",function(){q=[];ops=0;hist=[];say("Reset: all hooks unlinked.");});
+render();
+}());
+</script></body></html>
