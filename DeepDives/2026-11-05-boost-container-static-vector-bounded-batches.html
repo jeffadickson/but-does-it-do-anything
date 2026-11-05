@@ -288,7 +288,7 @@ ctest --test-dir build --output-on-failure
       tr.append(td);
       rows.append(tr);
     }
-    add.disabled = events.length === CAPACITY;
+    add.disabled = false; // Permit a deliberate rejected post at capacity.
     send.disabled = events.length === 0;
   }
   function postEvent(id, level) {
