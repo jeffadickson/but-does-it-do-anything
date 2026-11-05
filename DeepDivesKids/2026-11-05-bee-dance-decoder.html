@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#093c44">
+<meta name="description" content="Bee Dance Decoder: an interactive, offline science adventure for 9-year-olds about how honey bees share directions to flowers.">
+<title>Bee Dance Decoder! | DeepDivesKids | November 5, 2026</title>
+<style>
+:root{color-scheme:light;--ink:#183447;--sub:#3d596a;--forest:#073d43;--teal:#086968;--honey:#ffc753;--orange:#e87720;--rose:#e55d81;--sky:#dff6ff;--cream:#fffdf4;--line:#c4e1df;--focus:#b52a7b;--radius:23px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#fff9e5,#f4ffff 35%,#fff6e8);font:clamp(16px,1.6vw,18px)/1.63 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
+a{color:#075c72;text-underline-offset:3px}a:hover{color:#96316a}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:4px solid var(--focus);outline-offset:3px}
+.skip{position:absolute;left:-9999px;top:0;z-index:5;background:#fff;padding:.7rem 1rem}.skip:focus{left:1rem;top:1rem}
+.wrap{width:min(1080px,calc(100% - 2rem));margin-inline:auto}
+.hero{background:radial-gradient(ellipse at 83% 25%,#25767a 0,transparent 33%),radial-gradient(ellipse at 16% 84%,#15515c 0,transparent 30%),linear-gradient(135deg,#052f3a,#0c5661);color:#fff;padding:3.5rem 0 4.2rem;overflow:hidden}
+.hero-inner{display:grid;grid-template-columns:minmax(0,1.13fr) minmax(240px,.87fr);gap:2rem;align-items:center}
+.eyebrow{text-transform:uppercase;letter-spacing:.11em;font-size:.78rem;font-weight:900;color:#ffe28d}.eyebrow.dark{color:#0a6762}
+h1,h2,h3{line-height:1.15;letter-spacing:-.027em}h1{font-size:clamp(2.9rem,7vw,5.3rem);margin:.55rem 0 1rem}h2{font-size:clamp(1.6rem,3.2vw,2.35rem);margin:.4rem 0 .9rem}h3{font-size:1.16rem;margin:.3rem 0 .5rem}
+.hero p{max-width:54ch}.lede{font-size:1.18rem;color:#f4fffa;font-weight:580}
+.pills{display:flex;gap:.55rem;flex-wrap:wrap;margin:1.35rem 0}.pill{border:1px solid #a7dad5;background:#ffffff1f;padding:.35rem .75rem;border-radius:40px;font-weight:750;font-size:.84rem}
+.hero-illustration{background:#fff4d4;border:5px solid #ffffff58;border-radius:34px;padding:1.25rem;box-shadow:0 19px 44px #001d254d;transform:rotate(2deg)}
+.hero-illustration svg{display:block;width:100%;height:auto}
+.hero-illustration figcaption{color:#34564e;font-size:.8rem;text-align:center;font-weight:720}
+main{padding:2rem 0 4rem}.toc,.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:clamp(1.05rem,3vw,2rem);margin-bottom:1.5rem;box-shadow:0 7px 27px #143e4c12}
+.toc{background:#f7fffc;border-top:7px solid var(--honey)}.toc h2{font-size:1.3rem}
+.toc ol{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem 1.2rem;padding-left:1.4rem;margin-bottom:0}
+.toc a{display:block;padding:.3rem .15rem;font-weight:800}.card.sunny{background:linear-gradient(140deg,#fff0bd,#fffdf2)}.card.cool{background:linear-gradient(135deg,#e9fbff,#fffdf5)}.card.lilac{background:#fcf3ff}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.tile{padding:1rem 1.1rem;background:#eef9f6;border-radius:17px;border:1px solid #cbe4da}.tile.mango{background:#fff2d6;border-color:#efdcb3}.tile.pink{background:#fff0f6;border-color:#f4d2e1}
+.tile p{margin:.4rem 0 .1rem}.badge{display:inline-block;font-size:.75rem;letter-spacing:.035em;text-transform:uppercase;font-weight:900;padding:.2rem .65rem;border-radius:30px;background:#ccece5;color:#14544d}.badge.idea{background:#ffe0a2;color:#6d4300}
+.fact,.imagine{padding:.85rem 1rem;border-radius:0 14px 14px 0;margin:1rem 0;border-left:6px solid #118a7e;background:#e9f9f3}.imagine{border-left-color:#db8a20;background:#fff5de}
+strong{font-weight:820}.small{font-size:.91rem;color:var(--sub)}.card p{max-width:82ch}ul li,ol li{margin:.35rem 0}
+.lab{border:3px solid #087d7c;background:linear-gradient(160deg,#eafff6,#ffffff 50%,#fff3d4)}
+.lab-header{display:flex;justify-content:space-between;gap:.8rem;align-items:center;flex-wrap:wrap}.stamp{background:#083f44;color:#fff;border-radius:60px;padding:.34rem .7rem;font-size:.77rem;font-weight:900}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}
+.control{display:block;background:#fff;border:1px solid #bdddd7;padding:1rem 1.1rem;border-radius:17px}
+.control label{display:block;font-weight:850;margin-bottom:.5rem}.control output{font-weight:900;color:#075d62}
+input[type=range]{display:block;width:100%;margin:.9rem 0;accent-color:#087774;min-height:28px}
+select{width:100%;font:inherit;padding:.6rem .7rem;border:2px solid #276e70;border-radius:10px;background:#fff;color:var(--ink);min-height:46px}
+.diagram-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1.1rem}
+.diagram{background:#fff;border:2px solid #cce1dc;border-radius:19px;padding:.7rem;margin:0;min-width:0}
+.diagram svg{display:block;width:100%;height:auto}.diagram figcaption{font-weight:850;text-align:center;margin:.5rem 0 .1rem}
+.tip{background:#fff8e4;border:1px solid #edcf91;border-radius:14px;padding:.75rem 1rem}
+.btnrow{display:flex;gap:.65rem;flex-wrap:wrap;margin:.8rem 0}
+button{font:inherit;font-weight:850;cursor:pointer;border-radius:12px;padding:.6rem .95rem;min-height:46px;border:2px solid #086369;color:#fff;background:#086369;box-shadow:0 4px 0 #043b3d}
+button:hover:not(:disabled){filter:brightness(1.12)}button:active:not(:disabled){transform:translateY(2px);box-shadow:0 2px 0 #043b3d}
+button.secondary{background:#fff;color:#07555d;box-shadow:0 4px 0 #cbded9}button:disabled{cursor:not-allowed;opacity:.57}
+.mission{padding:1rem 1.2rem;background:#fff;border-radius:18px;border:2px dashed #e9a330;margin:1.15rem 0}
+#missionPrompt{font-size:1.04rem;font-weight:740;margin:.4rem 0}
+#missionFeedback{min-height:3rem;background:#e7f8f2;border-left:5px solid #058368;padding:.6rem .8rem;border-radius:0 12px 12px 0;margin:.9rem 0}
+#progress{font-weight:850;color:#086a63}
+pre{overflow-x:auto;padding:1rem 1.15rem;color:#e2fdf4;background:#0a3741;border-radius:16px;font:14px/1.65 ui-monospace,Consolas,monospace}pre code{background:transparent;color:inherit;padding:0}code{background:#e7f1f4;border-radius:5px;padding:.13rem .25rem;font:0.9em ui-monospace,Consolas,monospace}
+details{background:#f6fbfc;border:1px solid #c7dbe1;border-radius:14px;margin:.8rem 0;padding:.75rem 1rem}summary{cursor:pointer;font-weight:850}
+.sources{padding-left:1.5rem}.sources li{margin:.65rem 0;border-bottom:1px dashed #bdd5d7;padding-bottom:.65rem;overflow-wrap:anywhere}
+.note{font-size:.91rem;color:var(--sub)}footer{background:#073f47;color:#e1f9f6;padding:2.2rem 1rem;text-align:center}footer a{color:#ffe58c}section{scroll-margin-top:1.5rem}
+@media(max-width:730px){.hero-inner{grid-template-columns:1fr}.hero-illustration{max-width:460px;transform:none;margin-inline:auto}.toc ol{grid-template-columns:repeat(2,minmax(0,1fr))}.controls,.diagram-grid,.grid{grid-template-columns:1fr}.hero{padding:2.5rem 0 3rem}}
+@media(max-width:420px){.wrap{width:calc(100% - 1rem)}.toc ol{grid-template-columns:1fr}.card,.toc{padding:1rem}button{width:100%}.hero-illustration{padding:.65rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+@media print{.hero{background:#0c5661!important;print-color-adjust:exact}.toc,.card{box-shadow:none;break-inside:avoid}.btnrow{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the lesson</a>
+<header class="hero" id="top"><div class="wrap hero-inner">
+<div><div class="eyebrow">DeepDivesKids • November 5, 2026 • Nature + Navigation + Coding</div>
+<h1>Bee Dance<br>Decoder! <span aria-hidden="true">🐝</span></h1>
+<p class="lede">A scout bee finds an amazing patch of flowers. No phone. No map. No words. How can she tell her friends where to fly? <strong>By dancing!</strong></p>
+<div class="pills"><span class="pill">Ages 8–11</span><span class="pill">20-minute adventure</span><span class="pill">3 missions</span><span class="pill">Works offline</span></div>
+<p>Quinn and Reagan, your mission is to read the bee’s secret directions, steer a pretend flight, and rescue the nectar!</p>
+</div>
+<figure class="hero-illustration"><svg viewBox="0 0 440 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="heroTitle heroDesc"><title id="heroTitle">Cartoon honey bee sharing a flower map</title><desc id="heroDesc">A striped smiling bee flies over a yellow honeycomb, pointing to pink flowers. Decorative drawing, not a photograph.</desc>
+<defs><pattern id="cells" width="62" height="54" patternUnits="userSpaceOnUse"><path d="M31 2 L57 15 L57 41 L31 54 L5 41 L5 15 Z" fill="none" stroke="#db9e2c" stroke-width="3"/></pattern></defs>
+<rect width="440" height="280" rx="22" fill="#fff4c4"/><rect x="0" y="0" width="440" height="280" rx="22" fill="url(#cells)" opacity=".4"/>
+<path d="M135 176 Q220 42 360 154" fill="none" stroke="#18867c" stroke-width="5" stroke-dasharray="10 12"/>
+<g transform="translate(107 123) rotate(-12)"><ellipse cx="-20" cy="-40" rx="29" ry="43" fill="#e3f5fd" stroke="#90cbd2" stroke-width="3" transform="rotate(-30 -20 -40)"/><ellipse cx="25" cy="-38" rx="29" ry="43" fill="#e3f5fd" stroke="#90cbd2" stroke-width="3" transform="rotate(28 25 -38)"/><ellipse cx="0" cy="12" rx="58" ry="51" fill="#fbc542" stroke="#67451a" stroke-width="5"/><path d="M-37 -26 Q-12 12 -35 48 M2 -36 Q24 13 7 61" stroke="#67451a" stroke-width="17" fill="none"/><circle cx="-19" cy="-1" r="5" fill="#283c42"/><circle cx="17" cy="-2" r="5" fill="#283c42"/><path d="M-10 18 Q0 29 12 17" fill="none" stroke="#283c42" stroke-width="4" stroke-linecap="round"/><path d="M-20 -31 Q-33 -68 -51 -61 M16 -31 Q33 -72 46 -63" fill="none" stroke="#67451a" stroke-width="4"/><circle cx="-51" cy="-61" r="5" fill="#67451a"/><circle cx="46" cy="-63" r="5" fill="#67451a"/></g>
+<g transform="translate(344 159)"><path d="M0 18 V91" stroke="#248064" stroke-width="8" stroke-linecap="round"/><path d="M0 61 Q-25 33 -42 50" stroke="#248064" stroke-width="7" fill="none"/><g fill="#f58eac" stroke="#bd567a" stroke-width="3"><ellipse cy="-25" ry="28" rx="16"/><ellipse cx="24" cy="-7" ry="27" rx="16" transform="rotate(67 24 -7)"/><ellipse cx="-24" cy="-7" ry="27" rx="16" transform="rotate(-67 -24 -7)"/><ellipse cx="14" cy="18" ry="25" rx="16" transform="rotate(-37 14 18)"/><ellipse cx="-14" cy="18" ry="25" rx="16" transform="rotate(37 -14 18)"/></g><circle r="16" fill="#ffd34a" stroke="#ad711e" stroke-width="3"/></g>
+<text x="210" y="40" font-size="17" font-weight="900" fill="#205f5d" font-family="system-ui">FLOWER MISSION!</text></svg><figcaption>Original illustration. The arrow is an imaginary route—not a bee’s real map.</figcaption></figure>
+</div></header>
+<main class="wrap" id="main">
+<nav class="toc" aria-label="Table of contents"><h2>🧭 Adventure map</h2><ol>
+<li><a href="#surprise">The big surprise</a></li><li><a href="#mechanics">How the dance works</a></li>
+<li><a href="#evidence">Real science detectives</a></li><li><a href="#lab">Interactive dance decoder</a></li>
+<li><a href="#experiments">Try it away from the screen</a></li><li><a href="#code">Peek at the code</a></li>
+<li><a href="#connections">Hockey + engineering connections</a></li><li><a href="#limits">What the model misses</a></li><li><a href="#sources">Sources + license</a></li>
+</ol></nav>
+<section class="card sunny" id="surprise"><div class="eyebrow dark">01 · Big question</div><h2>What if your teammate could give directions without talking?</h2>
+<p>Imagine Quinn spots a perfect empty space near the hockey net. He cannot shout, so he skates in a tiny pattern to tell Reagan where to look. That sounds like a game—but for <strong>honey bees</strong>, something like this actually happens!</p>
+<p>A honey bee visiting flowers can return to the hive and do a <strong>waggle dance</strong>. Other bees follow her movements and gather clues about where a rewarding flower patch is. The dance is information, not just celebration. <a href="#source-nobel">[1]</a> <a href="#source-usda">[2]</a></p>
+<p class="fact"><strong>Science fact:</strong> the researchers study real bees, not just cartoon ones. In 1973 Karl von Frisch shared a Nobel Prize for research including how bees communicate. <a href="#source-nobel">[1]</a></p>
+</section>
+<section class="card" id="mechanics"><div class="eyebrow dark">02 · Nature’s navigation code</div><h2>A figure eight with two secret clues</h2>
+<div class="grid">
+<div class="tile"><span class="badge">Clue A · Direction</span><h3>Look at the tilt</h3><p>On a <strong>vertical honeycomb</strong>, running straight <strong>up</strong> during the waggle means “fly toward the Sun.” Tilting <strong>30° right</strong> of up means “fly 30° right of the Sun’s direction.” Tilting left works too. Real bees can dance inside a dark hive. <a href="#source-nobel">[1]</a></p></div>
+<div class="tile mango"><span class="badge">Clue B · Distance</span><h3>Watch how long she waggles</h3><p>A <strong>longer waggle run</strong> generally reports a farther food source. This is a clue about travel distance, not a precise stopwatch-to-meters formula for every bee or landscape. <a href="#source-ucsd2026">[3]</a></p></div>
+</div>
+<div class="grid" style="margin-top:1rem">
+<div class="tile pink"><h3>The return loops</h3><p>After the straight waggle, the bee turns back around and repeats. The repeated paths form something like a <strong>figure eight</strong>. The straight middle section carries the key angle and duration information. <a href="#source-ucsd2023">[4]</a></p></div>
+<div class="tile"><h3>The Sun moves!</h3><p>As the Sun appears to cross the sky, bees can adjust directions. A bee’s dance isn’t a fixed compass pointing north. This lesson places the Sun <strong>at the top</strong> on purpose so the geometry is easy to see. <a href="#source-nobel">[1]</a></p></div>
+</div>
+<p class="tip"><strong>Try this:</strong> point one arm straight ahead to represent the Sun. Rotate your other arm 45° to the right. That’s the kind of angle the bee is communicating. You do not have to know which way north is!</p>
+</section>
+<section class="card cool" id="evidence"><div class="eyebrow dark">03 · Evidence vs. ideas</div><h2>Scientists really decode these dances</h2>
+<div class="grid">
+<div class="tile"><span class="badge">Verified research · 2024</span><h3>Reading a landscape through bees</h3><p>Researchers decoded dances from <strong>20 honey bee colonies</strong> in urban and rural parts of southeast England to investigate where bees traveled for food. These are actual analyzed dances, not a made-up use of the technique. <a href="#source-ucl">[5]</a></p></div>
+<div class="tile mango"><span class="badge">Verified research · 2023</span><h3>Young bees learn from experts</h3><p>UC San Diego researchers and collaborators found that young bees that could not watch experienced dancers made <strong>less accurate</strong> dances. Practice and learning matter to these insects! <a href="#source-ucsd2023">[4]</a></p></div>
+<div class="tile"><span class="badge">Verified research · 2026</span><h3>The audience matters</h3><p>A study published <strong>March 23, 2026</strong> found that a scout’s dance directions became less precise when fewer followers watched. Bees even adjust to their audience. <a href="#source-ucsd2026">[3]</a></p></div>
+<div class="tile pink"><span class="badge idea">Imagined game · not a real device</span><h3>Could a robot dance?</h3><p>We could program a pretend swarm of classroom robots to share directions using angles and timing, like our browser toy below. <strong>That is our design idea</strong>, not evidence that Dad’s RISCue or VeloSim already uses bee dances.</p></div>
+</div>
+</section>
+<section class="card lab" id="lab"><div class="lab-header"><div><div class="eyebrow dark">04 · Interactive mission lab</div><h2>Decode the secret flower map</h2></div><span class="stamp">NO DOWNLOADS NEEDED</span></div>
+<p>Move the <strong>angle</strong> slider and choose a <strong>waggle length</strong>. The bee inside the honeycomb tilts, and your arrow on the flower map changes. These diagrams use the same Sun-up reference. Press <strong>Start missions</strong> to try three puzzles!</p>
+<div class="controls">
+<div class="control"><label for="angle">Waggle angle: <output id="angleValue" for="angle">0° (toward Sun)</output></label>
+<input id="angle" type="range" min="-90" max="90" step="15" value="0" aria-describedby="angleHelp">
+<span id="angleHelp" class="small">Negative = left of the Sun; positive = right. Arrow keys adjust by 15°.</span></div>
+<div class="control"><label for="distance">Length of the straight waggle</label>
+<select id="distance"><option value="near">Quick wiggle · near</option><option value="medium" selected>Middle wiggle · medium</option><option value="far">Long wiggle · far</option></select>
+<p class="small">Near / medium / far are teaching labels, not measured distances.</p></div>
+</div>
+<div class="diagram-grid">
+<figure class="diagram">
+<svg viewBox="0 0 360 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="danceTitle danceDesc"><title id="danceTitle">Dance on a vertical honeycomb</title><desc id="danceDesc">A vertical reference arrow points up toward the Sun. The bee's central waggle run tilts according to the angle slider. The return loops represent a simplified figure eight.</desc>
+<defs><pattern id="comb" width="47" height="42" patternUnits="userSpaceOnUse"><path d="M23 2 L43 12 L43 31 L23 41 L3 31 L3 12 Z" fill="none" stroke="#d9a950" stroke-width="1.6"/></pattern></defs>
+<rect width="360" height="290" rx="13" fill="#fff7d8"/><rect width="360" height="290" rx="13" fill="url(#comb)" opacity=".5"/>
+<path d="M180 214 V54" stroke="#217d89" stroke-width="3" stroke-dasharray="5 8"/><path d="M171 67 L180 51 L189 67" stroke="#217d89" stroke-width="3" fill="none"/>
+<text x="197" y="45" fill="#145b65" font-size="13" font-weight="800" font-family="system-ui">UP = toward Sun</text>
+<g id="danceGlyph" transform="rotate(0 180 161)">
+<path d="M180 110 C120 74 120 225 180 202 C240 225 240 74 180 110" fill="none" stroke="#ba772c" stroke-width="5" stroke-dasharray="9 8" opacity=".7"/>
+<path d="M180 202 L180 112" stroke="#075e66" stroke-width="11" stroke-linecap="round"/>
+<path d="M180 202 L180 112" stroke="#fbe087" stroke-width="4" stroke-dasharray="6 8" stroke-linecap="round"/>
+<g transform="translate(180 143)"><ellipse cx="-15" cy="-12" rx="15" ry="10" fill="#d0edf9" stroke="#6eafbb" stroke-width="2" transform="rotate(-32 -15 -12)"/><ellipse cx="15" cy="-12" rx="15" ry="10" fill="#d0edf9" stroke="#6eafbb" stroke-width="2" transform="rotate(32 15 -12)"/><ellipse cx="0" cy="0" rx="13" ry="20" fill="#ffd059" stroke="#66401a" stroke-width="2"/><path d="M-11 2 H11 M-9 10 H9" stroke="#66401a" stroke-width="5"/><circle cx="-5" cy="-8" r="2" fill="#23363b"/><circle cx="5" cy="-8" r="2" fill="#23363b"/></g>
+</g>
+<text x="12" y="270" fill="#74521b" font-size="12" font-family="system-ui">Vertical comb (not a floor plan)</text></svg><figcaption>The dance INSIDE the hive</figcaption></figure>
+<figure class="diagram">
+<svg viewBox="0 0 360 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="mapTitle mapDesc"><title id="mapTitle">Imaginary flower field and flight direction</title><desc id="mapDesc">A hive is near the bottom center. The Sun is at the top. An arrow and flower marker rotate left or right and extend farther with longer wiggles. All positions are illustrative.</desc>
+<rect width="360" height="290" rx="13" fill="#e5f9ea"/><path d="M0 50 Q120 2 360 63 M0 143 Q200 108 360 157 M0 252 Q190 215 360 253" fill="none" stroke="#a6d6b0" stroke-width="18" opacity=".6"/>
+<g fill="#f4a9be"><circle cx="45" cy="122" r="7"/><circle cx="307" cy="206" r="7"/><circle cx="91" cy="221" r="6"/></g>
+<circle cx="180" cy="31" r="18" fill="#ffd258" stroke="#e09320" stroke-width="3"/><path d="M180 3 V8 M180 54 V60 M151 31 H157 M203 31 H209 M159 10 L163 14 M197 48 L201 52 M159 52 L163 48 M197 14 L201 10" stroke="#d18812" stroke-width="3" stroke-linecap="round"/>
+<text x="205" y="28" fill="#3c6546" font-size="13" font-weight="800" font-family="system-ui">SUN</text>
+<path d="M180 220 V68" stroke="#91aba3" stroke-width="2.5" stroke-dasharray="5 7"/>
+<line id="route" x1="180" y1="220" x2="180" y2="144" stroke="#0b706d" stroke-width="7" stroke-linecap="round"/>
+<g id="flower" transform="translate(180 144)"><g fill="#f3739b" stroke="#b74470" stroke-width="1.5"><ellipse cx="-11" cy="0" rx="11" ry="7"/><ellipse cx="11" cy="0" rx="11" ry="7"/><ellipse cx="0" cy="-11" rx="7" ry="11"/><ellipse cx="0" cy="11" rx="7" ry="11"/></g><circle r="7" fill="#ffe369"/></g>
+<g transform="translate(180 220)"><path d="M-18 -8 H18 L14 15 H-14 Z" fill="#9b6031"/><path d="M-21 -8 L0 -23 L21 -8 Z" fill="#7f4c29"/><circle cy="0" r="6" fill="#ffcf4b"/></g><text x="200" y="248" fill="#346b4b" font-size="14" font-weight="800" font-family="system-ui">HIVE</text>
+</svg><figcaption>Your flight plan OUTSIDE</figcaption></figure>
+</div>
+<p class="tip" id="flightReadout" aria-live="off"><strong>Flight plan:</strong> fly toward the Sun, then keep going a medium (illustrative) distance.</p>
+<div class="mission"><h3>🕵️ Three flower-finding missions</h3><p class="small">All puzzles use the Sun at the top of the pretend map. Read the scout’s words and match BOTH direction and distance.</p>
+<p id="missionPrompt">Ready, scout? Start the missions—or play freely with the controls first.</p>
+<p id="progress">0 of 3 missions solved</p>
+<div class="btnrow"><button type="button" id="start">Start / restart missions</button><button type="button" id="check" class="secondary">Check my decoding</button><button type="button" id="next" disabled>Next mission →</button></div>
+<p id="missionFeedback" role="status" aria-live="polite" aria-atomic="true">Try changing the controls and watch both drawings update!</p></div>
+<noscript><p class="fact"><strong>JavaScript is off:</strong> the science and paper activities still work, but the interactive flight map needs JavaScript enabled.</p></noscript>
+</section>
+<section class="card sunny" id="experiments"><div class="eyebrow dark">05 · Try it for real (without bees!)</div><h2>A paper dance-code treasure hunt</h2>
+<ol><li>Draw a big circle on paper and mark <strong>UP = Sun</strong> at the top. Put a paper “hive” in the middle.</li>
+<li>Hide a pretend flower (a sticker or small drawing) somewhere on the page.</li>
+<li>One child plays the scout: point a pencil <strong>up</strong>, then turn it toward the hidden flower. Count an approximate angle (0°, 45°, or 90° works great).</li>
+<li>Choose a <strong>short, medium, or long</strong> waggle to show whether it is near, in between, or far in your paper world.</li>
+<li>The other child draws the flight. How close can they get? Switch roles!</li></ol>
+<p><strong>For an extra challenge:</strong> spin the paper “Sun” marker to a different direction and encode the <em>same</em> flower again. A new reference direction needs a new angle.</p>
+<p class="tip"><strong>Safety:</strong> no need to touch, trap, or disturb actual bees. If you watch real bees outdoors, give them space and ask an adult about insect allergies.</p>
+</section>
+<section class="card" id="code"><div class="eyebrow dark">06 · Code explorer</div><h2>How a tiny bit of math draws the route</h2>
+<p>The web page uses the browser’s built-in <strong>JavaScript + SVG</strong> drawing tools. The angle is measured from <strong>up</strong> (toward the pretend Sun), and the length comes from the chosen waggle setting.</p>
+<pre aria-label="Short JavaScript flight-direction example"><code>const degrees = 30;                 // right of the Sun
+const length = 70;                   // picture pixels, NOT meters
+const radians = degrees * Math.PI / 180;
+const x = 180 + Math.sin(radians) * length;
+const y = 220 - Math.cos(radians) * length;
+// SVG coordinates grow DOWN, so "up" subtracts y.
+// x and y mark our pretend flower's position.</code></pre>
+<p>At 0°, <code>Math.sin(0)</code> is 0, so the destination stays directly above the hive. Try 90°: <code>Math.cos(90°)</code> is about 0, so the arrow points right instead.</p>
+<details><summary>Why can this work without a coding library?</summary><p>Browsers already know how to draw SVG shapes and respond to slider and button events. This lesson adds no external library, downloads, fonts, photographs, or network requests. Save this HTML file, then double-click it to run it offline in a modern browser. A future classroom version could use p5.js—but we already explored p5.js in an earlier lesson, so this one uses native browser features.</p></details>
+</section>
+<section class="card lilac" id="connections"><div class="eyebrow dark">07 · Your world</div><h2>Bees, hockey, and Dad’s engineering projects</h2>
+<div class="grid"><div class="tile pink"><h3>🏒 Quinn &amp; Reagan: teamwork</h3><p>On the ice, a glance or a stick point can tell a teammate where to go. A goalie and defenders also share information quickly. Bee dances are a <em>nature example</em> of passing location clues—not a hockey playbook.</p></div>
+<div class="tile"><h3>🧰 RISCue: messages</h3><p>In Dad’s RISCue RTOS work, a computer task can send information to another task. Imagine a message with two fields: <code>direction</code> and <code>distance</code>. Bees inspire the analogy; this is a <strong>suggested classroom design</strong>, not an implemented RISCue feature.</p></div>
+<div class="tile mango"><h3>🧪 VeloSim: experiments</h3><p>With a simulation, you can repeat the same starting position and inputs to check whether you get the same result. Our little map behaves that way too: same angle + length = same drawn location. Actual bee flights have wind, landmarks, and uncertainty!</p></div>
+<div class="tile"><h3>🌻 Nature detectives</h3><p>A healthy habitat offers flowers across the seasons. Scientists can decode waggle dances to help understand how colonies use landscapes. The research is real; our pretend flower patches are just a learning game. <a href="#source-ucl">[5]</a></p></div></div>
+</section>
+<section class="card" id="limits"><div class="eyebrow dark">08 · Science needs careful thinking</div><h2>What our colorful toy does <em>not</em> show</h2>
+<ul>
+<li><strong>No exact mile counter.</strong> Our “quick / middle / long” labels are invented for teaching. In real hives, dance timing and distance depend on biology and conditions; our lengths are screen pixels, not meters.</li>
+<li><strong>Not all bees dance like this.</strong> This lesson is about <em>honey bees</em>; it is not a rule for bumble bees or every kind of bee. <a href="#source-usda">[2]</a></li>
+<li><strong>Not a perfect GPS.</strong> Bees also use visual and other sensory cues. Dance directions can be noisy, and even change with the audience. <a href="#source-ucsd2026">[3]</a></li>
+<li><strong>Not a real hive experiment.</strong> The figure eight and flower field are original schematic artwork. We did not collect bee observations or validate this toy against recorded waggle dances.</li>
+</ul>
+<p class="imagine"><strong>Science challenge:</strong> What if the scout’s directions were off by 15°? What if every follower made a slightly different guess? Where should a robot search next? This is a great way to explore uncertainty without pretending our model is nature itself.</p>
+</section>
+<section class="card cool" id="sources"><div class="eyebrow dark">09 · Evidence + reuse</div><h2>Primary sources you can explore together</h2>
+<ol class="sources">
+<li id="source-nobel"><strong>NobelPrize.org / Karolinska Institutet, 1973.</strong> <a href="https://www.nobelprize.org/prizes/medicine/1973/press-release/" rel="noopener noreferrer">1973 Nobel Prize press release</a>. Historical primary documentation on von Frisch’s bee communication research, vertical comb and Sun-based direction.</li>
+<li id="source-usda"><strong>USDA Agricultural Research Service, June 29, 2023.</strong> <a href="https://www.ars.usda.gov/news-events/news/research-news/2023/honey-bees-more-faithful-to-their-flower-patches-than-bumble-bees/" rel="noopener noreferrer">Honey bees and bumble bees differ in their foraging</a>. Original institutional research summary on honey-bee foraging and waggle communication.</li>
+<li id="source-ucsd2026"><strong>UC San Diego, March 23, 2026.</strong> <a href="https://today.ucsd.edu/story/bee-dancing-is-better-with-the-right-audience" rel="noopener noreferrer">Bee Dancing Is Better with the Right Audience</a>. Research-team reporting on how dance precision depends on followers.</li>
+<li id="source-ucsd2023"><strong>UC San Diego, March 9, 2023.</strong> <a href="https://today.ucsd.edu/story/complex-learned-social-behavior-discovered-in-bees-waggle-dance" rel="noopener noreferrer">Complex Learned Social Behavior Discovered in Bee’s “Waggle Dance”</a>. Actual experiments with young bees that lacked experienced dance models.</li>
+<li id="source-ucl"><strong>University College London research repository, 2024.</strong> <a href="https://discovery.ucl.ac.uk/id/eprint/10198456/" rel="noopener noreferrer">Foraging distance distributions reveal how waggle-dance recruitment varies with landscape</a>. Primary paper using decoded dances from 20 colonies.</li>
+<li><strong>Web standards.</strong> <a href="https://developer.mozilla.org/en-US/docs/Web/SVG" rel="noopener noreferrer">SVG</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" rel="noopener noreferrer">JavaScript</a> browser references, for the built-in drawing and interactive controls.</li>
+</ol>
+<p><strong>Provenance:</strong> the diagrams, puzzles, HTML, CSS and JavaScript on this page are original educational material. Linked scientific articles are third-party works and are <em>not</em> copied or relicensed. No external images, fonts or scripts are embedded.</p>
+<details><summary>License and classroom integration (MIT)</summary>
+<p><strong>Original lesson source:</strong> MIT License. Copyright (c) 2026 DeepDivesKids contributors. You may copy, modify, and share the original lesson code and artwork with the copyright and license notice preserved. External sources retain their own rights.</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+<p><strong>Integration:</strong> save this single <code>.html</code> file; open it locally in Chrome, Edge, Firefox or Safari with JavaScript enabled. No build tools, permissions, accounts, network connection, or third-party packages are required. The page is responsive, keyboard-accessible, and respects reduced-motion settings.</p>
+</details>
+</section>
+</main>
+<footer><p><strong>🐝 Keep asking how nature shares information!</strong></p><p>DeepDivesKids · November 5, 2026 · <a href="#top">Back to the top ↑</a></p></footer>
+<script>
+"use strict";
+(function(){
+  const angleInput = document.getElementById("angle");
+  const distanceInput = document.getElementById("distance");
+  const angleValue = document.getElementById("angleValue");
+  const danceGlyph = document.getElementById("danceGlyph");
+  const route = document.getElementById("route");
+  const flower = document.getElementById("flower");
+  const readout = document.getElementById("flightReadout");
+  const prompt = document.getElementById("missionPrompt");
+  const feedback = document.getElementById("missionFeedback");
+  const progress = document.getElementById("progress");
+  const nextButton = document.getElementById("next");
+  const lengths = {near:65, medium:100, far:132};
+  const missions = [
+    {angle:30, distance:"near", clue:"Mission 1 — Daisy Dash: the scout tilts 30° RIGHT of straight up and makes a QUICK waggle. Show where to fly!"},
+    {angle:-60, distance:"far", clue:"Mission 2 — Clover Quest: the scout tilts 60° LEFT of straight up and makes a LONG waggle. Decode both clues!"},
+    {angle:0, distance:"medium", clue:"Mission 3 — Sunflower Search: the scout wiggles STRAIGHT UP with a MIDDLE-LENGTH waggle. Go, flower detective!"}
+  ];
+  let missionIndex = -1;
+  let solved = false;
+  let completed = 0;
+  function directionText(angle){
+    if(angle===0)return "toward the Sun";
+    return Math.abs(angle)+"° "+(angle>0?"right":"left")+" of the Sun";
+  }
+  function updateDiagram(){
+    const angle = Number(angleInput.value);
+    const distance = distanceInput.value;
+    const length = lengths[distance];
+    if(!Number.isFinite(angle) || !(distance in lengths))return;
+    angleValue.textContent = angle===0?"0° (toward Sun)":Math.abs(angle)+"° "+(angle>0?"right":"left");
+    danceGlyph.setAttribute("transform","rotate("+angle+" 180 161)");
+    const radians = angle*Math.PI/180;
+    const x=180+Math.sin(radians)*length;
+    const y=220-Math.cos(radians)*length;
+    route.setAttribute("x2",x.toFixed(2));
+    route.setAttribute("y2",y.toFixed(2));
+    flower.setAttribute("transform","translate("+x.toFixed(2)+" "+y.toFixed(2)+")");
+    readout.textContent="Flight plan: fly "+directionText(angle)+", then continue an illustrative "+distance+" distance.";
+  }
+  function updateProgress(){
+    progress.textContent=completed+" of "+missions.length+" missions solved";
+  }
+  function setFeedback(message){feedback.textContent=message;}
+  function startMission(){
+    missionIndex=0;solved=false;completed=0;nextButton.disabled=true;
+    angleInput.value="0";distanceInput.value="medium";updateDiagram();updateProgress();
+    prompt.textContent=missions[0].clue;
+    setFeedback("Try matching the scout's angle and waggle length, then press Check my decoding.");
+  }
+  function checkAnswer(){
+    if(missionIndex<0){setFeedback("First press Start / restart missions to see the scout's clue!");return;}
+    if(missionIndex>=missions.length){setFeedback("All three missions solved. Start again to play another round!");return;}
+    if(solved){setFeedback("Correct! Press Next mission to keep flying.");return;}
+    const m=missions[missionIndex];
+    const angle=Number(angleInput.value);
+    const distance=distanceInput.value;
+    const angleOK=angle===m.angle;
+    const distanceOK=distance===m.distance;
+    if(angleOK && distanceOK){
+      solved=true;completed++;updateProgress();
+      nextButton.disabled=false;
+      setFeedback("🌟 Flower found! You decoded BOTH clues. Press Next mission.");
+    }else if(!angleOK && !distanceOK){
+      setFeedback("Not yet! Check the direction AND the wiggle length in the scout's clue.");
+    }else if(!angleOK){
+      setFeedback("Your distance is right! Check whether the tilt is left, right, or straight up.");
+    }else{
+      setFeedback("Your direction is right! Try a different waggle length.");
+    }
+  }
+  function nextMission(){
+    if(!solved)return;
+    missionIndex++;
+    solved=false;nextButton.disabled=true;
+    angleInput.value="0";distanceInput.value="medium";updateDiagram();
+    if(missionIndex===missions.length){
+      prompt.textContent="🎉 All flowers found! You are a certified Bee Dance Decoder.";
+      setFeedback("Mission complete. You solved all three flower maps. Try making your own dance on paper!");
+    }else{
+      prompt.textContent=missions[missionIndex].clue;
+      setFeedback("New scout, new clues! Set the angle and waggle length, then check.");
+    }
+  }
+  angleInput.addEventListener("input",updateDiagram);
+  distanceInput.addEventListener("change",updateDiagram);
+  document.getElementById("start").addEventListener("click",startMission);
+  document.getElementById("check").addEventListener("click",checkAnswer);
+  nextButton.addEventListener("click",nextMission);
+  updateDiagram();updateProgress();
+})();
+</script>
+</body>
+</html>
