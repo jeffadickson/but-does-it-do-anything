@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark"><meta name="description" content="An engineering deep dive into Boost.Container static_vector: bounded C++20 storage, explicit overflow, scheduler trace batches, CMake/Ninja, evidence, tests and tradeoffs.">
+<title>2026-11-05 · Boost.Container static_vector | Engineering Deep Dive</title>
+<style>
+:root{color-scheme:dark;--base:#09111d;--panel:#122235;--panel2:#172d42;--ink:#f2f8ff;--muted:#b9cfdf;--line:#3a5971;--aqua:#6de7d4;--gold:#ffd382;--violet:#c3aeff;--red:#ffaaa6;--blue:#9dcfff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:radial-gradient(ellipse at 70% -15%,#214768 0,transparent 40%),linear-gradient(140deg,#06101e,#0d192b 55%,#101e2c);font:17px/1.68 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}a{color:#9ef6e8;text-underline-offset:.22em}a:hover{color:#fff}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:4px} .skip{position:absolute;top:-5rem;left:1rem;z-index:3;padding:.6rem;background:#fff;color:#09111d}.skip:focus{top:.5rem}
+.page{width:min(1160px,calc(100% - 2.3rem));margin:auto}.eyebrow{letter-spacing:.19em;text-transform:uppercase;font-weight:800;color:var(--aqua);font-size:.8rem}.hero{padding:4.4rem 0 2.4rem;border-bottom:1px solid var(--line)}h1{font-size:clamp(2.45rem,6vw,5rem);letter-spacing:-.045em;line-height:1.04;max-width:850px;margin:.55rem 0 1.4rem}h1 em{color:var(--aqua);font-style:normal}h2{font-size:clamp(1.65rem,3vw,2.35rem);letter-spacing:-.025em;line-height:1.2;margin:0 0 1rem}h3{font-size:1.13rem;margin:1.6rem 0 .3rem;color:var(--gold)}p{margin:.7rem 0 1.2rem}.dek{font-size:1.18rem;max-width:800px;color:var(--muted)}.meta{display:flex;flex-wrap:wrap;gap:.6rem;margin:1.6rem 0}.chip{border:1px solid #53728b;background:#17334b;border-radius:100px;padding:.26rem .8rem;color:#e2f7ff;font-size:.81rem;font-weight:700}.verdict{border:1px solid #558e8c;background:linear-gradient(110deg,#123e45,#123047);padding:1.3rem 1.5rem;border-radius:18px;max-width:870px;box-shadow:0 18px 54px #0002}.verdict strong{color:#b2f9eb}.layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:2.5rem;align-items:start}.toc{position:sticky;top:1rem;margin:2rem 0;border-radius:16px;border:1px solid var(--line);background:#13283bd9;padding:1.2rem}.toc strong{font-size:.88rem;color:var(--gold);letter-spacing:.12em;text-transform:uppercase}.toc ol{padding-left:1.3rem;margin:.7rem 0}.toc li{font-size:.86rem;margin:.38rem 0}.toc a{color:#bce5f6}.content section{border-bottom:1px solid var(--line);padding:2.65rem 0;scroll-margin-top:1.6rem}.content ul,.content ol{padding-left:1.5rem}.content li{margin:.45rem 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.card{padding:1.1rem 1.25rem;border:1px solid var(--line);background:var(--panel);border-radius:16px}.card h3{margin-top:0}.kicker{font-size:.76rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--aqua)}.warning{border-left:5px solid var(--red);padding:1rem 1.1rem;background:#3c2534;border-radius:0 12px 12px 0}.note{border-left:5px solid var(--aqua);padding:1rem 1.1rem;background:#113b45;border-radius:0 12px 12px 0}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}code{font-size:.91em;color:#ffe0a8}p code,li code,td code{padding:.06em .28em;border-radius:5px;background:#203249}pre{padding:1.2rem 1.4rem;background:#050d17;border:1px solid #3c6478;border-radius:14px;overflow:auto;color:#dceafe;line-height:1.48;font-size:.8rem;tab-size:4;white-space:pre}pre code{color:inherit;padding:0;background:none}.caption{font-size:.85rem;color:var(--muted);margin-top:-.4rem}.table-wrap{overflow-x:auto;border-radius:13px;border:1px solid var(--line)}table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{text-align:left;padding:.8rem .85rem;vertical-align:top;border-bottom:1px solid #37536d}th{color:#e9fbff;background:#20384c;font-size:.78rem;letter-spacing:.04em}tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#12273a}.ok{color:var(--aqua);font-weight:800}.pending{color:var(--gold);font-weight:800}.bad{color:var(--red);font-weight:800}.lab{background:linear-gradient(145deg,#173f50,#182c47);border:1px solid #618996;border-radius:22px;padding:1.3rem;margin:1.3rem 0}.controls{display:flex;flex-wrap:wrap;align-items:end;gap:.8rem}.controls label{display:flex;flex-direction:column;gap:.2rem;font-size:.83rem;font-weight:750;color:var(--muted)}input,select{font:inherit;border:1px solid #85a8b7;background:#071c30;color:#fff;border-radius:8px;padding:.55rem .7rem;min-width:110px}button{font:700 .9rem/1.2 system-ui,sans-serif;background:var(--aqua);color:#042b32;border:2px solid var(--aqua);padding:.65rem .95rem;border-radius:9px;cursor:pointer;min-height:42px}button:hover:not(:disabled){background:#c6fcf2}button:disabled{cursor:not-allowed;opacity:.55}button.secondary{color:#eefcff;background:#194260;border-color:#5486a6}.small-button{font-size:.76rem;min-height:32px;padding:.35rem .55rem;background:#233b55;border-color:#6884a1;color:white}.slots{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.5rem;margin:1.1rem 0}.slot{min-height:92px;text-align:center;border:2px dashed #6d839e;display:flex;flex-direction:column;justify-content:center;gap:.2rem;background:#172a3c;border-radius:12px}.slot small{font-size:.63rem;letter-spacing:.08em}.slot strong{font-size:1.03rem}.slot.occupied{border-style:solid}.slot.p0{background:#3f345c;border-color:#d0b3ff}.slot.p1{background:#194c51;border-color:#5de3cf}.slot.p2{background:#4b3827;border-color:#fed28c}.stat{font-weight:750;color:#d1fff7}.history{font-size:.85rem;padding-left:1.25rem;color:var(--muted);margin:.45rem 0}.live{min-height:2rem;font-weight:700;color:#e2ffe4}.footer{color:var(--muted);padding:2.1rem 0 4rem;font-size:.85rem}.score{font-weight:800;color:#ffdf98}.tag{font-weight:800;color:var(--aqua);font-size:.79rem;text-transform:uppercase;letter-spacing:.06em}
+@media(max-width:870px){.layout{display:block}.toc{position:static}.toc ol{columns:2}.hero{padding-top:2.5rem}.content section{padding:2.1rem 0}}@media(max-width:560px){.page{width:calc(100% - 1.3rem)}.grid{grid-template-columns:1fr}.toc ol{columns:1}.slots{grid-template-columns:repeat(3,minmax(0,1fr))}.lab{padding:1rem}pre{font-size:.7rem;padding:.9rem}.hero{padding-top:2rem}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+</style></head>
+<body><a class="skip" href="#main">Skip to report</a>
+<header class="hero"><div class="page"><div class="eyebrow">Engineering deep dives · 05 November 2026 · C++20 / embedded</div>
+<h1>Six slots. <em>No surprise heap.</em></h1>
+<p class="dek">A practical examination of <strong>Boost.Container <code>static_vector</code></strong>: a variable-length sequence with compile-time-bounded storage, explicit overload behavior, and real costs you can measure.</p>
+<div class="meta"><span class="chip">Library: Boost.Container</span><span class="chip">C++20 example</span><span class="chip">Boost Software License 1.0</span><span class="chip">Header-only feature</span><span class="chip">GCC 14.2 / Boost 1.83 tested</span></div>
+<div class="verdict"><strong>Finding:</strong> excellent candidate for <em>bounded, single-owner batches</em> of ready events, state-transition records, or trace metadata. <strong>Not</strong> a concurrent queue, hard real-time proof, or substitute for event storage ownership.</div></div></header>
+<div class="page layout"><nav class="toc" aria-label="On this page"><strong>Contents</strong><ol>
+<li><a href="#decision">Decision in 60 seconds</a></li><li><a href="#mechanism">How storage works</a></li><li><a href="#lab">Interactive six-slot lab</a></li><li><a href="#code">Compilable C++20 example</a></li><li><a href="#build">CMake &amp; Ninja</a></li><li><a href="#verification">Actual verification</a></li><li><a href="#uses">Adoption evidence</a></li><li><a href="#tradeoffs">Tradeoffs &amp; failure modes</a></li><li><a href="#comparison">Alternatives</a></li><li><a href="#integration">RISCue / VeloSim fit</a></li><li><a href="#license">License &amp; integration</a></li><li><a href="#sources">Primary sources</a></li></ol></nav>
+<main id="main" class="content">
+<section id="decision"><p class="kicker">01 / executive decision</p><h2>Why this is worth a prototype</h2>
+<div class="grid"><div class="card"><h3>What it guarantees</h3><p>The number of elements never exceeds template capacity <code>N</code>; element storage lives <em>inside the container object</em>. No element-buffer heap allocation is needed, and <code>size()</code> changes as objects are inserted or removed. <a href="#ref-boost">Boost documentation</a>.</p></div><div class="card"><h3>What it does not guarantee</h3><p>Zero allocations by your element type, constant-time middle erasure, thread safety, lock-free behavior, deterministic whole-system timing, or graceful overflow if unchecked.</p></div></div>
+<p><strong>One-line API:</strong> <code>boost::container::static_vector&lt;Event, 6&gt; pending;</code>. It is much closer to <code>std::vector</code> ergonomics than a manual array-plus-count, but its <em>physical storage never grows</em>.</p>
+<div class="note"><strong>Scope:</strong> this is a new topic relative to the existing ETL, Boost.Intrusive, and Boost.Lockfree SPSC reports. The question here is <em>in-place bounded sequences and explicit capacity policy</em>, not inter-thread message passing or intrusive lifetime.</div>
+</section>
+<section id="mechanism"><p class="kicker">02 / mental model</p><h2>Allocated once in the object, constructed when needed</h2>
+<p>Imagine a toolbox built with six compartments. A normal <code>std::vector</code> may buy a larger toolbox when it fills. <code>static_vector</code> has only six compartments, permanently. Unlike <code>std::array&lt;Event,6&gt;</code>, it constructs only the currently occupied elements; <code>size()</code> can be zero through six.</p>
+<div class="table-wrap"><table><thead><tr><th>Operation</th><th>Typical bound</th><th>Consequence</th></tr></thead><tbody>
+<tr><td>Append within capacity</td><td>O(1)</td><td>No internal allocation; element constructor may still do work</td></tr><tr><td>Read by index</td><td>O(1)</td><td>Contiguous layout and random access</td></tr><tr><td>Pop last</td><td>O(1)</td><td>Destroys the last live element</td></tr><tr><td>Find and erase a middle element</td><td>O(N)</td><td>Remaining elements shift; references/iterators may be invalidated</td></tr><tr><td>Append when full</td><td>Rejected by our guard</td><td>Default library policy otherwise reports capacity error, commonly via <code>bad_alloc</code> with exceptions</td></tr></tbody></table></div>
+<p>Because storage lives inside the object, <strong>copying or moving the container is not simply moving one heap-buffer pointer</strong>. Also, declaring a huge <code>static_vector</code> as a local variable can exhaust a thread's <strong>stack</strong>; consider static lifetime or owner-provided placement where appropriate.</p>
+<div class="warning"><strong>Critical overflow warning:</strong> Boost's <code>throw_on_overflow&lt;false&gt;</code> is <em>not</em> a safe “return failure” option. Boost documents undefined behavior when overflow is allowed through this mode (an assertion may run first). Do not choose it as an error-handling strategy. <a href="#ref-options">Primary source</a>.</div>
+</section>
+<section id="lab"><p class="kicker">03 / interactive, offline simulator</p><h2>Run a six-event dispatch batch</h2>
+<p>The following is an original JavaScript teaching model of the C++ example—not the Boost library running in your browser. Capacity is exactly six; priorities order dispatch, and equal-priority events keep arrival order. Add, cancel, dispatch, and observe the shift when you erase an entry.</p>
+<div class="lab" aria-label="Interactive event capacity lab">
+<div class="controls"><label for="event-id">Event ID<input id="event-id" type="number" min="0" max="999999" step="1" inputmode="numeric" value="10"></label>
+<label for="priority">Priority<select id="priority"><option value="0">Urgent (0)</option><option value="1" selected>Normal (1)</option><option value="2">Background (2)</option></select></label>
+<button id="post" type="button">Post event</button><button id="dispatch" type="button" class="secondary">Dispatch next</button>
+<button id="preset" type="button" class="secondary">Load test scenario</button><button id="reset" type="button" class="secondary">Reset</button></div>
+<p class="stat"><output id="count" for="post dispatch reset preset">0</output> / 6 slots occupied</p>
+<div id="slots" class="slots" aria-label="Six occupied or free event slots"></div>
+<p class="live" id="live" role="status" aria-live="polite" aria-atomic="true"></p>
+<div class="table-wrap"><table><caption style="text-align:left;padding:.55rem">Live queued events in storage order</caption><thead><tr><th>Event</th><th>Priority</th><th>Sequence</th><th>Action</th></tr></thead><tbody id="pending-rows"></tbody></table></div>
+<h3>Event history</h3><ol id="history" class="history" aria-label="Recent activity"></ol>
+</div><p class="caption">Challenge: load the test scenario, dispatch twice (#11, then #13), cancel #14, post urgent #16, and dispatch until empty. The final ordering should be #16, #12, #15, #10. Our C++ test executes this exact sequence.</p>
+<noscript><p class="warning">JavaScript is disabled. The technical explanation and code remain fully readable; turn on JavaScript only for this optional simulator.</p></noscript>
+</section>
+<section id="code"><p class="kicker">04 / reproducible implementation</p><h2>Complete, tested C++20 example</h2>
+<p>This <em>single-owner</em> ready batch deliberately checks <code>size() == capacity()</code> <strong>before</strong> appending. It models a bounded work list, not the complete RISCue scheduler. Priority 0 is highest; sequence number breaks ties. The demonstration uses 32-bit-ish <code>unsigned</code> sequencing and therefore does not handle wraparound—see limitations.</p>
+<pre aria-label="Complete C++20 example"><code>#include &lt;boost/container/static_vector.hpp&gt;
+#include &lt;algorithm&gt;
+#include &lt;cstddef&gt;
+#include &lt;cstdio&gt;
+#include &lt;cstdlib&gt;
+#include &lt;optional&gt;
+
+#define CHECK(expr) do { if (!(expr)) std::abort(); } while (false)
+
+struct Event {
+    unsigned id;
+    unsigned priority; // 0 is highest
+    unsigned sequence; // FIFO when priorities tie
+};
+
+class ReadyBatch {
+    static constexpr std::size_t limit = 6;
+    boost::container::static_vector&lt;Event, limit&gt; events_{};
+    unsigned next_sequence_ = 0;
+
+public:
+    bool post(unsigned id, unsigned priority) noexcept {
+        if (events_.size() == events_.capacity()) return false;
+        events_.push_back(Event{id, priority, next_sequence_++});
+        return true;
+    }
+
+    bool cancel(unsigned id) noexcept {
+        auto it = std::find_if(events_.begin(), events_.end(),
+                               [id](const Event&amp; e) { return e.id == id; });
+        if (it == events_.end()) return false;
+        events_.erase(it);
+        return true;
+    }
+
+    std::optional&lt;Event&gt; dispatch() noexcept {
+        if (events_.empty()) return std::nullopt;
+        const auto it = std::min_element(events_.begin(), events_.end(),
+            [](const Event&amp; a, const Event&amp; b) {
+                return a.priority &lt; b.priority ||
+                    (a.priority == b.priority &amp;&amp; a.sequence &lt; b.sequence);
+            });
+        const Event selected = *it;
+        events_.erase(it);
+        return selected;
+    }
+
+    std::size_t size() const noexcept { return events_.size(); }
+    std::size_t capacity() const noexcept { return events_.capacity(); }
+};
+
+int main() {
+    ReadyBatch batch;
+    CHECK(batch.capacity() == 6);
+    CHECK(batch.post(10, 2));
+    CHECK(batch.post(11, 0));
+    CHECK(batch.post(12, 1));
+    CHECK(batch.post(13, 0));
+    CHECK(batch.post(14, 2));
+    CHECK(batch.post(15, 1));
+    CHECK(batch.size() == 6);
+    CHECK(!batch.post(99, 0));       // rejection, not an allocation
+    CHECK(batch.size() == 6);       // no mutation on rejection
+    CHECK(batch.dispatch()-&gt;id == 11);
+    CHECK(batch.dispatch()-&gt;id == 13);
+    CHECK(batch.cancel(14));
+    CHECK(!batch.cancel(14));
+    CHECK(batch.post(16, 0));
+    CHECK(batch.dispatch()-&gt;id == 16);
+    CHECK(batch.dispatch()-&gt;id == 12);
+    CHECK(batch.dispatch()-&gt;id == 15);
+    CHECK(batch.dispatch()-&gt;id == 10);
+    CHECK(!batch.dispatch());
+    std::puts(&quot;PASS: bounded, priority/FIFO, overflow, cancellation, drain&quot;);
+}</code></pre>
+<p class="caption">Save as <code>main.cpp</code>. The <code>CHECK</code> macro remains active in Release builds (unlike <code>assert</code> under <code>NDEBUG</code>). Every entry is a trivially copyable value, so no user-defined element allocation is involved.</p>
+<p class="note"><strong>Contract:</strong> rejected posts preserve the size and do not consume a sequence number. <code>cancel</code> removes the first ID match (callers should enforce unique IDs). <code>dispatch</code> scans O(N) and then erases O(N). None of these methods provides synchronization between threads.</p>
+</section>
+<section id="build"><p class="kicker">05 / integration</p><h2>CMake + Ninja, with a header-only dependency</h2>
+<pre aria-label="CMakeLists.txt"><code>cmake_minimum_required(VERSION 3.25)
+project(static_vector_check LANGUAGES CXX)
+find_package(Boost 1.83 CONFIG REQUIRED)
+add_executable(static_vector_check main.cpp)
+target_compile_features(static_vector_check PRIVATE cxx_std_20)
+target_link_libraries(static_vector_check PRIVATE Boost::headers)
+if(CMAKE_CXX_COMPILER_ID MATCHES &quot;GNU|Clang&quot;)
+  target_compile_options(static_vector_check PRIVATE -Wall -Wextra -Werror -pedantic -fno-exceptions -fno-rtti)
+endif()
+enable_testing()
+add_test(NAME bounded_batch COMMAND static_vector_check)</code></pre>
+<pre aria-label="Build commands"><code>cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+ctest --test-dir build --output-on-failure
+# Example output: PASS: bounded, priority/FIFO, overflow, cancellation, drain</code></pre>
+<p>This uses the Boost CMake config package and <code>Boost::headers</code> target. For the showcased <code>static_vector</code>, no separately compiled Boost.Container binary is required; some <em>other</em> Boost.Container features have compiled components. For cross-compilation, point CMake to the target-compatible Boost package and use your established toolchain file.</p>
+</section>
+<section id="verification"><p class="kicker">06 / measured vs inferred</p><h2>What we actually ran</h2>
+<div class="table-wrap"><table><thead><tr><th>Check</th><th>Result</th><th>Precisely what it establishes</th></tr></thead><tbody>
+<tr><td>GCC 14.2.0, Boost 1.83, C++20, Ninja, Release; <code>-fno-exceptions -fno-rtti</code></td><td class="ok">PASS</td><td>Example compiled and linked; CTest passed with always-active CHECK expressions</td></tr>
+<tr><td>GCC 14.2.0, Debug-style <code>-O0 -g</code> with strict warnings</td><td class="ok">PASS</td><td>Same behavior without Release optimizations</td></tr>
+<tr><td>Capacity-full post rejection, duplicate cancel, empty drain, urgency and FIFO ties</td><td class="ok">PASS</td><td>Functional behavior of this six-element example</td></tr>
+<tr><td>Heap allocation interception / custom global <code>operator new</code></td><td class="pending">NOT RUN</td><td>Library's storage guarantee is documented; no independent whole-program allocation audit</td></tr>
+<tr><td>ARM / flight CPU, ISR concurrency, WCET, memory placement</td><td class="pending">NOT RUN</td><td>Target-dependent performance and safety remain to be qualified</td></tr>
+<tr><td>Boost 1.92 and other released/toolchain combinations</td><td class="pending">NOT RUN</td><td>Claims of compatibility beyond Boost 1.83 are upstream-documented, not locally compiled</td></tr></tbody></table></div>
+<p><strong>Interpretation:</strong> a test passing in 0.01 seconds in a Linux container is neither a benchmark nor evidence of timing determinism on a flight processor. A bound on elements is not yet a measured bound on the entire execution path.</p>
+</section>
+<section id="uses"><p class="kicker">07 / evidence ledger</p><h2>Who actually uses it?</h2>
+<div class="grid"><div class="card"><h3><span class="ok">Verified</span> · Boost's own shipped implementation</h3><p>Boost.Container publishes and tests <code>static_vector</code> in its official repository, including capacity and overflow options. That establishes real library implementation and maintained examples—not third-party production deployment. <a href="#ref-src">Source</a>.</p></div>
+<div class="card"><h3><span class="ok">Verified report</span> · Existing application</h3><p>A developer reported in <a href="#ref-issue">boostorg/container issue #309</a> on <strong>August 14, 2025</strong> that a real application uses <code>static_vector</code> heavily, and found a regression moving from Boost 1.81 to 1.86. The application is unnamed; we cannot independently identify the product or establish its deployment footprint. The issue records a maintainer fix.</p></div>
+<div class="card"><h3><span class="ok">Documented influence</span> · C++ standardization</h3><p>WG21 paper <a href="#ref-wg21">P0843R14</a> discusses a fixed-capacity vector and culminates in the related <code>std::inplace_vector</code> facility in <strong>C++26</strong>. This is evidence of design relevance and standardization, not evidence of adoption by RISCue.</p></div>
+<div class="card"><h3><span class="pending">Proposed only</span> · Engineering projects</h3><p>RISCue ready batches, VeloSim trace records, and BenchForge bounded sample collections are <em>candidate integrations</em>. No source checked for this report proves that any of those repositories currently uses <code>boost::container::static_vector</code>.</p></div></div>
+<p class="warning"><strong>Performance lesson from real users:</strong> issue #309 is unusually instructive: a container can be functionally correct yet suffer a compiler/version-specific vectorization regression. When upgrading Boost, compare generated code and throughput on your <em>actual</em> compiler and target.</p>
+</section>
+<section id="tradeoffs"><p class="kicker">08 / failure analysis</p><h2>Six things that can still go wrong</h2>
+<ol><li><strong>Bound exceeded:</strong> unchecked insertion reaches Boost's overflow handling; with exceptions disabled, the default path can terminate or invoke platform exception hooks. Explicitly guard every boundary.</li>
+<li><strong>Unchecked “fast” option:</strong> <code>throw_on_overflow&lt;false&gt;</code> permits undefined behavior on overflow; it does not implement backpressure.</li>
+<li><strong>Stack pressure:</strong> an inline <code>N × sizeof(T)</code> buffer makes each container object larger. Copying and passing by value may be surprisingly expensive.</li>
+<li><strong>Element-owned allocation:</strong> inserting a <code>std::string</code>, owning <code>std::vector</code>, or allocating constructor defeats a program-level no-heap requirement even if the container's own storage never allocates.</li>
+<li><strong>Iterator and pointer stability:</strong> erasing a middle entry shifts subsequent objects. Do not keep persistent pointers into entries across mutation.</li>
+<li><strong>Concurrency and priority:</strong> the example is neither thread-safe nor wait-free; scanning/erasing is O(N) and the 32-bit sequence counter wraps after enough posts. For a long-running design use an explicit wrap-safe ordering scheme or epoch discipline.</li></ol>
+</section>
+<section id="comparison"><p class="kicker">09 / choose deliberately</p><h2>Alternatives worth comparing</h2>
+<div class="table-wrap"><table><thead><tr><th>Type</th><th>Storage</th><th>Best for</th><th>Caveat</th></tr></thead><tbody>
+<tr><td><code>std::array&lt;T,N&gt;</code></td><td>Inline fixed length</td><td>All N objects logically present</td><td>Not a variable-sized sequence</td></tr>
+<tr><td><code>std::vector&lt;T&gt;</code></td><td>Typically heap-backed</td><td>Unbounded data or separately managed arena</td><td>Growth may allocate and invalidate</td></tr>
+<tr><td><code>boost::container::static_vector&lt;T,N&gt;</code></td><td>Inline fixed capacity</td><td>Variable count up to known max</td><td>No automatic overload policy</td></tr>
+<tr><td><code>boost::container::small_vector&lt;T,N&gt;</code></td><td>Inline, then may heap-allocate</td><td>Mostly-small workloads</td><td>Cannot claim no heap past N</td></tr>
+<tr><td><code>boost::intrusive::list</code></td><td>Links in externally owned nodes</td><td>Known-node O(1) erase and stable ownership</td><td>Pointer/lifetime and hook discipline</td></tr>
+<tr><td><code>std::inplace_vector&lt;T,N&gt;</code></td><td>Inline fixed capacity</td><td>C++26 toolchains</td><td>Not a portable C++20 dependency yet</td></tr></tbody></table></div>
+<p><strong>Bottom line:</strong> <code>static_vector</code> is a compact collection, not a scheduler algorithm. When cancellation of known events is the hot path, revisit yesterday's Boost.Intrusive analysis. For cross-thread transport, a qualified bounded queue remains the right separate abstraction.</p>
+</section>
+<section id="integration"><p class="kicker">10 / actionable engineering experiment</p><h2>RISCue first; VeloSim second</h2>
+<h3>Suggested RISCue proof of concept (not an implemented change)</h3>
+<p>Create a single-owner, fixed maximum batch of <em>event handles or trivially copyable descriptors</em> (not dynamically allocated payloads). Record the reason for every refusal at capacity. Keep producer-to-owner handoff outside this container. Instrument per-cycle enqueue, scan, cancel, and dispatch under maximum occupancy, and enforce the same order under deterministic replay.</p>
+<div class="table-wrap"><table><thead><tr><th>Proposed requirement</th><th>Verification approach</th><th>Acceptance evidence</th></tr></thead><tbody>
+<tr><td>R-BOUNDED-01: no internal growth</td><td>Fill to N, request N+1</td><td>Explicit reject, size remains N</td></tr>
+<tr><td>R-ORDER-02: stable priority and FIFO tie-breaking</td><td>Replay fixed event sequence</td><td>Byte-identical ID order across seeds/runs</td></tr>
+<tr><td>R-LIFETIME-03: no dangling handles</td><td>Cancel, dispatch, reuse owned event slots</td><td>Sanitizers + owner-model review</td></tr>
+<tr><td>R-WCET-04: bounded latency</td><td>Target instrumentation at N=0 and N=max</td><td>Measured upper limits with margin; not a host-only result</td></tr>
+<tr><td>R-HEAP-05: no runtime allocation</td><td>Wrap allocation hooks and all element constructors</td><td>Zero allocations over qualified scenarios</td></tr></tbody></table></div>
+<h3>Suggested VeloSim usage</h3><p>Keep a bounded vector of trace annotations for one simulation time step, then flush or emit a deterministic overflow record at the boundary. This favors contiguous iteration over linked ownership. A trace file format also needs a defined representation for dropped annotations; silent truncation is unsafe for verification.</p>
+<h3>BenchForge / SharpHDL note</h3><p>Fixed-size benchmark samples or synthesis diagnostic batches could use the same pattern, but those host tools may benefit more from the simplicity and familiarity of <code>std::vector</code>. Do not introduce a dependency unless the upper bound is part of the engineering contract.</p>
+</section>
+<section id="license"><p class="kicker">11 / compliance &amp; maintainability</p><h2>Licensing, version pinning, and upgrades</h2>
+<p><strong>License:</strong> Boost Software License 1.0 (BSL-1.0), not MIT. Broadly permissive for commercial/open use. Keep the required license/copyright notice with distribution of covered source; read the <a href="https://www.boost.org/LICENSE_1_0.txt">official license text</a> rather than relying on a summary. This report's original prose, CSS, and simulator are offered under MIT; its small example is original demonstration code.</p>
+<p><strong>Integration:</strong> include <code>&lt;boost/container/static_vector.hpp&gt;</code>, use the Boost header target in CMake, and pin the selected Boost release in the repository's toolchain/dependency manifest. Boost.Container's core containers are header-only; some other modules of the library can require a binary. Test both exception-enabled and <code>-fno-exceptions</code> build profiles as appropriate.</p>
+<p><strong>Upgrade gate:</strong> record Boost version, C++ compiler/version/flags, full vs. empty memory footprint, append/erase latency distributions, generated assembly for critical loops, static-analysis results, and requirements test evidence. The August 2025 regression report is a concrete reason not to equate an ABI-compatible upgrade with unchanged runtime behavior.</p>
+</section>
+<section id="sources"><p class="kicker">12 / source register</p><h2>Primary documentation and limitations</h2>
+<ol>
+<li id="ref-boost"><a href="https://www.boost.org/doc/libs/latest/doc/html/container/non_standard_containers.html">Boost.Container — non-standard containers, including <code>static_vector</code></a>. Core guarantees, storage and complexity; official current documentation.</li>
+<li id="ref-options"><a href="https://www.boost.org/doc/libs/latest/doc/html/container/configurable_containers.html">Boost.Container — configurable static vector</a>. Overflow mode, stored-size and alignment options; official current documentation.</li>
+<li id="ref-src"><a href="https://github.com/boostorg/container/blob/develop/include/boost/container/static_vector.hpp">boostorg/container — <code>static_vector.hpp</code></a>. Library source and explicit overflow behavior; <a href="https://github.com/boostorg/container/tree/develop/test">official test directory</a>.</li>
+<li><a href="https://www.boost.org/library/latest/container/">Boost.Container overview</a>. Official license/dependencies/build-mode description.</li>
+<li id="ref-issue"><a href="https://github.com/boostorg/container/issues/309">boostorg/container issue #309</a>. Actual user-reported application regression dated August 14, 2025; anonymous application, maintainer fix, no generalized benchmark.</li>
+<li id="ref-wg21"><a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p0843r14.html">WG21 P0843R14 — <code>inplace_vector</code></a>. C++ standardization rationale. <a href="https://en.cppreference.com/w/cpp/container/inplace_vector">C++26 API summary</a> is secondary documentation.</li>
+<li><a href="https://www.boost.org/LICENSE_1_0.txt">Boost Software License 1.0</a>. Authoritative license terms.</li></ol>
+<p class="caption">Prepared 2026-11-05. Sources were researched before publication. Local verification was on Linux with GCC 14.2.0 and installed Boost 1.83—not a flight target. Referenced upstream <code>develop</code> may change; pin the relevant release when integrating. Names of RISCue, VeloSim and BenchForge denote proposed applications, not claimed deployments.</p>
+</section>
+</main></div><footer class="page footer"><p>Engineering Deep Dives · <a href="https://github.com/jeffadickson/but-does-it-do-anything/tree/main/DeepDives">DeepDives archive</a> · Generated for engineering review · Original HTML/JS under MIT (Boost remains BSL-1.0)</p><p><a href="#main">Back to contents ↑</a></p></footer>
+<script>(() => {
+  "use strict";
+  const CAPACITY = 6;
+  const slots = document.querySelector("#slots");
+  const rows = document.querySelector("#pending-rows");
+  const live = document.querySelector("#live");
+  const count = document.querySelector("#count");
+  const history = document.querySelector("#history");
+  const add = document.querySelector("#post");
+  const send = document.querySelector("#dispatch");
+  const reset = document.querySelector("#reset");
+  const preset = document.querySelector("#preset");
+  const priority = document.querySelector("#priority");
+  const idBox = document.querySelector("#event-id");
+  let events = [];
+  let nextSequence = 0;
+  let nextId = 10;
+  const log = [];
+  const priorityNames = ["Urgent", "Normal", "Background"];
+
+  function announce(message) {
+    live.textContent = message;
+    log.unshift(message);
+    log.length = Math.min(log.length, 7);
+    history.replaceChildren();
+    for (const line of log) {
+      const li = document.createElement("li");
+      li.textContent = line;
+      history.append(li);
+    }
+  }
+  function selectBest() {
+    if (!events.length) return -1;
+    let best = 0;
+    for (let i = 1; i < events.length; ++i) {
+      if (events[i].priority < events[best].priority ||
+          (events[i].priority === events[best].priority && events[i].seq < events[best].seq)) {
+        best = i;
+      }
+    }
+    return best;
+  }
+  function render() {
+    slots.replaceChildren();
+    rows.replaceChildren();
+    count.textContent = String(events.length);
+    for (let i = 0; i < CAPACITY; ++i) {
+      const cell = document.createElement("div");
+      cell.className = "slot " + (events[i] ? "occupied p" + events[i].priority : "vacant");
+      const number = document.createElement("small");
+      number.textContent = "SLOT " + (i + 1);
+      cell.append(number);
+      const word = document.createElement("strong");
+      word.textContent = events[i] ? "#" + events[i].id : "FREE";
+      cell.append(word);
+      slots.append(cell);
+    }
+    for (const e of events) {
+      const tr = document.createElement("tr");
+      for (const word of [String(e.id), priorityNames[e.priority], String(e.seq)]) {
+        const td = document.createElement("td");
+        td.textContent = word;
+        tr.append(td);
+      }
+      const td = document.createElement("td");
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "small-button";
+      btn.textContent = "Cancel #" + e.id;
+      btn.setAttribute("aria-label", "Cancel event " + e.id);
+      btn.addEventListener("click", () => {
+        const index = events.findIndex(x => x.seq === e.seq);
+        if (index !== -1) {
+          events.splice(index, 1);
+          announce("Canceled event #" + e.id + ". Remaining events shift to fill the gap.");
+          render();
+        }
+      });
+      td.append(btn);
+      tr.append(td);
+      rows.append(tr);
+    }
+    add.disabled = events.length === CAPACITY;
+    send.disabled = events.length === 0;
+  }
+  function postEvent(id, level) {
+    if (events.length >= CAPACITY) {
+      announce("FULL: event #" + id + " rejected. Capacity stays at six; there is no heap expansion.");
+      return false;
+    }
+    events.push({id, priority: level, seq: nextSequence++});
+    announce("Accepted #" + id + " (" + priorityNames[level] + "); " + events.length + "/6 slots used.");
+    render();
+    return true;
+  }
+  add.addEventListener("click", () => {
+    const raw = idBox.value.trim();
+    const id = raw === "" ? nextId : Number(raw);
+    if (!Number.isSafeInteger(id) || id < 0 || id > 999999) {
+      announce("Please choose a whole-number event ID from 0 to 999999.");
+      return;
+    }
+    if (events.some(e => e.id === id)) {
+      announce("Event #" + id + " already exists. Choose a different ID.");
+      return;
+    }
+    if (postEvent(id, Number(priority.value))) {
+      nextId = Math.max(nextId + 1, id + 1);
+      idBox.value = String(nextId);
+    }
+  });
+  send.addEventListener("click", () => {
+    const best = selectBest();
+    if (best < 0) return;
+    const e = events.splice(best, 1)[0];
+    announce("Dispatched #" + e.id + " (" + priorityNames[e.priority] + "). Priority first, FIFO for ties.");
+    render();
+  });
+  preset.addEventListener("click", () => {
+    events = [
+      {id:10, priority:2, seq:0}, {id:11, priority:0, seq:1},
+      {id:12, priority:1, seq:2}, {id:13, priority:0, seq:3},
+      {id:14, priority:2, seq:4}, {id:15, priority:1, seq:5}
+    ];
+    nextSequence = 6;
+    nextId = 16;
+    idBox.value = "16";
+    announce("Loaded six events. Try Dispatch: #11 then #13 should be first.");
+    render();
+  });
+  reset.addEventListener("click", () => {
+    events = [];
+    nextSequence = 0;
+    nextId = 10;
+    idBox.value = "10";
+    log.length = 0;
+    announce("Reset. Six empty slots are available.");
+    render();
+  });
+  idBox.value = "10";
+  announce("Ready: add a few events, then dispatch them.");
+  render();
+})();</script>
+</body></html>
