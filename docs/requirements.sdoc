@@ -1,0 +1,24 @@
+[DOCUMENT]
+TITLE: Repository contribution requirements
+
+[REQUIREMENT]
+UID: REPO-LANG-001
+TITLE: Prefer C# and F#
+STATEMENT: >>>
+Repository scripts, automation, and tooling shall use C# or F# wherever practical. Shell operations shall default to PowerShell and native cmdlets. Exceptions required by an explicit request, toolchain, workflow, runtime, or lesson subject shall be documented.
+<<<
+COMMENT: >>>
+Implementation: AGENTS.md, Languages and automation; CONTRIBUTING.md, Script and automation policy.
+Verification: Manual inspection confirms both documents explicitly name C# and F#, PowerShell defaults, and documented exceptions. Documentation-only change; executable line and branch coverage and mutation/fuzz/property tests are not applicable.
+<<<
+
+[REQUIREMENT]
+UID: REPO-SCRIPT-001
+TITLE: Commit scripts used for project work
+STATEMENT: >>>
+All scripts created or used to implement, generate, migrate, build, test, validate, or maintain a change shall be committed, including one-off scripts initially stored outside the repository. Script documentation shall describe purpose, prerequisites, invocation, inputs, and outputs. Material interactive commands and verification results shall be recorded. Secrets, private inputs, caches, dependencies, and generated build artifacts shall be excluded from this script retention requirement.
+<<<
+COMMENT: >>>
+Implementation: AGENTS.md, Reproducible scripts; CONTRIBUTING.md, Script and automation policy.
+Verification: Manual inspection confirms both documents require retaining one-off script sources, documenting their use, and excluding sensitive data and build artifacts. No standalone script was created for this documentation change; native PowerShell file operations and Git commands were used. Documentation-only change; executable coverage and mutation/fuzz/property tests are not applicable.
+<<<
