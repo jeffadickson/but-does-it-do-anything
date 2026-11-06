@@ -169,7 +169,7 @@ constexpr bool valid(const Frame&amp; f) noexcept {
            f.samples &lt;= 5000 &amp;&amp; (f.flags &amp; 0xFCu) == 0;
 }
 
-bool encode(std::span&lt;unsigned char&gt; out, const Frame&amp; f) noexcept {
+inline bool encode(std::span&lt;unsigned char&gt; out, const Frame&amp; f) noexcept {
     if (out.size() != size || !valid(f)) return false;
     using namespace boost::endian;
     endian_store&lt;std::uint16_t, 2, order::big&gt;(out.data(), magic);
@@ -181,7 +181,7 @@ bool encode(std::span&lt;unsigned char&gt; out, const Frame&amp; f) noexcept {
     return true;
 }
 
-std::optional&lt;Frame&gt; decode(std::span&lt;const unsigned char&gt; in) noexcept {
+inline std::optional&lt;Frame&gt; decode(std::span&lt;const unsigned char&gt; in) noexcept {
     if (in.size() != size) return std::nullopt;
     using namespace boost::endian;
     if (endian_load&lt;std::uint16_t, 2, order::big&gt;(in.data()) != magic ||
@@ -263,7 +263,7 @@ int main() {
 project(endian_lab LANGUAGES CXX)
 
 # Pin and provision an approved Boost version in your build image.
-find_package(Boost 1.83 REQUIRED)
+find_package(Boost 1.83 CONFIG REQUIRED)
 add_executable(endian_lab main.cpp)
 target_compile_features(endian_lab PRIVATE cxx_std_20)
 target_link_libraries(endian_lab PRIVATE Boost::headers)
