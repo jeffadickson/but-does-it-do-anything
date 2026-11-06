@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="description" content="Engineering deep dive: Boost.Endian for bounded, allocation-free C++20 binary telemetry. Interactive wire viewer, tested source, CMake/Ninja, adoption evidence and tradeoffs.">
+<title>Byte Order Is a Contract | Boost.Endian | DeepDives · 2026-11-06</title>
+<style>
+:root{color-scheme:dark;--bg:#080e20;--paper:#101b32;--card:#152440;--line:#375071;--ink:#f1f6ff;--muted:#b8c8dc;--teal:#69e8d4;--amber:#ffd18b;--blue:#91bfff;--coral:#ff9e9f;--good:#8fe4ab;--bad:#ffacac;--shadow:0 18px 55px #0006}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font:16px/1.64 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(ellipse at 8% 0%,#173d5b 0,transparent 43%),radial-gradient(ellipse at 95% 15%,#2c2859 0,transparent 35%),var(--bg);color:var(--ink)}
+a{color:var(--teal);text-underline-offset:3px}a:hover{color:#fff}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+.skip{position:absolute;top:-5rem;left:1rem;background:var(--amber);color:#0b1321;padding:.7rem;z-index:30}.skip:focus{top:1rem}
+.container{width:min(1130px,calc(100% - 2rem));margin:auto}.mast{padding:1.3rem 0 4rem}.mast nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;color:var(--muted);font-weight:750;font-size:.9rem}.mast nav a{color:var(--ink)}.pill{border:1px solid #6f89af;border-radius:99px;padding:.28rem .8rem;color:var(--teal);font-size:.78rem;letter-spacing:.13em;text-transform:uppercase}.hero{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(220px,.85fr);gap:2rem;align-items:center;margin-top:4rem}.eyebrow{text-transform:uppercase;letter-spacing:.2em;font-size:.85rem;font-weight:850;color:var(--teal)}h1,h2,h3,p{margin-top:0}h1{font-size:clamp(2.6rem,7vw,5.7rem);line-height:1.04;letter-spacing:-.055em;margin:.55rem 0 1.35rem}h1 em{font-style:normal;color:var(--amber)}.dek{font-size:clamp(1.15rem,2.5vw,1.42rem);max-width:680px;color:#d6e3f4}.meta{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:2rem}.meta span{background:#172e45;border:1px solid #3f7080;border-radius:99px;padding:.35rem .8rem;font-size:.82rem;font-weight:750;color:#d5f8ef}.orbit{min-height:245px;position:relative;display:grid;place-items:center}.orbit svg{width:min(100%,330px);height:auto;filter:drop-shadow(0 18px 18px #0008)}.orbit figcaption{position:absolute;bottom:-.8rem;color:var(--muted);font-size:.75rem}
+main{padding-bottom:5rem}main>section{margin:4.2rem 0;scroll-margin-top:1.2rem}h2{font-size:clamp(1.9rem,4vw,2.8rem);line-height:1.12;letter-spacing:-.035em;margin-bottom:1.25rem}h3{font-size:1.16rem;color:#defaff;margin-bottom:.55rem}p,li{color:#d7e3f1}strong{color:#fff}.lead{font-size:1.13rem;max-width:880px}
+.toc,.panel,.callout{background:linear-gradient(145deg,#172b48e8,#0f1e36);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:clamp(1.2rem,3vw,2rem)}.toc h2{font-size:1.45rem}.toc ol{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.55rem 1.5rem;margin:0;padding-left:1.3rem}.toc li{padding:.12rem 0}.toc a{text-decoration:none}.toc a:hover{text-decoration:underline}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.two{grid-template-columns:repeat(2,minmax(0,1fr))}.tile{padding:1.3rem;background:#122139;border-radius:16px;border:1px solid #344c69;min-width:0}.tile .number{font-size:2rem;line-height:1.05;color:var(--teal);font-weight:850;letter-spacing:-.045em}.tile p:last-child{margin-bottom:0}.callout{border-left:5px solid var(--amber)}.callout.good{border-left-color:var(--teal)}.callout.bad{border-left-color:var(--coral)}
+table{width:100%;border-collapse:collapse;font-size:.95rem}th,td{padding:.8rem;text-align:left;border-bottom:1px solid #415373;vertical-align:top}th{color:var(--amber)}.scroll{overflow-x:auto}code,pre,kbd,.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.91em;color:#b5ffed}p code,li code,td code{background:#091b2c;border-radius:4px;padding:.12rem .25rem}pre{background:#070f1e;border:1px solid #37506c;border-radius:14px;padding:1.2rem;overflow:auto;white-space:pre;font-size:.81rem;line-height:1.55;color:#eaf2ff;max-height:710px}pre code{color:inherit;font-size:inherit}
+.badge{font-size:.75rem;display:inline-block;border:1px solid #647a9c;border-radius:8px;padding:.16rem .45rem;font-weight:800;vertical-align:middle;color:#d3e9ff;margin-right:.3rem}.badge.proven{color:var(--good);border-color:#44735d}.badge.idea{color:var(--amber);border-color:#9f7949}
+.lab{border:1px solid #437c89;border-radius:24px;background:linear-gradient(170deg,#102941,#111831);padding:clamp(1rem,3vw,2rem);box-shadow:var(--shadow)}.lab-head{display:flex;justify-content:space-between;align-items:start;gap:1rem;flex-wrap:wrap}.chip{font:750 .8rem system-ui;border:1px solid #5e938e;border-radius:99px;padding:.4rem .7rem;color:#9fe9d8}fieldset{border:0;margin:0;padding:0}legend{font-size:1.1rem;font-weight:850;margin-bottom:.6rem}.inputs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem;margin:1.5rem 0}.field label{display:block;font-size:.85rem;font-weight:750;color:#cae1f4;margin-bottom:.35rem}.field input,.field select{width:100%;padding:.75rem;border-radius:10px;border:1px solid #7892af;background:#091629;color:#fff;font-size:1rem;min-height:46px}.hint{display:block;font-size:.75rem;color:var(--muted);margin-top:.3rem}
+.actions{display:flex;gap:.6rem;flex-wrap:wrap;margin:.7rem 0 1.4rem}.btn{font:800 .92rem system-ui;border:1px solid #5f7d9e;border-radius:12px;padding:.72rem 1rem;min-height:44px;background:#234061;color:#f2f8ff;cursor:pointer}.btn:hover{background:#375777}.btn.primary{background:#82ead8;color:#09222c;border-color:#82ead8}.btn.primary:hover{background:#b7fff0}
+.wire{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:.35rem;margin:1rem 0 1.3rem}.byte{min-width:0;text-align:center;border-radius:10px;background:#294465;border:1px solid #6386a8;padding:.65rem .1rem}.byte strong{font:800 clamp(.84rem,1.7vw,1.22rem) ui-monospace,monospace;display:block;color:#fff}.byte small{display:block;color:#d8e7fa;font-size:.71rem}.byte.magic{background:#285b55}.byte.control{background:#595079}.byte.seq{background:#224b83}.byte.temp{background:#704443}.byte.samples{background:#63572f}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;font-size:.79rem;margin:0 0 1.5rem}.legend span:before{content:"";display:inline-block;width:.7rem;height:.7rem;margin-right:.4rem;vertical-align:baseline;border-radius:3px;background:var(--teal)}.legend .control:before{background:#baabff}.legend .seq:before{background:#83bbff}.legend .temp:before{background:#f6a8a3}.legend .samples:before{background:#ebd38d}
+.result{padding:.9rem 1.1rem;border:1px solid #638fa0;border-radius:12px;background:#0a2230;min-height:3.2rem;color:#d5faf5}.result.error{border-color:#ed8e8d;color:#ffc7c6;background:#3a1f28}.hexline{word-break:break-word;color:#ffdda6}
+.steps{counter-reset:step;padding-left:0;list-style:none}.steps>li{padding:0 0 1.2rem 2.8rem;position:relative}.steps>li:before{counter-increment:step;content:counter(step);position:absolute;left:0;top:0;background:#275a67;border:1px solid #469eab;color:#fff;border-radius:50%;display:grid;place-items:center;width:2rem;height:2rem;font-weight:900}
+footer{border-top:1px solid #344860;background:#081325;padding:2.5rem 0;color:var(--muted)}footer p{color:var(--muted);margin:0}.cite{font-size:.93rem}.cite li{margin:.5rem 0;overflow-wrap:anywhere}.mini{color:var(--muted);font-size:.88rem}.overline{color:var(--amber);font-weight:850;text-transform:uppercase;letter-spacing:.14em;font-size:.79rem}.nowrap{white-space:nowrap}
+@media(max-width:830px){.hero{grid-template-columns:1fr;margin-top:2.5rem}.orbit{min-height:170px}.orbit svg{width:210px}.toc ol{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:1fr}.inputs{grid-template-columns:repeat(2,minmax(0,1fr))}.wire{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media(max-width:510px){.mast{padding-bottom:1rem}.toc ol{grid-template-columns:1fr}.inputs{grid-template-columns:1fr}.wire{grid-template-columns:repeat(4,minmax(0,1fr))}.byte strong{font-size:1.06rem}.meta span{font-size:.75rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+@media print{:root{color-scheme:light}body{background:#fff;color:#111}h1,h2,h3,p,li,strong,th,td{color:#111}.mast,.toc,.panel,.tile,.callout,.lab{background:#fff;box-shadow:none;border-color:#bbb}.hero{display:block}.orbit{display:none}pre{color:#111;background:#f3f3f3;white-space:pre-wrap;max-height:none}code{color:#111}.lab{break-inside:avoid}a{color:#064b79}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to article</a>
+<header class="mast">
+ <div class="container">
+  <nav aria-label="Edition"><span><span class="pill">DeepDives / 2026.11.06</span></span><a href="https://github.com/jeffadickson/but-does-it-do-anything/tree/main/DeepDives">← All engineering deep dives</a></nav>
+  <div class="hero">
+   <div>
+    <div class="eyebrow">C++20 · Embedded data contracts · Library review #19</div>
+    <h1>Byte order<br>is a <em>contract.</em></h1>
+    <p class="dek">A 12-byte sensor packet can mean two different things to two processors. <strong>Boost.Endian</strong> makes the meaning explicit—without a heap allocation in the demonstrated encode/decode path.</p>
+    <div class="meta"><span>Boost Software License 1.0</span><span>Header-only</span><span>Bounded packet</span><span>Release + Debug tested</span></div>
+   </div>
+   <figure class="orbit" aria-label="Illustration: a binary packet crosses from a sensor to a computer, with bytes arranged into groups">
+    <svg viewBox="0 0 340 250" role="img" aria-labelledby="visual-title visual-desc" xmlns="http://www.w3.org/2000/svg">
+     <title id="visual-title">One wire, one byte order</title><desc id="visual-desc">Packets of eight-bit cells travel from a sensor to a receiver along a curved dotted path.</desc>
+     <defs><linearGradient id="glow" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#69e8d4"/><stop offset="1" stop-color="#81a5ff"/></linearGradient></defs>
+     <circle cx="170" cy="122" r="104" fill="none" stroke="#2a5075" stroke-dasharray="3 9" stroke-width="2"/>
+     <rect x="11" y="82" width="90" height="83" rx="16" fill="#10283c" stroke="#69e8d4" stroke-width="2"/>
+     <path d="M23 121h16l7-20 12 39 10-25 8 6h13" fill="none" stroke="#69e8d4" stroke-width="3" stroke-linecap="round"/>
+     <text x="56" y="151" fill="#d8fcf6" font-size="12" text-anchor="middle">SENSOR</text>
+     <path d="M110 126h116" stroke="url(#glow)" stroke-width="3" stroke-dasharray="7 6"/><path d="m217 119 11 7-11 7" stroke="#91bfff" stroke-width="3" fill="none" stroke-linejoin="round"/>
+     <rect x="239" y="82" width="90" height="83" rx="16" fill="#142541" stroke="#91bfff" stroke-width="2"/>
+     <rect x="255" y="97" width="57" height="27" rx="5" fill="#203e66" stroke="#91bfff"/><text x="283" y="115" font-size="15" fill="#fff" text-anchor="middle" font-family="monospace">A6 5C</text>
+     <text x="283" y="151" fill="#d8e8ff" font-size="12" text-anchor="middle">RECEIVER</text>
+     <g font-family="monospace" font-weight="700" font-size="15" text-anchor="middle"><text x="141" y="91" fill="#69e8d4">01</text><text x="170" y="91" fill="#ffd18b">02</text><text x="199" y="91" fill="#91bfff">03</text></g>
+     <text x="170" y="220" font-size="12" fill="#b8c8dc" text-anchor="middle">SAME BYTES · SAME INTERPRETATION</text>
+    </svg>
+    <figcaption>Illustration: an invented teaching packet, not a flight protocol.</figcaption>
+   </figure>
+  </div>
+ </div>
+</header>
+<main id="content" class="container">
+ <nav class="toc" aria-labelledby="toc-heading">
+  <h2 id="toc-heading">The route through this investigation</h2>
+  <ol>
+   <li><a href="#decision">Executive decision</a></li><li><a href="#problem">The byte-order problem</a></li><li><a href="#mechanism">Three library approaches</a></li><li><a href="#lab">Interactive wire lab</a></li><li><a href="#contract">Wire-format contract</a></li><li><a href="#implementation">C++20 implementation</a></li><li><a href="#tests">Tests and reproducibility</a></li><li><a href="#adoption">Verified real use</a></li><li><a href="#integration">CMake / Ninja integration</a></li><li><a href="#tradeoffs">Failure modes & tradeoffs</a></li><li><a href="#applications">Project fit & experiment</a></li><li><a href="#sources">Primary sources</a></li>
+  </ol>
+ </nav>
+ <section id="decision">
+  <div class="overline">01 / Engineering verdict</div>
+  <h2>Worth a bounded protocol prototype.</h2>
+  <p class="lead"><strong>Recommendation:</strong> use <code>boost::endian::endian_load</code> and <code>endian_store</code> at serialization boundaries where binary formats are defined byte-by-byte. Keep buffers externally owned, validate lengths and field ranges, and compare with a hand-written or standard-library implementation before introducing another dependency.</p>
+  <div class="grid">
+   <article class="tile"><div class="number">12 B</div><h3>Fixed wire frame</h3><p>No wire-side padding; the example's output size is exactly twelve octets.</p></article>
+   <article class="tile"><div class="number">0</div><h3>Explicit heap operations</h3><p>No <code>new</code>, <code>malloc</code>, or container growth in this encode/decode path. <em>Not</em> a whole-program allocation proof.</p></article>
+   <article class="tile"><div class="number">2</div><h3>Real configurations tested</h3><p>GCC 14.2 / Boost 1.83, CMake/Ninja Release and Debug, no exceptions, no RTTI.</p></article>
+  </div>
+ </section>
+ <section id="problem">
+  <div class="overline">02 / The failure that hides in plain sight</div>
+  <h2>Is <code>0x01020304</code> stored as <code>01 02 03 04</code>?</h2>
+  <p>Sometimes. A <strong>big-endian</strong> representation places the most-significant byte first: <code>01 02 03 04</code>. A <strong>little-endian</strong> representation places the least-significant first: <code>04 03 02 01</code>. The <em>integer value</em> is identical; the <em>byte sequence</em> differs. A network packet or file format must prescribe one byte sequence independently of the CPU running the code. The official Boost.Endian documentation calls out portable binary exchange as its primary use. <a href="#ref-boost">[1]</a></p>
+  <div class="callout"><h3>The critical distinction</h3><p><code>std::uint32_t n = 0x01020304;</code> defines a numeric value, <strong>not a portable on-wire byte sequence</strong>. Writing the four bytes of <code>n</code> with <code>reinterpret_cast</code> silently couples the format to the machine. Read and write by declared wire order instead.</p></div>
+ </section>
+ <section id="mechanism">
+  <div class="overline">03 / The library under the microscope</div>
+  <h2>Three ways to express byte order</h2>
+  <div class="grid">
+   <article class="tile"><h3>1. Conversion functions</h3><p><code>native_to_big</code>, <code>big_to_native</code>, <code>endian_reverse</code>. Useful when operating on native integer values. <strong>Caution:</strong> a converted integer is still an integer; its in-memory bytes require care.</p></article>
+   <article class="tile"><h3>2. Endian buffers</h3><p><code>big_uint24_buf_t</code> and related unaligned storage types encode a specified number of bits in a specified byte order. The library supports 1–8 octet buffers, including non-native widths. <a href="#ref-buffer">[2]</a></p></article>
+   <article class="tile"><h3>3. Explicit load/store</h3><p><code>endian_store&lt;T, N, order::big&gt;(p, value)</code> and its load counterpart operate on caller-owned bytes. This is the approach used below: explicit lengths, offsets and orders. <a href="#ref-conversion">[3]</a></p></article>
+  </div>
+  <p class="mini">The library is header-only and licensed under the Boost Software License 1.0. No runtime allocator, OS service, or linked Boost object library is required for the operations shown. Inclusion and dependencies still affect build integration. <a href="#ref-readme">[4]</a></p>
+ </section>
+ <section id="lab">
+  <div class="overline">04 / An interactive mental model</div>
+  <h2>Wire lab: encode, inspect, corrupt, decode</h2>
+  <p>The interactive demonstrator is <strong>plain browser JavaScript</strong> implementing our <em>invented</em> twelve-octet protocol, not Boost compiled to WebAssembly. It uses <code>DataView</code> to model explicit endian choices. Compare its golden bytes with the separately compiled C++ test.</p>
+  <div class="lab" aria-labelledby="lab-title">
+   <div class="lab-head"><div><h3 id="lab-title">Packet 01 / ground-station test bench</h3><p class="mini">Edit numbers → encode → flip the version byte → observe decode rejection.</p></div><span class="chip">Offline · no external scripts</span></div>
+   <fieldset>
+    <legend>Invented sensor payload</legend>
+    <div class="inputs">
+     <div class="field"><label for="sequence">Sequence (uint32)</label><input id="sequence" type="number" min="0" max="4294967295" step="1" value="16909060"><span class="hint">0 to 4,294,967,295</span></div>
+     <div class="field"><label for="temperature">Temperature (tenths °C)</label><input id="temperature" type="number" min="-400" max="1250" step="1" value="-125"><span class="hint">−12.5 °C = −125</span></div>
+     <div class="field"><label for="samples">Sample count (uint16)</label><input id="samples" type="number" min="0" max="5000" step="1" value="300"><span class="hint">Contract limit: 5000</span></div>
+     <div class="field"><label for="flags">Flags (allowed bits 0–1)</label><select id="flags"><option value="0">00 — none</option><option value="1" selected>01 — valid data</option><option value="2">02 — calibration</option><option value="3">03 — both</option></select><span class="hint">Bits 2–7 reserved</span></div>
+    </div>
+   </fieldset>
+   <div class="actions">
+    <button type="button" class="btn primary" id="encode">Encode values</button>
+    <button type="button" class="btn" id="corrupt">Corrupt version byte</button>
+    <button type="button" class="btn" id="restore">Restore golden values</button>
+    <button type="button" class="btn" id="selftest">Run JS self-tests</button>
+   </div>
+   <h3>Exactly 12 octets, no object-memory layout assumptions</h3>
+   <div id="bytes" class="wire" role="list" aria-label="Packet bytes and decimal offsets"><span class="mini">Loading interactive lab…</span></div>
+   <div class="legend" aria-label="Wire field colors"><span>Magic</span><span class="control">Version + flags</span><span class="seq">Big-endian sequence</span><span class="temp">Big-endian signed temperature</span><span class="samples">Little-endian sample count</span></div>
+   <p class="mono hexline" id="hex" aria-label="Complete hexadecimal packet"></p>
+   <div id="status" class="result" role="status" aria-live="polite" aria-atomic="true">Starting decoder…</div>
+   <p id="test-results" class="mini" aria-live="polite"></p>
+  </div>
+ </section>
+ <section id="contract">
+  <div class="overline">05 / Put the agreement in writing</div>
+  <h2>A deliberate mixed-endian frame</h2>
+  <p>This frame is made up for the lesson. The <em>mixed</em> order is intentional: it forces both orientations to be explicit and makes the golden-vector test meaningful. It is <strong>not</strong> a NASA, CCSDS, JPL or flight telemetry specification.</p>
+  <div class="panel scroll"><table><caption class="mini" style="caption-side:bottom;text-align:left;margin-top:.65rem">Offsets are measured in octets from the beginning of the frame. All fields are unaligned in the wire representation.</caption><thead><tr><th scope="col">Offset</th><th scope="col">Bytes</th><th scope="col">Field</th><th scope="col">Order</th><th scope="col">Checks</th></tr></thead><tbody>
+   <tr><td>0–1</td><td>2</td><td>Magic <code>0xA65C</code></td><td>Big</td><td>Exact match</td></tr>
+   <tr><td>2</td><td>1</td><td>Version</td><td>n/a</td><td>Must equal 1</td></tr>
+   <tr><td>3</td><td>1</td><td>Flags</td><td>n/a</td><td>Bits 2–7 must be zero</td></tr>
+   <tr><td>4–7</td><td>4</td><td>Sequence (<code>uint32_t</code>)</td><td>Big</td><td>Full 32-bit range</td></tr>
+   <tr><td>8–9</td><td>2</td><td>Temperature (<code>int16_t</code>, 0.1 °C)</td><td>Big</td><td>−400 to +1250</td></tr>
+   <tr><td>10–11</td><td>2</td><td>Samples (<code>uint16_t</code>)</td><td>Little</td><td>0 to 5000</td></tr>
+  </tbody></table></div>
+  <p>The golden vector for sequence <code>0x01020304</code>, temperature <code>−125</code>, 300 samples, flags 1 is <strong class="mono">A6 5C 01 01 01 02 03 04 FF 83 2C 01</strong>. Notice that the signed negative temperature is <code>FF 83</code> and the little-endian 300 (<code>0x012C</code>) is <code>2C 01</code>.</p>
+ </section>
+ <section id="implementation">
+  <div class="overline">06 / Copy, compile, inspect</div>
+  <h2>C++20 example: no allocator in the API</h2>
+  <p><code>std::span</code> carries a pointer and a length, while <code>std::optional</code> represents successful decoding or rejection. A single caller-owned <code>std::array&lt;unsigned char,12&gt;</code> suffices. Keep this example in a <code>wire.hpp</code> file (or a translation unit) and expose it only to the host tests until validated for the target.</p>
+  <pre tabindex="0" aria-label="Complete C++20 packet encoder and decoder"><code>#include &lt;boost/endian/conversion.hpp&gt;
+#include &lt;array&gt;
+#include &lt;climits&gt;
+#include &lt;cstddef&gt;
+#include &lt;cstdint&gt;
+#include &lt;optional&gt;
+#include &lt;span&gt;
+
+static_assert(CHAR_BIT == 8);
+
+namespace wire {
+constexpr std::size_t size = 12;
+constexpr std::uint16_t magic = 0xA65C;
+
+struct Frame {
+    std::uint32_t sequence;
+    std::int16_t tenths_c;
+    std::uint16_t samples;
+    std::uint8_t flags;
+    friend bool operator==(const Frame&amp;, const Frame&amp;) = default;
+};
+
+constexpr bool valid(const Frame&amp; f) noexcept {
+    return f.tenths_c &gt;= -400 &amp;&amp; f.tenths_c &lt;= 1250 &amp;&amp;
+           f.samples &lt;= 5000 &amp;&amp; (f.flags &amp; 0xFCu) == 0;
+}
+
+bool encode(std::span&lt;unsigned char&gt; out, const Frame&amp; f) noexcept {
+    if (out.size() != size || !valid(f)) return false;
+    using namespace boost::endian;
+    endian_store&lt;std::uint16_t, 2, order::big&gt;(out.data(), magic);
+    out[2] = 1;  // Protocol version
+    out[3] = f.flags;
+    endian_store&lt;std::uint32_t, 4, order::big&gt;(out.data() + 4, f.sequence);
+    endian_store&lt;std::int16_t, 2, order::big&gt;(out.data() + 8, f.tenths_c);
+    endian_store&lt;std::uint16_t, 2, order::little&gt;(out.data() + 10, f.samples);
+    return true;
+}
+
+std::optional&lt;Frame&gt; decode(std::span&lt;const unsigned char&gt; in) noexcept {
+    if (in.size() != size) return std::nullopt;
+    using namespace boost::endian;
+    if (endian_load&lt;std::uint16_t, 2, order::big&gt;(in.data()) != magic ||
+        in[2] != 1) return std::nullopt;
+    Frame f {
+        endian_load&lt;std::uint32_t, 4, order::big&gt;(in.data() + 4),
+        endian_load&lt;std::int16_t, 2, order::big&gt;(in.data() + 8),
+        endian_load&lt;std::uint16_t, 2, order::little&gt;(in.data() + 10),
+        in[3]
+    };
+    if (!valid(f)) return std::nullopt;
+    return f;
+}
+}  // namespace wire</code></pre>
+  <div class="callout good"><h3>Why this is not a raw struct copy</h3><p>No assumptions about padding, member ordering, native endianness or natural alignment leak into the wire representation. Every field has a documented width and offset. <code>endian_load</code> handles partial widths and sign extension; unlike casting a byte pointer to a <code>uint32_t*</code>, it does not assume that wire memory satisfies a CPU integer's alignment. <a href="#ref-conversion">[3]</a></p></div>
+ </section>
+ <section id="tests">
+  <div class="overline">07 / Tests, including tests that fail</div>
+  <h2>Golden bytes are an executable requirement.</h2>
+  <p>Tests reject short buffers, incorrect magic, unknown version, reserved flag bits, invalid sample counts and out-of-contract temperatures. A separate signed 24-bit test exercises the library's documented sign extension. This is <strong>test evidence</strong>, not a claim of embedded timing qualification.</p>
+  <pre tabindex="0" aria-label="C++20 golden-vector and rejection tests"><code>#include &quot;wire.hpp&quot;  // Save the code above as wire.hpp; remove its duplicate includes.
+#include &lt;array&gt;
+#include &lt;cstdio&gt;
+
+#define REQUIRE(expr) do { if (!(expr)) { \
+    std::fprintf(stderr, &quot;FAIL line %d: %s\n&quot;, __LINE__, #expr); \
+    return 1; } } while (false)
+
+int main() {
+    using namespace wire;
+    constexpr Frame original{0x01020304u, -125, 300, 1};
+    constexpr std::array&lt;unsigned char, size&gt; golden{
+        0xA6,0x5C, 0x01,0x01, 0x01,0x02,0x03,0x04,
+        0xFF,0x83, 0x2C,0x01
+    };
+    std::array&lt;unsigned char, size&gt; bytes{};
+    REQUIRE(encode(bytes, original));
+    REQUIRE(bytes == golden);
+    REQUIRE(decode(bytes).has_value());
+    REQUIRE(*decode(bytes) == original);
+
+    auto bad = bytes;
+    bad[2] = 2; REQUIRE(!decode(bad));         // unknown version
+    bad = bytes;
+    bad[0] = 0; REQUIRE(!decode(bad));         // wrong magic
+    bad = bytes;
+    bad[3] = 0x80; REQUIRE(!decode(bad));      // reserved flag
+    bad = bytes;
+    bad[10] = 0xFF; bad[11] = 0x7F;
+    REQUIRE(!decode(bad));                   // sample count &gt; 5000
+    REQUIRE(!decode(std::span&lt;const unsigned char&gt;(bytes.data(), 11)));
+    REQUIRE(!encode(std::span&lt;unsigned char&gt;(bytes.data(), 11), original));
+    REQUIRE(!encode(bytes, Frame{0, 1251, 0, 0}));
+    const unsigned char signed24[]{0xFF, 0x00, 0x01};
+    REQUIRE((boost::endian::endian_load&lt;std::int32_t, 3,
+             boost::endian::order::big&gt;(signed24) == -65535));
+    return 0;
+}</code></pre>
+  <p class="mini">Test integration note: the snippet above includes <code>wire.hpp</code>. The locally executed check used the <strong>same encoder and decoder</strong> combined in one source file, with the same behavioral assertions. As usual, add an include guard or <code>#pragma once</code> if saving <code>wire.hpp</code> as a separate reusable header.</p>
+  <div class="grid two">
+   <div class="tile"><h3>Locally exercised</h3><p>GCC 14.2.0, Boost 1.83, CMake 3.31.6 and Ninja 1.12.1. <strong>Release and Debug both compiled, and CTest passed (1/1 in each configuration)</strong> with <code>-Wall -Wextra -Wpedantic -Werror -fno-exceptions -fno-rtti</code>. Tests use explicit runtime checks, not <code>assert</code>, which disappears under <code>NDEBUG</code>.</p></div>
+   <div class="tile"><h3>Not established</h3><p>Boost versions newer than 1.83 were <em>not</em> compiled here. Neither ARM target code, toolchain-specific builtins, worst-case execution time, flight allocation instrumentation, undefined-behavior sanitizers, nor deployed Github Pages rendering have been qualified.</p></div>
+  </div>
+ </section>
+ <section id="adoption">
+  <div class="overline">08 / Evidence, not folklore</div>
+  <h2>Who actually uses this API?</h2>
+  <div class="grid two">
+   <article class="tile"><span class="badge proven">Verified source</span><h3>Ceph · <code>rbd-nbd</code></h3><p>The Ceph repository's <a href="https://github.com/ceph/ceph/blob/main/src/tools/rbd_nbd/rbd-nbd.cc">rbd-nbd.cc source</a> includes <code>boost/endian/conversion.hpp</code> and calls <code>big_to_native</code>/<code>native_to_big</code> on request, reply, and network-block-device fields. This demonstrates a real source dependency; it is <strong>not</strong> evidence Ceph is allocation-free. <a href="#ref-ceph">[5]</a></p></article>
+   <article class="tile"><span class="badge proven">Verified source</span><h3>Boost.Unordered · UUID benchmark</h3><p>The upstream <a href="https://github.com/boostorg/unordered/blob/develop/benchmark/uuid.cpp">UUID benchmark</a> invokes <code>store_little_u64</code> and <code>load_little_u64</code> to convert byte sequences. This is a real developer/test use inside Boost, <em>not</em> a claim that the main hash-table runtime depends on Endian. <a href="#ref-unordered">[6]</a></p></article>
+  </div>
+  <div class="callout"><h3>What is not claimed</h3><p>No repository inspection established Boost.Endian currently deployed aboard a particular spacecraft, inside RISCue, or in VeloSim. The official documentation's mixed-endian GIS example is a <em>demonstration of handling a real file-format convention</em>, not proof that a specific GIS product ships this library. <a href="#ref-buffer">[2]</a></p></div>
+ </section>
+ <section id="integration">
+  <div class="overline">09 / Make it reproducible</div>
+  <h2>CMake, Ninja, package pinning</h2>
+  <p>In the verified local experiment the Boost header was available under <code>/usr/include</code>. For portable builds, resolve a declared Boost package, pin a version in the build environment and link its <strong>header-only CMake interface target</strong>. This does not link a Boost binary library.</p>
+  <pre tabindex="0" aria-label="CMake Ninja integration example"><code>cmake_minimum_required(VERSION 3.20)
+project(endian_lab LANGUAGES CXX)
+
+# Pin and provision an approved Boost version in your build image.
+find_package(Boost 1.83 REQUIRED)
+add_executable(endian_lab main.cpp)
+target_compile_features(endian_lab PRIVATE cxx_std_20)
+target_link_libraries(endian_lab PRIVATE Boost::headers)
+
+enable_testing()
+add_test(NAME endian_lab COMMAND endian_lab)
+
+# On a Unix toolchain, optionally add -fno-exceptions -fno-rtti
+# to this target after validating the rest of the application.</code></pre>
+  <pre tabindex="0" aria-label="Build and test commands"><code>cmake -S . -B build-release -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build-release
+ctest --test-dir build-release --output-on-failure
+
+cmake -S . -B build-debug -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake --build build-debug
+ctest --test-dir build-debug --output-on-failure</code></pre>
+  <p class="mini">To reproduce the single-file local experiment rather than the two-file excerpts, concatenate the implementation and test program into <code>main.cpp</code> (excluding the test's <code>#include "wire.hpp"</code>). A package found with <code>Boost::headers</code> must be supplied by your chosen Boost CMake integration; do not rely on an uncontrolled system version in a flight build.</p>
+  <div class="grid two">
+   <div class="tile"><h3>Licensing</h3><p>Boost Software License 1.0 (BSL-1.0), not MIT. Review notice/redistribution requirements with the actual source package and its dependency licenses. Library usage does not place your application under an open-source license. <a href="#ref-license">[7]</a></p></div>
+   <div class="tile"><h3>Toolchains</h3><p>Boost.Endian documents C++11 requirements in modern releases, and the example uses C++20 <code>span</code>, <code>optional</code>, and defaulted comparison. A freestanding target may need replacements for library components; compatibility must be established per compiler and standard-library build. <a href="#ref-readme">[4]</a></p></div>
+  </div>
+ </section>
+ <section id="tradeoffs">
+  <div class="overline">10 / Where it goes wrong</div>
+  <h2>A byte-perfect parser is not yet a flight packet processor.</h2>
+  <div class="panel scroll"><table><thead><tr><th scope="col">Hazard / tradeoff</th><th scope="col">Engineering response</th></tr></thead><tbody>
+   <tr><td>Truncated, oversized, or malicious packet</td><td>Check length <em>before</em> passing pointers to <code>endian_load</code>. The library reads exactly N bytes; it does not know total buffer length.</td></tr>
+   <tr><td>Undefined field meaning / reserved bits</td><td>Version the contract; check magic, ranges, flags and unknown enum values explicitly.</td></tr>
+   <tr><td>Integrity and corruption</td><td>Byte order provides <strong>no error detection, authentication, CRC, or FEC</strong>. Add protocol-appropriate integrity coverage and test it separately.</td></tr>
+   <tr><td>Object layout or unaligned access</td><td>Prefer explicit byte-pointer loads/stores; don't alias unaligned wire bytes as native typed pointers.</td></tr>
+   <tr><td>Signed or fractional telemetry</td><td>Specify signed representation, scaling, valid range and saturating/rejection policies; negative values here rely on the library's integer conversion semantics.</td></tr>
+   <tr><td>Static timing and memory evidence</td><td>Header-only and inline do not imply constant-time execution or allocation-free entire call chains. Measure generated code and instrument hot paths on each real target.</td></tr>
+   <tr><td>Dependency footprint</td><td>On a small target, four explicit shifts may be easier to audit. Compare object code size and compiler intrinsics before standardizing on Boost.</td></tr>
+   <tr><td>Cross-language interoperability</td><td>C# <code>BinaryPrimitives.ReadUInt32BigEndian</code> and <code>WriteUInt16LittleEndian</code> can encode the <em>same declared wire contract</em>; no Boost binary or managed dependency is required. Confirm with identical golden vectors.</td></tr>
+  </tbody></table></div>
+ </section>
+ <section id="applications">
+  <div class="overline">11 / Engineering transfer</div>
+  <h2>Where this could go next</h2>
+  <div class="grid">
+   <article class="tile"><span class="badge idea">Proposed, not implemented</span><h3>RISCue / hardware adapters</h3><p>Use the packet contract at an I/O boundary; hand the decoded typed event to a single-owner active object. A zero-copy wire reader is <em>not</em> inherently thread-safe and does not replace queue ownership rules.</p></article>
+   <article class="tile"><span class="badge idea">Proposed, not implemented</span><h3>VeloSim / deterministic replay</h3><p>Keep a versioned byte trace with golden vectors so a Windows host and an embedded target decode identical event values, including signed and non-native-width fields.</p></article>
+   <article class="tile"><span class="badge idea">Proposed, not implemented</span><h3>SharpTestBench / property tests</h3><p>Generate valid random frames with fixed seeds; assert encode→decode identity and identical bytes across compilers. Fuzz invalid lengths and reserved fields before hardware-in-the-loop work.</p></article>
+  </div>
+  <h3 style="margin-top:1.5rem">Recommended qualification experiment</h3>
+  <ol class="steps">
+   <li><strong>Freeze the format:</strong> document offsets, widths, order, signedness, limits, version and integrity layer in a requirements-controlled schema.</li>
+   <li><strong>Cross-check:</strong> compare Boost.Endian, manual shift-based codec and C# <code>BinaryPrimitives</code> against the same goldens (including boundary values and corruption).</li>
+   <li><strong>Instrument:</strong> measure CPU cycles, text size, stack peaks and allocations on the actual target, with optimization and exception/RTTI policy matching flight.</li>
+   <li><strong>Decide:</strong> adopt the library only when its auditability and portability justify build and qualification overhead.</li>
+  </ol>
+ </section>
+ <section id="sources">
+  <div class="overline">12 / Audit trail</div>
+  <h2>Primary sources and reproduction notes</h2>
+  <ol class="cite">
+   <li id="ref-boost"><a href="https://www.boost.org/library/latest/endian/">Boost.Endian official library overview</a> — scope, license and header-only facilities.</li>
+   <li id="ref-buffer"><a href="https://github.com/boostorg/endian/blob/develop/doc/endian/buffers.adoc">Boost.Endian upstream buffer documentation</a> — unaligned widths, mixed-endian GIS teaching example and 8-bit-byte requirement.</li>
+   <li id="ref-conversion"><a href="https://github.com/boostorg/endian/blob/develop/doc/endian/conversion.adoc">Boost.Endian upstream conversion API</a> — <code>endian_load</code>/<code>endian_store</code> contracts and sign extension.</li>
+   <li id="ref-readme"><a href="https://github.com/boostorg/endian/blob/develop/README.md">Maintainer README</a> — supported compiler policy and C++11 requirement since Boost 1.84.</li>
+   <li id="ref-ceph"><a href="https://github.com/ceph/ceph/blob/main/src/tools/rbd_nbd/rbd-nbd.cc">Ceph rbd-nbd source</a> — direct <code>native_to_big</code>/<code>big_to_native</code> usages.</li>
+   <li id="ref-unordered"><a href="https://github.com/boostorg/unordered/blob/develop/benchmark/uuid.cpp">Boost.Unordered UUID benchmark source</a> — direct little-endian loads/stores.</li>
+   <li id="ref-license"><a href="https://www.boost.org/LICENSE_1_0.txt">Boost Software License 1.0</a> — official license text.</li>
+  </ol>
+  <div class="callout good"><h3>Evidence ledger · 6 November 2026</h3><p><strong>Checked:</strong> existing <code>DeepDives</code> filenames on <code>main</code> to avoid library repetition; upstream Boost API/docs; upstream Ceph and Boost.Unordered source; example C++20 compiled and tested on GCC 14.2 / Boost 1.83 with CMake/Ninja in Release and Debug. <strong>Not checked:</strong> external production deploys, newer Boost builds, target-specific worst case, complete packet integrity, or actual embedded target execution. The browser demonstrator is an independent illustration, not test evidence for the C++ code.</p></div>
+ </section>
+</main>
+<footer><div class="container"><p><strong>DeepDives · 2026-11-06</strong> · Original analysis and teaching sample for <a href="https://github.com/jeffadickson/but-does-it-do-anything">but-does-it-do-anything</a>. Example packet is fictional. No tracking, no network requests and no external script dependencies.</p><p class="mini">Use <kbd>Tab</kbd> to reach the interactive controls; all status and diagnostic results are text as well as color.</p></div></footer>
+<script>
+(function () {
+  "use strict";
+  var ids = function (id) { return document.getElementById(id); };
+  var fields = ["sequence", "temperature", "samples", "flags"];
+  var colors = ["magic","magic","control","control","seq","seq","seq","seq","temp","temp","samples","samples"];
+  var labels = ["magic hi","magic lo","version","flags","seq 3","seq 2","seq 1","seq 0","temp hi","temp lo","samples lo","samples hi"];
+  var golden = [0xA6,0x5C,0x01,0x01,0x01,0x02,0x03,0x04,0xFF,0x83,0x2C,0x01];
+  var state = new Uint8Array(golden);
+  function toHex(n) { return n.toString(16).toUpperCase().padStart(2,"0"); }
+  function values() {
+    for (var i = 0; i < fields.length; i++) {
+      var input = ids(fields[i]);
+      if (!input.validity.valid || input.value.trim() === "") return null;
+    }
+    var v = fields.map(function (id) { return Number(ids(id).value); });
+    if (!v.every(Number.isSafeInteger)) return null;
+    if (v[0] < 0 || v[0] > 4294967295 || v[1] < -400 || v[1] > 1250 || v[2] < 0 || v[2] > 5000 || v[3] < 0 || v[3] > 3) return null;
+    return v;
+  }
+  function encode(v) {
+    var b = new Uint8Array(12);
+    var d = new DataView(b.buffer);
+    d.setUint16(0,0xA65C,false);
+    b[2] = 1; b[3] = v[3];
+    d.setUint32(4,v[0],false);
+    d.setInt16(8,v[1],false);
+    d.setUint16(10,v[2],true);
+    return b;
+  }
+  function decode(b) {
+    if (b.length !== 12) return null;
+    var d = new DataView(b.buffer,b.byteOffset,b.byteLength);
+    if (d.getUint16(0,false) !== 0xA65C || b[2] !== 1 || (b[3] & 0xFC) !== 0) return null;
+    var v = [d.getUint32(4,false),d.getInt16(8,false),d.getUint16(10,true),b[3]];
+    if (v[1] < -400 || v[1] > 1250 || v[2] > 5000) return null;
+    return v;
+  }
+  function paint(message) {
+    var host = ids("bytes");
+    host.replaceChildren();
+    state.forEach(function (byte,i) {
+      var elem = document.createElement("div");
+      elem.className = "byte " + colors[i];
+      elem.setAttribute("role","listitem");
+      elem.setAttribute("aria-label","Offset " + i + ", " + labels[i] + ", hex " + toHex(byte));
+      var main = document.createElement("strong");
+      main.textContent = toHex(byte);
+      var sub = document.createElement("small");
+      sub.textContent = String(i).padStart(2,"0");
+      elem.append(main,sub);host.appendChild(elem);
+    });
+    ids("hex").textContent = Array.from(state,toHex).join(" ");
+    var result = decode(state);
+    var status = ids("status");
+    status.classList.toggle("error",!result);
+    status.textContent = result ?
+      "ACCEPTED · seq " + result[0] + "; temp " + (result[1] / 10).toFixed(1) + " °C; " + result[2] + " samples; flags " + result[3] + ". " + (message || "") :
+      "REJECTED · The packet violates at least one field or version rule. " + (message || "");
+  }
+  ids("encode").addEventListener("click",function () {
+    var v = values();
+    if (!v) {
+      ids("status").classList.add("error");
+      ids("status").textContent = "INPUT REJECTED · Enter whole numbers within the limits shown.";
+      return;
+    }
+    state = encode(v);paint("Values encoded with explicit byte orders.");
+  });
+  ids("corrupt").addEventListener("click",function () {
+    state = new Uint8Array(state);
+    state[2] = state[2] === 1 ? 2 : 1;
+    paint("Version byte toggled between 01 and 02.");
+  });
+  ids("restore").addEventListener("click",function () {
+    ids("sequence").value = "16909060";
+    ids("temperature").value = "-125";
+    ids("samples").value = "300";
+    ids("flags").value = "1";
+    state = new Uint8Array(golden);paint("Golden test vector restored.");
+    ids("test-results").textContent = "";
+  });
+  ids("selftest").addEventListener("click",function () {
+    var checks = 0;
+    function expect(condition) { if (!condition) throw Error("Test " + (checks + 1) + " failed"); checks++; }
+    try {
+      var b = encode([16909060,-125,300,1]);
+      expect(Array.from(b).every(function (n,i) {return n === golden[i];}));
+      var round = decode(b);
+      expect(!!round && round[0] === 16909060 && round[1] === -125 && round[2] === 300 && round[3] === 1);
+      var x = b.slice();x[2] = 2;expect(decode(x) === null);
+      x = b.slice();x[3] = 128;expect(decode(x) === null);
+      x = b.slice();x[0] = 0;expect(decode(x) === null);
+      x = b.slice();x[10] = 255;x[11] = 127;expect(decode(x) === null);
+      expect(decode(b.subarray(0,11)) === null);
+      ids("test-results").textContent = "PASS · " + checks + " independent browser-model checks.";
+    } catch (error) {
+      ids("test-results").textContent = "FAIL · " + String(error.message);
+    }
+  });
+  paint("The default packet matches the C++ golden vector.");
+})();
+</script>
+</body>
+</html>
