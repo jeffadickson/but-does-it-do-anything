@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101c39">
+<meta name="description" content="Orbit Rangers: an interactive, kid-friendly NASA-sourced lesson about gravity, satellites, free fall, and the math of orbit.">
+<title>Orbit Rangers: Fall Sideways Forever! · DeepDivesKids · November 7, 2026</title>
+<style>
+:root{color-scheme:light;--ink:#14233c;--navy:#101c39;--blue:#244f92;--cyan:#0e7c91;--yellow:#ffdc76;--paper:#fffdf7;--light:#ecf7fc;--line:#d6e6ed;--mint:#e3f8ec;--pink:#fde9ed;--shadow:0 20px 55px rgba(19,41,81,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(160deg,#edf6ff 0,#fffaf0 48%,#edf5fb 100%);color:var(--ink);font:17px/1.64 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+a{color:#124f90;text-decoration-thickness:2px;text-underline-offset:3px}a:hover{text-decoration-thickness:3px}a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #f4a72b;outline-offset:4px}
+.skip{position:absolute;left:12px;top:-70px;padding:10px 18px;background:#fff;color:#172540;z-index:100}.skip:focus{top:10px}
+.wrap{width:min(1100px,calc(100% - 36px));margin-inline:auto}header{background:radial-gradient(circle at 90% 8%,#2b5c90 0,transparent 36%),linear-gradient(120deg,#101831,#132e50 74%,#204f73);color:#f6fbff;overflow:hidden;position:relative}
+header:before{content:"✦  ·   ✧    ·  ✦     ·   ✧     ✦";position:absolute;right:6%;top:12%;font-size:2rem;letter-spacing:1.7rem;color:#d8edff55;transform:rotate(-10deg);pointer-events:none}
+.hero{padding:60px 0 62px;display:grid;grid-template-columns:1.1fr .9fr;gap:42px;align-items:center;position:relative}.kicker{display:inline-flex;align-items:center;gap:9px;background:#fbe6a929;border:1px solid #fff4c947;color:#fff0b1;padding:6px 13px;border-radius:999px;font-weight:750;font-size:.82rem;letter-spacing:.09em;text-transform:uppercase}
+h1,h2,h3{line-height:1.2;letter-spacing:-.035em}h1{font-size:clamp(2.8rem,6vw,5rem);margin:22px 0 18px;max-width:750px}h1 .gold{color:#ffda74}.hero p{max-width:610px;font-size:1.15rem;color:#ddecff}.tags{display:flex;gap:9px;flex-wrap:wrap;margin-top:25px}.tag{display:inline-block;border:1px solid #789db2;color:#effbff;border-radius:99px;padding:5px 11px;font-weight:650;font-size:.82rem}
+.hero-art{max-width:450px;width:100%;justify-self:center;filter:drop-shadow(0 30px 35px #030a20a6)}.hero-art svg{width:100%;height:auto}
+.toc{margin-top:-25px;position:relative;border:1px solid #c4dce9;background:#fff;border-radius:20px;padding:17px 23px;box-shadow:var(--shadow)}.toc strong{display:block;margin-bottom:8px;color:#17365c}.toc ul{list-style:none;padding:0;margin:0;display:flex;gap:8px 18px;flex-wrap:wrap}.toc a{font-weight:650;font-size:.91rem}
+main{padding:35px 0 80px}.card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:clamp(22px,4vw,44px);box-shadow:0 12px 30px #2039570b;margin:26px 0}
+.section-label{color:#0b7190;text-transform:uppercase;font-size:.8rem;letter-spacing:.12em;font-weight:900;margin:0 0 8px}
+h2{font-size:clamp(1.85rem,4vw,2.65rem);margin:0 0 18px}h3{font-size:1.26rem;margin:18px 0 10px}p{margin:9px 0 16px}strong{font-weight:800}
+.lead{font-size:1.25rem;line-height:1.55}.highlight{background:#fff2c5;border-left:5px solid #edae39;padding:16px 19px;border-radius:12px;margin:22px 0}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:23px 0}.mini{background:#f0f7ff;border:1px solid #cfe5f8;border-radius:17px;padding:18px}.mini:nth-child(2){background:#fff8e8;border-color:#efdfb3}.mini:nth-child(3){background:#eaf9ef;border-color:#cce9d4}.mini b{display:block;font-size:1.12rem}.icon{display:block;font-size:2rem;line-height:1.2;margin:0 0 8px}
+.lab{background:var(--navy);color:#edf7ff;border-color:#29466a;padding:clamp(16px,3vw,33px)}.lab h2{color:#fff}.lab p{color:#deecfb}.lab .section-label{color:#83dfef}.lab .labelrow{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.controlbox{background:#1a2e50;border:1px solid #426384;padding:19px;border-radius:17px}.controlbox label{font-size:1.07rem;font-weight:800}.controlbox input[type=range]{display:block;width:100%;margin:12px 0 3px;accent-color:#ffc85e;height:30px}
+.speednum{font-variant-numeric:tabular-nums;font-weight:900;font-size:1.6rem;color:#ffe18a}.rangeends{display:flex;justify-content:space-between;font-size:.85rem;color:#c7dff4}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0 0}button{font:inherit;cursor:pointer;border-radius:12px;border:2px solid transparent;padding:9px 15px;background:#ffe08c;color:#132640;font-weight:800;min-height:45px;transition:transform .15s ease,background .15s ease}button:hover{transform:translateY(-2px);background:#fff0bd}.buttons .ghost{color:#edf9ff;border-color:#7295b4;background:#263f64}.buttons .ghost:hover{background:#34537d}.buttons .launch{background:#65decc;color:#082b35}.buttons .launch:hover{background:#9deee3}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:16px 0}.stat{padding:12px 13px;background:#f6faff;color:#142843;border-radius:12px;border:1px solid #c8e4f2}.stat small{display:block;font-weight:750;font-size:.78rem;color:#3a5471}.stat output{display:block;font-weight:900;font-size:1.22rem;font-variant-numeric:tabular-nums}
+.canvas-wrap{border:1px solid #3e6283;background:#07132d;border-radius:16px;overflow:hidden}.canvas-wrap canvas{display:block;width:100%;height:auto;aspect-ratio:960/590}.canvas-note{font-size:.88rem;color:#b9d9ed!important;margin:9px 0}.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:.86rem;color:#daeaff}.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px}.dot.gold{background:#ffe18b}.dot.cyan{background:#55d9f1}.dot.white{background:#d5e6fb}.announce{border:1px solid #6fcbbb;background:#123b4a;color:#e5fcf6;padding:10px 14px;border-radius:12px;margin:13px 0;font-weight:750}
+.numbers{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0}.numbers span{border-radius:999px;padding:6px 12px;background:#223c5e;border:1px solid #6b93b9;color:#f6faff;font-weight:700;font-size:.88rem}
+.friendlytable{border-collapse:collapse;width:100%;margin:20px 0;font-size:.95rem}.friendlytable th,.friendlytable td{border-bottom:1px solid #d9e6ef;padding:12px 11px;text-align:left;vertical-align:top}.friendlytable th{background:#eaf4fa;color:#174066}.friendlytable tr:last-child td{border-bottom:0}
+.checklist{background:#ebf9f3;border:1px solid #bfe4d2;border-radius:15px;padding:18px 23px}.checklist ol{padding-left:24px;margin:8px 0}.checklist li{margin:9px 0}
+pre{background:#122139;color:#eefbff;border-radius:16px;padding:20px;overflow:auto;font:14px/1.55 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;tab-size:2}code{overflow-wrap:anywhere}pre code{overflow-wrap:normal}
+.callout{background:#edf5ff;border-left:4px solid #4c84db;padding:14px 19px;border-radius:12px}
+details{border:1px solid #d5e6ef;background:#f8fcff;border-radius:12px;padding:12px 16px;margin:10px 0}summary{cursor:pointer;font-weight:800}details p{margin-bottom:5px}
+.refs{padding-left:22px}.refs li{margin:12px 0;overflow-wrap:anywhere}.fine{color:#4c6076;font-size:.9rem}footer{border-top:1px solid #d9e6ef;padding:25px 0 45px;color:#41586d;text-align:center;font-size:.91rem}
+@media(max-width:760px){.hero{grid-template-columns:1fr;gap:12px;padding:48px 0}.hero-art{width:min(270px,70%)}.three{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.toc{margin-top:-14px}.friendlytable{font-size:.87rem}.card{margin:18px 0}h1{font-size:clamp(2.65rem,11vw,4rem)}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button{transition:none}button:hover{transform:none}}
+@media print{body{background:#fff}header{background:#132b4e!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.toc{margin-top:15px}.card{box-shadow:none;break-inside:avoid}.lab{background:#142b49!important;print-color-adjust:exact}.buttons{display:none}a{color:#114f8e}main{padding-top:10px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the adventure</a>
+<header>
+  <div class="wrap hero">
+    <div>
+      <span class="kicker">★ DeepDivesKids · November 7, 2026</span>
+      <h1>ORBIT RANGERS:<br><span class="gold">Fall Sideways Forever!</span></h1>
+      <p>Why don't satellites crash into Earth? Build a tiny space mission, choose its speed, and watch gravity turn a straight trip into an orbit. Spoiler: astronauts are falling, too!</p>
+      <div class="tags"><span class="tag">Ages 9+</span><span class="tag">Space + physics</span><span class="tag">Interactive mission</span><span class="tag">No downloads</span></div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 450 430" xmlns="http://www.w3.org/2000/svg">
+        <defs><radialGradient id="earthgrad" cx=".3" cy=".24"><stop stop-color="#73e3ff"/><stop offset=".65" stop-color="#157fc2"/><stop offset="1" stop-color="#143a89"/></radialGradient><linearGradient id="orbitglow"><stop stop-color="#fff3ba"/><stop offset="1" stop-color="#61e8df"/></linearGradient></defs>
+        <circle cx="224" cy="220" r="154" fill="#81ddfb" opacity=".09"/>
+        <ellipse cx="224" cy="220" rx="206" ry="94" fill="none" stroke="url(#orbitglow)" stroke-width="3" stroke-dasharray="10 9" transform="rotate(-34 224 220)"/>
+        <circle cx="224" cy="220" r="137" fill="url(#earthgrad)"/>
+        <path d="M152 125q48 -12 79 18l-16 24 -30 12 -3 43 -27 21 -24 -43 8 -27 -20 -18zM253 248l48 -19 45 25 -18 28 -18 8 7 38 -31 13 -18 -37 -28 -21z" fill="#64d9ab" opacity=".9"/>
+        <path d="M156 111q70 -31 136 7M116 215q45 -35 72 -26M280 170q52 -1 65 28" fill="none" stroke="#f1ffff" opacity=".43" stroke-width="11" stroke-linecap="round"/>
+        <g transform="translate(360 94) rotate(-25)"><rect x="-20" y="-11" width="40" height="22" fill="#f4df9f" stroke="#fff6cc" stroke-width="3" rx="5"/><rect x="-66" y="-17" width="40" height="34" fill="#5ec9e3" stroke="#c8f7ff" stroke-width="3"/><rect x="26" y="-17" width="40" height="34" fill="#5ec9e3" stroke="#c8f7ff" stroke-width="3"/><path d="M-65 0h38m52 0h40M-45 -17v34M45 -17v34" stroke="#164d83" stroke-width="2"/></g>
+        <circle cx="61" cy="76" r="3" fill="#fff3bb"/><circle cx="385" cy="331" r="4" fill="#fff3bb"/><path d="M80 330v14m-7 -7h14M392 32v16m-8 -8h16" stroke="#cceeff" stroke-width="3"/>
+      </svg>
+    </div>
+  </div>
+</header>
+<div class="wrap toc" aria-label="Table of contents">
+<strong>🧭 Your mission map</strong>
+<nav aria-label="Contents"><ul>
+<li><a href="#mission">1 · The mystery</a></li><li><a href="#how">2 · The trick</a></li><li><a href="#lab">3 · Orbit lab</a></li><li><a href="#try">4 · Try it yourself</a></li><li><a href="#real">5 · Real missions</a></li><li><a href="#code">6 · Under the hood</a></li><li><a href="#sources">7 · Sources</a></li>
+</ul></nav>
+</div>
+<main id="main" class="wrap">
+<section class="card" id="mission" aria-labelledby="mission-title">
+<p class="section-label">01 / Mission briefing</p>
+<h2 id="mission-title">A space station is falling. So why doesn't it land?</h2>
+<p class="lead">Quinn and Reagan, picture throwing a puck sideways. It moves forward, but gravity pulls it toward the ground. Now imagine an impossibly powerful throw, <em>high above the air</em>, where Earth curves away beneath the puck.</p>
+<p>It might keep missing the ground, again and again, all the way around the planet. That's an <strong>orbit</strong>! An actual satellite doesn't get its speed from a giant hockey stick. A rocket carries it up and gives it the right sideways velocity.</p>
+<div class="highlight"><strong>The big surprise:</strong> Orbiting doesn't mean gravity disappears. At the International Space Station, Earth is still pulling strongly. The spacecraft and astronauts are <strong>falling together</strong>, which makes them float relative to one another. NASA calls this <em>microgravity</em>. <a href="https://www.nasa.gov/learning-resources/for-kids-and-students/what-is-microgravity-grades-5-8/">NASA explains why</a>.</div>
+</section>
+
+<section class="card" id="how" aria-labelledby="how-title">
+<p class="section-label">02 / How it works</p><h2 id="how-title">Three ingredients in the space sandwich</h2>
+<div class="three">
+<div class="mini"><span class="icon" aria-hidden="true">➡️</span><b>1. Sideways speed</b><p>An object moving through space keeps traveling in a straight line unless a force changes its motion.</p></div>
+<div class="mini"><span class="icon" aria-hidden="true">🌎</span><b>2. Earth's gravity</b><p>Earth pulls the satellite <em>toward Earth's center</em>, bending its path at every moment.</p></div>
+<div class="mini"><span class="icon" aria-hidden="true">🛰️</span><b>3. The perfect miss</b><p>At the right speed, the curve of the fall matches the curve of Earth. The satellite circles without touching the ground.</p></div>
+</div>
+<p>At a starting height of <strong>400 kilometers</strong>, our ideal circular-orbit speed is about <strong>7.67 kilometers per second</strong>. That is more than 27,000 kilometers per hour! The satellite completes a lap in roughly <strong>92 minutes</strong>. The International Space Station travels at similar speeds and heights, according to the <a href="https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/International_Space_Station/ISS_International_Space_Station">European Space Agency</a>.</p>
+<p><strong>Try a prediction:</strong> Too slow, and the spacecraft may hit Earth. A little faster than circular speed, and it can trace a stretched oval (an ellipse). Faster still, it can escape Earth altogether.</p>
+</section>
+
+<section class="card lab" id="lab" aria-labelledby="lab-title">
+<p class="section-label">03 / Hands-on simulation</p><h2 id="lab-title">🚀 Orbit Control: you are mission commander!</h2>
+<p>Every launch begins 400 km above an imaginary airless Earth. Change <strong>only the sideways speed</strong>. The yellow line records where your satellite went. The cyan dashed ring is the circular-orbit target.</p>
+<div class="controlbox">
+<div class="labelrow"><label for="speed">Launch speed <span class="speednum"><output id="speed-out" for="speed">7.673</output> km/s</span></label><span class="fine" style="color:#d6e8ff">1 km/s = 3,600 km/h</span></div>
+<input id="speed" type="range" min="4.5" max="11.5" step="0.001" value="7.673" aria-describedby="speed-help">
+<div class="rangeends"><span>4.5 · slower</span><span>11.5 · faster</span></div>
+<p id="speed-help" class="canvas-note">Use the arrow keys on the speed slider for tiny adjustments. A preset is easier for your first flight.</p>
+<div class="buttons" aria-label="Choose a mission">
+<button type="button" class="ghost" data-preset="5.8">💥 Too slow</button>
+<button type="button" class="ghost" id="circular">🟢 Circle</button>
+<button type="button" class="ghost" data-preset="8.6">🥚 Oval</button>
+<button type="button" class="ghost" data-preset="11.2">✨ Escape</button>
+</div>
+<div class="buttons" aria-label="Simulation controls">
+<button id="play" class="launch" type="button">▶ Launch / resume</button>
+<button id="pause" class="ghost" type="button">⏸ Pause</button>
+<button id="step" class="ghost" type="button">⏭ Advance 1 minute</button>
+<button id="reset" class="ghost" type="button">↺ Reset</button>
+</div>
+</div>
+<div class="numbers"><span id="vcirc">Circular speed: 7.67 km/s</span><span id="vesc">Escape speed: 10.85 km/s</span></div>
+<div class="stats" aria-label="Mission measurements">
+<div class="stat"><small>Flight time</small><output id="time-out">0 min</output></div>
+<div class="stat"><small>Height above Earth</small><output id="height-out">400 km</output></div>
+<div class="stat"><small>Current speed</small><output id="actualspeed-out">7.67 km/s</output></div>
+<div class="stat"><small>Completed laps</small><output id="laps-out">0</output></div>
+</div>
+<div class="canvas-wrap"><canvas id="orbit" width="960" height="590" role="img" aria-label="Top-down diagram of Earth, a dashed circular reference path, and the satellite's simulated trail. The measurements and mission result below describe the same state.">Your browser does not support canvas. Use the numerical mission readings and source explanations instead.</canvas></div>
+<p class="canvas-note">Drawing is proportional to distance in this simple 2D view. A 400 km orbit sits very close to Earth's edge! Yellow = simulated track; cyan = circular reference; Earth is at the center. There is no sound and the animation does not start automatically.</p>
+<div class="legend" aria-hidden="true"><span><i class="dot gold"></i>Satellite trail</span><span><i class="dot cyan"></i>Circular orbit</span><span><i class="dot white"></i>Earth's edge</span></div>
+<p class="announce" id="announcement" role="status" aria-live="polite">Mission ready. Choose a speed, predict what will happen, then press Launch.</p>
+<p class="canvas-note" id="prediction">Ideal-model prediction: nearly circular orbit.</p>
+</section>
+
+<section class="card" id="try" aria-labelledby="try-title">
+<p class="section-label">04 / Try it yourself</p><h2 id="try-title">The four-flight challenge + a paper experiment</h2>
+<div class="checklist">
+<strong>Mission cards — can you beat all four?</strong>
+<ol>
+<li>Choose <strong>Too slow</strong>. Predict whether the satellite will go once around Earth. Launch and watch.</li>
+<li>Choose <strong>Circle</strong>. Can you make one complete lap without touching Earth?</li>
+<li>Choose <strong>Oval</strong>. Look for the satellite speeding up when closer to Earth and slowing down farther away.</li>
+<li>Choose <strong>Escape</strong>. Does the satellite make a closed loop, or head outward?</li>
+</ol>
+<p><strong>Super-engineer challenge:</strong> Find the slowest speed that can avoid Earth in this ideal simulation. Change the slider a little at a time and use the one-minute step button to test your prediction.</p>
+</div>
+<h3>✏️ Off-screen experiment: draw a satellite's next move</h3>
+<p><strong>You need:</strong> a sheet of paper, pencil, ruler, and a cup to trace a circle. No throwing anything!</p>
+<p>Trace a big circle for Earth. Put a dot just outside its edge on the right. Draw a straight arrow <em>up</em> from the dot: that is the direction the satellite wants to travel. Then draw another arrow <em>left</em>, toward Earth's center: that is gravity's pull. Connect several small forward moves, bending each one a bit toward Earth. The resulting curve is a rough sketch, not an exact orbital calculation.</p>
+<div class="callout"><strong>Investigator question:</strong> Why does the satellite change direction if nobody is steering? Because gravity is changing its velocity all the time.</div>
+<h3>Quick brain-check</h3>
+<details><summary>1. Is there gravity up where the astronauts live?</summary><p>Yes! Gravity keeps the space station orbiting. The astronauts float because they and the station fall together.</p></details>
+<details><summary>2. If a satellite moves slightly faster than circular speed, must it escape?</summary><p>No. It can travel in an oval orbit. It needs the higher local escape speed (about 10.85 km/s at our starting height) to escape in this simplified model.</p></details>
+<details><summary>3. Is the path in this game accurate enough to fly a real spacecraft?</summary><p>No. Real mission navigation includes more forces, precise measurements, spacecraft engines, and careful safety checks.</p></details>
+</section>
+
+<section class="card" id="real" aria-labelledby="real-title">
+<p class="section-label">05 / Real-world evidence versus big ideas</p><h2 id="real-title">Satellites that really use orbits</h2>
+<p>These are <strong>verified real missions</strong>, not inventions made up for this page.</p>
+<table class="friendlytable">
+<thead><tr><th scope="col">Real mission</th><th scope="col">What it actually does</th><th scope="col">Evidence</th></tr></thead>
+<tbody>
+<tr><td><strong>International Space Station</strong></td><td>A laboratory with astronauts, orbiting Earth at about 370–460 km altitude and 7.6–7.7 km/s.</td><td><a href="https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/International_Space_Station/ISS_International_Space_Station">ESA mission facts</a></td></tr>
+<tr><td><strong>GRACE Follow-On</strong></td><td>Two satellites measure tiny changes in their separation to help scientists map changes in Earth's gravity and track moving water and ice.</td><td><a href="https://science.nasa.gov/kids/earth/mission-grace-fo/">NASA kids' mission page</a></td></tr>
+<tr><td><strong>GRACE-C (planned)</strong></td><td>A future continuation mission designed to monitor how Earth's gravity changes as water and ice move. NASA lists a planned December 2028 launch, not an already completed launch.</td><td><a href="https://science.nasa.gov/mission/grace-c/">NASA mission page</a></td></tr>
+</tbody>
+</table>
+<div class="highlight"><strong>How this connects to your family:</strong> Quinn and Reagan, your dad works on spacecraft engineering, including GRACE-C. His teams must test software and systems much more carefully than this small game. Imagine a <em>RISCue</em> program collecting spacecraft events, or a <em>VeloSim</em> simulation replaying exactly the same steps to check a result. Those are <strong>possible learning connections</strong>—we have <em>not</em> claimed that either project uses this orbit game, or that the game is part of GRACE-C.</div>
+</section>
+
+<section class="card" id="code" aria-labelledby="code-title">
+<p class="section-label">06 / Code lab + engineering honesty</p><h2 id="code-title">How does the browser know where to fly?</h2>
+<p>We use ordinary <strong>JavaScript</strong> and the browser's built-in <strong>Canvas 2D API</strong>. There is no external library or internet dependency. All positions are in kilometers and times in seconds. We start with NASA's approximate Earth numbers: mean radius <strong>6,371 km</strong> and gravitational parameter <strong>398,600 km³/s²</strong>.</p>
+<p>Each little fixed step asks: <em>Which way is Earth pulling?</em> Then it updates the satellite's position and speed. The live simulator uses a <strong>velocity-Verlet</strong> numerical step, which is more accurate for orbits than a naïve one-line position update.</p>
+<pre aria-label="JavaScript code for gravity and a velocity Verlet simulation step"><code>// Positions in km, speeds in km/s, time in seconds.
+const GM = 398600;
+function acceleration(x, y) {
+  const r = Math.hypot(x, y);
+  const factor = -GM / (r * r * r);
+  return {x: factor * x, y: factor * y};
+}
+function advance(s, dt) {
+  const a = acceleration(s.x, s.y);
+  const x = s.x + s.vx * dt + 0.5 * a.x * dt * dt;
+  const y = s.y + s.vy * dt + 0.5 * a.y * dt * dt;
+  const b = acceleration(x, y);
+  return {x, y,
+    vx: s.vx + 0.5 * (a.x + b.x) * dt,
+    vy: s.vy + 0.5 * (a.y + b.y) * dt};
+}
+// Same start + speed + step count = same calculated path.</code></pre>
+<p>Try modifying the <code>dt</code> time step in your own copy of the page. A smaller step usually gives a more accurate numerical orbit, but requires more calculations. That's an example of a <strong>tradeoff</strong> engineers make.</p>
+<table class="friendlytable">
+<thead><tr><th scope="col">What the game does</th><th scope="col">What a real mission still needs</th></tr></thead>
+<tbody>
+<tr><td>2D, Earth-centered gravity with Earth treated as a perfect sphere</td><td>3D motion, Earth's irregular gravity, and forces from the Moon, Sun, and other sources</td></tr>
+<tr><td>No air resistance; starts already 400 km above Earth</td><td>Atmospheric drag, rocket ascent, fuel, and navigation corrections</td></tr>
+<tr><td>Constant 3-second calculation steps; approximate drawings</td><td>Error budgets, numerical verification, precise measurements, mission-qualified code</td></tr>
+<tr><td>Prediction shows an idealized impact, circle, oval, or escape path</td><td>Real spacecraft might need orbit-raising maneuvers; one loop does not prove indefinite stability</td></tr>
+</tbody>
+</table>
+<h3>Getting it running and sharing code</h3>
+<p><strong>Integration:</strong> Save this entire file as <code>.html</code>, double-click it, and use a modern browser (Edge, Chrome, Firefox, or Safari). It runs offline. No npm, CMake, build process, cookies, tracking, accounts, network calls, or bundled third-party packages are required. For a classroom project, change the HTML and JavaScript in a text editor and reopen it.</p>
+<p><strong>Licensing:</strong> This lesson's original HTML, JavaScript, CSS, and illustrations are offered under the <a href="https://opensource.org/license/mit">MIT License</a>: you may copy, change, and share them, including commercially, as long as you retain the copyright and permission notices. <strong>Copyright (c) 2026 DeepDivesKids contributors.</strong> This permission does not relicense NASA/ESA pages, names, or trademarks; those are linked as sources, not bundled into this lesson.</p>
+<details><summary>Read the MIT permission notice</summary>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+</details>
+</section>
+
+<section class="card" id="sources" aria-labelledby="sources-title">
+<p class="section-label">07 / Primary-source mission notebook</p><h2 id="sources-title">Want to check our facts?</h2>
+<p>These links go to the organizations that publish the scientific explanations or run the missions. Facts are cited directly above; the simulated adventures are our own educational invention.</p>
+<ol class="refs">
+<li><a href="https://spaceplace.nasa.gov/orbits/en/">NASA Space Place — What Is an Orbit?</a> The kid-friendly explanation of sideways motion and gravity.</li>
+<li><a href="https://www.nasa.gov/learning-resources/for-kids-and-students/what-is-microgravity-grades-5-8/">NASA — What Is Microgravity? (Grades 5–8)</a> Why astronauts float while gravity still acts.</li>
+<li><a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html">NASA Goddard — Earth Fact Sheet</a> Mean Earth radius (6,371 km) and GM (398,600 km³/s²).</li>
+<li><a href="https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/International_Space_Station/ISS_International_Space_Station">European Space Agency — ISS Mission Facts</a> Verified orbital speed and altitude ranges.</li>
+<li><a href="https://science.nasa.gov/kids/earth/mission-grace-fo/">NASA Science for Kids — GRACE Follow-On</a> Gravity and Earth's moving water.</li>
+<li><a href="https://science.nasa.gov/mission/grace-c/">NASA Science — GRACE-C</a> Planned continuity mission and stated launch target.</li>
+<li><a href="https://science.nasa.gov/earth/earth-observatory/catalog-of-earth-satellite-orbits/">NASA Earth Observatory — Catalog of Earth Satellite Orbits</a> Atmospheric drag and limits of real low-Earth orbits.</li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API">MDN Web Docs — Canvas API</a> The browser drawing interface used by this lesson.</li>
+</ol>
+<p class="fine">Research reviewed November 7, 2026. Numbers are rounded for learning. Scientific data and mission status can be updated by their original publishers.</p>
+</section>
+</main>
+<footer><div class="wrap"><strong>DeepDivesKids</strong> · Orbit Rangers · November 7, 2026 · Keep asking “what if?” 🌍✨<br><span class="fine">Offline-friendly learning page · Original lesson material under MIT · No data collected</span></div></footer>
+
+<script>
+(function () {
+  "use strict";
+  const MU = 398600;
+  const EARTH = 6371;
+  const START = EARTH + 400;
+  const CIRCLE = Math.sqrt(MU / START);
+  const ESCAPE = Math.sqrt(2 * MU / START);
+  const DT = 3;
+  const speedInput = document.getElementById("speed");
+  const speedOutput = document.getElementById("speed-out");
+  const canvas = document.getElementById("orbit");
+  const ctx = canvas.getContext("2d");
+  const notice = document.getElementById("announcement");
+  const predictionText = document.getElementById("prediction");
+  const stats = {
+    time: document.getElementById("time-out"),
+    height: document.getElementById("height-out"),
+    speed: document.getElementById("actualspeed-out"),
+    laps: document.getElementById("laps-out")
+  };
+  const cx = 468, cy = 296, scale = 0.023;
+  const stars = [];
+  let seed = 4721;
+  function random() {
+    seed = (1664525 * seed + 1013904223) >>> 0;
+    return seed / 4294967296;
+  }
+  for (let i = 0; i < 95; i++) {
+    stars.push({x:random()*960,y:random()*590,r:random()*1.5+0.25});
+  }
+  let s, path, active = false, frameId = 0, lastLap = 0;
+  document.getElementById("vcirc").textContent = "Circular speed: " + CIRCLE.toFixed(2) + " km/s";
+  document.getElementById("vesc").textContent = "Escape speed: " + ESCAPE.toFixed(2) + " km/s";
+
+  function grav(x, y) {
+    const r = Math.hypot(x, y);
+    const f = -MU / (r*r*r);
+    return {x: x*f, y: y*f};
+  }
+  function classify(v) {
+    const energy = 0.5*v*v - MU/START;
+    if (energy >= 0) return "Escape path — the orbit does not close.";
+    const h = START*v;
+    const ecc = Math.sqrt(Math.max(0, 1 + 2*energy*h*h/(MU*MU)));
+    const peri = h*h/(MU*(1+ecc));
+    if (peri <= EARTH) return "Impact predicted — the path crosses Earth.";
+    if (Math.abs(v-CIRCLE)<0.015) return "Nearly circular orbit — one lap is about 92 minutes.";
+    return "Oval orbit — the satellite will move faster when nearer Earth.";
+  }
+  function announce(message) { notice.textContent = message; }
+  function stop() {
+    active = false;
+    if (frameId) cancelAnimationFrame(frameId);
+    frameId = 0;
+  }
+  function restart(message) {
+    stop();
+    const v = Number(speedInput.value);
+    s = {x:START, y:0, vx:0, vy:v, t:0, steps:0, theta:0, travelled:0, crashed:false, out:false, laps:0};
+    path = [{x:s.x,y:s.y}];
+    lastLap = 0;
+    speedOutput.textContent = v.toFixed(3);
+    predictionText.textContent = "Ideal-model prediction: " + classify(v);
+    updateStats();
+    draw();
+    announce(message || "Mission ready. Predict the path, then press Launch.");
+  }
+  function step() {
+    if (s.crashed || s.out) return;
+    const a = grav(s.x, s.y);
+    const nx = s.x + s.vx*DT + 0.5*a.x*DT*DT;
+    const ny = s.y + s.vy*DT + 0.5*a.y*DT*DT;
+    const b = grav(nx, ny);
+    s.vx += 0.5*(a.x+b.x)*DT;
+    s.vy += 0.5*(a.y+b.y)*DT;
+    s.x=nx;s.y=ny;s.t+=DT;s.steps++;
+    const angle = Math.atan2(ny,nx);
+    let da = angle - s.theta;
+    if (da > Math.PI) da -= 2*Math.PI;
+    if (da < -Math.PI) da += 2*Math.PI;
+    s.theta=angle;s.travelled+=da;
+    s.laps = Math.floor(Math.max(0,s.travelled+1e-9)/(2*Math.PI));
+    if (s.steps % 4 === 0) {
+      path.push({x:nx,y:ny});
+      if (path.length > 2500) path.shift();
+    }
+    const r = Math.hypot(nx,ny);
+    if (r<=EARTH) s.crashed=true;
+    if (r>25000) s.out=true;
+    if (s.laps > lastLap) {
+      lastLap=s.laps;
+      announce("Success! Your satellite completed " + s.laps + " full lap" + (s.laps===1 ? "" : "s") + " around Earth.");
+    }
+  }
+  function updateStats() {
+    const r=Math.hypot(s.x,s.y);
+    stats.time.textContent = Math.round(s.t/60) + " min";
+    stats.height.textContent = Math.max(0,Math.round(r-EARTH)).toLocaleString("en-US") + " km";
+    stats.speed.textContent = Math.hypot(s.vx,s.vy).toFixed(2) + " km/s";
+    stats.laps.textContent = String(s.laps);
+  }
+  function draw() {
+    if (!ctx) return;
+    ctx.clearRect(0,0,960,590);
+    const bg=ctx.createLinearGradient(0,0,960,590);
+    bg.addColorStop(0,"#08152e");bg.addColorStop(1,"#142d50");
+    ctx.fillStyle=bg;ctx.fillRect(0,0,960,590);
+    for (const st of stars) {
+      ctx.fillStyle="rgba(233,245,255,.65)";
+      ctx.beginPath();ctx.arc(st.x,st.y,st.r,0,Math.PI*2);ctx.fill();
+    }
+    ctx.save();
+    ctx.beginPath();ctx.arc(cx,cy,START*scale,0,2*Math.PI);
+    ctx.setLineDash([7,8]);ctx.lineWidth=2.5;ctx.strokeStyle="#62d8eb";ctx.stroke();ctx.restore();
+    const radius=EARTH*scale;
+    const globe=ctx.createRadialGradient(cx-38,cy-60,10,cx,cy,radius);
+    globe.addColorStop(0,"#65cafa");globe.addColorStop(.66,"#1879ba");globe.addColorStop(1,"#153d80");
+    ctx.beginPath();ctx.arc(cx,cy,radius,0,2*Math.PI);ctx.fillStyle=globe;ctx.fill();
+    ctx.save();ctx.beginPath();ctx.arc(cx,cy,radius,0,2*Math.PI);ctx.clip();
+    ctx.fillStyle="#48be9a";ctx.beginPath();ctx.ellipse(cx-46,cy-34,34,70,-.4,0,2*Math.PI);ctx.fill();
+    ctx.fillStyle="#5dd1a5";ctx.beginPath();ctx.ellipse(cx+50,cy+64,43,26,.5,0,2*Math.PI);ctx.fill();
+    ctx.strokeStyle="rgba(235,252,255,.34)";ctx.lineWidth=7;
+    ctx.beginPath();ctx.arc(cx,cy,radius*.77,-2.4,-.5);ctx.stroke();
+    ctx.restore();
+    ctx.beginPath();ctx.arc(cx,cy,radius,0,2*Math.PI);
+    ctx.lineWidth=2;ctx.strokeStyle="rgba(215,245,255,.8)";ctx.stroke();
+
+    if (path.length>0) {
+      ctx.beginPath();
+      ctx.moveTo(cx+path[0].x*scale,cy-path[0].y*scale);
+      for (let i=1;i<path.length;i++)ctx.lineTo(cx+path[i].x*scale,cy-path[i].y*scale);
+      ctx.lineTo(cx+s.x*scale,cy-s.y*scale);
+      ctx.lineWidth=4;ctx.strokeStyle="#ffe282";ctx.lineCap="round";ctx.lineJoin="round";ctx.stroke();
+    }
+    const sx=cx+s.x*scale,sy=cy-s.y*scale;
+    if (sx>-25 && sx<985 && sy>-25 && sy<615 && Math.hypot(s.x,s.y)>=EARTH) {
+      ctx.save();ctx.translate(sx,sy);
+      ctx.fillStyle="#ffe49c";ctx.strokeStyle="#fdf7de";ctx.lineWidth=2;
+      ctx.fillRect(-9,-7,18,14);ctx.strokeRect(-9,-7,18,14);
+      ctx.fillStyle="#66dbea";ctx.fillRect(-26,-11,14,22);ctx.fillRect(12,-11,14,22);
+      ctx.restore();
+    }
+    ctx.font="700 21px system-ui, sans-serif";
+    ctx.fillStyle="#e9f5ff";ctx.fillText("EARTH",cx-35,cy+9);
+    ctx.font="500 16px system-ui, sans-serif";
+    ctx.fillStyle="#bfd6ee";ctx.fillText("TOP VIEW · not a real flight plan",22,35);
+    ctx.fillStyle="#e7e8bb";ctx.fillText("400 km above the surface at launch",22,566);
+  }
+  function render() {updateStats();draw();}
+  function endMessage() {
+    if (s.crashed) announce("Impact! This flight was too slow; its path crossed Earth after " + Math.round(s.t/60) + " minutes.");
+    else if (s.out) announce("Out of view! The spacecraft traveled beyond our map. Check the prediction for the orbit type.");
+  }
+  function animate() {
+    if (!active) return;
+    for (let i=0;i<6 && !s.crashed && !s.out;i++) step();
+    render();
+    if (s.crashed||s.out) {stop();endMessage();return;}
+    frameId=requestAnimationFrame(animate);
+  }
+  document.getElementById("play").addEventListener("click",function(){
+    if(s.crashed||s.out) restart("Starting a fresh flight.");
+    if (active) return;
+    active=true;announce("Flight running. Pause or advance one minute to inspect the path.");
+    frameId=requestAnimationFrame(animate);
+  });
+  document.getElementById("pause").addEventListener("click",function(){
+    stop();announce("Flight paused at " + Math.round(s.t/60) + " mission minutes.");
+  });
+  document.getElementById("step").addEventListener("click",function(){
+    stop();
+    if (s.crashed||s.out) {announce("That flight has ended. Press Reset to try again.");return;}
+    for(let i=0;i<20 && !s.crashed && !s.out;i++) step();
+    render();
+    if(s.crashed||s.out)endMessage();
+    else announce("Advanced by one mission minute. Time now: " + Math.round(s.t/60) + " minutes.");
+  });
+  document.getElementById("reset").addEventListener("click",function(){restart("Flight reset. Ready for your next prediction.");});
+  speedInput.addEventListener("input",function(){restart("New launch speed: " + Number(speedInput.value).toFixed(3) + " km/s. Ready to launch.");});
+  document.querySelectorAll("[data-preset]").forEach(function(button){
+    button.addEventListener("click",function(){
+      speedInput.value=button.getAttribute("data-preset");
+      restart("Selected " + button.textContent.trim() + " mission. Predict the path and launch.");
+    });
+  });
+  document.getElementById("circular").addEventListener("click",function(){
+    speedInput.value=CIRCLE.toFixed(3);
+    restart("Selected nearly circular speed. Can your satellite complete a lap?");
+  });
+  document.addEventListener("visibilitychange",function(){
+    if(document.hidden && active){stop();announce("Flight paused while the page is hidden.");}
+  });
+  restart();
+})();
+</script>
+</body>
+</html>
