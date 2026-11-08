@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="description" content="A source-checked engineering deep dive into Nordic zcbor: bounded CBOR telemetry, CDDL code generation and practical RTOS integration.">
+<title>zcbor · Tiny Messages, Explicit Contracts | Engineering Deep Dive · 2026-11-08</title>
+<style>
+:root{color-scheme:dark;--ink:#edf6fc;--muted:#acc3d4;--card:#10283d;--card2:#0c2032;--line:#31536a;--mint:#68e0bf;--yellow:#ffce70;--pink:#ffa0bd;--sky:#9fc9ff;--bg:#061421;--focus:#ffe38a}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:1rem}body{margin:0;background:radial-gradient(circle at 6% 0%,#183c51 0,transparent 39%),radial-gradient(circle at 94% 3%,#26345a 0,transparent 42%),var(--bg);color:var(--ink);font:16px/1.65 system-ui,-apple-system,Segoe UI,sans-serif}a{color:var(--mint);text-underline-offset:3px}a:hover{text-decoration-thickness:3px}a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--focus);outline-offset:4px}p{max-width:79ch}header,main,footer{width:min(1100px,calc(100% - 34px));margin:auto}header{padding:65px 0 30px}header .top{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.pill{display:inline-block;padding:.28rem .72rem;border-radius:999px;background:#143e4c;color:var(--mint);font-weight:700;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;border:1px solid #377778}.edition{color:#d8e2f4;border-color:#5c6d92;background:#293651}h1,h2,h3{line-height:1.17;letter-spacing:-.035em}h1{font-size:clamp(2.45rem,6vw,5.3rem);max-width:14ch;margin:18px 0}h1 span{color:var(--mint)}h2{font-size:clamp(1.65rem,3.5vw,2.4rem);margin:0 0 19px}h3{font-size:1.24rem;margin:20px 0 8px}.lede{font-size:1.23rem;max-width:70ch;color:#d9e9f3}.meta{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:.93rem}.hero-line{height:5px;background:linear-gradient(90deg,var(--mint),var(--sky),var(--pink));border-radius:6px;margin:36px 0 8px}nav.toc{padding:22px 24px;border:1px solid var(--line);border-radius:18px;background:#0b2134}nav.toc strong{color:var(--yellow)}nav.toc ul{display:grid;grid-template-columns:repeat(3,1fr);list-style:none;margin:10px 0 0;padding:0;gap:6px 15px}nav.toc a{display:block;padding:5px 2px;text-decoration:none}nav.toc a:hover{text-decoration:underline}section{margin-top:29px;padding:30px;border:1px solid var(--line);border-radius:23px;background:linear-gradient(165deg,#112a3d 0%,#0b2032 80%);box-shadow:0 14px 35px #0002}section>p:first-of-type{margin-top:0}.kicker{text-transform:uppercase;color:var(--yellow);font-size:.8rem;letter-spacing:.13em;font-weight:800}.two{display:grid;grid-template-columns:1fr 1fr;gap:17px}.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.panel{border:1px solid #35586c;border-radius:17px;padding:19px;background:#102c40}.panel p{margin:8px 0}.panel strong{color:var(--yellow)}.emphasis{border-left:4px solid var(--mint);background:#143647;padding:14px 18px;border-radius:0 12px 12px 0}.alert{border-left-color:var(--pink)}.warn{border-left-color:var(--yellow)}.data{font-variant-numeric:tabular-nums}.tag{background:#224153;border-radius:5px;padding:1px 5px;color:var(--yellow)}code,kbd{font:0.91em ui-monospace,SFMono-Regular,Consolas,monospace}pre{white-space:pre;overflow:auto;background:#061522;border:1px solid #2f5161;border-radius:14px;padding:17px;font-size:.89rem;line-height:1.52;tab-size:4}pre code{font-size:1em;color:#e3edf6}table{border-collapse:collapse;width:100%;font-size:.96rem}th,td{border-bottom:1px solid #35576c;text-align:left;padding:11px 12px;vertical-align:top}th{background:#19354a;color:var(--yellow)}.tablewrap{overflow-x:auto}ol li,ul li{padding:3px 0}small,.sub{color:var(--muted)}.graphic{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin:17px 0 6px}.byte{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;text-align:center;border:1px solid #42728c;border-radius:9px;padding:13px 4px;background:#204258;color:#f8fbff;font-weight:700;font-size:clamp(.82rem,2.5vw,1.1rem)}.byte small{display:block;font:12px system-ui;color:#acd2e3}.byte.h{background:#234c4d;border-color:#4b9c84}.byte.t{background:#4a3856;border-color:#9d7a9f}.byte.s{background:#655027;border-color:#b89950}.lab{background:linear-gradient(145deg,#092e3f,#13273f);border:1px solid #3d8190;border-radius:18px;padding:20px}.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.ctrl{display:block;color:#eaf3fa;font-weight:700}.ctrl output{color:var(--mint);font-variant-numeric:tabular-nums;display:block;font-size:1.3rem}.ctrl input{width:100%;accent-color:var(--mint);height:26px;cursor:pointer}.buttons{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}button{font:inherit;font-weight:750;border-radius:11px;padding:10px 15px;background:var(--mint);color:#032427;border:none;cursor:pointer}button.alt{color:var(--ink);background:#254b66;border:1px solid #4d7084}button:hover{filter:brightness(1.1)}.result{padding:16px;border-radius:14px;border:1px solid #47738d;background:#071b2b;overflow-wrap:anywhere}.result .hex{font:700 clamp(1rem,2.5vw,1.6rem)/1.6 ui-monospace,monospace;color:var(--yellow);letter-spacing:.09em;word-break:break-word}.good{color:var(--mint)}.bad{color:var(--pink)}.smallcaps{font-variant:small-caps}.stamp{font-weight:800;font-size:.83rem;color:#001f20;background:var(--mint);display:inline-block;border-radius:8px;padding:.2rem .6rem}.ref li{margin-bottom:9px}.ref li span{display:block;font-size:.88rem;color:var(--muted)}footer{padding:40px 0 70px;color:var(--muted)}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}details{background:#0b2134;border-radius:12px;padding:13px 16px;border:1px solid #355268}summary{font-weight:800;cursor:pointer;color:var(--mint)}@media(max-width:740px){header{padding-top:35px}.two,.tri,.controls{grid-template-columns:1fr}nav.toc ul{grid-template-columns:1fr 1fr}section{padding:22px 18px}.graphic{gap:4px}.byte{padding:10px 1px;font-size:.83rem}}@media(max-width:420px){nav.toc ul{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<a class="sr-only" href="#content">Skip to main content</a>
+<header>
+<div class="top"><span class="pill">Embedded systems field guide</span><span class="pill edition">08 November 2026 · Deep dive</span></div>
+<h1>Tiny messages.<br><span>Explicit contracts.</span></h1>
+<p class="lede">Meet <strong>zcbor</strong>: Nordic Semiconductor’s C library and CDDL code generator for CBOR. A bounded wire format can fit a telemetry message into a few bytes—but only a carefully specified decoder makes it trustworthy.</p>
+<div class="meta"><span>Focus: C++20 / C11 · RISCue · VeloSim</span><span>Primary sources: Nordic, Zephyr, IETF</span><span>Library license: Apache-2.0</span></div>
+<div class="hero-line" aria-hidden="true"></div>
+<nav class="toc" aria-label="Table of contents"><strong>Jump to the investigation</strong><ul>
+<li><a href="#why">01 · Why this matters</a></li><li><a href="#bytes">02 · Wire anatomy</a></li><li><a href="#lab">03 · Interactive lab</a></li><li><a href="#implementation">04 · Working API example</a></li><li><a href="#schemas">05 · Schema generation</a></li><li><a href="#production">06 · Integration &amp; tests</a></li><li><a href="#adoption">07 · Verified use</a></li><li><a href="#tradeoffs">08 · Tradeoffs</a></li><li><a href="#license">09 · License &amp; decision</a></li><li><a href="#sources">10 · Primary references</a></li>
+</ul></nav>
+</header>
+<main id="content">
+<section id="why"><p class="kicker">01 / the design problem</p><h2>Ship meaning, not megabytes</h2>
+<p>An embedded sensor may need to report <em>sequence 17, temperature 21.500°C, status 3</em>. JSON makes the numbers readable, but it repeats field names and punctuation. A carefully designed CBOR array encodes the three values as <strong>six bytes</strong>, without a heap-backed string builder. zcbor can operate on caller-provided byte buffers and fixed-size stack state.</p>
+<div class="two"><div class="panel"><strong>RISCue opportunity · proposed</strong><p>Bounded active-object events or diagnostic snapshots could use an explicit CBOR envelope at a communication boundary. This is a design proposal, not a current RISCue integration.</p></div><div class="panel"><strong>VeloSim opportunity · proposed</strong><p>Capture independently replayable binary traces and compare canonical byte sequences. Pinning schema and library versions would support reproducibility. This is not documented adoption.</p></div></div>
+<p class="emphasis"><strong>Boundary matters:</strong> CBOR describes bytes; it does not supply transport reliability, authentication, replay protection, or application-level state-machine correctness. zcbor is a codec, not an RTOS or safety proof.</p></section>
+<section id="bytes"><p class="kicker">02 / wire anatomy</p><h2>Six bytes, three typed fields</h2>
+<p>Our illustrative wire contract is one CBOR <strong>definite-length array</strong>: <code>[uint sequence, int temperature_mC, uint flags]</code>, in that order. Units are millidegrees Celsius; <code>21500</code> means 21.500°C. This is a new example protocol, not a real flight packet.</p>
+<div class="graphic" aria-label="Six hexadecimal bytes: 83 11 19 53 FC 03"><div class="byte h">83<small>array of 3</small></div><div class="byte">11<small>seq 17</small></div><div class="byte t">19<small>uint16 marker</small></div><div class="byte t">53<small>temperature</small></div><div class="byte t">FC<small>temperature</small></div><div class="byte s">03<small>flags 3</small></div></div>
+<p class="sub">The two temperature bytes <code>53 FC</code> represent hexadecimal <code>0x53FC</code> = decimal 21,500. For larger magnitudes or negatives, CBOR uses different additional bytes; six bytes is this example’s size, not the universal size of this schema.</p>
+<div class="tri"><div class="panel"><strong>3 bits: major type</strong><p>Array, positive integer, negative integer and other CBOR families. The leading <code>83</code> is an array with three members.</p></div><div class="panel"><strong>5 bits: extra info</strong><p>Small values 0–23 fit directly in one byte. Larger values carry 1, 2, 4 or 8 follow-on bytes.</p></div><div class="panel"><strong>Range rules are external</strong><p>CBOR can represent values your application must reject. For example, the sequence field must be ≤65,535.</p></div></div></section>
+<section id="lab"><p class="kicker">03 / interactive lab</p><h2>Packet forge <span class="stamp">Runs offline</span></h2>
+<p>Move the controls and watch the packet grow or shrink. The browser demo implements <em>just this bounded array protocol</em> in JavaScript; it is an independent educational codec and <strong>does not execute the zcbor C library</strong>. Press an error button to see a receiver reject damaged or out-of-contract input.</p>
+<div class="lab"><div class="controls">
+<label class="ctrl" for="sequence">Sequence <output id="seqShow" for="sequence">17</output><input id="sequence" type="range" min="0" max="65535" step="1" value="17"></label>
+<label class="ctrl" for="temperature">Temperature °C <output id="tempShow" for="temperature">21.500</output><input id="temperature" type="range" min="-50000" max="125000" step="500" value="21500"></label>
+<label class="ctrl" for="flags">Flags <output id="flagsShow" for="flags">3</output><input id="flags" type="range" min="0" max="255" step="1" value="3"></label>
+</div><div class="buttons" aria-label="Packet test cases"><button type="button" id="normal">Clean packet</button><button type="button" class="alt" id="trunc">Truncate 1 byte</button><button type="button" class="alt" id="extra">Add trailing byte</button><button type="button" class="alt" id="range">Out-of-range flags</button><button type="button" class="alt" id="noncanonical">Nonminimal integer</button></div>
+<div class="result" aria-live="polite" aria-atomic="true"><div id="verdict" class="good"><strong>Accepted</strong> · all three fields validated</div><div id="hex" class="hex">83 11 19 53 FC 03</div><p class="data" id="details">6 bytes · sequence=17 · temperature=21.500°C · flags=3</p></div>
+<p class="sub">The “nonminimal” test deliberately encodes 17 in two bytes (<code>18 11</code>) although one byte (<code>11</code>) suffices. The demo rejects it under the strict encoding policy defined for this lesson. zcbor’s canonical option has documented limits; see tradeoffs.</p>
+</div></section>
+<section id="implementation"><p class="kicker">04 / C API</p><h2>Caller-owned storage; errors are explicit</h2>
+<p>This example uses zcbor’s documented <code>ZCBOR_STATE_E</code>/<code>ZCBOR_STATE_D</code> macros, typed integer helpers, and list delimiters. It stages decoded values in a temporary structure and publishes only after full validation. Define <code>ZCBOR_CANONICAL</code> consistently for the library build and test it on your pinned version.</p>
+<pre><code class="language-c">/* Telemetry demonstration — zcbor direct API (C11, callable from C++20).
+ * Wire contract: exactly [sequence:uint, temperature_mC:int, flags:uint].
+ * Deliberately use an array (not a map) for stable field positions.
+ * See build instructions below; schema validation is explicit here.
+ */
+#include &lt;zcbor_encode.h&gt;
+#include &lt;zcbor_decode.h&gt;
+#include &lt;zcbor_common.h&gt;
+#include &lt;stdbool.h&gt;
+#include &lt;stddef.h&gt;
+#include &lt;stdint.h&gt;
+
+typedef struct {
+    uint32_t sequence;         /* 0 .. 65535 */
+    int32_t temperature_mc;    /* -50000 .. 125000 */
+    uint32_t flags;            /* 0 .. 255 */
+} Telemetry;
+
+static bool valid(const Telemetry *t) {
+    return t &amp;&amp; t-&gt;sequence &lt;= 65535u &amp;&amp;
+        t-&gt;temperature_mc &gt;= -50000 &amp;&amp; t-&gt;temperature_mc &lt;= 125000 &amp;&amp;
+        t-&gt;flags &lt;= 255u;
+}
+
+bool telemetry_encode(uint8_t *out, size_t capacity,
+                      const Telemetry *t, size_t *written) {
+    if (!out || !written || !valid(t)) return false;
+    *written = 0;
+    /* A nested list requires one backup state; outer item count = 1. */
+    ZCBOR_STATE_E(s, 1, out, capacity, 1);
+    const bool ok = zcbor_list_start_encode(s, 3) &amp;&amp;
+        zcbor_uint32_put(s, t-&gt;sequence) &amp;&amp;
+        zcbor_int32_put(s, t-&gt;temperature_mc) &amp;&amp;
+        zcbor_uint32_put(s, t-&gt;flags) &amp;&amp;
+        zcbor_list_end_encode(s, 3);
+    if (!ok) return false;
+    *written = (size_t)(s-&gt;payload - out);
+    return true;
+}
+
+bool telemetry_decode(const uint8_t *in, size_t length, Telemetry *result) {
+    if (!in || !result) return false;
+    Telemetry tmp = {0};
+    ZCBOR_STATE_D(s, 1, in, length, 1, 0);
+    const bool ok = zcbor_list_start_decode(s) &amp;&amp;
+        zcbor_uint32_decode(s, &amp;tmp.sequence) &amp;&amp;
+        zcbor_int32_decode(s, &amp;tmp.temperature_mc) &amp;&amp;
+        zcbor_uint32_decode(s, &amp;tmp.flags) &amp;&amp;
+        zcbor_list_end_decode(s) &amp;&amp;
+        zcbor_payload_at_end(s);
+    if (!ok || !valid(&amp;tmp)) return false;
+    *result = tmp;  /* Publish only after complete validation. */
+    return true;
+}
+
+/* Golden vector with ZCBOR_CANONICAL enabled:
+ * [17, 21500, 3] =&gt; 83 11 19 53 FC 03 (6 bytes).
+ * Production tests should reject truncated, extra, wrong-type,
+ * out-of-range, duplicate/ambiguous (if using maps) and noncanonical data.
+ */</code></pre>
+<p class="emphasis warn"><strong>Review status:</strong> Function names and macro signatures were checked against upstream headers, but this newly composed C example was <em>not</em> compiled or executed against the zcbor library in this run. Treat it as a review candidate, not qualified production code. The upstream <a href="https://github.com/nordicsemi/zcbor/blob/main/samples/hello_world/src/main.c">hello_world sample</a> is the independently buildable reference.</p>
+</section>
+<section id="schemas"><p class="kicker">05 / CDDL &amp; generation</p><h2>Turn protocol rules into generated C</h2>
+<p>CDDL is an IETF-defined language for describing CBOR shapes. zcbor’s host-side Python tool can generate C encoder/decoder and typed structs, while also enforcing supported field constraints. It is especially valuable for <strong>decoding untrusted input</strong>, where missing a validation check can become a defect.</p>
+<pre><code class="language-text">Telemetry = [
+  sequence: 0..65535,
+  temperature_mC: -50000..125000,
+  flags: 0..255
+]
+
+; Suggested schema for the generated-code path. Pin and test the
+; zcbor generator version; do not assume this page generated code.</code></pre>
+<p>Example generator invocation following Nordic’s documented CLI shape:</p><pre><code class="language-bash"># Host-side generation (not a target/device runtime dependency)
+python -m pip install &#x27;zcbor==0.9.1&#x27;
+zcbor code -c telemetry.cddl -t Telemetry -d -e \
+  --output-cmake generated/CMakeLists.txt
+# Include generated/CMakeLists.txt in a separate integration build.
+# Generated public function/type names: inspect produced headers;
+# do not guess symbols before code generation.</code></pre>
+<p><strong>Engineering rule:</strong> pin zcbor’s source and Python generator revisions together; review the produced headers; commit the schema and generated artifacts; use known-good and malformed CBOR golden vectors. Not every RFC 8610 feature is supported, and the project documents experimental support for decoding unordered maps.</p>
+</section>
+<section id="production"><p class="kicker">06 / reproducible integration</p><h2>CMake / Ninja: avoid hidden assumptions</h2>
+<p>For a non-Zephyr CMake project, Nordic’s own hello-world sample compiles three C sources (<code>zcbor_common.c</code>, <code>zcbor_encode.c</code>, <code>zcbor_decode.c</code>) and includes <code>include/</code>. A minimal integration skeleton is:</p>
+<pre><code class="language-cmake"># Folder layout: ./zcbor/ (pinned upstream checkout), ./main.c, ./CMakeLists.txt
+cmake_minimum_required(VERSION 3.20)
+project(zcbor_telemetry C)
+set(CMAKE_C_STANDARD 11)
+add_library(zcbor_core STATIC
+  zcbor/src/zcbor_common.c
+  zcbor/src/zcbor_encode.c
+  zcbor/src/zcbor_decode.c)
+target_include_directories(zcbor_core PUBLIC zcbor/include)
+target_compile_definitions(zcbor_core PUBLIC ZCBOR_CANONICAL)
+add_executable(telemetry_test main.c)
+target_link_libraries(telemetry_test PRIVATE zcbor_core)
+# cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+# cmake --build build
+# ctest --test-dir build --output-on-failure  # only after adding tests</code></pre>
+<p>The build sketch expects a local pinned checkout. It is <strong>not</strong> a claim that a complete CTest suite was configured or run here. For Zephyr, use <code>CONFIG_ZCBOR</code> instead of manually compiling the library. Keep code generation on the development host; the firmware only needs the generated C and C runtime components.</p>
+<h3>Qualification matrix (proposed)</h3><div class="tablewrap"><table><thead><tr><th>Test</th><th>Required result</th><th>Why</th></tr></thead><tbody>
+<tr><td>Golden-vector round-trip</td><td><code>83 11 19 53 FC 03</code> ↔ <code>[17,21500,3]</code></td><td>Byte-for-byte independent oracle</td></tr>
+<tr><td>Truncated data (all cuts)</td><td>Always reject; never read outside buffer</td><td>Memory safety</td></tr>
+<tr><td>Unknown list member / trailing byte</td><td>Reject by fixed schema and end check</td><td>Version/length control</td></tr>
+<tr><td>Negative temperature</td><td>Accept in range, reject below −50°C</td><td>Signed type/range</td></tr>
+<tr><td>Out-of-range sequence/flags</td><td>Reject, preserve prior output</td><td>Do not publish partial state</td></tr>
+<tr><td>Nonminimal integer; map key ordering</td><td>Define &amp; test policy explicitly</td><td>Canonical does not mean every RFC rule</td></tr>
+<tr><td>Heap / WCET / fuzzing</td><td>Instrument target; record maximum path</td><td>Determinism and robustness</td></tr>
+</tbody></table></div></section>
+<section id="adoption"><p class="kicker">07 / evidence vs proposals</p><h2>Actual use is not the same as our idea</h2>
+<div class="two"><div class="panel"><strong>Documented upstream uses · evidence</strong><p>Nordic’s README names <strong>MCUboot serial recovery</strong>, <strong>Zephyr mcumgr</strong>, <strong>Zephyr LwM2M SenML</strong>, and nRF Connect SDK modem-update and <code>nrf_rpc</code> components. Nordic’s own migration guide documents TinyCBOR-to-zcbor API replacements. These are upstream-maintainer statements, not our deployment measurements.</p><p><a href="https://github.com/nordicsemi/zcbor#history">Upstream project history ↗</a><br><a href="https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/releases_and_maturity/migration/migration_guide_1.x_to_2.x.html">Nordic migration guide ↗</a></p></div>
+<div class="panel"><strong>Local project fits · hypothetical</strong><p><strong>RISCue</strong>: serialize bounded diagnostics at the MCU interface. <strong>VeloSim</strong>: cross-check fixed-vector trace encoding. <strong>SharpTestBench</strong>: build independent corrupt-packet tests. These are proposals; no integration or benchmark of those repositories was performed for this report.</p></div></div>
+</section>
+<section id="tradeoffs"><p class="kicker">08 / threat &amp; timing model</p><h2>Useful does not mean free</h2><div class="tablewrap"><table><thead><tr><th>Strength</th><th>Constraint / mitigation</th></tr></thead><tbody>
+<tr><td>Binary CBOR can be compact</td><td>Not self-describing at application-semantic level; version the schema and units.</td></tr>
+<tr><td>Fixed input/output buffers and state arrays</td><td>Prove bounded nesting, state backup count, buffer size and stack use per schema; library operation alone does not prove zero allocations in a whole program.</td></tr>
+<tr><td>Generated validation</td><td>Generator is a build-time Python dependency; audit generated code and supported CDDL constructs. Regenerate deterministically.</td></tr>
+<tr><td><code>ZCBOR_CANONICAL</code></td><td>Upstream explicitly does not check map-key ordering or minimum float representation on decode; a signed/cross-platform protocol must define its own complete canonical policy.</td></tr>
+<tr><td>Typed C API compatible with C++</td><td>Manual decoding is repetitive; errors must be checked at every step. Generated code improves coverage but is not a security guarantee.</td></tr>
+<tr><td>CBOR flexibility</td><td>Unbounded arrays, maps, strings and recursion are not appropriate for hard-real-time boundaries without strict limits.</td></tr>
+</tbody></table></div>
+<p class="emphasis alert"><strong>Do not confuse:</strong> “canonical CBOR” (a set of encoding rules) with deterministic execution time, deterministic simulation, or data authenticity. They are separate engineering obligations. For signed material, RFC 8949 and your security profile govern the exact byte representation.</p></section>
+<section id="license"><p class="kicker">09 / dependency decision</p><h2>Apache-2.0, not MIT</h2>
+<p>zcbor is licensed under the <strong>Apache License 2.0</strong> (verified in the repository’s <code>LICENSE</code> and SPDX identifiers). It allows modification and redistribution, including commercial use, subject to preserving required notices, including the license, identifying modified files, and handling any applicable NOTICE. It provides an explicit patent license subject to its terms. The IETF CBOR/CDDL RFCs specify formats; they are not zcbor’s software license.</p>
+<div class="two"><div class="panel"><strong>Adoption gate — go to prototype</strong><p>Appropriate for small, schema-locked binary telemetry and recovery messages after cross-compiler tests and heap instrumentation. Start with a single bounded message type, a fixed arena and positive/negative vectors.</p></div><div class="panel"><strong>Adoption gate — do not claim yet</strong><p>No flight suitability, RISCue integration, worst-case-time bound, code-size benchmark, static-allocation proof, generator reproducibility or security certification was established in this report.</p></div></div></section>
+<section id="sources"><p class="kicker">10 / verifiable primary sources</p><h2>Source trail &amp; reproducibility</h2><ol class="ref">
+<li><a href="https://github.com/nordicsemi/zcbor">Nordic Semiconductor · zcbor README</a><span>Scope, design, macros, configuration, code generation, limitations, documented adopters. Inspected 2026-11-08.</span></li>
+<li><a href="https://github.com/nordicsemi/zcbor/blob/main/samples/hello_world/src/main.c">Nordic · minimal C encoding and decoding example</a><span>Official API usage and fixed buffer patterns.</span></li>
+<li><a href="https://github.com/nordicsemi/zcbor/blob/main/include/zcbor_encode.h">Nordic · encoder header</a> / <a href="https://github.com/nordicsemi/zcbor/blob/main/include/zcbor_decode.h">decoder header</a><span>Actual function and state macro declarations.</span></li>
+<li><a href="https://github.com/nordicsemi/zcbor/blob/main/LICENSE">Nordic · Apache-2.0 license text</a><span>Primary licensing terms.</span></li>
+<li><a href="https://github.com/nordicsemi/zcbor/releases/tag/0.9.1">Nordic · tagged release 0.9.1</a><span>One upstream published version; pair tool and runtime revisions for reproduction.</span></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc8949.html">IETF RFC 8949 · Concise Binary Object Representation</a><span>Wire structure and deterministic encoding requirements.</span></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc8610.html">IETF RFC 8610 · Concise Data Definition Language</a><span>Schema syntax.</span></li>
+<li><a href="https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrf/releases_and_maturity/migration/migration_guide_1.x_to_2.x.html">Nordic nRF Connect SDK migration guide</a><span>Primary documentation for real zcbor API adoption.</span></li>
+</ol>
+<details><summary>Scope of verification for this edition</summary><p>Reviewed primary repository documentation, headers, example, license and upstream release metadata. The browser simulator’s golden vector and error cases were independently checked with local JavaScript tests. Syntax, navigation IDs, and standalone HTML were reviewed. The novel illustrative C code and CMake sketch were not compiled against a vendored zcbor checkout because the runtime had no direct access to the upstream sources through its local build environment. No claims of flight qualification, source-level adoption in the user’s repositories or repository-wide CI are made.</p></details>
+</section>
+</main>
+<footer><p><strong>Engineering Deep Dives · 2026-11-08</strong> · Original educational content. Self-contained HTML/CSS/JS with no tracking, network fonts or runtime dependencies. Library and documentation copyrights remain with their respective authors.</p><p>Principle: <em>Make the wire contract smaller than the ambiguity.</em></p></footer>
+<script>
+'use strict';
+(function(){
+  const $ = id => document.getElementById(id);
+  const seq=$('sequence'), temp=$('temperature'), flags=$('flags');
+  const formatHex=bytes=>Array.from(bytes,b=>b.toString(16).padStart(2,'0').toUpperCase()).join(' ');
+  function appendNumber(out,n,major){
+    if(!Number.isSafeInteger(n)||n<0||n>4294967295)throw new RangeError('Invalid 32-bit magnitude');
+    const head=major<<5;
+    if(n<24)out.push(head|n);
+    else if(n<=255)out.push(head|24,n);
+    else if(n<=65535)out.push(head|25,(n>>>8)&255,n&255);
+    else out.push(head|26,(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255);
+  }
+  function encode(s,t,f){
+    if(!Number.isInteger(s)||s<0||s>65535||!Number.isInteger(t)||t< -50000||t>125000||!Number.isInteger(f)||f<0||f>255)throw new RangeError('Outside telemetry schema');
+    const b=[0x83]; appendNumber(b,s,0); appendNumber(b,t>=0?t:-1-t,t>=0?0:1); appendNumber(b,f,0); return b;
+  }
+  function decode(b){
+    if(!Array.isArray(b)||b.length===0||b[0]!==0x83)throw new Error('Expected definite array of exactly 3 values');
+    let pos=1;
+    function item(){
+      if(pos>=b.length)throw new Error('Truncated CBOR integer');
+      let head=b[pos++],major=head>>>5,ai=head&31;
+      if(major!==0 && major!==1)throw new Error('Unexpected CBOR value type');
+      let n;
+      if(ai<24)n=ai;
+      else {let len=ai===24?1:ai===25?2:ai===26?4:0;
+        if(!len)throw new Error('Invalid/unsupported integer length');
+        if(pos+len>b.length)throw new Error('Truncated integer');
+        n=0;for(let i=0;i<len;i++)n=n*256+b[pos++];
+        if((len===1&&n<24)||(len===2&&n<=255)||(len===4&&n<=65535))throw new Error('Nonminimal integer encoding');
+      }
+      return {major,value:major===0?n:-1-n};
+    }
+    const s=item(),t=item(),f=item();
+    if(pos!==b.length)throw new Error('Unexpected trailing bytes');
+    if(s.major!==0||f.major!==0)throw new Error('Sequence and flags must be unsigned');
+    if(s.value>65535||t.value< -50000||t.value>125000||f.value>255)throw new Error('Value outside telemetry schema');
+    return {sequence:s.value,temperature_mc:t.value,flags:f.value};
+  }
+  function setOutputs(){ $('seqShow').textContent=seq.value; $('tempShow').textContent=(Number(temp.value)/1000).toFixed(3); $('flagsShow').textContent=flags.value; }
+  function render(mode='normal'){
+    setOutputs();let bytes=encode(Number(seq.value),Number(temp.value),Number(flags.value));
+    if(mode==='trunc')bytes=bytes.slice(0,-1);
+    else if(mode==='extra')bytes.push(0x00);
+    else if(mode==='range')bytes=encode(Number(seq.value),Number(temp.value),0).slice(0,-1).concat([0x19,0x01,0x00]);
+    else if(mode==='noncanonical')bytes=[0x83,0x18,0x11,...encode(17,Number(temp.value),Number(flags.value)).slice(2)];
+    $('hex').textContent=formatHex(bytes);
+    try{const v=decode(bytes);$('verdict').className='good';$('verdict').textContent='ACCEPTED · bounded array and all fields valid';$('details').textContent=`${bytes.length} bytes · sequence=${v.sequence} · temperature=${(v.temperature_mc/1000).toFixed(3)}°C · flags=${v.flags}`;}
+    catch(e){$('verdict').className='bad';$('verdict').textContent='REJECTED · '+e.message;$('details').textContent=`${bytes.length} bytes · message not delivered to the application`;}
+  }
+  [seq,temp,flags].forEach(el=>el.addEventListener('input',()=>render()));
+  [['normal','normal'],['trunc','trunc'],['extra','extra'],['range','range'],['noncanonical','noncanonical']].forEach(([id,mode])=>$(id).addEventListener('click',()=>render(mode)));
+  render();
+  // Scope for independent regression tests; no global JS dependencies.
+  window.zcborDemo={encode,decode,appendNumber,formatHex};
+})();
+</script>
+</body></html>
