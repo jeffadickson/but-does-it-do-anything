@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#14204a">
+<meta name="description" content="An interactive, offline-ready RGB color laboratory for curious nine-year-olds: mix light, magnify pixels, solve color mysteries and discover how satellite pictures are made.">
+<title>Color Code! The Light-Mixing Lab · DeepDivesKids · November 8, 2026</title>
+<style>
+:root{color-scheme:light;--ink:#192746;--navy:#15244a;--muted:#435273;--paper:#fffefa;--card:#ffffff;--line:#d7dff0;--blue:#1861c4;--sun:#ffdc70;--violet:#8b5cf6;--mint:#c9f6dc;--radius:22px}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:1rem}body{margin:0;background:linear-gradient(180deg,#edf5ff 0%,#faf7ff 48%,#ecfbf4 100%);color:var(--ink);font:1.06rem/1.67 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+a{color:#1356b8;text-underline-offset:3px}a:hover{text-decoration-thickness:3px}button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.48}
+:focus-visible{outline:4px solid #fa9e13;outline-offset:4px}::selection{background:#ffe790;color:#17213b}
+.skip{position:absolute;left:1rem;top:-5rem;z-index:10;padding:.6rem 1rem;background:white;border:3px solid #192746;border-radius:12px}.skip:focus{top:1rem}
+.shell{width:min(1100px,calc(100% - 2rem));margin:auto}.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 86% 22%,#4036a8 0%,transparent 40%),linear-gradient(125deg,#15244a,#243f77);color:white;padding:2.5rem 0 3rem}
+.hero::after{content:"";position:absolute;inset:auto -12% -8rem auto;width:28rem;height:28rem;border-radius:50%;background:conic-gradient(from 20deg,#ff699c,#ffc76c,#65dfb2,#74b6ff,#ad93ff,#ff699c);opacity:.15;filter:blur(22px);pointer-events:none}
+.eyebrow{font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:.8rem;color:#ffe49b}.hero h1{font-size:clamp(2.7rem,7vw,5.9rem);line-height:1.03;letter-spacing:-.055em;margin:.3rem 0 .7rem;max-width:880px}.hero h1 span{color:#ffdd7f}
+.hero p{max-width:700px;font-size:1.25rem;color:#eff3ff}.tagrow{display:flex;gap:.6rem;flex-wrap:wrap;margin:1.3rem 0}.tag{background:#ffffff21;border:1px solid #ffffff50;padding:.3rem .85rem;border-radius:999px;font-size:.9rem;font-weight:650}
+.hero-art{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-top:1.7rem}
+.light{width:82px;height:82px;border-radius:50%;display:inline-grid;place-items:center;font-size:1.5rem;font-weight:900;color:#061b31;border:4px solid #ffffff60;box-shadow:0 0 25px #ffffff25}.light-r{background:#ff7070}.light-g{background:#7ff2a1}.light-b{background:#79b6ff}.light-w{background:white}
+.plus{font-size:2rem;font-weight:900}.arrow{font-size:2rem;font-weight:900;color:#ffdc70}
+nav.toc{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 22px #18345c10;padding:1.3rem 1.7rem;margin:-1.5rem auto 2rem;position:relative;z-index:2}
+nav.toc strong{display:block;margin-bottom:.55rem}nav.toc ul{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.55rem 1.2rem}nav.toc a{font-weight:700}
+main{padding-bottom:3rem}section{margin:1.5rem 0;scroll-margin-top:1rem}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 12px 28px #1430500c;padding:clamp(1.2rem,4vw,2.1rem)}
+h2{font-size:clamp(1.7rem,3.2vw,2.45rem);letter-spacing:-.035em;line-height:1.16;margin:0 0 .65rem}h3{font-size:1.3rem;margin:1.1rem 0 .5rem}p{margin:.6rem 0 1rem}strong{font-weight:750}
+.kicker{color:#165bad;font-weight:850;letter-spacing:.08em;text-transform:uppercase;font-size:.79rem;margin:0 0 .35rem}
+.lead{font-size:1.2rem;max-width:76ch}.badge{display:inline-block;background:#e9ebff;color:#393287;border-radius:999px;padding:.2rem .75rem;font-size:.83rem;font-weight:800}
+.callout{padding:1.1rem 1.3rem;border-radius:16px;border-left:6px solid #f1b43d;background:#fff5cf;margin:1rem 0}.callout.blue{background:#eaf5ff;border-color:#2586de}.callout.green{background:#e5f8ee;border-color:#178758}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.4rem;align-items:start}.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.smallcard{border:1px solid var(--line);border-radius:16px;background:#f8fbff;padding:1rem}
+figure{margin:0}figcaption{font-size:.91rem;color:#485775;margin:.5rem 0}.mini{font-size:.91rem;color:#455576}
+ul,ol{padding-left:1.5rem}li{margin:.35rem 0}details{border:1px solid var(--line);border-radius:13px;padding:.7rem 1rem;background:#fbfcff;margin:.7rem 0}summary{cursor:pointer;font-weight:800}
+.lab{border:2px solid #b8c9f3;background:linear-gradient(135deg,#fff,#f6f9ff);border-radius:20px;padding:clamp(1rem,3vw,1.6rem)}
+.controls{display:grid;gap:1rem}.channel{border:1px solid #cbd7ea;background:#fff;border-radius:16px;padding:1rem}.channel .line{display:flex;align-items:center;justify-content:space-between;gap:1rem;font-weight:800}
+.channel output{font-variant-numeric:tabular-nums;background:#edf1f7;border-radius:8px;padding:.08rem .55rem;min-width:3.6ch;text-align:center}
+input[type=range]{display:block;width:100%;height:2.2rem;accent-color:#1961b6;cursor:pointer}.r input{accent-color:#d22543}.g input{accent-color:#13764b}.b input{accent-color:#315fcf}
+.range-ends{display:flex;justify-content:space-between;font-size:.77rem;color:#52617d;margin-top:-.3rem}
+.buttonrow{display:flex;gap:.5rem;flex-wrap:wrap}.btn{background:#1b58ab;color:white;border:2px solid transparent;border-radius:12px;padding:.6rem .94rem;font-weight:800;min-height:44px}
+.btn:hover{background:#153e80}.btn.alt{background:white;color:#1a4278;border:2px solid #99b4de}.btn.alt:hover{background:#edf5ff}
+.btn.good{background:#11784e}.btn.gold{background:#8a4803;color:#fff}
+.swatch{display:grid;place-items:center;min-height:180px;border-radius:20px;border:3px solid #edf0f8;text-align:center;transition:background-color .12s ease}
+.swatch strong{font-size:clamp(2rem,4vw,3.3rem);letter-spacing:.02em;font-variant-numeric:tabular-nums;line-height:1.25}
+.swatch small{display:block;font-weight:800}.readout{display:grid;gap:1rem}
+#pixel-canvas,#earth-canvas{display:block;width:100%;height:auto;border-radius:15px;border:3px solid #243358;background:#111d37;image-rendering:pixelated}
+.mission{background:#142751;color:#fff;border-radius:18px;padding:1.1rem 1.3rem}.mission p{margin:.4rem 0}.mission .badge{background:#ffedb1;color:#684200}
+#mission-status{font-weight:800;min-height:2.5rem;background:#edf5ff;border:1px solid #aac7ec;padding:.7rem 1rem;border-radius:12px}
+code,kbd{background:#eaf0fb;padding:.07rem .33rem;border-radius:5px;color:#173c71}pre{background:#142242;color:#f2f8ff;border-radius:16px;overflow-x:auto;padding:1.2rem;line-height:1.55;font-size:.88rem}
+pre code{background:none;color:inherit;padding:0}
+.fact{border-left:5px solid #1a84c4;background:#e9f7ff;padding:.8rem 1.1rem;border-radius:0 12px 12px 0}
+.proposed{border-left:5px solid #8a5aaf;background:#f3eaff;padding:.8rem 1.1rem;border-radius:0 12px 12px 0}
+.legend{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;font-weight:750;font-size:.92rem}
+.legend span{border-radius:99px;padding:.15rem .6rem;background:#eff2fd}
+#earth-report{min-height:2.8rem}
+footer{background:#15244a;color:#e7edff;padding:2rem 0}footer a{color:#ffe599}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media(max-width:790px){.split,.three{grid-template-columns:1fr}.hero-art{gap:.45rem}.light{width:58px;height:58px;font-size:1.1rem}.plus,.arrow{font-size:1.4rem}.hero{padding-top:2rem}.panel{border-radius:18px}nav.toc{margin-top:-1rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+@media print{.hero{background:#15244a!important;print-color-adjust:exact}.panel{box-shadow:none;break-inside:avoid}button,.skip{display:none}body{background:white}nav.toc{margin-top:1rem}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the adventure</a>
+<header class="hero">
+  <div class="shell">
+    <div class="eyebrow">DeepDivesKids · Sunday, November 8, 2026 · Art + science + coding</div>
+    <h1>COLOR CODE! <span>The Light-Mixing Lab</span></h1>
+    <p>What if your hockey scoreboard, a cartoon dragon, and a picture of Earth from space all shared a secret code? Three numbers can help make millions of screen colors. Today, <strong>Quinn and Reagan</strong> crack that code.</p>
+    <div class="tagrow"><span class="tag">Age 9+</span><span class="tag">15–25 minutes</span><span class="tag">Interactive</span><span class="tag">Works offline</span><span class="tag">No downloads</span></div>
+    <div class="hero-art" aria-label="Red plus green plus blue light can make white light">
+      <span class="light light-r" aria-hidden="true">R</span><span class="plus" aria-hidden="true">+</span>
+      <span class="light light-g" aria-hidden="true">G</span><span class="plus" aria-hidden="true">+</span>
+      <span class="light light-b" aria-hidden="true">B</span><span class="arrow" aria-hidden="true">→</span>
+      <span class="light light-w" aria-hidden="true">W</span>
+    </div>
+    <p class="mini" style="color:#e6eafa">In this screen-color model, full red + full green + full blue = white. That is different from mixing paint!</p>
+  </div>
+</header>
+<div class="shell">
+<nav class="toc" aria-label="Table of contents">
+<strong>Choose your mission</strong>
+<ul>
+<li><a href="#story">1 · Mystery</a></li>
+<li><a href="#how">2 · How light works</a></li>
+<li><a href="#mixer">3 · RGB mixer</a></li>
+<li><a href="#missions">4 · Color quests</a></li>
+<li><a href="#space">5 · Earth from space</a></li>
+<li><a href="#experiment">6 · Try it on paper</a></li>
+<li><a href="#code">7 · Code corner</a></li>
+<li><a href="#facts">8 · Real uses &amp; tradeoffs</a></li>
+<li><a href="#sources">9 · Sources &amp; license</a></li>
+</ul>
+</nav>
+<main id="main">
+<section id="story" class="panel">
+<p class="kicker">The mystery</p><h2>Why does red + green make <em>yellow</em> on a screen?</h2>
+<p class="lead">Quinn is designing a glowing scoreboard. Reagan wants a bright gold victory flash. They switch on the red and green parts of a pixel—and the screen looks yellow. Wait … red and green paint usually don't do that!</p>
+<div class="callout"><strong>Your mission:</strong> Build yellow using <em>light</em>, solve three color challenges, and learn why scientists sometimes paint forests red in satellite pictures. No actual paint is needed for the computer part.</div>
+<p>Two different recipes are at work: screens <strong>add light</strong>, while paints and markers <strong>absorb some light</strong> and reflect the rest. That's why mixing them gives different results.</p>
+</section>
+<section id="how" class="panel">
+<p class="kicker">Decode the science</p><h2>Three dials, many colors</h2>
+<div class="three">
+<div class="smallcard"><h3>🔴 Red channel</h3><p>A number from <strong>0</strong> (off) to <strong>255</strong> (maximum in our 8-bit color model).</p></div>
+<div class="smallcard"><h3>🟢 Green channel</h3><p>Another 0–255 number. Red plus green at maximum, with no blue, produces bright yellow on a typical display.</p></div>
+<div class="smallcard"><h3>🔵 Blue channel</h3><p>Also 0–255. All three at 0 give black; all three at 255 give white in standard RGB coding.</p></div>
+</div>
+<p>One screen color can be written <strong>RGB(255, 255, 0)</strong>. That means red is fully on, green is fully on, and blue is off. A shorter computer spelling is <strong>#FFFF00</strong>: two hexadecimal digits for each channel.</p>
+<div class="callout blue">Your eyes aren't literally tiny RGB meters. The National Eye Institute explains that humans generally have <strong>three kinds of color-sensitive cone cells</strong>, most sensitive to different ranges of light wavelengths. Your brain helps turn those signals into color experiences. <a href="https://www.nei.nih.gov/research-and-training/research-news/are-these-newly-found-rare-cells-missing-link-color-perception">See the eye-science evidence ↗</a></div>
+<p><strong>Important detail:</strong> this is a useful <em>digital color model</em>, not a claim that every screen has identical red-green-blue stripes or that real lights mix perfectly. Display hardware and color perception are more complicated.</p>
+</section>
+<section id="mixer" class="panel">
+<p class="kicker">Lab 01 · The color engine</p><h2>Move the dials. Invent a color.</h2>
+<div class="lab split">
+<div class="controls">
+<div class="channel r"><div class="line"><label for="red">🔴 Red light</label><output id="red-value" for="red">255</output></div><input id="red" type="range" min="0" max="255" step="1" value="255" aria-describedby="range-help"><div class="range-ends"><span>0 · off</span><span>255 · full</span></div></div>
+<div class="channel g"><div class="line"><label for="green">🟢 Green light</label><output id="green-value" for="green">255</output></div><input id="green" type="range" min="0" max="255" step="1" value="255" aria-describedby="range-help"><div class="range-ends"><span>0 · off</span><span>255 · full</span></div></div>
+<div class="channel b"><div class="line"><label for="blue">🔵 Blue light</label><output id="blue-value" for="blue">0</output></div><input id="blue" type="range" min="0" max="255" step="1" value="0" aria-describedby="range-help"><div class="range-ends"><span>0 · off</span><span>255 · full</span></div></div>
+<p id="range-help" class="mini">Use sliders with a mouse or finger; use arrow keys for fine changes, Home for 0 and End for 255. Color values are also shown as numbers.</p>
+<div><strong>Quick recipes</strong><div class="buttonrow" style="margin-top:.5rem"><button class="btn alt" type="button" data-rgb="255,255,0">Sun yellow</button><button class="btn alt" type="button" data-rgb="0,255,255">Ice cyan</button><button class="btn alt" type="button" data-rgb="255,0,255">Magic magenta</button><button class="btn alt" type="button" data-rgb="255,255,255">White</button><button class="btn alt" type="button" data-rgb="0,0,0">Black</button></div></div>
+</div>
+<div class="readout">
+<div class="swatch" id="swatch" style="background:#ffff00;color:#000"><div><strong id="hex">#FFFF00</strong><small id="rgb-text">RGB(255, 255, 0)</small></div></div>
+<figure>
+<canvas id="pixel-canvas" width="480" height="240" role="img" aria-label="Stylized enlarged display pixels: twelve columns and six rows of repeated red, green, and blue color stripes. The stripes change with the sliders.">Your browser does not support Canvas; the numbered RGB values and large color swatch still work.</canvas>
+<figcaption>Imagine zooming WAY in: this is a <strong>cartoon</strong> of RGB subpixels, not a microscope image. Real screens arrange subpixels in several different ways.</figcaption>
+</figure>
+<p class="mini">Try <strong>Red 255, Green 255, Blue 0</strong>. Then turn blue up to 255. What changes?</p>
+</div>
+</div>
+<noscript><p class="callout">JavaScript is turned off. You can still read the science and try the paper experiment, but interactive controls need JavaScript enabled.</p></noscript>
+</section>
+<section id="missions" class="panel">
+<p class="kicker">Lab 02 · Mini game</p><h2>Three missions. One color detective.</h2>
+<div class="split">
+<div>
+<div class="mission">
+<span id="mission-count" class="badge">Challenge 1 of 3</span>
+<h3 id="mission-title" style="color:#fff">Golden goal light</h3>
+<p id="mission-clue">Make glowing YELLOW. Red and green are fully on. Blue is off.</p>
+</div>
+<p>Set the three sliders above, then press <strong>Check my color</strong>. Your result is compared by its numbers, not only its appearance.</p>
+<div class="buttonrow">
+<button type="button" id="check" class="btn good">✓ Check my color</button>
+<button type="button" id="hint" class="btn alt">Show a number hint</button>
+<button type="button" id="next" class="btn gold" disabled>Next challenge →</button>
+<button type="button" id="reset" class="btn alt">Start over</button>
+</div>
+<p id="mission-status" role="status" aria-live="polite">Ready! Experiment with the sliders to begin.</p>
+</div>
+<div class="smallcard">
+<h3>Your progress</h3><p style="font-size:2.6rem;font-weight:900;margin:.2rem 0" id="score" aria-label="0 out of 3 solved">0 / 3</p>
+<p class="mini">Exact matches earn a star. Need a clue? Hints are allowed—engineers use clues, too!</p>
+<p><strong>Brain teaser:</strong> How many combinations can three 8-bit channels make?</p>
+<details><summary>Reveal the count</summary><p>There are 256 choices for each of three channels, so <strong>256 × 256 × 256 = 16,777,216</strong> possible number combinations. Displays may not show every one as a different-looking color to every person.</p></details>
+</div>
+</div>
+</section>
+<section id="space" class="panel">
+<p class="kicker">Lab 03 · Real science, pretend data</p><h2>Why might a forest look red from space?</h2>
+<p>NASA explains that satellites can measure colors your eyes <em>can't</em> see, such as <strong>near-infrared light</strong>. Scientists can assign that invisible measurement to the red part of a picture, making healthy plant-covered areas appear red. That is called a <strong>false-color image</strong>—and it can reveal information hidden in an ordinary-looking picture.</p>
+<div class="lab split">
+<div>
+<h3>Switch the cartoon satellite view</h3>
+<div class="buttonrow">
+<button class="btn" type="button" id="natural" aria-pressed="true">Natural-color view</button>
+<button class="btn alt" type="button" id="false" aria-pressed="false">False-color view</button>
+</div>
+<p id="earth-report" role="status" aria-live="polite"><strong>Natural color:</strong> our fictional forest looks green because its green channel is stronger than its red and blue channels.</p>
+<div class="legend" aria-label="Illustration legend"><span>🌳 Forest</span><span>💧 Water</span><span>🏘️ Town</span><span>🟨 Bare ground</span></div>
+<p class="mini">This demonstration uses <strong>invented teaching numbers</strong>, not downloaded Landsat measurements. It shows a method, not a real scientific map.</p>
+</div>
+<figure>
+<canvas id="earth-canvas" width="480" height="300" role="img" aria-label="Illustrative map of a town beside a curving river, forest and bare ground. Switch buttons change between simulated natural and false-color assignments.">Canvas is unavailable. Read the text description beside the map to learn how the colors are assigned.</canvas>
+<figcaption>Illustration only: red = near-infrared, green = visible red, blue = visible green in the example false-color setting.</figcaption>
+</figure>
+</div>
+<div class="callout green"><strong>Real mission, real data:</strong> USGS documents that Landsat 8 and Landsat 9 use <strong>Band 4 for red, Band 3 for green, Band 2 for blue, and Band 5 for near-infrared</strong>. NASA Earth Observatory documents how those measurements are combined into natural- and false-color pictures. This cartoon doesn't claim to reproduce a particular Landsat image.</div>
+</section>
+<section id="experiment" class="panel">
+<p class="kicker">Hands-on · 5 minutes</p><h2>Light recipe versus marker recipe</h2>
+<p>You'll need <strong>white paper, a red marker, a green marker</strong>, and this page. Use washable markers and a surface you can color on.</p>
+<ol>
+<li>On the computer, press <strong>Sun yellow</strong> in the mixer: R=255, G=255, B=0. Write down the resulting name, “yellow.”</li>
+<li>On paper, draw a solid red patch. Add green marker over half of it. What happens to the covered part?</li>
+<li>Ask: “Did I <em>add light</em> with the markers, or did I add material that <em>absorbs</em> some light?”</li>
+<li>Try <strong>Ice cyan</strong> and <strong>Magic magenta</strong> on the computer. Can marker layers copy the exact look?</li>
+<li>Explain the result in one sentence to someone at home.</li>
+</ol>
+<div class="callout blue"><strong>Prediction:</strong> Overlapping red and green marker ink usually gets darker or muddier than glowing yellow. The exact result depends on which markers you used. Paints and inks do not obey the simple RGB-screen rule.</div>
+</section>
+<section id="code" class="panel">
+<p class="kicker">Coding corner · For curious builders</p><h2>Three numbers turn into one color</h2>
+<p>Below is the same core idea as the working mixer on this page. It uses <strong>the browser's built-in Canvas 2D API</strong>, not an external library. Save this example as <code>colors.html</code> and open it in a browser, or just play with the live mixer above.</p>
+<pre><code>&lt;canvas id="color" width="240" height="100"
+  aria-label="A yellow rectangle"&gt;
+  A yellow rectangle.
+&lt;/canvas&gt;
+&lt;script&gt;
+  const red = 255;
+  const green = 255;
+  const blue = 0;
+  const canvas = document.getElementById("color");
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    ctx.fillStyle = "rgb(" + red + "," + green + "," + blue + ")";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+&lt;/script&gt;</code></pre>
+<p>Try changing <code>blue = 0</code> to <code>blue = 255</code>. You should turn the rectangle white. The <a href="https://html.spec.whatwg.org/multipage/canvas.html">HTML Living Standard</a> defines Canvas; <a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle">MDN explains <code>fillStyle</code></a>.</p>
+<div class="split">
+<div class="smallcard"><h3>Make it your own</h3><p>Replace the rectangle with a rink scoreboard, pixel creature, or comic-book power effect. Add <code>input</code> controls and redraw when their values change, just like this page.</p></div>
+<div class="smallcard"><h3>Dad's engineering connection</h3><p>RISCue handles events—like a button or sensor saying “something changed.” This page also reacts to events when you move a slider. VeloSim makes repeatable computer simulations. Here, the same RGB inputs always produce the same RGB numbers, which makes a fun little test case. These are <strong>ideas for exploration</strong>, not claims that Dad's projects use this color engine.</p></div>
+</div>
+</section>
+<section id="facts" class="panel">
+<p class="kicker">Evidence versus imagination</p><h2>What's real? What's our invention?</h2>
+<div class="split">
+<div class="fact"><h3>✅ Verified real uses</h3>
+<p><strong>Color vision:</strong> NEI describes three cone types in human eyes, each sensitive to different wavelength ranges.</p>
+<p><strong>Earth observation:</strong> NASA explains how satellite bands are assigned to RGB channels to make real natural- and false-color imagery. USGS documents the Landsat band numbers.</p>
+<p><strong>Web graphics:</strong> the HTML Canvas standard specifies drawing operations; the color-mixer code uses them to draw rectangles.</p>
+</div>
+<div class="proposed"><h3>💡 Invented for this lesson</h3>
+<p>The scoreboard quest, “golden goal” story, pixel microscope illustration, fictional forest/town grid, and exact satellite pixel values are educational models.</p>
+<p>A hockey scoreboard art editor or RISCue-powered color controller could be a future project. We did <strong>not</strong> verify such a product or integration.</p>
+</div>
+</div>
+<h3>What can't our simple model do?</h3>
+<ul>
+<li><strong>Light is complicated.</strong> Actual red, green and blue LEDs have spectra; the same RGB numbers may look a little different on different displays.</li>
+<li><strong>Eyes differ.</strong> Some people perceive colors differently, and some colors are difficult to distinguish. That's why the controls also use names and numerical readouts.</li>
+<li><strong>Pixels differ.</strong> The giant stripe picture is a teaching illustration. Real screens can use different pixel patterns.</li>
+<li><strong>Science needs calibration.</strong> NASA satellite pictures use measured bands, selected display ranges and image processing; our little invented grid has none of that.</li>
+<li><strong>Software needs testing.</strong> Sliders and Canvas make learning easy, but they don't automatically make flight-qualified or real-time control software.</li>
+</ul>
+<h3>Quick check</h3>
+<details><summary>Question A: Which recipe makes white in standard RGB?</summary><p>R=255, G=255, B=255. All three channels are at maximum.</p></details>
+<details><summary>Question B: Can a satellite display invisible light as red?</summary><p>Yes. The measured invisible band can be <em>assigned</em> to the red display channel, which is how a false-color image can be built. The forest itself hasn't changed color.</p></details>
+<details><summary>Question C: Is our pretend map actual Landsat data?</summary><p>No. It uses made-up numbers to show the idea; scientific images use measurements from real instruments.</p></details>
+</section>
+<section id="sources" class="panel">
+<p class="kicker">Engineer’s notes</p><h2>Sources, reuse &amp; integration</h2>
+<p>These are direct documentation from the organizations responsible for the science or technology. The examples and graphics here were created for this lesson; no outside images or software are downloaded.</p>
+<ol>
+<li><strong>National Eye Institute (NIH):</strong> <a href="https://www.nei.nih.gov/research-and-training/research-news/are-these-newly-found-rare-cells-missing-link-color-perception">Three cone types and color perception</a>. Scientific background.</li>
+<li><strong>NASA Earth Observatory:</strong> <a href="https://science.nasa.gov/earth/earth-observatory/how-to-interpret-a-false-color-satellite-image/">How to Interpret a False-Color Satellite Image</a>. First-party examples of real band combinations.</li>
+<li><strong>USGS Landsat:</strong> <a href="https://www.usgs.gov/faqs/what-are-band-designations-landsat-satellites">Landsat 8/9 band designations</a>. Instrument band numbers and wavelengths.</li>
+<li><strong>WHATWG:</strong> <a href="https://html.spec.whatwg.org/multipage/canvas.html">HTML Living Standard, Canvas</a>. The platform specification for this lesson's drawing API.</li>
+<li><strong>Mozilla MDN:</strong> <a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle"><code>CanvasRenderingContext2D.fillStyle</code></a>. API usage reference (documentation, not evidence of any particular company's adoption).</li>
+</ol>
+<h3>How to run or integrate</h3>
+<p>Everything—styles, images, experiments and JavaScript—is in this single HTML file. Open it from disk or serve it through GitHub Pages. It needs a current browser with HTML5 Canvas support and JavaScript enabled. It uses <strong>no third-party library, build step, CDN, web font, account, analytics, or network request</strong>. The browser platform API does not require installing a separate license package.</p>
+<details><summary>Original lesson license (MIT) · click to expand</summary>
+<p>Copyright (c) 2026 DeepDivesKids contributors.</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+</details>
+</section>
+</main>
+</div>
+<footer><div class="shell"><strong>DeepDivesKids · Color Code!</strong><p>Curiosity is a superpower. Build something bright today. ✨</p><p><a href="#main">Back to the adventure ↑</a> · <a href="https://github.com/jeffadickson/but-does-it-do-anything/tree/main/DeepDivesKids">See other DeepDivesKids lessons</a></p></div></footer>
+<script>
+"use strict";
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const sliderIds = ["red","green","blue"];
+  const sliders = sliderIds.map($);
+  function clamp(value){return Math.max(0, Math.min(255, Math.round(value)));}
+  function hex2(value){return clamp(value).toString(16).padStart(2,"0").toUpperCase();}
+  function hexRgb(rgb){return "#" + rgb.map(hex2).join("");}
+  function readRgb(){return sliders.map((s) => Number(s.value));}
+  function srgbLinear(x){const c = x/255; return c<=0.04045 ? c/12.92 : Math.pow((c+0.055)/1.055,2.4);}
+  function readableText(rgb){const l=0.2126*srgbLinear(rgb[0])+0.7152*srgbLinear(rgb[1])+0.0722*srgbLinear(rgb[2]);return l>0.179?"#071527":"#ffffff";}
+  function drawPixels(rgb){
+    const canvas=$("pixel-canvas"),ctx=canvas.getContext("2d");if(!ctx)return;
+    const w=canvas.width,h=canvas.height;ctx.fillStyle="#101525";ctx.fillRect(0,0,w,h);
+    const stripe=["rgb("+rgb[0]+",0,0)","rgb(0,"+rgb[1]+",0)","rgb(0,0,"+rgb[2]+")"];
+    const cw=w/12,ch=h/6;
+    for(let row=0;row<6;row++){
+      for(let col=0;col<12;col++){
+        for(let c=0;c<3;c++){
+          ctx.fillStyle=stripe[c];
+          ctx.fillRect(col*cw+3+c*11,row*ch+3,10,ch-6);
+        }
+      }
+    }
+  }
+  function updateMixer(){
+    const rgb=readRgb();
+    for(let i=0;i<3;i++)$(sliderIds[i]+"-value").textContent=String(rgb[i]);
+    $("swatch").style.backgroundColor="rgb("+rgb.join(",")+")";
+    $("swatch").style.color=readableText(rgb);
+    $("hex").textContent=hexRgb(rgb);
+    $("rgb-text").textContent="RGB("+rgb.join(", ")+")";
+    drawPixels(rgb);
+  }
+  function setRgb(rgb){
+    rgb.forEach((value,i)=>{sliders[i].value=String(clamp(value));});
+    updateMixer();
+  }
+  sliders.forEach((s)=>s.addEventListener("input", updateMixer));
+  document.querySelectorAll("[data-rgb]").forEach((button)=>{
+    button.addEventListener("click",()=>setRgb(button.dataset.rgb.split(",").map(Number)));
+  });
+  const challenges=[
+    {title:"Golden goal light",clue:"Make glowing YELLOW. Red and green are fully on. Blue is off.", rgb:[255,255,0],hint:"Red 255 · Green 255 · Blue 0"},
+    {title:"Icy rescue beacon",clue:"Make CYAN like shining ice. Green and blue are fully on; red is off.",rgb:[0,255,255],hint:"Red 0 · Green 255 · Blue 255"},
+    {title:"Space-magic signal",clue:"Make MAGENTA. Red and blue are fully on; green is off.",rgb:[255,0,255],hint:"Red 255 · Green 0 · Blue 255"}
+  ];
+  let index=0,solved=0,finished=false;
+  function showChallenge(){
+    const c=challenges[index];
+    $("mission-count").textContent="Challenge "+(index+1)+" of "+challenges.length;
+    $("mission-title").textContent=c.title;
+    $("mission-clue").textContent=c.clue;
+    $("score").textContent=solved+" / "+challenges.length;
+    $("score").setAttribute("aria-label",solved+" out of "+challenges.length+" solved");
+    $("next").disabled=true;
+    $("next").textContent=index===challenges.length-1?"Finish missions ✓":"Next challenge →";
+    $("check").disabled=false;
+    $("hint").disabled=false;
+    $("mission-status").textContent="Ready! Read the clue and choose your color.";
+  }
+  $("check").addEventListener("click",()=>{
+    if(finished)return;
+    const target=challenges[index].rgb;
+    const current=readRgb();
+    if(current.every((n,i)=>n===target[i])){
+      solved++;finished=true;
+      $("score").textContent=solved+" / "+challenges.length;
+      $("score").setAttribute("aria-label",solved+" out of "+challenges.length+" solved");
+      $("next").disabled=false;$("check").disabled=true;$("hint").disabled=true;
+      $("mission-status").textContent="🌟 Exactly right! "+hexRgb(current)+" is your successful color code. "+(solved===challenges.length?"All three solved!":"Go to the next mission!");
+    }else{
+      const wrong=current.filter((n,i)=>n!==target[i]).length;
+      $("mission-status").textContent="Not yet: "+wrong+" channel"+(wrong===1?" needs":"s need")+" changing. Compare the clue with the numbers above.";
+    }
+  });
+  $("hint").addEventListener("click",()=>{
+    $("mission-status").textContent="Number hint: "+challenges[index].hint+".";
+  });
+  $("next").addEventListener("click",()=>{
+    if(!finished)return;
+    if(index===challenges.length-1){
+      $("mission-status").textContent="🏆 All 3 colors cracked! Try inventing a secret color of your own, or choose Start over.";
+      $("next").disabled=true;return;
+    }
+    index++;finished=false;showChallenge();
+  });
+  $("reset").addEventListener("click",()=>{
+    index=0;solved=0;finished=false;setRgb([255,255,0]);showChallenge();
+  });
+  const reflectance={
+    forest:[65,132,58,225],
+    water:[22,60,92,12],
+    town:[128,130,132,115],
+    ground:[174,139,96,190]
+  };
+  function terrainType(x,y){
+    if((x-13)*(x-13)+(y-5)*(y-5)<16 || (x>13 && y>10 && y<14)) return "town";
+    if(Math.abs(x-(6+2*Math.sin(y*0.46)))<1.45) return "water";
+    if((x>15 && y<3)||(x<4 && y>9))return "ground";
+    return "forest";
+  }
+  function drawEarth(mode){
+    const ctx=$("earth-canvas").getContext("2d");if(!ctx)return;
+    const cell=20,cols=24,rows=15;
+    ctx.clearRect(0,0,480,300);
+    for(let y=0;y<rows;y++){
+      for(let x=0;x<cols;x++){
+        const v=reflectance[terrainType(x,y)];
+        const rgb=mode==="false"?[v[3],v[0],v[1]]:[v[0],v[1],v[2]];
+        ctx.fillStyle="rgb("+rgb.join(",")+")";
+        ctx.fillRect(x*cell,y*cell,cell,cell);
+        ctx.strokeStyle="rgba(255,255,255,0.11)";
+        ctx.strokeRect(x*cell+0.5,y*cell+0.5,cell-1,cell-1);
+      }
+    }
+  }
+  function earthMode(mode){
+    const natural=mode==="natural";
+    $("natural").setAttribute("aria-pressed",String(natural));
+    $("false").setAttribute("aria-pressed",String(!natural));
+    $("natural").className="btn "+(natural?"":"alt");
+    $("false").className="btn "+(!natural?"":"alt");
+    $("earth-report").textContent=natural?
+      "Natural-color cartoon: the forest appears green; water is bluish; town is gray. Display R=measured red, G=green, B=blue (invented data).":
+      "False-color cartoon: forest appears bright red because a fictional strong near-infrared reading is assigned to display red. Display R=near-infrared, G=measured red, B=measured green (invented data).";
+    drawEarth(mode);
+  }
+  $("natural").addEventListener("click",()=>earthMode("natural"));
+  $("false").addEventListener("click",()=>earthMode("false"));
+  updateMixer();
+  showChallenge();
+  earthMode("natural");
+  // Minimal deterministic self-checks (independent of screen appearance).
+  console.assert(hexRgb([255,255,0])==="#FFFF00","RGB to hex yellow");
+  console.assert(hexRgb([0,0,0])==="#000000","RGB to hex black");
+  console.assert(hexRgb([255,255,255])==="#FFFFFF","RGB to hex white");
+  console.assert(terrainType(13,5)==="town","cartoon map town exists");
+})();
+</script>
+</body>
+</html>
