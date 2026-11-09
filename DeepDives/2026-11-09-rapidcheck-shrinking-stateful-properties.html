@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="description" content="RapidCheck C++ property-based testing: reproducible seeds, shrinking, stateful models, bounded RTOS mailboxes, CMake/Ninja, primary sources, and an interactive counterexample lab.">
+<title>The Failure That Shrinks — RapidCheck | Engineering Deep Dive · 9 Nov 2026</title>
+<style>
+:root{--bg:#091324;--surface:#122239;--surface2:#162b43;--ink:#edf5ff;--muted:#b6c9da;--line:#385271;--teal:#62e6d2;--gold:#ffcb7e;--pink:#ff88b9;--danger:#ff9a9a;--focus:#ffe486;--radius:18px;font-synthesis:none}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:1.3rem}
+body{margin:0;font:17px/1.7 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:radial-gradient(ellipse at 12% 0,#164065 0,transparent 43%),radial-gradient(ellipse at 88% 7%,#322d5b 0,transparent 32%),var(--bg)}
+a{color:var(--teal);text-underline-offset:3px}
+a:hover{color:#d8fff7}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+.skip{position:absolute;left:1rem;top:-5rem;padding:.6rem 1rem;background:#fff;color:#111;z-index:100}
+.skip:focus{top:1rem}
+.wrap{width:min(1120px,calc(100% - 2.5rem));margin-inline:auto}
+header{padding:4rem 0 2.9rem;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:.8rem;letter-spacing:.19em;text-transform:uppercase;font-weight:800;color:var(--teal)}
+h1,h2,h3{line-height:1.15;letter-spacing:-.026em}h1{font-size:clamp(2.75rem,7vw,5.7rem);max-width:14ch;margin:.6rem 0}h2{font-size:clamp(1.75rem,3.2vw,2.5rem);margin:0 0 .8rem}h3{font-size:1.22rem;margin:.4rem 0}
+.lede{max-width:76ch;color:#d9e8fa;font-size:clamp(1.07rem,1.8vw,1.25rem)}
+.meta{display:flex;gap:.7rem;flex-wrap:wrap;margin:1.6rem 0}
+.pill{display:inline-flex;align-items:center;padding:.25rem .78rem;border-radius:999px;border:1px solid #52728f;background:#112c43;font-size:.84rem;color:#d8eafb;font-weight:700}
+.pill.alt{color:var(--gold);border-color:#775e34}
+.hero-grid{display:grid;grid-template-columns:1.35fr .75fr;gap:1.2rem;align-items:stretch}
+.hero-art{display:flex;flex-direction:column;justify-content:center;min-height:230px;background:linear-gradient(135deg,#0a2744,#202852);border:1px solid #4b6787;border-radius:var(--radius);padding:1.25rem;overflow:hidden}
+.hero-art pre{background:none;border:none;box-shadow:none;padding:0;margin:0;font-size:clamp(.88rem,1.7vw,1.16rem);line-height:1.85;color:#a8ffe7;white-space:pre-wrap}
+.hero-art .red{color:#ffc1b1}.hero-art .gold{color:#ffdb9b}
+nav{background:#11253d;border:1px solid var(--line);border-radius:var(--radius);padding:1.3rem 1.5rem;margin:2rem 0 3rem}
+nav h2{font-size:1.12rem;margin:0 0 .7rem}
+nav ol{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.3rem 1.8rem;margin:0;padding-left:1.3rem}
+section{margin:3.4rem 0;scroll-margin-top:2rem}
+p,li{max-width:87ch}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.4rem 0}
+.card,.panel{padding:1.35rem;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.card strong{display:block;font-size:1.04rem;color:var(--teal)}
+.panel{padding:1.6rem;margin:1.4rem 0}
+.callout{border-left:5px solid var(--gold);padding:1rem 1.3rem;background:#2d2934;border-radius:0 13px 13px 0;margin:1.6rem 0}
+.callout.green{border-color:var(--teal);background:#153636}
+.callout.red{border-color:var(--pink);background:#392639}
+code,kbd{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#253b52;border-radius:5px;padding:.08em .28em;font-size:.88em}
+pre{background:#071421;border:1px solid #365170;border-radius:13px;padding:1.15rem;overflow:auto;line-height:1.45;font-size:.83rem}
+pre code{background:none;padding:0;font-size:1em}
+figure{margin:1.7rem 0}figcaption{font-size:.88rem;color:var(--muted);margin-top:.7rem}
+table{width:100%;border-collapse:collapse;margin:1.4rem 0;font-size:.94rem}
+th,td{text-align:left;vertical-align:top;padding:.85rem;border-bottom:1px solid var(--line)}
+th{background:#203854}
+.table-scroll{overflow-x:auto}
+.hint{color:var(--muted);font-size:.94rem}
+small{font-size:.85rem}
+.controls{display:flex;gap:.9rem;align-items:flex-end;flex-wrap:wrap;margin:1rem 0}
+label{display:grid;gap:.25rem;font-weight:700}
+input[type=number]{font:inherit;color:var(--ink);background:#0a182a;border:1px solid #7798b6;border-radius:9px;padding:.6rem .7rem;width:11rem}
+button{font:inherit;font-weight:800;cursor:pointer;padding:.62rem 1rem;color:#081b24;background:var(--teal);border:2px solid transparent;border-radius:10px;min-height:44px}
+button.secondary{background:#223d58;color:#edf7ff;border-color:#718cad}
+button:disabled{opacity:.48;cursor:not-allowed}
+.outputs{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.outbox{min-width:0;background:#09192b;border:1px solid #516982;border-radius:12px;padding:1rem}
+.outbox h3{margin:0 0 .7rem}
+.trace{display:flex;gap:.4rem;flex-wrap:wrap;padding:0;list-style:none}
+.trace li{margin:0;padding:.35rem .55rem;border-radius:7px;background:#2a4862;font-family:ui-monospace,monospace;font-size:.84rem}
+.trace li.push{background:#174a51}.trace li.pop{background:#50405e}
+.status{margin:1rem 0;padding:.8rem 1rem;border-radius:9px;background:#233b57;border:1px solid #7696b0}
+.status strong{color:var(--gold)}
+.statrow{display:flex;flex-wrap:wrap;gap:1rem;margin:1rem 0}
+.stat{flex:1 1 155px;padding:.8rem;background:#13364a;border:1px solid #346b72;border-radius:9px}
+.stat b{display:block;font-size:1.5rem;color:var(--teal)}
+.steps{counter-reset:steps;list-style:none;padding:0}.steps li{counter-increment:steps;margin:.7rem 0;padding:.9rem 1rem .9rem 3.1rem;background:var(--surface2);border-radius:11px;position:relative}.steps li:before{content:counter(steps);position:absolute;left:1rem;top:1rem;width:1.35rem;height:1.35rem;border-radius:100%;background:var(--gold);color:#111f2a;text-align:center;font-size:.85rem;font-weight:900}
+footer{margin-top:4rem;padding:2rem 0 3rem;color:var(--muted);border-top:1px solid var(--line)}
+@media(max-width:760px){header{padding-top:2.8rem}.hero-grid,.outputs{grid-template-columns:1fr}.cards{grid-template-columns:1fr}nav ol{grid-template-columns:1fr 1fr}h1{max-width:none}}
+@media(max-width:470px){.wrap{width:min(100% - 1.2rem,1120px)}nav ol{grid-template-columns:1fr}.panel{padding:1rem}th,td{padding:.6rem}button{width:100%}.controls>*{width:100%}input[type=number]{width:100%}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{:root{--bg:#fff;--surface:#fff;--surface2:#fff;--ink:#111;--muted:#333;--line:#aaa}body{background:#fff;color:#111}header,.panel,.card,nav{background:#fff;color:#111}a{color:#173f82}pre{white-space:pre-wrap;overflow-wrap:anywhere}button,.controls{display:none}section{break-inside:avoid}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<header>
+ <div class="wrap hero-grid">
+  <div>
+   <p class="eyebrow">Engineering Deep Dive / 09 November 2026 / C++20 · Verification</p>
+   <h1>The Failure<br>That <span style="color:var(--teal)">Shrinks.</span></h1>
+   <p class="lede">What if a randomized test could turn a messy 14-step RTOS failure into four commands that reveal the bug? Meet <strong>RapidCheck</strong>: generated inputs, automatically simplified counterexamples, and reproducible host-side verification for bounded embedded software.</p>
+   <div class="meta"><span class="pill">RapidCheck</span><span class="pill">BSD-2-Clause</span><span class="pill">Host-side test tool</span><span class="pill alt">Not an on-target RTOS dependency</span></div>
+  </div>
+  <div class="hero-art" aria-label="An example trace reduced from nine commands to four">
+   <span class="eyebrow">The smallest clue wins</span>
+   <pre><span class="red">P7 P4 D P9 P3 P2 D P6 P1</span>
+       ↓ shrink
+<span class="gold">P7 P9 P3 P2</span>
+       ↓ simplify values
+<span style="color:#91f0db">P0 P0 P0 P0</span>
+
+capacity = 3
+fourth push must fail ✓
+buggy overwrite returns true ✗</pre>
+  </div>
+ </div>
+</header>
+<main id="main" class="wrap">
+<nav aria-label="Table of contents"><h2>Inside this deep dive</h2>
+<ol>
+<li><a href="#answer">The verdict</a></li>
+<li><a href="#mechanics">How RapidCheck works</a></li>
+<li><a href="#lab">Interactive shrink laboratory</a></li>
+<li><a href="#cpp">C++20 working pattern</a></li>
+<li><a href="#integration">CMake / Ninja / CI</a></li>
+<li><a href="#stateful">Stateful RTOS testing</a></li>
+<li><a href="#adoption">Verified real use</a></li>
+<li><a href="#tradeoffs">Tradeoffs and qualification</a></li>
+<li><a href="#decision">Project adoption decision</a></li>
+<li><a href="#sources">Primary-source dossier</a></li>
+</ol></nav>
+<section id="answer">
+<h2>01 / The verdict</h2>
+<p><strong>RapidCheck is a good fit for host-side property tests</strong> of bounded queues, event routing, state-machine transition invariants, protocol codecs, and deterministic simulation. It is <em>not</em> a drop-in runtime library for allocation-free firmware. The harness itself uses dynamic data structures to generate, record, and shrink cases; the production component under test can remain allocation-free.</p>
+<div class="cards">
+<div class="card"><strong>Generate</strong> Feed a property many inputs and command sequences rather than maintaining only hand-selected examples.</div>
+<div class="card"><strong>Shrink</strong> Remove irrelevant operations and simplify values to expose a smaller failing case.</div>
+<div class="card"><strong>Replay</strong> Capture a seed or the stronger opaque <code>reproduce=…</code> token for investigation and regression tests.</div>
+</div>
+<div class="callout green"><strong>Where it belongs:</strong> Your C++20 desktop/CI test executable, linked to the same RISCue algorithms or portable abstractions used in firmware. Keep the RapidCheck dependency and generator heap allocations out of the flight/embedded binary.</div>
+</section>
+<section id="mechanics">
+<h2>02 / Generated properties, not a bag of assertions</h2>
+<p>A property states a rule that must hold for every <em>valid</em> input. RapidCheck chooses values, checks the rule, and, on falsification, attempts simplification. The upstream guide demonstrates this with reversing a list twice: the result must equal the original list. Its documentation describes generators, shrinking, and stateful commands. <a href="https://github.com/emil-e/rapidcheck">[1]</a> <a href="https://github.com/emil-e/rapidcheck/blob/master/doc/generators.md">[2]</a></p>
+<ol class="steps">
+<li><strong>Write the invariant.</strong> For a fixed-capacity mailbox, a fourth push into a full capacity-three mailbox must be rejected without losing the first three messages.</li>
+<li><strong>Generate valid input.</strong> Values may vary freely; longer scenarios can include push/pop commands. Constrain only what the interface actually requires.</li>
+<li><strong>Run and compare.</strong> Check both return codes and observable state against an independent model.</li>
+<li><strong>Minimize failure.</strong> Shrinking tries simpler cases and retains those that still fail; it does not mathematically guarantee a globally minimal counterexample.</li>
+<li><strong>Replay and preserve.</strong> Capture the full failure text and a deterministic regression vector. A passing property campaign is evidence of sampled cases, not a proof of correctness.</li>
+</ol>
+<div class="callout"><strong>Coverage is a design problem.</strong> An unconstrained generator might mostly produce empty/short queues and miss full-capacity behavior. Explicitly bias toward boundaries and classify the generated distribution. RapidCheck documents <code>RC_CLASSIFY</code> and <code>RC_TAG</code> for inspecting test categories. <a href="https://github.com/emil-e/rapidcheck/blob/master/doc/distribution.md">[3]</a></div>
+</section>
+<section id="lab">
+<h2>03 / Try it: make a failure small</h2>
+<p>This interactive <strong>teaching simulator</strong> is written in plain JavaScript, not linked to RapidCheck. It illustrates the shrinking idea on an intentionally buggy, capacity-three queue. A correct queue rejects the fourth push; the buggy queue silently overwrites the oldest item and returns success. Both are local simulation models, not measurements of RISCue.</p>
+<div class="panel">
+<div class="controls">
+<label for="seed">Repeatable seed <input id="seed" type="number" min="1" max="4294967295" step="1" value="20261109" inputmode="numeric"></label>
+<button id="generate" type="button">1 · Generate failing trace</button>
+<button id="shrink" class="secondary" type="button" disabled>2 · Shrink it</button>
+<button id="reset" class="secondary" type="button">Reset</button>
+</div>
+<p class="hint">P<number> = push that value; D = dequeue. Capacity: 3. A trace is evaluated from a fresh, empty queue. The generator favors pushes so overflow is likely.</p>
+<div class="statrow"><div class="stat">Candidate commands<b id="candidateCount">—</b></div><div class="stat">Shrunk commands<b id="shrunkCount">—</b></div><div class="stat">Trial traces<b id="attemptCount">—</b></div></div>
+<div class="outputs">
+<div class="outbox"><h3>Original random trace</h3><ol id="originalTrace" class="trace" aria-label="Original sequence"><li>Generate to begin</li></ol></div>
+<div class="outbox"><h3>Reduced counterexample</h3><ol id="reducedTrace" class="trace" aria-label="Reduced sequence"><li>No shrink yet</li></ol></div>
+</div>
+<div class="status" role="status" aria-live="polite" aria-atomic="true" id="status"><strong>Ready.</strong> Enter a seed, then generate.</div>
+<div class="outbox"><h3>Why the property failed</h3><p id="explanation">The checker will compare the specification with the deliberately broken queue at each command.</p></div>
+</div>
+<p class="hint">The demonstration uses deterministic xorshift32 and a simple deletion/value-simplification shrinker, <strong>not</strong> RapidCheck's algorithm. With an unchanged seed, it generates an identical trace in the same browser. The exact sequence of RapidCheck's own shrink attempts depends on its version, generators, and environment.</p>
+</section>
+<section id="cpp">
+<h2>04 / A small, concrete C++20 property</h2>
+<p>The <strong>production-side example</strong> below uses only <code>std::array</code>, integer operations, and a caller-owned fixed-capacity object. No dynamic allocation is required by <code>BoundedMailbox::push</code>. RapidCheck surrounds that code in a host executable that supplies varying values. The property checks both overflow rejection <em>and retention of prior data</em>. A return value of nonzero on failure is important for CTest and CI. <a href="https://github.com/emil-e/rapidcheck#quick-introduction">[1]</a></p>
+<figure><pre><code class="language-cpp">#include &lt;rapidcheck.h&gt;
+#include &lt;array&gt;
+#include &lt;cstddef&gt;
+
+struct BoundedMailbox {
+  std::array&lt;int, 3&gt; data{};
+  std::size_t count = 0;
+
+  bool push(int value) noexcept {
+    if (count == data.size()) return false;
+    data[count++] = value;
+    return true;
+  }
+};
+
+int main() {
+  const bool passed = rc::check("full mailbox never overwrites", [] {
+    const int a = *rc::gen::inRange&lt;int&gt;(0, 256);
+    const int b = *rc::gen::inRange&lt;int&gt;(0, 256);
+    const int c = *rc::gen::inRange&lt;int&gt;(0, 256);
+    const int d = *rc::gen::inRange&lt;int&gt;(0, 256);
+
+    BoundedMailbox q;
+    RC_ASSERT(q.push(a));
+    RC_ASSERT(q.push(b));
+    RC_ASSERT(q.push(c));
+    RC_ASSERT(!q.push(d));
+    RC_ASSERT(q.count == 3);
+    RC_ASSERT(q.data[0] == a);
+    RC_ASSERT(q.data[1] == b);
+    RC_ASSERT(q.data[2] == c);
+  });
+  return passed ? 0 : 1; // Make CTest fail on falsification.
+}</code></pre><figcaption>Complete <code>mailbox_properties.cpp</code> example. RapidCheck supplies <code>rc::check</code>, <code>rc::gen::inRange</code> and <code>RC_ASSERT</code>; other code is standard C++20.</figcaption></figure>
+<div class="callout red"><strong>Scope of this property:</strong> It exercises one full-capacity boundary, not all dequeue, wraparound, concurrency, interrupt, or ordering behavior. This intentionally simple mailbox is not a full production ring-buffer implementation. A realistic RISCue campaign would add reference-model command sequences and stress reset/restart semantics.</div>
+</section>
+<section id="integration">
+<h2>05 / CMake, Ninja, pinning, and replay</h2>
+<p>RapidCheck is a compiled C++ library, not simply a standalone header. Its official CMake project exports the <code>rapidcheck</code> target. The upstream source currently has <code>RC_ENABLE_TESTS</code> and <code>RC_ENABLE_EXAMPLES</code> disabled by default; it also exposes <code>RC_ENABLE_RTTI</code>. The example below pins the reviewed upstream commit from <time datetime="2026-10-05">5 October 2026</time> rather than an unbounded moving branch. <a href="https://github.com/emil-e/rapidcheck/blob/master/CMakeLists.txt">[4]</a></p>
+<figure><pre><code class="language-cmake">cmake_minimum_required(VERSION 3.20)
+project(riscue_property_probe LANGUAGES CXX)
+include(CTest)
+include(FetchContent)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Pin source for reproducible CI and review its license.
+FetchContent_Declare(rapidcheck
+  GIT_REPOSITORY https://github.com/emil-e/rapidcheck.git
+  GIT_TAG 2c3c4365aca21ef4e612768fdc95b1ce8b39a651)
+FetchContent_MakeAvailable(rapidcheck)
+
+add_executable(mailbox_properties mailbox_properties.cpp)
+target_link_libraries(mailbox_properties PRIVATE rapidcheck)
+add_test(NAME mailbox_properties COMMAND mailbox_properties)
+
+# On Linux/macOS: reproducible test input for RapidCheck.
+set_tests_properties(mailbox_properties PROPERTIES
+  ENVIRONMENT "RC_PARAMS=seed=123456 max_success=1000")
+
+# cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+# cmake --build build
+# ctest --test-dir build --output-on-failure</code></pre><figcaption>CMakeLists.txt, illustrative host-side integration. FetchContent requires network or a populated local cache when configuring for the first time.</figcaption></figure>
+<div class="table-scroll"><table><thead><tr><th scope="col">Situation</th><th scope="col">Recommended record</th></tr></thead><tbody>
+<tr><td>Nightly exploratory test</td><td>Record randomly chosen seed and binary/commit hashes with failure output.</td></tr>
+<tr><td>Developer reproduction</td><td>Run with <code>RC_PARAMS="seed=…"</code>; on a failure, prefer the exact upstream-provided <code>reproduce=…</code> token.</td></tr>
+<tr><td>CI regression</td><td>Pin a seed and preserve the minimized commands as a deterministic standalone regression test.</td></tr>
+<tr><td>Cross-platform evaluation</td><td>Rebuild with your intended GCC/Clang/MSVC toolchain, sanitizer selection, and exception/RTTI policy.</td></tr>
+</tbody></table></div>
+<p>On Windows PowerShell, set the variable with <code>$env:RC_PARAMS = 'seed=123456 max_success=1000'</code> before invoking a test binary directly. In CMake, the <code>ENVIRONMENT</code> test property above is cross-platform. Official options include <code>seed</code>, <code>max_success</code>, <code>max_size</code>, <code>max_discard_ratio</code>, and <code>noshrink</code>; the <code>reproduce</code> token is generated upon failure. <a href="https://github.com/emil-e/rapidcheck/blob/master/doc/configuration.md">[5]</a> <a href="https://github.com/emil-e/rapidcheck/blob/master/doc/debugging.md">[6]</a></p>
+</section>
+<section id="stateful">
+<h2>06 / Stateful commands for RISCue and active objects</h2>
+<p>A single function property cannot exercise event-driven timing and lifecycle transitions. RapidCheck's <code>rc::state</code> API defines <strong>model</strong>, <strong>system under test</strong>, and commands with preconditions, updates, execution, and postconditions. Its official docs cover <code>rc::state::check</code> and command generators. <a href="https://github.com/emil-e/rapidcheck/blob/master/doc/state_ref.md">[7]</a></p>
+<div class="cards">
+<div class="card"><strong>RISCue mailbox</strong> Model push, pop, full, empty, cancellation, and queue ordering. Assert that the SUT's observable behavior matches the abstract model.</div>
+<div class="card"><strong>HSM / active object</strong> Generate event sequences such as Start → Tick → Stop → Start, then check legal transitions, entry/exit counters, and timer cancellation.</div>
+<div class="card"><strong>VeloSim</strong> Generate seed-fixed stimuli, compare independent models, and retain reduced mismatches as golden traces with toolchain metadata.</div>
+</div>
+<p><strong>Crucial boundary:</strong> A host simulation of interleavings does not demonstrate thread safety or preemption correctness. Use separate stress, scheduler instrumentation, target hardware, sanitizers, and formal techniques for concurrency properties. If the generator allows impossible state transitions, it can drown the signal in discarded tests; preconditions should describe legitimate system states and not conceal bugs.</p>
+</section>
+<section id="adoption">
+<h2>07 / Verified real use versus suggested use</h2>
+<div class="table-scroll"><table>
+<thead><tr><th scope="col">Claim</th><th scope="col">Evidence status</th><th scope="col">Why it matters</th></tr></thead>
+<tbody>
+<tr><td><strong>ONNX-MLIR</strong> documents RapidCheck-based generated numerical test cases for convolution implementation correctness.</td><td><span class="pill">Documented actual project use</span><br><a href="https://github.com/onnx/onnx-mlir/blob/main/docs/Testing.md">Project's own testing document [8]</a></td><td>Concrete example of model/checker testing on a sophisticated C++ toolchain. The documentation is not a deployment or usage-frequency audit.</td></tr>
+<tr><td>The upstream RapidCheck repository includes docs, examples, and test-framework integrations.</td><td><span class="pill">Upstream capability</span><br><a href="https://github.com/emil-e/rapidcheck">Official project [1]</a></td><td>Evidence that these APIs exist; not proof of RTOS deployment.</td></tr>
+<tr><td>RISCue, SharpTestBench and VeloSim could use RapidCheck in a <strong>host-only</strong> test target.</td><td><span class="pill alt">Proposed application</span></td><td>Hypothesis to prototype and benchmark; not evidence that any of these repositories already integrate the library.</td></tr>
+</tbody></table></div>
+<p>The RapidCheck author acknowledges employer support from Spotify in the official README. That supports <em>development sponsorship</em>; it is <strong>not</strong> evidence that Spotify deployed it in production. <a href="https://github.com/emil-e/rapidcheck#thanks">[1]</a></p>
+</section>
+<section id="tradeoffs">
+<h2>08 / The uncomfortable details</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">Advantage</th><th scope="col">Limitation / mitigation</th></tr></thead><tbody>
+<tr><td>Finds combinations hand-written unit tests overlook.</td><td>Probability is not exhaustive verification. Add explicit boundary tests and independent reference models.</td></tr>
+<tr><td>Shrinking produces useful, reviewable bug reports.</td><td>Minimality is heuristic; shrinking can be slow, particularly for expensive simulations. Bound case budgets.</td></tr>
+<tr><td>Seed and reproduce tokens aid investigation.</td><td>Capture tool version, model version, and environment; a seed alone does not identify a binary or a source revision.</td></tr>
+<tr><td>Good STL and generator support.</td><td>Harness-side allocations and C++ runtime dependencies make it inappropriate as an RTOS runtime dependency.</td></tr>
+<tr><td>State-machine command testing.</td><td>Generated single-threaded sequences do not prove real scheduling/interleaving properties.</td></tr>
+<tr><td>Native CMake target and broad C++ compiler heritage.</td><td>C++20, no-exception, no-RTTI, cross-compiler, and Windows/Ninja configurations require your own qualification.</td></tr>
+</tbody></table></div>
+<div class="callout"><strong>Licensing:</strong> RapidCheck is <strong>BSD-2-Clause</strong>, not MIT. The copyright/license conditions require preservation of the notice and disclaimer in source redistributions, and their inclusion with binary redistributions as specified. Its original source license is linked in <a href="https://github.com/emil-e/rapidcheck/blob/master/LICENSE.md">[9]</a>. This HTML article and its original JavaScript example may be reused under MIT; that permission does <em>not</em> relicense the third-party RapidCheck library.</div>
+</section>
+<section id="decision">
+<h2>09 / A two-day qualification spike</h2>
+<p><strong>Recommendation:</strong> Add one optional <code>tests/property/</code> target in a host build, not to RISCue firmware. Keep the first experiment small and measurable:</p>
+<ol>
+<li>Build against the exact pinned RapidCheck revision using C++20 and Ninja on the intended host compiler(s). Verify the binary's success and failure exit codes.</li>
+<li>Wrap a fixed-capacity queue or HSM dispatcher with a fully independent reference model. Generate push/pop/reset sequences; explicitly favor empty/full/wraparound boundaries.</li>
+<li>Record seeds, minimize failures, and transform each discovered failure into a permanent deterministic regression case.</li>
+<li>Benchmark throughput (cases/second), memory peak, compile time, and diagnostic usefulness against existing handwritten tests and your Spice-style mutation campaigns.</li>
+<li>Only expand after you can demonstrate at least one useful failure or meaningful additional boundary coverage; skip the dependency if it adds compile complexity without benefit.</li>
+</ol>
+<div class="callout green"><strong>Decision criterion:</strong> One actionable, reduced counterexample that a small unit-test suite missed is more valuable than a thousand passes with weak generators. For requirement traceability, attach each property to a named interface invariant and retain the failure seed plus a human-readable minimized trace.</div>
+</section>
+<section id="sources">
+<h2>10 / Primary-source dossier</h2>
+<ol>
+<li><a href="https://github.com/emil-e/rapidcheck">RapidCheck official repository, README, introductory API</a> — features, installation, first property, authorship.</li>
+<li><a href="https://github.com/emil-e/rapidcheck/blob/master/doc/generators.md">RapidCheck generators guide</a> — generator dereferencing and custom generation.</li>
+<li><a href="https://github.com/emil-e/rapidcheck/blob/master/doc/distribution.md">RapidCheck distribution guide</a> — classifying generated cases.</li>
+<li><a href="https://github.com/emil-e/rapidcheck/blob/master/CMakeLists.txt">RapidCheck CMakeLists.txt</a> — targets, toggles, compile configuration.</li>
+<li><a href="https://github.com/emil-e/rapidcheck/blob/master/doc/configuration.md">RapidCheck configuration</a> — <code>RC_PARAMS</code> and documented defaults.</li>
+<li><a href="https://github.com/emil-e/rapidcheck/blob/master/doc/debugging.md">RapidCheck debugging and reproducing failures</a> — seed/reproduce.</li>
+<li><a href="https://github.com/emil-e/rapidcheck/blob/master/doc/state_ref.md">RapidCheck state testing reference</a> — command semantics and model checks.</li>
+<li><a href="https://github.com/onnx/onnx-mlir/blob/main/docs/Testing.md">ONNX-MLIR official testing documentation</a> — concrete third-party RapidCheck numerical tests.</li>
+<li><a href="https://github.com/emil-e/rapidcheck/blob/master/LICENSE.md">RapidCheck original BSD-2-Clause license</a>.</li>
+<li><a href="https://github.com/emil-e/rapidcheck/commit/2c3c4365aca21ef4e612768fdc95b1ce8b39a651">Reviewed pin (5 October 2026)</a> — explicit dependency source revision.</li>
+</ol>
+<p class="hint">Source audit: 9 November 2026. This is a source-reviewed design proposal; do not equate the working interactive JavaScript with an execution of the C++ library.</p>
+</section>
+</main>
+<footer><div class="wrap">
+<strong>Engineering Deep Dives · 2026-11-09</strong><br>
+Made for bounded embedded systems, deterministic simulation, and evidence-driven verification. Original instructional article and browser simulator: MIT license. Third-party RapidCheck: BSD-2-Clause, separate original copyright and license. No external fonts, images, scripts or network calls are needed to read this file.
+</div></footer>
+<script>
+"use strict";
+(function () {
+  const CAP = 3;
+  const $ = function (id) { return document.getElementById(id); };
+  const seedInput = $("seed"), generate = $("generate"), shrink = $("shrink"), reset = $("reset");
+  const orig = $("originalTrace"), reduced = $("reducedTrace"), status = $("status"), explanation = $("explanation");
+  let candidate = null, reducedSeq = null, trialCount = 0;
+  function prng(seed) {
+    let x = seed >>> 0;
+    if (x === 0) x = 0x9e3779b9;
+    return function () {
+      x ^= x << 13; x ^= x >>> 17; x ^= x << 5; return (x >>> 0) / 4294967296;
+    };
+  }
+  function replay(seq) {
+    const good = [], bad = [];
+    for (let i = 0; i < seq.length; ++i) {
+      const item = seq[i], before = good.slice();
+      if (item.op === "P") {
+        const shouldAccept = good.length < CAP;
+        if (shouldAccept) good.push(item.value);
+        // Deliberate bug: always accepts a push, discarding the oldest
+        // event when full instead of returning false.
+        if (bad.length === CAP) bad.shift();
+        bad.push(item.value);
+        if (!shouldAccept || good.join(",") !== bad.join(",")) {
+          return { failing: true, index: i, expected: shouldAccept, actual: true,
+                   good: good.slice(), bad: bad.slice(), before: before };
+        }
+      } else {
+        const expected = good.length ? good.shift() : null;
+        const actual = bad.length ? bad.shift() : null;
+        if (expected !== actual) {
+          return { failing: true, index: i, expected: expected, actual: actual,
+                   good: good.slice(), bad: bad.slice(), before: before };
+        }
+      }
+    }
+    return { failing: false };
+  }
+  function generateCase(seed) {
+    const rand = prng(seed);
+    for (let tryNo = 1; tryNo <= 700; ++tryNo) {
+      const size = 7 + Math.floor(rand() * 12);
+      const seq = [];
+      for (let j = 0; j < size; ++j) {
+        seq.push(rand() < .84 ? {op:"P",value:Math.floor(rand() * 10)}
+                              : {op:"D"});
+      }
+      if (replay(seq).failing) return {seq:seq, attempts:tryNo};
+    }
+    return null;
+  }
+  function minimize(seq) {
+    let cur = seq.map(function(x) { return {...x}; });
+    let changed = true;
+    while (changed) {
+      changed = false;
+      outer: for (let length = cur.length - 1; length >= 1; --length) {
+        for (let start = 0; start + length <= cur.length; ++start) {
+          const next = cur.slice(0,start).concat(cur.slice(start+length));
+          if (replay(next).failing) {cur = next; changed = true; break outer;}
+        }
+      }
+    }
+    for (let i = 0; i < cur.length; ++i) {
+      if (cur[i].op !== "P" || cur[i].value === 0) continue;
+      const next = cur.map(function(x){return {...x};});
+      next[i].value = 0;
+      if (replay(next).failing) cur = next;
+    }
+    return cur;
+  }
+  function draw(list, seq) {
+    list.replaceChildren();
+    if (!seq) {
+      const li = document.createElement("li"); li.textContent = "No trace"; list.append(li); return;
+    }
+    for (const cmd of seq) {
+      const li = document.createElement("li");
+      li.className = cmd.op === "P" ? "push" : "pop";
+      li.textContent = cmd.op === "P" ? "P" + cmd.value : "D";
+      li.setAttribute("aria-label",cmd.op === "P" ? "Push " + cmd.value : "Dequeue");
+      list.append(li);
+    }
+  }
+  function explain(seq, prefix) {
+    const result = replay(seq);
+    if (!result.failing) {
+      explanation.textContent = "No divergence was detected by this teaching model."; return;
+    }
+    const step = result.index + 1;
+    explanation.textContent = prefix + ": the implementations first disagree at command " + step +
+      ". Before that command, the correct mailbox contains [" + result.before.join(", ") +
+      "]. The correct result is " + String(result.expected) + ", but the buggy result is " +
+      String(result.actual) + ". The specification retains [" + result.good.join(", ") +
+      "]; the buggy queue contains [" + result.bad.join(", ") + "].";
+  }
+  function clear() {
+    candidate=null; reducedSeq=null; trialCount=0; shrink.disabled=true;
+    $("candidateCount").textContent="—"; $("shrunkCount").textContent="—"; $("attemptCount").textContent="—";
+    draw(orig,null); draw(reduced,null);
+    status.textContent="Ready. Enter a seed, then generate.";
+    explanation.textContent="The checker will compare the specification with the deliberately broken queue at each command.";
+  }
+  generate.addEventListener("click", function(){
+    const input = Number(seedInput.value);
+    if (!Number.isSafeInteger(input) || input < 1 || input > 4294967295) {
+      status.textContent="Enter a whole-number seed between 1 and 4,294,967,295."; return;
+    }
+    const found = generateCase(input);
+    if (!found) {
+      status.textContent="No counterexample found within 700 generated traces. Change the seed."; return;
+    }
+    candidate=found.seq; reducedSeq=null; trialCount=found.attempts;
+    draw(orig,candidate); draw(reduced,null);
+    $("candidateCount").textContent=String(candidate.length);
+    $("shrunkCount").textContent="—"; $("attemptCount").textContent=String(trialCount);
+    shrink.disabled=false;
+    status.textContent="Counterexample found. Select “Shrink it” to remove unnecessary commands and simplify values.";
+    explain(candidate,"Original trace");
+  });
+  shrink.addEventListener("click",function(){
+    if (!candidate) return;
+    reducedSeq=minimize(candidate); draw(reduced,reducedSeq);
+    $("shrunkCount").textContent=String(reducedSeq.length);
+    status.textContent="Reduction complete: " + candidate.length + " → " + reducedSeq.length +
+      " commands. The reduced trace still violates the same full-queue rule.";
+    explain(reducedSeq,"Reduced trace");
+  });
+  reset.addEventListener("click",clear);
+  // deterministic, dependency-free self-checks on the educational model
+  const assert = function(condition,msg){if(!condition)throw new Error(msg);};
+  assert(!replay([{op:"P",value:1},{op:"P",value:2},{op:"D"}]).failing, "simple non-overflow");
+  assert(replay([{op:"P",value:1},{op:"P",value:2},{op:"P",value:3},{op:"P",value:4}]).failing, "capacity overflow");
+  assert(minimize([{op:"D"},{op:"P",value:8},{op:"P",value:7},{op:"P",value:6},{op:"P",value:5},{op:"D"}]).length === 4,"shrink length");
+  assert(generateCase(20261109) !== null,"example seed finds bug");
+  clear();
+})();
+</script>
+</body>
+</html>
