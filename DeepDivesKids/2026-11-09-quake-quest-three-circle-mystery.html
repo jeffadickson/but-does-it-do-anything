@@ -132,7 +132,6 @@ console.log(distanceFromGap(10)); // 84 kilometers</code></pre>
     {title:"Case 3 · Mystery aftershock", story:"One more imaginary event! Can your detective team solve it without immediately revealing the answer?", x:360, y:135}
   ];
   const byId = id => document.getElementById(id);
-  const svgNS = "http://www.w3.org/2000/svg";
   const xSlider = byId("xGuess"), ySlider = byId("yGuess"), map = byId("quakeMap");
   const done = [false, false, false], revealed = [false, false, false];
   let mission = 0, showRings = false;
@@ -141,7 +140,10 @@ console.log(distanceFromGap(10)); // 84 kilometers</code></pre>
   function gapFromDistance(km) { return km * (1/sSpeed - 1/pSpeed); }
   function integer(value) { return Math.max(0, Math.round(value)); }
   function ringFor(station, quake) {
-    const observedGap = Number(gapFromDistance(distance(station, quake)).toFixed(1));
+    const km = distance(station, quake);
+    const displayedP = Number((km / pSpeed).toFixed(1));
+    const displayedS = Number((km / sSpeed).toFixed(1));
+    const observedGap = Number((displayedS - displayedP).toFixed(1));
     return distanceFromGap(observedGap);
   }
   function updatePin() {
@@ -175,7 +177,9 @@ console.log(distanceFromGap(10)); // 84 kilometers</code></pre>
     body.replaceChildren();
     stations.forEach(function(station) {
       const quake = missions[index], km = distance(station, quake);
-      const p = km / pSpeed, s = km / sSpeed, gap = gapFromDistance(km);
+      const p = Number((km / pSpeed).toFixed(1));
+      const s = Number((km / sSpeed).toFixed(1));
+      const gap = Number((s - p).toFixed(1));
       const radius = ringFor(station, quake);
       const tr = document.createElement("tr");
       [station.name + " (" + station.short + ")", p.toFixed(1) + " s", s.toFixed(1) + " s", gap.toFixed(1) + " s", radius.toFixed(1) + " km"].forEach(function(value) {
@@ -210,9 +214,6 @@ console.log(distanceFromGap(10)); // 84 kilometers</code></pre>
     setFeedback("The green crosshairs reveal the pretend epicenter: " + missions[mission].x + " km east, " + missions[mission].y + " km south. This case does not earn a star; try another!");
   }
   function mapClick(event) {
-    const rect = map.getBoundingClientRect();
-    if (!rect.width || !rect.height) return;
-    const ratioX = 600 / rect.width, ratioY = 380 / rect.height;
     // SVG viewBox scales uniformly. Its x/y letterboxing is corrected by getScreenCTM.
     const pt = map.createSVGPoint(); pt.x = event.clientX; pt.y = event.clientY;
     const transform = map.getScreenCTM();
