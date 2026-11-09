@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="An interactive earthquake mystery for curious nine-year-olds: use P- and S-wave clues from three seismic stations to find a hidden earthquake.">
+<title>Quake Quest! The Three-Circle Mystery | DeepDivesKids | 9 Nov 2026</title>
+<style>
+:root{--ink:#13283a;--muted:#466078;--navy:#10243b;--blue:#146bac;--cyan:#007b88;--orange:#a13a14;--paper:#fffdf6;--sun:#ffcf55;--line:#cadbdc;--focus:#e34d30;--card:#fff;--a:#b03978;--b:#047d83;--c:#8351b6}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:#eaf4f5;font:17px/1.64 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:#075e95;text-underline-offset:3px}a:hover{text-decoration-thickness:3px}a:focus-visible,button:focus-visible,input:focus-visible{outline:4px solid var(--focus);outline-offset:4px}
+.skip{position:absolute;top:-90px;left:15px;background:#fff;color:#000;padding:.6rem 1rem;z-index:20}.skip:focus{top:15px}
+.shell{width:min(1120px,calc(100% - 32px));margin:auto}.mast{background:var(--navy);color:white;padding:13px 0}.mast .shell{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}.mast strong{letter-spacing:.04em}.mast a{color:#fff}
+.hero{position:relative;overflow:hidden;background:linear-gradient(125deg,#0e294b,#18576e 54%,#257d7c);color:white;padding:66px 0 56px}.hero:before{content:"";position:absolute;inset:0;opacity:.18;background-image:radial-gradient(circle at 15% 20%,#fff 0 2px,transparent 3px),radial-gradient(circle at 80% 50%,#fff 0 2px,transparent 3px);background-size:85px 85px,110px 110px;pointer-events:none}.hero .shell{position:relative}.eyebrow{display:inline-block;padding:5px 13px;background:#fbdf77;color:#253218;border-radius:20px;font-size:.78rem;font-weight:850;letter-spacing:.06em;text-transform:uppercase}.hero h1{font-size:clamp(2.6rem,7vw,5.1rem);line-height:1.04;margin:18px 0;font-weight:900;letter-spacing:-.045em;max-width:850px}.hero h1 span{color:#ffdf83}.lead{font-size:clamp(1.1rem,2.3vw,1.4rem);max-width:790px;line-height:1.55}.hero-cta{display:inline-flex;background:#ffda76;color:#24331a;border:3px solid #fff9d9;border-radius:16px;padding:12px 21px;margin-top:10px;font-weight:850;text-decoration:none;box-shadow:0 7px 0 #0c1f2d}.hero-cta:hover{transform:translateY(-2px)}
+main{padding:28px 0 65px}.intro-grid,.mini-grid,.truth-grid,.experiment-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.mini{padding:18px 20px;background:#fff;border:1px solid var(--line);border-radius:18px;border-top:6px solid #19a2a7}.mini:nth-child(2){border-top-color:#edb143}.mini:nth-child(3){border-top-color:#a88eda}.mini b{display:block;font-size:1.2rem}.mini p{margin:.2rem 0 0}.card{background:#fff;border:1px solid var(--line);box-shadow:0 10px 30px #17415813;border-radius:24px;margin-top:24px;padding:clamp(20px,3.2vw,36px)}.card h2{line-height:1.18;font-size:clamp(1.65rem,3.4vw,2.4rem);margin:0 0 16px}.card h3{line-height:1.25;margin:12px 0 9px}.kicker{font-size:.82rem;color:#176178;letter-spacing:.12em;text-transform:uppercase;font-weight:900}.toc{display:flex;gap:9px;flex-wrap:wrap}.toc a{display:inline-block;padding:7px 13px;background:#e8f4f5;border:1px solid #9fc6cb;border-radius:30px;font-weight:750;text-decoration:none}.toc a:hover{background:#d2e9ea}
+.callout{background:#fff5d8;border-left:5px solid #e9a21c;padding:13px 19px;border-radius:4px 14px 14px 4px;margin:17px 0}.science{background:#e9f5fc;border-left-color:#2384b5}.caution{background:#fff0ed;border-left-color:#b94b38}.bubble{font-size:1.24rem;font-weight:760;color:#173f58}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;counter-reset:step}.step{border:1px solid #bad3d7;border-radius:19px;padding:17px;background:#f6fbfb;position:relative}.step:before{counter-increment:step;content:counter(step);display:grid;place-items:center;width:32px;height:32px;background:#d6ebf4;color:#11446b;border-radius:50%;font-weight:900;margin-bottom:10px}.step p{margin:.3rem 0}
+.lab{border:3px solid #1f667d;border-radius:24px;background:#f9feff;padding:clamp(12px,2.8vw,27px);margin-top:14px}.lab h3{font-size:1.4rem;margin:6px 0}.mission-buttons{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.mission-buttons button{background:#eaf4f7;color:#173a54;border:2px solid #6795a8;border-radius:12px;padding:9px 16px;font-size:1rem;font-weight:800;cursor:pointer}.mission-buttons button[aria-pressed="true"]{background:#143c60;color:#fff;border-color:#143c60}
+.map-card{background:#e8f6f4;border:2px solid #8db6bd;border-radius:20px;padding:9px}.map-card svg{display:block;width:100%;height:auto;background:#ebf8f2;border-radius:12px;touch-action:manipulation;cursor:crosshair}.map-card figcaption{color:#315368;padding:8px;font-size:.88rem}.map-legend{display:flex;flex-wrap:wrap;gap:12px 20px;font-size:.87rem;font-weight:700;margin:10px 2px}.dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle;margin-right:6px}.dot.a{background:var(--a)}.dot.b{background:var(--b)}.dot.c{background:var(--c)}.dot.guess{background:#be511b}
+.table-wrap{overflow-x:auto;margin:20px 0}table{border-collapse:collapse;width:100%;min-width:420px;font-variant-numeric:tabular-nums}th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #c9dcde}th{background:#e5f3f4;color:#193c51;font-size:.89rem}tr:nth-child(even) td{background:#f5fafb}caption{caption-side:top;text-align:left;font-weight:850;color:#244556;margin-bottom:9px}
+.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.slider-card{background:white;border:1px solid #bdd8df;border-radius:15px;padding:13px}.slider-card label{display:block;font-weight:800}.slider-card output{display:inline-block;background:#133d59;color:white;padding:2px 8px;border-radius:7px;min-width:72px;text-align:center}input[type=range]{width:100%;accent-color:#9f391b;min-height:30px}.action-row{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.action-row button{cursor:pointer;background:#195e88;border:2px solid #155477;color:#fff;padding:11px 16px;border-radius:12px;font-weight:850;font-size:1rem;min-height:46px}.action-row button.secondary{background:white;color:#164866}.action-row button.reveal{background:#814b12;border-color:#814b12}.action-row button:disabled{opacity:.5;cursor:not-allowed}.readout{background:#133c58;color:#fff;padding:16px;border-radius:14px;min-height:60px;font-size:1.05rem}.readout strong{color:#ffe49c}.feedback{background:#fff6d8;color:#3f320e;border:2px solid #efd489;border-radius:14px;padding:15px;margin-top:11px;min-height:70px;font-weight:720}.score{display:inline-block;background:#ffe7ad;color:#493d19;border-radius:9px;padding:3px 9px;font-weight:850}.small{font-size:.9rem;color:#4d687a}.math{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#eaf1f5;color:#213c54;padding:2px 6px;border-radius:6px;word-break:break-word}.truth-grid article{background:#f1f8fa;padding:17px;border-radius:17px;border:1px solid #d3e5e8}.truth-grid article h3{margin-top:0}.truth-grid article p{margin-bottom:0}
+pre{background:#112d45;color:#e9fcfe;overflow:auto;padding:18px;border-radius:16px;font-size:.91rem;line-height:1.58;tab-size:2}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}details{background:#f1f8f7;border:1px solid #bdd6d6;border-radius:12px;padding:13px 16px;margin:9px 0}summary{font-weight:850;cursor:pointer}summary:focus-visible{outline:4px solid var(--focus)}
+.hands-on{background:#fdf5e4;border-radius:17px;padding:19px;border:1px solid #ead6a7}.hands-on ol{padding-left:23px}.hands-on li{padding-left:5px;margin-bottom:7px}.reference-list li{margin:12px 0;overflow-wrap:anywhere}.foot{background:#10243b;color:#e2f3f9;padding:35px 0}.foot a{color:#f8d88f}.foot p{max-width:840px} 
+@media(max-width:760px){.intro-grid,.mini-grid,.truth-grid,.experiment-grid,.steps,.control-grid{grid-template-columns:1fr}.hero{padding:45px 0}.card{padding:19px}.mast .shell{align-items:flex-start}.map-legend{gap:6px 14px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-cta:hover{transform:none}}
+@media print{body{background:white;font-size:12pt}.mast,.hero-cta,.action-row,.mission-buttons{display:none!important}.hero{color:black;background:white;padding:20px 0}.hero h1 span{color:black}.card{box-shadow:none;break-inside:avoid}.lab{border:1px solid #888}.map-card svg{max-width:100%}}
+</style>
+</head>
+<body>
+<a href="#main" class="skip">Skip to the adventure</a>
+<div class="mast"><div class="shell"><strong>🌟 DeepDivesKids / Field Lab No. 16</strong><span>Monday, November 9, 2026 · Ages 9+</span><a href="#sources">Meet the science sources ↓</a></div></div>
+<header class="hero"><div class="shell"><span class="eyebrow">Earth science × detective coding</span><h1>🌎 Quake Quest!<br><span>The Three-Circle Mystery</span></h1><p class="lead">An earthquake just shook our pretend island. Nobody saw where it began! You have three listening stations, some wave-arrival clues, and one giant question: <strong>Where did the shaking start?</strong></p><a class="hero-cta" href="#lab">🕵️ Start the mystery →</a><p style="margin-top:22px;font-size:.92rem;color:#e5fbff">No account. No downloads. No live earthquake feed. All three quakes are imaginary.</p></div></header>
+<main class="shell" id="main">
+<div class="intro-grid" aria-label="Three important clues"><div class="mini"><b>⚡ P waves rush first</b><p>These compression waves travel faster through solid rock.</p></div><div class="mini"><b>〰️ S waves arrive later</b><p>The time gap is a clue about how far away the quake was.</p></div><div class="mini"><b>⭕ Three circles meet</b><p>One listening station tells distance; three can pinpoint a spot in our simple map.</p></div></div>
+<section class="card" aria-labelledby="contents"><p class="kicker">Your mission map</p><h2 id="contents">What's inside?</h2><nav class="toc" aria-label="Page contents"><a href="#story">The mystery</a><a href="#science">Wave science</a><a href="#real">Real-world missions</a><a href="#lab">Play the lab</a><a href="#paper">Try it on paper</a><a href="#code">Peek at the code</a><a href="#limits">What the model misses</a><a href="#sources">Sources &amp; license</a></nav></section>
+<section class="card" id="story"><p class="kicker">01 · The case</p><h2>The island heard a <em>rumble</em> … but from where?</h2><p>Picture three tiny earthquake detectors named <strong>Ada</strong>, <strong>Byte</strong>, and <strong>Comet</strong>. Each writes down the instant a speedy P wave arrives and the instant a slower S wave follows.</p><p>Station Ada might say: “I heard the first wave … then the next wave 20 seconds later!” That tells us the quake was a certain <em>distance</em> away. But was it north, south, east, or west? Ada cannot know from that clue alone.</p><div class="callout"><span class="bubble">🔍 Detective trick:</span> Draw a circle around Ada. Repeat around Byte and Comet. The spot where all three circles cross is your best answer in our model.</div><p>And yes, in real life, scientists do use seismometers and arrival times to locate earthquakes. The three-circle classroom trick is a simplified version of that work.</p></section>
+<section class="card" id="science"><p class="kicker">02 · How it works</p><h2>Two waves. One stopwatch clue.</h2><div class="steps"><div class="step"><h3>Feel the fast one</h3><p><strong>P</strong> stands for <em>primary</em>. In solid rock, these waves squeeze and stretch the material in their direction of travel.</p></div><div class="step"><h3>Wait for the wiggle</h3><p><strong>S</strong> stands for <em>secondary</em>. These waves shake material sideways and arrive after P waves.</p></div><div class="step"><h3>Find the delay</h3><p>Subtract the P-wave arrival time from the S-wave arrival time. A bigger gap usually means more distance.</p></div></div>
+<div class="callout science"><strong>Our easy-mode model:</strong> P waves always move at 6 kilometers per second, and S waves at 3.5 kilometers per second. The pretend island is flat, and the quake starts at its surface. Real Earth is not this simple! These fixed speeds are <em>illustrative assumptions</em>, not measured values for a particular place.</div>
+<p>In this model, <span class="math">distance = (S time − P time) ÷ (1/3.5 − 1/6)</span>. That funny number works because the slower S wave needs more time for the same journey.</p><p><strong>Quick challenge:</strong> If the S wave arrives <strong>10 seconds</strong> after the P wave, the station is <strong>84 km</strong> from the quake in our pretend world. Try another gap in the lab!</p>
+<details><summary>Why isn't one station enough?</summary><p>It tells you how far away the earthquake was, but not which direction. Imagine standing on a hockey rink and hearing a whistle from exactly 15 meters away: the whistle could be anywhere on a circle around you. A second station narrows the choices; a third usually picks the crossing point.</p></details>
+</section>
+<section class="card" id="real"><p class="kicker">03 · Evidence vs imagination</p><h2>Earthquake detectives really exist!</h2><div class="truth-grid">
+<article><h3>✅ USGS earthquake locations</h3><p>The U.S. Geological Survey explains how P- and S-wave arrivals at multiple stations help locate a quake. Modern scientists model Earth's different rock layers rather than using our perfectly uniform pretend island. <a href="https://www.usgs.gov/programs/earthquake-hazards/science-earthquakes" target="_blank" rel="noopener noreferrer">USGS explanation ↗</a></p></article>
+<article><h3>✅ EarthScope's real learning map</h3><p>EarthScope's <em>Earthquake Triangulation</em> app lets learners draw distance circles from seismic stations, just like our investigation. It can use real seismic data. <a href="https://www.iris.edu/app/triangulation/" target="_blank" rel="noopener noreferrer">EarthScope app ↗</a></p></article>
+<article><h3>✅ ShakeAlert early warning</h3><p>USGS's ShakeAlert system uses earthquake sensors and fast P-wave information to estimate where shaking may occur. It is <strong>not</strong> an earthquake prediction system. <a href="https://www.usgs.gov/media/images/earthquake-early-warning-basics-0" target="_blank" rel="noopener noreferrer">USGS ShakeAlert explanation ↗</a></p></article>
+</div><div class="callout science"><strong>Our pretend part:</strong> The island, stations, perfect clocks, earthquake locations, speeds, and scores below are invented for learning. They do <em>not</em> describe any actual earthquake or real safety warning.</div></section>
+<section class="card" id="lab"><p class="kicker">04 · Interactive detective agency</p><h2>🎯 Find the hidden epicenter</h2><p>Select a mystery. Tap <strong>Draw the three circles</strong>, then move your detective pin where the circles appear to meet. You can click the map or use the two keyboard-friendly sliders. Get within <strong>15 kilometers</strong> to crack the case.</p>
+<div class="lab">
+<div class="mission-buttons" role="group" aria-label="Choose your earthquake mystery"><button id="mission0" type="button" aria-pressed="true">Case 1 · First tremor</button><button id="mission1" type="button" aria-pressed="false">Case 2 · Mountain rumble</button><button id="mission2" type="button" aria-pressed="false">Case 3 · Mystery aftershock</button></div>
+<h3 id="caseTitle">Case 1 · First tremor</h3><p id="caseStory">An imaginary earthquake shakes the island. Collect the arrival-time clues.</p><p><span class="score" id="score">Solved: 0 of 3</span></p>
+<div class="table-wrap"><table><caption>Arrival times measured from the imaginary quake's start (seconds)</caption><thead><tr><th scope="col">Station</th><th scope="col">P arrives</th><th scope="col">S arrives</th><th scope="col">S − P gap</th><th scope="col">Circle radius</th></tr></thead><tbody id="clues"></tbody></table></div>
+<figure class="map-card"><svg id="quakeMap" viewBox="0 0 600 380" role="img" aria-labelledby="mapTitle mapDesc" tabindex="-1">
+<title id="mapTitle">Pretend island seismic-station map</title>
+<desc id="mapDesc">Three listening stations, optional distance circles and an orange movable detective marker. Use the east and south sliders beneath the map for a fully accessible way to place the marker.</desc>
+<defs><pattern id="squareGrid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="#aaccc8" stroke-width="1"/></pattern></defs>
+<rect width="600" height="380" rx="12" fill="#e9f4ec"/><rect width="600" height="380" fill="url(#squareGrid)"/>
+<path d="M25 350 Q75 305 105 340 T190 334 T305 356 L305 380H0V355Z" fill="#d0e8cb"/>
+<path d="M355 0 L410 56 L454 23 L500 75 L560 18 L600 56 L600 0Z" fill="#d5e4d4" opacity=".9"/>
+<g id="rings" aria-hidden="true">
+<circle id="ringA" cx="110" cy="90" r="0" fill="none" stroke="#b03978" stroke-width="3" stroke-dasharray="7 5" visibility="hidden"/>
+<circle id="ringB" cx="485" cy="105" r="0" fill="none" stroke="#047d83" stroke-width="3" stroke-dasharray="7 5" visibility="hidden"/>
+<circle id="ringC" cx="300" cy="320" r="0" fill="none" stroke="#8351b6" stroke-width="3" stroke-dasharray="7 5" visibility="hidden"/>
+</g>
+<g aria-hidden="true" font-size="16" font-weight="800" text-anchor="middle">
+<circle cx="110" cy="90" r="13" fill="#b03978" stroke="white" stroke-width="3"/><text x="110" y="69" fill="#562449">Ada · A</text>
+<circle cx="485" cy="105" r="13" fill="#047d83" stroke="white" stroke-width="3"/><text x="485" y="83" fill="#124b50">Byte · B</text>
+<circle cx="300" cy="320" r="13" fill="#8351b6" stroke="white" stroke-width="3"/><text x="300" y="300" fill="#4a3075">Comet · C</text>
+</g>
+<g id="targetMark" visibility="hidden" aria-hidden="true"><circle cx="0" cy="0" r="20" fill="none" stroke="#16824a" stroke-width="5"/><path d="M-14 0H14M0 -14V14" stroke="#16824a" stroke-width="3"/></g>
+<g id="guessMark" transform="translate(300 190)" aria-hidden="true"><circle r="15" fill="#e56722" stroke="#fff" stroke-width="4"/><path d="M-8 0H8M0 -8V8" stroke="#fff" stroke-width="2.5"/></g>
+<text x="590" y="25" text-anchor="end" font-size="12" font-weight="750" fill="#235a66">N ↑ · 1 map unit = 1 km</text>
+</svg><figcaption>This is a fictional 600 km × 380 km flat map, not a real earthquake map. Circle colors match the three stations. The orange marker is your guess. North is up.</figcaption></figure>
+<div class="map-legend" aria-label="Map legend"><span><span class="dot a"></span>Ada / A</span><span><span class="dot b"></span>Byte / B</span><span><span class="dot c"></span>Comet / C</span><span><span class="dot guess"></span>Your guess</span></div>
+<div class="control-grid"><div class="slider-card"><label for="xGuess">Eastward map position: <output id="xValue" for="xGuess">300 km</output></label><input type="range" id="xGuess" min="0" max="600" value="300" step="1"><span class="small">0 = left edge · 600 = right edge</span></div><div class="slider-card"><label for="yGuess">Southward map position: <output id="yValue" for="yGuess">190 km</output></label><input type="range" id="yGuess" min="0" max="380" value="190" step="1"><span class="small">0 = top edge · 380 = bottom edge</span></div></div>
+<div class="action-row"><button type="button" id="ringsButton">⭕ Draw the three circles</button><button type="button" id="checkButton">🔎 Check my answer</button><button type="button" id="revealButton" class="reveal">💡 Reveal location</button><button type="button" id="nextButton" class="secondary">Next mystery →</button></div>
+<div class="readout" id="positionReadout">Your detective pin is at <strong>300 km east, 190 km south</strong>.</div>
+<div class="feedback" id="feedback" role="status" aria-live="polite" aria-atomic="true">Detective tip: press “Draw the three circles” to see where the clues point!</div>
+<p class="small">Accessibility: use Tab to reach the sliders, then arrow keys to move your pin one kilometer at a time. Map clicking is optional. This game does not read your actual location.</p>
+</div>
+</section>
+<section class="card" id="paper"><p class="kicker">05 · Do it yourself</p><h2>📐 The paper-and-string earthquake hunt</h2><div class="hands-on"><p><strong>You need:</strong> a sheet of paper, pencil, ruler, a piece of string, and a helper (optional). No shaking equipment required.</p><ol>
+<li>Draw a rectangle <strong>12 cm wide and 7.6 cm tall</strong>. That is our 600 km × 380 km island: <strong>1 cm = 50 km</strong>.</li>
+<li>Mark three stations measured from the <strong>top-left corner</strong>: Ada (2.2 cm right, 1.8 cm down), Byte (9.7 cm right, 2.1 cm down), and Comet (6.0 cm right, 6.4 cm down).</li>
+<li>Choose Case 1. Look at the game's “Circle radius” column, divide each radius in kilometers by 50, and set that length on your ruler or string.</li>
+<li>Hold one end of the string at Ada and swing the pencil around to make a circle. Repeat at Byte and Comet using <em>their</em> radii.</li>
+<li>Find the place where all the circles cross. Compare with your online guess. What happened when you tried just one circle?</li>
+</ol><p><strong>Bonus for two detectives:</strong> One person draws the circles; the other checks the result in the web lab. Swap jobs for Case 2.</p></div><p class="small">Rounding the on-screen times to tenths of a second makes pencil circles approximate. That's fine—real science also needs to talk about measurement uncertainty.</p></section>
+<section class="card" id="code"><p class="kicker">06 · The code behind the clue</p><h2>💻 A tiny bit of JavaScript detective math</h2><p>The same little formula runs inside this page. It does not need a special library, account, server, or internet connection after you save the file.</p><pre><code>// Speed assumptions for our imaginary island:
+const pSpeed = 6;    // km per second
+const sSpeed = 3.5;  // km per second
+
+function distanceFromGap(seconds) {
+  return seconds / (1 / sSpeed - 1 / pSpeed);
+}
+
+console.log(distanceFromGap(10)); // 84 kilometers</code></pre>
+<p>Try changing <span class="math">10</span> to <span class="math">5</span>. Would the earthquake be closer or farther away? In this model, half the delay means half the distance.</p>
+<div class="callout science"><strong>How engineers use the same idea:</strong> Your dad's RISCue software handles events with careful timing. A seismic station also records events—in this case, <em>when a wave arrives</em>. VeloSim explores repeatable simulations. Our three pretend quakes are repeatable too: the same station positions and wave speeds give the same answers every time. These are learning connections, <strong>not claims that either project processes earthquake data</strong>.</div>
+<p><strong>Hockey connection:</strong> Two teammates who hear a slap shot at different times have timing clues. Like the goalie reaction-time game, timing matters! But sound in an ice rink is not the same as seismic waves traveling through rock.</p></section>
+<section class="card" id="limits"><p class="kicker">07 · Scientist's honesty badge</p><h2>What this model cannot tell you</h2><div class="callout caution"><strong>🚨 Not a warning tool:</strong> Never use this page to judge earthquake safety, predict an earthquake, or decide whether to evacuate. Follow official local guidance. Earthquakes cannot currently be predicted by date, place, and size.</div><div class="truth-grid">
+<article><h3>🪨 Rock isn't uniform</h3><p>Real seismic waves speed up, slow down, and bend through different materials. Scientists use travel-time models, not our two fixed speeds.</p></article>
+<article><h3>📍 Quakes have depth</h3><p>Earthquakes start underground at a <em>hypocenter</em>. The <em>epicenter</em> is the point on the surface above it. Our island pretends the source is right at the surface.</p></article>
+<article><h3>⏱️ Measurements are messy</h3><p>Real sensors have uncertain arrival times. More stations, calibration, and computer calculations improve location estimates. Three drawn circles are a teaching tool.</p></article>
+</div>
+<details><summary>Explorer quiz: Which wave reaches a station first?</summary><p><strong>The P wave!</strong> It travels faster than the S wave in our model and generally arrives first in real seismic records.</p></details>
+<details><summary>Explorer quiz: What is an epicenter?</summary><p>The spot on Earth's surface above where an earthquake starts underground. The underground starting point is called the <em>hypocenter</em>.</p></details>
+<details><summary>Explorer quiz: Can this game predict the next earthquake?</summary><p><strong>No.</strong> It locates an <em>already occurred, imaginary</em> earthquake using pretend arrival data. Real ShakeAlert is an <em>early warning</em> system after a quake begins, not a prediction system.</p></details></section>
+<section class="card" id="sources"><p class="kicker">08 · Traceable research</p><h2>🔗 Our science trail &amp; license</h2><p>Primary materials checked for this edition; facts about actual systems come from these organizations, not from the game's invented cases.</p><ol class="reference-list">
+<li><strong>USGS — The Science of Earthquakes:</strong> earthquake origins, P/S waves, simple three-station circles, and limits of prediction. <a href="https://www.usgs.gov/programs/earthquake-hazards/science-earthquakes" target="_blank" rel="noopener noreferrer">Read USGS ↗</a></li>
+<li><strong>USGS — Seismographs: Keeping Track of Earthquakes:</strong> recorded P/S arrival times and real-world travel-time curves. <a href="https://www.usgs.gov/programs/earthquake-hazards/seismographs-keeping-track-earthquakes" target="_blank" rel="noopener noreferrer">Read USGS ↗</a></li>
+<li><strong>EarthScope (IRIS) — Earthquake Triangulation:</strong> actual classroom app with station distance circles and P/S timing. <a href="https://www.iris.edu/app/triangulation/" target="_blank" rel="noopener noreferrer">Open the learning map ↗</a></li>
+<li><strong>USGS — Earthquake Early Warning Basics:</strong> how ShakeAlert reacts after P-wave detection. <a href="https://www.usgs.gov/media/images/earthquake-early-warning-basics-0" target="_blank" rel="noopener noreferrer">Read USGS ↗</a></li>
+<li><strong>USGS — Everything Is Relative: Precise Earthquake Location:</strong> uncertainty and computer-based best fits using seismic wave arrival times. <a href="https://www.usgs.gov/observatories/yvo/news/everything-relative-precise-earthquake-location" target="_blank" rel="noopener noreferrer">Read USGS ↗</a></li>
+</ol>
+<p><strong>Software integration:</strong> Standalone HTML5, inline CSS, SVG, and standard JavaScript; no external JavaScript library, network API, tracking, assets, build step, or runtime dependency. Open as a local <span class="math">.html</span> file or serve from GitHub Pages. Tested assumptions are shown in the game.</p>
+<p><strong>Licensing:</strong> The original lesson's code, styling, and diagrams are offered under the <a href="https://opensource.org/license/mit/" target="_blank" rel="noopener noreferrer">MIT License</a> (copyright © 2026 contributors to this lesson). External USGS and EarthScope material is <em>linked, not bundled or relicensed</em>; follow each source's own terms. All in-page map graphics are original and schematic.</p>
+<p class="small">Edition: 2026-11-09 · Audience: ages 9+ · Learning goal: reason from measured arrival-time gaps to distance and from three distances to a location.</p></section>
+</main><footer class="foot"><div class="shell"><strong>🧭 DeepDivesKids · Be curious. Check the clues. Be kind to the facts.</strong><p>For Quinn, Reagan, and every young detective who wonders how computers help scientists understand our world. All stations and earthquakes in the interactive game are fictional.</p><p><a href="#main">Back to the top ↑</a></p></div></footer>
+<script>
+(function () {
+  "use strict";
+  const pSpeed = 6, sSpeed = 3.5, toleranceKm = 15;
+  const stations = [
+    {name:"Ada", short:"A", x:110, y:90, ring:"ringA"},
+    {name:"Byte", short:"B", x:485, y:105, ring:"ringB"},
+    {name:"Comet", short:"C", x:300, y:320, ring:"ringC"}
+  ];
+  const missions = [
+    {title:"Case 1 · First tremor", story:"The island is peaceful until three stations hear a mystery rumble. Draw their circles and find where it began.", x:245, y:190},
+    {title:"Case 2 · Mountain rumble", story:"A second pretend quake rattles the northern trails. The station clocks have a fresh set of clues.", x:355, y:225},
+    {title:"Case 3 · Mystery aftershock", story:"One more imaginary event! Can your detective team solve it without immediately revealing the answer?", x:360, y:135}
+  ];
+  const byId = id => document.getElementById(id);
+  const svgNS = "http://www.w3.org/2000/svg";
+  const xSlider = byId("xGuess"), ySlider = byId("yGuess"), map = byId("quakeMap");
+  const done = [false, false, false], revealed = [false, false, false];
+  let mission = 0, showRings = false;
+  const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  function distanceFromGap(seconds) { return seconds / (1/sSpeed - 1/pSpeed); }
+  function gapFromDistance(km) { return km * (1/sSpeed - 1/pSpeed); }
+  function integer(value) { return Math.max(0, Math.round(value)); }
+  function ringFor(station, quake) {
+    const observedGap = Number(gapFromDistance(distance(station, quake)).toFixed(1));
+    return distanceFromGap(observedGap);
+  }
+  function updatePin() {
+    const x = Number(xSlider.value), y = Number(ySlider.value);
+    byId("guessMark").setAttribute("transform", "translate(" + x + " " + y + ")");
+    byId("xValue").value = x + " km";
+    byId("yValue").value = y + " km";
+    byId("positionReadout").innerHTML = "Your detective pin is at <strong>" + x + " km east, " + y + " km south</strong>.";
+  }
+  function setFeedback(text) { byId("feedback").textContent = text; }
+  function showTarget() {
+    const quake = missions[mission];
+    byId("targetMark").setAttribute("transform", "translate(" + quake.x + " " + quake.y + ")");
+    byId("targetMark").setAttribute("visibility", revealed[mission] || done[mission] ? "visible" : "hidden");
+  }
+  function updateRings() {
+    stations.forEach(function(station) {
+      const ring = byId(station.ring);
+      ring.setAttribute("r", ringFor(station, missions[mission]).toFixed(2));
+      ring.setAttribute("visibility", showRings ? "visible" : "hidden");
+    });
+    byId("ringsButton").textContent = showRings ? "🙈 Hide the three circles" : "⭕ Draw the three circles";
+  }
+  function showMission(index) {
+    mission = index;
+    showRings = false;
+    byId("caseTitle").textContent = missions[index].title;
+    byId("caseStory").textContent = missions[index].story;
+    for (let i=0; i<missions.length; i++) byId("mission" + i).setAttribute("aria-pressed", String(index === i));
+    const body = byId("clues");
+    body.replaceChildren();
+    stations.forEach(function(station) {
+      const quake = missions[index], km = distance(station, quake);
+      const p = km / pSpeed, s = km / sSpeed, gap = gapFromDistance(km);
+      const radius = ringFor(station, quake);
+      const tr = document.createElement("tr");
+      [station.name + " (" + station.short + ")", p.toFixed(1) + " s", s.toFixed(1) + " s", gap.toFixed(1) + " s", radius.toFixed(1) + " km"].forEach(function(value) {
+        const td = document.createElement("td"); td.textContent = value; tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+    xSlider.value = 300; ySlider.value = 190; updatePin(); updateRings(); showTarget();
+    byId("checkButton").disabled = done[index] || revealed[index];
+    setFeedback(done[index] ? "You already solved this case! Green crosshairs show the epicenter." : revealed[index] ? "This case was revealed. Try another mystery to earn a detective star." : "Draw the circles, then choose the place where all three cross.");
+  }
+  function updateScore() { byId("score").textContent = "Solved: " + done.filter(Boolean).length + " of 3"; }
+  function checkGuess() {
+    if (done[mission] || revealed[mission]) return;
+    const quake = missions[mission];
+    const guess = {x:Number(xSlider.value), y:Number(ySlider.value)};
+    const miss = distance(guess, quake);
+    if (miss <= toleranceKm) {
+      done[mission] = true;
+      updateScore(); showTarget(); byId("checkButton").disabled = true;
+      setFeedback("🎉 Case cracked! Your pin is " + miss.toFixed(1) + " km from the imaginary epicenter. You earned a detective star!");
+    } else if (miss < 50) {
+      setFeedback("🔥 So close! Your pin is " + miss.toFixed(1) + " km from the answer. Nudge the pin toward the circle crossing.");
+    } else {
+      setFeedback("🧩 Keep investigating! Your pin is " + miss.toFixed(1) + " km away. Follow all THREE circles to their common crossing.");
+    }
+  }
+  function reveal() {
+    if (done[mission]) { setFeedback("This case is already solved. Great work!"); return; }
+    revealed[mission] = true; showRings = true; updateRings(); showTarget();
+    byId("checkButton").disabled = true;
+    setFeedback("The green crosshairs reveal the pretend epicenter: " + missions[mission].x + " km east, " + missions[mission].y + " km south. This case does not earn a star; try another!");
+  }
+  function mapClick(event) {
+    const rect = map.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const ratioX = 600 / rect.width, ratioY = 380 / rect.height;
+    // SVG viewBox scales uniformly. Its x/y letterboxing is corrected by getScreenCTM.
+    const pt = map.createSVGPoint(); pt.x = event.clientX; pt.y = event.clientY;
+    const transform = map.getScreenCTM();
+    if (!transform) return;
+    const local = pt.matrixTransform(transform.inverse());
+    xSlider.value = Math.max(0,Math.min(600,integer(local.x)));
+    ySlider.value = Math.max(0,Math.min(380,integer(local.y)));
+    updatePin();
+  }
+  for (let i=0;i<missions.length;i++) byId("mission"+i).addEventListener("click",function(){showMission(i);});
+  xSlider.addEventListener("input",updatePin); ySlider.addEventListener("input",updatePin);
+  map.addEventListener("click",mapClick);
+  byId("ringsButton").addEventListener("click",function(){showRings=!showRings;updateRings();setFeedback(showRings?"The circles show each station's estimated distance. Aim for their common meeting spot!":"Circles hidden. Can you remember where they crossed?");});
+  byId("checkButton").addEventListener("click",checkGuess);
+  byId("revealButton").addEventListener("click",reveal);
+  byId("nextButton").addEventListener("click",function(){showMission((mission+1)%missions.length);});
+  // Deterministic educational checks: formula, round trip and mission coverage.
+  if (Math.abs(distanceFromGap(10)-84)>1e-9 || Math.abs(gapFromDistance(84)-10)>1e-9 || stations.length!==3 || missions.length!==3) {
+    throw new Error("Quake Quest mathematical self-check failed.");
+  }
+  showMission(0); updateScore();
+})();
+</script>
+</body></html>
