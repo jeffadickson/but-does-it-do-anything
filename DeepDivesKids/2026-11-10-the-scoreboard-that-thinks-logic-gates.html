@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="Build logic gates, light a make-believe hockey goal lamp, and count in binary with an interactive FPGA-inspired computer lab for curious nine-year-olds.">
+<title>The Scoreboard That Thinks! | DeepDivesKids | November 10, 2026</title>
+<style>
+:root{--navy:#142745;--ink:#19304b;--muted:#486179;--paper:#fffdf8;--blue:#135ca3;--aqua:#007b79;--coral:#c43b49;--gold:#ffe08c;--line:#b4d0d8;--focus:#da3c29;--white:#fff}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#eef7f4;color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:#075b91;text-underline-offset:3px}
+a:hover{text-decoration-thickness:3px}
+a:focus-visible,button:focus-visible,select:focus-visible{outline:4px solid var(--focus);outline-offset:4px}
+.skip{position:absolute;top:-100px;left:10px;background:white;color:var(--navy);z-index:20;padding:.65rem 1rem;border-radius:10px}
+.skip:focus{top:12px}
+.wrap{width:min(1100px,calc(100% - 32px));margin:0 auto}
+.mast{background:#142745;color:white;padding:12px 0}
+.mast .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.mast b{letter-spacing:.09em}
+.mast a{color:white}
+.hero{background:linear-gradient(126deg,#112a54,#204f77 56%,#007f7a);color:white;overflow:hidden;position:relative;padding:55px 0 48px}
+.hero:after{content:"";position:absolute;inset:0;opacity:.11;pointer-events:none;background:radial-gradient(circle at 12% 25%,#fff 2px,transparent 3px),radial-gradient(circle at 75% 78%,#fff 2px,transparent 3px);background-size:80px 80px,115px 115px}
+.hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:36px}
+.pill{display:inline-block;background:var(--gold);color:#332c18;padding:5px 13px;border-radius:99px;font-size:.8rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
+h1{font-size:clamp(2.65rem,6vw,5.2rem);font-weight:900;line-height:1.03;letter-spacing:-.045em;margin:17px 0}
+h1 em{font-style:normal;color:#ffe29a}
+.hero p{font-size:clamp(1.1rem,2vw,1.34rem);max-width:670px}
+.hero .cta{display:inline-block;background:#ffdd7c;color:#263a40;border:2px solid #fff8dd;border-radius:14px;padding:12px 20px;font-weight:900;text-decoration:none;box-shadow:0 6px 0 #08243a}
+.score-art{background:#10213c;border:5px solid #a9e0dd;border-radius:23px;padding:22px 16px 26px;box-shadow:0 18px 0 #0a253d,0 26px 36px #08243c66;text-align:center;transform:rotate(2deg)}
+.score-art .label{letter-spacing:.21em;font-size:.78rem;color:#b6e5de;font-weight:900}
+.score-art .screen{margin:14px auto;background:#071528;border-radius:15px;padding:15px 8px;display:grid;grid-template-columns:1fr auto 1fr;gap:7px;align-items:center}
+.score-art .digit{font-size:clamp(3.4rem,8vw,5.9rem);font-weight:900;font-variant-numeric:tabular-nums;color:#ffb661;text-shadow:0 0 13px #ff8b3f77}
+.score-art .dash{font-size:2rem;color:#fce5a1}
+.score-art .dots{letter-spacing:.32em;color:#81e9d2;font-weight:900}
+main{padding:20px 0 60px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:23px;padding:clamp(20px,3vw,35px);margin:22px 0;box-shadow:0 8px 27px #0a4e6412}
+.card h2{font-size:clamp(1.65rem,3vw,2.3rem);line-height:1.18;margin:2px 0 17px;letter-spacing:-.02em}
+.card h3{font-size:1.27rem;line-height:1.25;margin:14px 0 8px}
+.kicker{font-size:.8rem;color:#087477;letter-spacing:.13em;text-transform:uppercase;font-weight:900}
+.lede{font-size:1.19rem;max-width:72ch}
+nav.toc{display:flex;flex-wrap:wrap;gap:10px}
+.toc a{border:1px solid #9abec6;background:#e8f6f8;border-radius:25px;text-decoration:none;padding:7px 13px;font-weight:750}
+.toc a:hover{background:#d2edf1}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.mini{border-radius:18px;padding:17px 18px;border:1px solid #bad4dc;background:#f5fbfb;border-top:6px solid #209f9b}
+.mini:nth-child(2){border-top-color:#f2b946}.mini:nth-child(3){border-top-color:#ee8b90}
+.mini b{display:block;font-size:1.17rem}.mini p{margin:.3rem 0 0}
+.callout{margin:15px 0;border-left:5px solid #dca22d;background:#fff8e8;padding:14px 17px;border-radius:4px 13px 13px 4px}
+.callout.science{border-left-color:#15889c;background:#ecf9fc}
+.callout.caution{border-left-color:#ca4e48;background:#fff2ef}
+.badge{display:inline-block;border-radius:6px;background:#e5f1f4;color:#14556c;text-transform:uppercase;letter-spacing:.045em;font-size:.76rem;font-weight:900;padding:2px 8px;margin-right:5px}
+.badge.idea{background:#fff0d3;color:#78501c}
+.lab{background:#f8fcff;border:3px solid #36728f;border-radius:20px;padding:clamp(13px,2.8vw,25px);margin-top:18px}
+.controls,.buttons{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:12px 0}
+button,select{font:inherit;font-weight:800;border-radius:13px;min-height:48px}
+button{cursor:pointer;border:2px solid #23617d;background:#e9f7fb;color:#173957;padding:9px 17px}
+button:hover:not(:disabled){background:#d2ecf2}
+button[aria-pressed="true"],button.active{background:#154d75;color:white;border-color:#154d75}
+button:disabled{opacity:.55;cursor:not-allowed}
+select{border:2px solid #386f86;background:white;color:var(--navy);padding:7px 12px}
+label{font-weight:850}
+.switch{display:inline-flex;gap:10px;align-items:center}
+.switch .bit{display:inline-grid;place-items:center;width:35px;height:35px;background:#fff;border-radius:8px;font-weight:950;color:#14435c}
+.switch[aria-pressed="true"] .bit{background:#ffdc85;color:#322b18}
+.gate-grid,.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+.signal{background:#092744;color:white;border-radius:18px;padding:25px 14px;text-align:center;min-height:190px;display:grid;place-content:center}
+.signal .value{font-size:clamp(3.7rem,8vw,6.4rem);font-weight:900;line-height:1.1;font-variant-numeric:tabular-nums;color:#ffca76}
+.signal .sub{font-size:.95rem;color:#d9eef5}
+.led{display:inline-block;width:39px;height:39px;border-radius:50%;background:#566576;box-shadow:inset 0 -5px 6px #0005,0 0 0 5px #c2d0d8;margin:0 auto 10px}
+.led.on{background:#65ec91;box-shadow:0 0 20px 6px #60e79988,0 0 0 5px #e4fff0}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;margin:15px 0}
+caption{text-align:left;font-weight:750;padding:4px 0 8px}
+th,td{border:1px solid #aac4cf;text-align:center;padding:9px 12px}
+th{background:#d6edf4;color:#113d55}
+tbody tr:nth-child(even){background:#f2f9fc}
+tbody tr.current{background:#ffecae;font-weight:900;color:#2b302b;box-shadow:inset 4px 0 #b56e10}
+.small{font-size:.91rem;color:var(--muted)}
+.binary{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+.binary .tile{border:2px solid #a8c1d5;border-radius:12px;background:#d7e4ee;min-width:73px;text-align:center;padding:8px}
+.binary .tile.on{background:#ffda86;border-color:#c58a33}
+.binary .bit-number{font-size:1.95rem;font-weight:950;line-height:1.25}
+.binary .place{font-size:.75rem;font-weight:800}
+.scorebox{background:#122b4d;color:white;border-radius:16px;text-align:center;padding:17px;box-shadow:inset 0 0 0 3px #6ccdc8}
+.scorebox .n{font-size:clamp(4rem,9vw,6rem);font-weight:950;color:#ffda85;line-height:1.17}
+.status{border:2px solid #bcd2dd;border-radius:11px;background:#eaf5fa;padding:12px 15px;min-height:55px;font-weight:680;color:#203e53;margin:10px 0}
+.step-list{padding-left:1.5rem}.step-list li{margin:.6rem 0}
+.puzzle{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;align-items:center;background:#f2f9e6;border:1px solid #a9cd9e;border-radius:16px;padding:18px}
+.puzzle .buttons{margin:0}
+.progress{font-weight:850;color:#1c5547}
+pre{white-space:pre;overflow:auto;border-radius:15px;background:#142b47;color:#e9fbff;padding:17px 20px;font:14px/1.62 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:2}
+code{font: .94em ui-monospace,SFMono-Regular,Consolas,monospace}
+code:not(pre code){background:#e9f2f6;padding:.12em .3em;border-radius:5px;color:#114662}
+.ref-list li{margin:.7rem 0;overflow-wrap:anywhere}
+footer{background:#142745;color:#f0fafc;padding:23px 0;font-size:.92rem}
+footer a{color:#b8ecfa}
+@media(max-width:800px){.hero .wrap,.gate-grid,.score-grid,.puzzle{grid-template-columns:1fr}.score-art{transform:none;max-width:450px;margin:4px auto 0;width:100%}.three{grid-template-columns:1fr}.hero{padding:38px 0}}
+@media(max-width:520px){body{font-size:16px}.hero h1{font-size:2.7rem}.card{border-radius:17px}.score-art .digit{font-size:4.1rem}.binary .tile{min-width:65px}.signal{min-height:160px}th,td{padding:7px 8px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.hero,.mast,footer{background:white;color:black}.card{box-shadow:none;break-inside:avoid}.lab{break-inside:avoid}button{border-color:black}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the adventure</a>
+<header class="mast"><div class="wrap"><b>⚡ DEEPDIVES<span aria-hidden="true">/</span>KIDS</b><span>Tuesday, November 10, 2026 · Engineering edition</span></div></header>
+<section class="hero" aria-labelledby="title"><div class="wrap">
+  <div>
+    <span class="pill">Mission 27 · Tiny computers, big ideas</span>
+    <h1 id="title">The Scoreboard <em>That Thinks!</em></h1>
+    <p>How can a machine decide whether to light a lamp or add a goal? Give it a couple of tiny switches, and you're on your way to building a computer.</p>
+    <a class="cta" href="#gate-lab">Flip the switches →</a>
+    <p class="small" style="color:#e1f4f3">A hands-on logic adventure for Quinn, Reagan, and curious builders everywhere.</p>
+  </div>
+  <div class="score-art" aria-label="Illustration of a hockey scoreboard showing home 2, away 1">
+    <div class="label">OUR IMAGINARY HOCKEY RINK</div>
+    <div class="screen"><div><div class="label">HOME</div><div class="digit">2</div></div><div class="dash">:</div><div><div class="label">AWAY</div><div class="digit">1</div></div></div>
+    <div class="dots">● ● ●</div><div class="label">BEHIND THE LIGHTS: LOGIC!</div>
+  </div>
+</div></section>
+<main id="main" class="wrap">
+<section class="card" id="start">
+  <p class="kicker">The big idea</p>
+  <h2>Computers start with tiny yes-or-no questions.</h2>
+  <p class="lede">Imagine a pretend hockey arena. A sensor says, “The puck crossed my line!” A human scorer says, “Count it!” Our little machine turns on a goal lamp <strong>only when both agree</strong>.</p>
+  <div class="three">
+    <div class="mini"><b>⚫ 0 means OFF</b><p>Like a light switch that is down, or a question answered “no.”</p></div>
+    <div class="mini"><b>🟡 1 means ON</b><p>Like a light switch that is up, or a question answered “yes.”</p></div>
+    <div class="mini"><b>🧠 A gate makes a rule</b><p>It takes in bits (0s and 1s) and produces a new bit.</p></div>
+  </div>
+  <div class="callout"><strong>Mission:</strong> Learn three gates, build a pretend goal light, and make a 3-bit counter that counts from zero to seven. No actual rink sensors required.</div>
+</section>
+
+<section class="card" aria-labelledby="contents-title">
+  <h2 id="contents-title">🗺️ Adventure map</h2>
+  <nav class="toc" aria-label="Table of contents">
+    <a href="#how">1 · Gate secrets</a><a href="#gate-lab">2 · Switch laboratory</a><a href="#score-lab">3 · Hockey counter</a><a href="#challenge">4 · Gate detective</a><a href="#experiment">5 · Paper experiment</a><a href="#code">6 · Real code</a><a href="#reality">7 · Real-world evidence</a><a href="#tradeoffs">8 · Limits & license</a><a href="#sources">9 · Sources</a>
+  </nav>
+</section>
+
+<section class="card" id="how">
+  <p class="kicker">Chapter 1 · How it works</p><h2>Three little rules that make big things</h2>
+  <div class="three">
+    <div class="mini"><b>AND — “Both!”</b><p>The lamp shines only if A <strong>and</strong> B are both 1. Example: sensor AND approval.</p></div>
+    <div class="mini"><b>OR — “Either!”</b><p>The lamp shines if A or B or both are 1. Example: either alarm switch is on.</p></div>
+    <div class="mini"><b>XOR — “Different!”</b><p>The lamp shines if <strong>exactly one</strong> input is 1. When both match, it's off.</p></div>
+  </div>
+  <p><strong>Surprise:</strong> XOR is also a tiny piece of addition! It produces the last digit of <code>1 + 1</code>, which is <code>0</code> in binary. AND produces the <em>carry</em> bit, which is <code>1</code>. Put the carry in front and you get <code>10</code> (two in binary).</p>
+  <div class="callout science">A <strong>truth table</strong> is a complete answer sheet for a gate. With two on/off inputs, there are exactly four combinations: 00, 01, 10, and 11. We can check every one!</div>
+</section>
+
+<section class="card" id="gate-lab">
+  <p class="kicker">Chapter 2 · Interactive lab</p><h2>🎛️ Flip the switches. Be the computer.</h2>
+  <p>Set A and B to 0 or 1, choose a rule, and watch the output. A bright green LED means the result is 1.</p>
+  <div class="lab" aria-label="Two-switch logic gate simulator">
+    <div class="controls">
+      <button type="button" class="switch" id="switch-a" aria-pressed="false" aria-label="Input A, currently off">Input A <span class="bit" id="a-value">0</span></button>
+      <button type="button" class="switch" id="switch-b" aria-pressed="false" aria-label="Input B, currently off">Input B <span class="bit" id="b-value">0</span></button>
+      <label for="gate-type">Gate:</label>
+      <select id="gate-type"><option value="AND">AND — both</option><option value="OR">OR — either</option><option value="XOR">XOR — different</option></select>
+    </div>
+    <div class="gate-grid">
+      <div>
+        <h3 id="rule-name">AND gate</h3>
+        <p id="rule-description">Both switches must be ON.</p>
+        <table><caption id="truth-caption">Truth table for AND. The yellow row matches your switches.</caption>
+          <thead><tr><th scope="col">A</th><th scope="col">B</th><th scope="col">Output</th></tr></thead>
+          <tbody id="truth-rows"><tr><td>0</td><td>0</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td></tr></tbody>
+        </table>
+      </div>
+      <div class="signal" aria-label="Gate output indicator">
+        <span class="led" id="gate-led" aria-hidden="true"></span>
+        <div id="gate-output" class="value">0</div>
+        <div class="sub">GATE OUTPUT · <span id="gate-state">OFF</span></div>
+      </div>
+    </div>
+    <p class="status" id="gate-message" role="status" aria-live="polite">AND: A=0, B=0 → output 0.</p>
+  </div>
+</section>
+
+<section class="card" id="score-lab">
+  <p class="kicker">Chapter 3 · Build a pretend goal machine</p><h2>🥅 Turn a goal into three glowing bits</h2>
+  <p>Our imaginary rink needs <strong>two yes answers</strong> before the goal button works. Then the little scoreboard uses three binary lamps to count. Try counting from 0 to 7!</p>
+  <div class="lab">
+    <div class="score-grid">
+      <div>
+        <h3>1. Check the pretend goal</h3>
+        <div class="buttons">
+          <button type="button" class="switch" id="sensor" aria-pressed="false" aria-label="Imaginary puck sensor off">📡 Puck sensor <span class="bit" id="sensor-value">0</span></button>
+          <button type="button" class="switch" id="approval" aria-pressed="false" aria-label="Human approval off">🧑‍⚖️ Scorer approves <span class="bit" id="approval-value">0</span></button>
+        </div>
+        <p id="goal-check"><strong>GOAL LIGHT OFF.</strong> Both switches must be on.</p>
+        <button type="button" id="count-goal" disabled>+ Count this goal</button>
+        <button type="button" id="reset-score">↺ Reset scoreboard</button>
+        <p class="status" id="score-message" role="status" aria-live="polite">Start with both switches off.</p>
+      </div>
+      <div class="scorebox">
+        <div class="label">TINY HOME SCOREBOARD</div>
+        <div class="n" id="score-value">0</div>
+        <div class="binary" aria-label="Binary score display">
+          <div class="tile" id="tile4"><div class="bit-number" id="bit4">0</div><div class="place">FOURS (4)</div></div>
+          <div class="tile" id="tile2"><div class="bit-number" id="bit2">0</div><div class="place">TWOS (2)</div></div>
+          <div class="tile" id="tile1"><div class="bit-number" id="bit1">0</div><div class="place">ONES (1)</div></div>
+        </div>
+        <p class="small" style="color:#d3eaf2;margin:10px 0">Add up the places whose bits are 1. Example: 101 means 4 + 0 + 1 = 5.</p>
+      </div>
+    </div>
+    <div class="callout science"><strong>Inside the counter:</strong> The rightmost bit uses <strong>XOR</strong> to flip. <strong>AND</strong> passes a carry to the next bit only when the old bit was already 1. This is a real digital-addition idea, shown here in JavaScript.</div>
+    <div class="callout caution"><strong>Limit:</strong> Three bits hold only eight values (0–7). The next count wraps back to 0, so our toy scoreboard announces “overflow!” A real game scoreboard needs more bits, proper sensors, controls, and official scoring decisions.</div>
+  </div>
+</section>
+
+<section class="card" id="challenge">
+  <p class="kicker">Chapter 4 · Three quick riddles</p><h2>🕵️ Gate Detective</h2>
+  <p>Which gate would solve the puzzle? Each question is a <em>made-up</em> engineering challenge, not a claim about any real hockey arena.</p>
+  <div class="puzzle">
+    <div>
+      <span class="progress" id="quiz-progress">Puzzle 1 of 3</span>
+      <h3 id="quiz-question">Light a lamp only when the sensor AND the scorer agree. Which gate?</h3>
+      <p class="status" id="quiz-message" role="status" aria-live="polite">Choose a gate to check your idea.</p>
+    </div>
+    <div class="buttons" id="quiz-buttons">
+      <button type="button" data-answer="AND">AND</button>
+      <button type="button" data-answer="OR">OR</button>
+      <button type="button" data-answer="XOR">XOR</button>
+    </div>
+  </div>
+  <div class="buttons">
+    <button type="button" id="quiz-next" disabled>Next puzzle →</button>
+    <button type="button" id="quiz-restart">↺ Start again</button>
+  </div>
+</section>
+
+<section class="card" id="experiment">
+  <p class="kicker">Chapter 5 · Away from the screen</p><h2>✂️ Make a paper logic computer</h2>
+  <p>You'll need paper, a pencil, and two coins or two scraps labeled 0 and 1. No batteries!</p>
+  <ol class="step-list">
+    <li>Draw a table with columns A, B, AND, OR, XOR. Write the four A/B pairs: 00, 01, 10, 11.</li>
+    <li>Predict the answers. Try using “both,” “either,” and “exactly one” instead of memorizing.</li>
+    <li>Flip two coins to pick A and B. Ask a partner to calculate the output. Check the screen's truth table.</li>
+    <li><strong>Challenge:</strong> Make a pretend goal light out of a paper circle. One person plays the puck sensor, another plays the scorer. Light the paper lamp only when both say YES.</li>
+  </ol>
+  <div class="callout">Try this with a teammate: can you invent a situation where XOR is better than OR? Hint: what if two switches should <em>not</em> be on together?</div>
+</section>
+
+<section class="card" id="code">
+  <p class="kicker">Chapter 6 · Working code</p><h2>💻 Write a tiny computer in JavaScript</h2>
+  <p>This code uses built-in JavaScript operators: <code>&amp;</code> for AND and <code>^</code> for XOR. You don't have to install a library. Try it in a browser console or a <code>.js</code> file.</p>
+  <pre><code>// A and B must each be 0 or 1.
+function andGate(a, b) {
+  return a &amp; b;
+}
+function xorGate(a, b) {
+  return a ^ b;
+}
+// Add one to a 3-bit number (0 through 7).
+function addOne3(score) {
+  let carry = 1;
+  let result = 0;
+  for (let bit = 0; bit &lt; 3; bit++) {
+    const oldBit = (score &gt;&gt; bit) &amp; 1;
+    const newBit = xorGate(oldBit, carry);
+    carry = andGate(oldBit, carry);
+    result |= newBit &lt;&lt; bit;
+  }
+  return { value: result, overflow: carry === 1 };
+}
+console.log(addOne3(4)); // { value: 5, overflow: false }
+console.log(addOne3(7)); // { value: 0, overflow: true }</code></pre>
+  <p><strong>Experiment:</strong> What happens when you change <code>bit &lt; 3</code> to <code>bit &lt; 4</code>? Explain why you also need to change the display to show a fourth bit.</p>
+  <div class="callout science"><strong>Dad's engineering connection:</strong> The <a href="https://github.com/jeffadickson/SharpHDL">SharpHDL project</a> works with circuits described in C#, simulates them, and generates Verilog for hardware tools. It is <em>not</em> the same program as this browser toy, but these truth tables and counters are the building blocks that hardware engineers test.</div>
+</section>
+
+<section class="card" id="reality">
+  <p class="kicker">Chapter 7 · Fact check</p><h2>🌍 What is real? What did we invent?</h2>
+  <div class="three">
+    <div class="mini"><b><span class="badge">Documented</span> Real gate chips</b><p>Texas Instruments documents the SN74HC08 as a chip containing <strong>four two-input AND gates</strong> and the SN74HC86 as a chip containing <strong>four two-input XOR gates</strong>. Those are manufactured electronic parts, not just a screen trick. <a href="#sources">Sources 1–2</a>.</p></div>
+    <div class="mini"><b><span class="badge">Documented</span> A real FPGA board</b><p>Sipeed documents the <strong>Tang Primer 20K</strong> with <strong>20,736 four-input lookup-table logic units</strong> and a tutorial for blinking a real LED using the board. Its FPGA can be configured to implement logic circuits. <a href="#sources">Sources 3–4</a>.</p></div>
+    <div class="mini"><b><span class="badge idea">Our invention</span> Hockey goal machine</b><p>Our pretend sensor, approval button, quiz, and 3-bit scoreboard are learning games. We have <strong>not</strong> shown that a real hockey rink uses these exact rules or components.</p></div>
+  </div>
+  <p>The FPGA doesn't simply contain 20,736 physical AND gates. Its configurable lookup tables can represent many different small logic functions. Also, a browser simulation does not program a real circuit board.</p>
+  <p><strong>Connection to engineering:</strong> Before building real hardware, engineers make small models and test every possible input. This page does the same for two-input gates: only four input combinations, so we can test all four. That resembles the repeatable testing ideas behind your dad's SharpHDL and simulation projects—on a much smaller scale.</p>
+</section>
+
+<section class="card" id="tradeoffs">
+  <p class="kicker">Chapter 8 · Truthful engineering</p><h2>⚖️ Cool powers, honest limits, and licensing</h2>
+  <div class="three">
+    <div class="mini"><b>✅ What's great?</b><p>Gates are simple, predictable, and easy to test. Put enough together and you can add numbers, choose actions, and build controllers.</p></div>
+    <div class="mini"><b>⚠️ What gets tricky?</b><p>Real circuits have electricity, timing, wires, heat, and sometimes unexpected signals. They need careful design and testing—not just correct truth tables.</p></div>
+    <div class="mini"><b>🧰 What do I need?</b><p>To use this lesson: a current browser, even offline after saving this file. No npm, external scripts, accounts, tracking, or purchased hardware.</p></div>
+  </div>
+  <p><strong>License and reuse:</strong> The original interactive example and JavaScript snippets in this lesson are offered under the <a href="https://opensource.org/license/mit">MIT License</a> (copyright © 2026 Jeff Dickson). The linked hardware documentation, products, names, and trademarks belong to their respective owners; we did not import their source code.</p>
+  <p><strong>Integration:</strong> This HTML is self-contained. To run it, save it as a <code>.html</code> file and open it in a browser. If you want to build an actual FPGA circuit, you need a suitable board, vendor or open-source synthesis tools, a pin assignment, a clock plan, and hardware tests. The code above is browser JavaScript, <strong>not</strong> synthesizable Verilog or SharpHDL C#.</p>
+  <p class="small">Technical note for grown-ups: the score counter deliberately wraps modulo 8. Bitwise JavaScript operators convert operands to 32-bit integers, but this example only uses 0/1 bits and 3-bit non-negative scores. The example does not measure physical FPGA timing or claim real-time safety.</p>
+</section>
+
+<section class="card" id="sources">
+  <p class="kicker">Chapter 9 · Primary sources</p><h2>📚 Follow the evidence</h2>
+  <ol class="ref-list">
+    <li><strong>Texas Instruments:</strong> <a href="https://www.ti.com/product/SN74HC08">SN74HC08</a> — official description of a four-channel two-input AND-gate IC; confirms the real part and its function.</li>
+    <li><strong>Texas Instruments:</strong> <a href="https://www.ti.com/product/SN74HC86">SN74HC86</a> — official description of a four-channel two-input XOR-gate IC; confirms its Boolean function.</li>
+    <li><strong>Sipeed:</strong> <a href="https://wiki.sipeed.com/hardware/en/tang/tang-primer-20k/primer-20k.html">Tang Primer 20K specifications</a> — board model and documented logic resources.</li>
+    <li><strong>Sipeed:</strong> <a href="https://wiki.sipeed.com/hardware/en/tang/tang-primer-20k/examples/lite/blink.html">Primer 20K Lite: blink an LED</a> — official hardware learning example. Requires a matching Lite configuration to follow exactly.</li>
+    <li><strong>SharpHDL:</strong> <a href="https://github.com/jeffadickson/SharpHDL">Project README</a> — primary description of a C# hardware-description library that can simulate circuits and emit Verilog. This lesson does not claim hardware deployment.</li>
+    <li><strong>JavaScript:</strong> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_AND">MDN: bitwise AND</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_XOR">MDN: bitwise XOR</a> — operator descriptions for the working code.</li>
+  </ol>
+  <div class="callout science">🔎 <strong>Mini science habit:</strong> Ask “What did the manufacturer actually show?” and “What part did we invent to learn?” Good engineers keep those answers separate.</div>
+</section>
+</main>
+<footer><div class="wrap"><strong>DeepDivesKids · 2026-11-10</strong> · Built for curious minds and careful experiments. <a href="#title">Back to top ↑</a><br><span class="small" style="color:#cbe1eb">All controls work with a keyboard. No ads. No external scripts. Save this page to explore offline.</span></div></footer>
+<script>
+"use strict";
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const rules = {
+    AND: { fn: (a, b) => a & b, desc: "Both switches must be ON." },
+    OR:  { fn: (a, b) => a | b, desc: "At least one switch must be ON." },
+    XOR: { fn: (a, b) => a ^ b, desc: "Exactly one switch must be ON." }
+  };
+  let a = 0, b = 0, sensor = 0, approval = 0, score = 0;
+  function updateSwitch(id, value, name) {
+    const el = $(id);
+    el.setAttribute("aria-pressed", String(value === 1));
+    el.setAttribute("aria-label", name + (value ? " on" : " off"));
+  }
+  function renderGate() {
+    const kind = $("gate-type").value;
+    const output = rules[kind].fn(a, b);
+    updateSwitch("switch-a", a, "Input A, currently");
+    updateSwitch("switch-b", b, "Input B, currently");
+    $("a-value").textContent = String(a);
+    $("b-value").textContent = String(b);
+    $("rule-name").textContent = kind + " gate";
+    $("rule-description").textContent = rules[kind].desc;
+    $("truth-caption").textContent = "Truth table for " + kind + ". Yellow marks your switches.";
+    const rows = $("truth-rows");
+    rows.replaceChildren();
+    for (let x = 0; x <= 1; x++) {
+      for (let y = 0; y <= 1; y++) {
+        const tr = document.createElement("tr");
+        if (x === a && y === b) tr.className = "current";
+        for (const n of [x, y, rules[kind].fn(x, y)]) {
+          const td = document.createElement("td");
+          td.textContent = String(n);
+          tr.appendChild(td);
+        }
+        rows.appendChild(tr);
+      }
+    }
+    $("gate-output").textContent = String(output);
+    $("gate-state").textContent = output ? "ON" : "OFF";
+    $("gate-led").classList.toggle("on", !!output);
+    $("gate-message").textContent = kind + ": A=" + a + ", B=" + b + " → output " + output + ".";
+  }
+  $("switch-a").addEventListener("click", () => { a ^= 1; renderGate(); });
+  $("switch-b").addEventListener("click", () => { b ^= 1; renderGate(); });
+  $("gate-type").addEventListener("change", renderGate);
+  function addOne3(number) {
+    let carry = 1, result = 0;
+    for (let bit = 0; bit < 3; bit++) {
+      const oldBit = (number >> bit) & 1;
+      const newBit = oldBit ^ carry;
+      carry = oldBit & carry;
+      result |= newBit << bit;
+    }
+    return { value: result, overflow: carry === 1 };
+  }
+  function renderScore() {
+    updateSwitch("sensor", sensor, "Imaginary puck sensor");
+    updateSwitch("approval", approval, "Human approval");
+    $("sensor-value").textContent = String(sensor);
+    $("approval-value").textContent = String(approval);
+    const allowed = (sensor & approval) === 1;
+    $("count-goal").disabled = !allowed;
+    $("goal-check").textContent = allowed ? "🟢 GOAL LIGHT ON! Both agreed." : "⚫ GOAL LIGHT OFF. Both switches must be on.";
+    $("score-value").textContent = String(score);
+    for (const weight of [4, 2, 1]) {
+      const bit = (score & weight) ? 1 : 0;
+      $("bit" + weight).textContent = String(bit);
+      $("tile" + weight).classList.toggle("on", !!bit);
+    }
+  }
+  $("sensor").addEventListener("click", () => { sensor ^= 1; renderScore(); $("score-message").textContent = "Puck sensor " + (sensor ? "on" : "off") + ". Goal lamp " + ((sensor & approval) ? "on" : "off") + "."; });
+  $("approval").addEventListener("click", () => { approval ^= 1; renderScore(); $("score-message").textContent = "Scorer approval " + (approval ? "on" : "off") + ". Goal lamp " + ((sensor & approval) ? "on" : "off") + "."; });
+  $("count-goal").addEventListener("click", () => {
+    if ((sensor & approval) !== 1) return;
+    const next = addOne3(score);
+    score = next.value;
+    renderScore();
+    $("score-message").textContent = next.overflow ? "Overflow! Three bits cannot show 8; the toy score wrapped to 0." : "Goal counted. The binary score now reads " + score.toString(2).padStart(3, "0") + ".";
+    sensor = 0; approval = 0; renderScore();
+  });
+  $("reset-score").addEventListener("click", () => { score = 0; sensor = 0; approval = 0; renderScore(); $("score-message").textContent = "Reset to zero. Both switches are off."; });
+  const puzzles = [
+    { question: "Light a lamp only when the sensor AND the scorer agree. Which gate?", answer: "AND", why: "AND needs both inputs to be 1." },
+    { question: "Sound the warning if either of two emergency buttons is pressed (or both). Which gate?", answer: "OR", why: "OR is on when at least one input is 1." },
+    { question: "Show an alert if exactly one of two switches is on, but not if both match. Which gate?", answer: "XOR", why: "XOR is on only when its inputs are different." }
+  ];
+  let puzzleIndex = 0, quizDone = false;
+  function renderQuiz() {
+    const doneAll = puzzleIndex === puzzles.length;
+    $("quiz-progress").textContent = doneAll ? "You solved all three!" : "Puzzle " + (puzzleIndex + 1) + " of " + puzzles.length;
+    $("quiz-question").textContent = doneAll ? "🎉 Certified Gate Detective!" : puzzles[puzzleIndex].question;
+    $("quiz-message").textContent = doneAll ? "Amazing! Try the switch laboratory to check every rule." : "Choose a gate to check your idea.";
+    $("quiz-next").disabled = true;
+    $("quiz-next").textContent = puzzleIndex === puzzles.length - 1 ? "See your victory →" : "Next puzzle →";
+    quizDone = false;
+    document.querySelectorAll("[data-answer]").forEach(btn => { btn.disabled = doneAll; btn.classList.remove("active"); });
+  }
+  document.querySelectorAll("[data-answer]").forEach((button) => button.addEventListener("click", () => {
+    if (puzzleIndex >= puzzles.length || quizDone) return;
+    const chosen = button.dataset.answer;
+    const question = puzzles[puzzleIndex];
+    if (chosen !== question.answer) {
+      $("quiz-message").textContent = "Not yet! Think: both, either, or exactly one? Try again.";
+      return;
+    }
+    quizDone = true;
+    button.classList.add("active");
+    document.querySelectorAll("[data-answer]").forEach(btn => { btn.disabled = true; });
+    $("quiz-message").textContent = "Correct! " + question.why;
+    $("quiz-next").disabled = false;
+  }));
+  $("quiz-next").addEventListener("click", () => { if (!quizDone) return; puzzleIndex++; renderQuiz(); });
+  $("quiz-restart").addEventListener("click", () => { puzzleIndex = 0; renderQuiz(); });
+  renderGate(); renderScore(); renderQuiz();
+})();
+</script>
+</body>
+</html>
