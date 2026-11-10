@@ -1,0 +1,241 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#132e3a">
+<meta name="description" content="2026-11-10 DeepDives: ThrowTheSwitch Unity, real ESP-IDF adoption, five bounded queue regression tests, CMake/Ninja, and interactive bug hunt.">
+<title>Five Tests. One Tiny Queue. — Unity · 2026-11-10</title>
+<style>:root{--ink:#182a35;--muted:#455d69;--mint:#15d3ae;--blue:#145a7c;--paper:#fafbf8}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:24px}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.7 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}a{color:#095c81;text-underline-offset:3px}a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #be570b;outline-offset:4px}.skip{position:absolute;top:-90px;background:white;padding:12px;left:12px;z-index:5}.skip:focus{top:12px}.wrap{max-width:1110px;width:calc(100% - 40px);margin:auto}header{background:radial-gradient(circle at 88% 10%,#286a6c,transparent 35%),linear-gradient(120deg,#112b3b,#154356);color:white;padding:24px 0 84px;border-bottom:6px solid var(--mint)}.top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13px;font-weight:800;letter-spacing:.07em;color:#d2eeee}.top a{color:#c6fcf1;text-decoration:none}.chip{display:inline-block;color:#bdfff0;border:1px solid #52b6ad;background:#1c4c52;padding:5px 16px;border-radius:30px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;font-size:12px;margin-top:58px}h1{font-size:clamp(2.8rem,7vw,5.8rem);letter-spacing:-.06em;line-height:1.02;margin:16px 0 22px;max-width:890px}.lead{color:#e0f4f6;font-size:clamp(1.13rem,2.1vw,1.42rem);max-width:760px}.badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}.badge{border:1px solid #56959d;border-radius:30px;padding:4px 12px;font-size:13px;font-weight:700}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:-45px;position:relative}.metric{background:white;border:1px solid #dae4e2;box-shadow:0 12px 28px #133b441b;border-radius:16px;padding:19px}.metric strong{display:block;font-size:25px;color:#155b70}.metric span{font-size:13px;color:var(--muted)}.layout{display:grid;grid-template-columns:205px minmax(0,1fr);gap:44px;margin-top:44px}.nav{align-self:start;position:sticky;top:20px;background:#e9f5f0;padding:17px;border-radius:15px;border:1px solid #d4e8de}.nav strong{font-size:13px;letter-spacing:.1em;text-transform:uppercase}.nav ol{padding-left:22px;margin:9px 0 0}.nav li{font-size:14px;margin:5px 0}.nav a{text-decoration:none;color:#1a5263}main{min-width:0}section{margin-bottom:60px}h2{font-size:clamp(1.75rem,3vw,2.45rem);letter-spacing:-.04em;line-height:1.15;margin:8px 0 18px}h3{font-size:1.22rem;margin:26px 0 8px}.eyebrow{color:#116b75;text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:900}p{margin:0 0 16px}li{margin:7px 0}code,pre{font:13px/1.6 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}p code,li code,td code{background:#e2f3ed;border-radius:3px;padding:2px 4px;word-break:break-word}.callout{background:#e8f7ef;border-left:5px solid #13a998;padding:18px 20px;border-radius:0 12px 12px 0;margin:20px 0}.warn{background:#fff4e0;border-color:#d29226}.info{background:#e6f2fb;border-color:#277dad}.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.card{background:white;border:1px solid #d4e3e0;border-radius:14px;padding:19px}.card h3{margin:7px 0}.tag{background:#d3f6e5;color:#15583e;padding:3px 7px;border-radius:5px;font-size:11px;font-weight:900;text-transform:uppercase}.idea{background:#fff0d3;color:#704500}.lab{background:#183747;border:1px solid #2d5561;border-radius:22px;color:#e9fafa;padding:24px;box-shadow:0 16px 38px #152b3328}.lab h2{color:white}.lab p{color:#d1ebed}.buttons{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}.buttons button{border:2px solid #76d8d0;border-radius:10px;padding:11px 17px;font-size:15px;font-weight:800;background:#1fd4af;color:#17303a;cursor:pointer}.buttons button.secondary{background:#26475a;color:white}.buttons button[aria-pressed=true]{background:#ffe19e;color:#342800;border-color:#ffe19e}#status{display:block;padding:12px;border-radius:9px;background:#285064}.good{color:#a0f6c6}.bad{color:#ffd0c0}#results{list-style:none;padding:0;display:grid;gap:7px}#results li{background:#244758;padding:9px 12px;border-radius:6px;font:700 13px/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere;border-left:4px solid #79ddae}#results li.fail{border-color:#ff8d77}.file{background:#e1efec;border-radius:10px 10px 0 0;padding:5px 12px;font:700 13px ui-monospace,Consolas,monospace;margin-top:22px}pre{overflow:auto;max-width:100%;background:#102d38;color:#e2f9f4;border-radius:0 0 12px 12px;margin:0 0 22px;padding:18px;tab-size:4}pre code{font-size:inherit}.tablewrap{overflow-x:auto;border:1px solid #d2e3df;border-radius:12px}table{min-width:580px;width:100%;border-collapse:collapse;background:#fff}th,td{padding:12px;border-bottom:1px solid #d8e7e2;text-align:left;vertical-align:top}thead{background:#e1f1ed}tr:last-child td{border-bottom:0}details{padding:13px 15px;background:white;border:1px solid #d3e0df;border-radius:10px;margin:10px 0}summary{cursor:pointer;font-weight:800}details p{margin:9px 0 0}footer{background:#132e3a;color:#d0eeef;padding:30px 0;font-size:14px}footer a{color:#b9fbea}@media(max-width:780px){.layout{grid-template-columns:1fr;gap:25px}.nav{position:static}.nav ol{columns:2}}@media(max-width:520px){.wrap{width:calc(100% - 22px)}header{padding-bottom:70px}.metrics{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.nav ol{columns:1}.lab{padding:15px}.buttons button{flex:1 1 130px}pre{font-size:12px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}</style></head><body>
+<a class="skip" href="#main">Skip to article</a>
+<header><div class="wrap"><nav class="top" aria-label="Series navigation">
+<span>DEEPDIVES / ENGINEERING NOTES</span><a href="https://jeffadickson.github.io/but-does-it-do-anything/DeepDives/">All editions ↗</a><span>10 NOV 2026</span></nav>
+<span class="chip">Embedded testing · C11 / C++20</span>
+<h1>Five Tests.<br>One Tiny Queue.</h1>
+<p class="lead">Can a microcontroller-sized test framework catch an event-queue bug before it becomes a timing mystery? Meet <strong>ThrowTheSwitch Unity</strong>, then deliberately break a bounded queue and watch the assertion fail.</p>
+<div class="badges"><span class="badge">Unity v2.7.0</span><span class="badge">MIT licensed</span><span class="badge">Real ESP-IDF adoption</span><span class="badge">RISCue candidate</span></div></div></header>
+<div class="wrap metrics" aria-label="Highlights">
+<div class="metric"><strong>3 source files</strong><span>Unity's core: unity.c and two headers</span></div>
+<div class="metric"><strong>5 tests</strong><span>FIFO · overflow · wrap · empty · reset</span></div>
+<div class="metric"><strong>4 queue slots</strong><span>No heap use in the demonstrated queue operations</span></div></div>
+<div class="wrap layout"><aside class="nav" aria-label="Table of contents"><strong>Contents</strong>
+<ol><li><a href="#verdict">Verdict</a></li><li><a href="#how">Mechanism</a></li><li><a href="#evidence">Verified uses</a></li><li><a href="#lab">Bug hunt</a></li><li><a href="#code">Complete code</a></li><li><a href="#integration">Integration &amp; licensing</a></li><li><a href="#tradeoffs">Tradeoffs</a></li><li><a href="#plan">Qualification plan</a></li><li><a href="#sources">Primary sources</a></li></ol></aside>
+<main id="main">
+<section id="verdict"><p class="eyebrow">01 / Verdict</p><h2>A small harness. An executable contract.</h2>
+<p>Unity is a <strong>C unit testing framework for embedded targets</strong>. Its core is one implementation file (<code>unity.c</code>) and two headers. A test calls <code>TEST_ASSERT_*</code>; the runner invokes <code>UNITY_BEGIN()</code>, <code>RUN_TEST()</code> and <code>UNITY_END()</code>. Failure is reported with the named test and source location. The library can be included in ordinary CMake/Ninja builds.</p>
+<div class="callout"><strong>Fit:</strong> test bounded queues, device-support code, simple protocol encoders and low-level C components that sit beneath a C++20 RTOS. Put Unity in the <em>test executable</em>, not the released scheduler. Do not treat a unit test as proof of worst-case latency or system correctness.</div>
+<p>Uniqueness check: existing DeepDives cover ETL, QP/C++, Boost.Ext.SML, HFSM2, fixed-capacity containers, and RapidCheck. Unity is a distinct library for hand-written tests; RapidCheck generates/shrinks inputs and is better suited to host-side exploration.</p></section>
+<section id="how"><p class="eyebrow">02 / How it works</p><h2>Arrange. Act. Assert. Report.</h2>
+<ol><li><strong>Arrange:</strong> initialize a fixed 4-slot queue.</li><li><strong>Act:</strong> push and pop messages, including boundary cases.</li><li><strong>Assert:</strong> use <code>TEST_ASSERT_EQUAL_UINT8(expected, actual)</code> to catch wrong values.</li><li><strong>Report:</strong> <code>UNITY_END()</code> returns the suite's failure count; make a nonzero count fail CTest/CI.</li></ol>
+<p>Unity maintains global runner state and normally routes failure through a nonlocal-abort mechanism involving <code>setjmp</code>/<code>longjmp</code> on hosted targets. Output defaults to a configurable character sink, typically backed by <code>putchar</code>. Neither execution time nor the I/O implementation is inherently deterministic.</p>
+<div class="callout warn"><strong>C++20 caution:</strong> nonlocal assertion failures may skip nontrivial C++ destructors, which can invoke undefined behavior. Use C-style test functions or carefully bounded C++ wrappers; for RAII-heavy test bodies, prefer a native C++-aware framework. The example below uses C11 intentionally, while its queue header is C++20-compatible.</div></section>
+<section id="evidence"><p class="eyebrow">03 / Sources versus proposals</p><h2>Where is it actually used?</h2>
+<div class="cards">
+<article class="card"><span class="tag">Verified adoption</span><h3>Espressif ESP-IDF</h3><p>Espressif's first-party guide explicitly says its device-based test app uses Unity. Component tests include <code>unity.h</code> and can register tests via <code>TEST_CASE</code>, an <strong>ESP-IDF-specific integration</strong>, not an upstream Unity macro with identical behavior.</p><a href="https://github.com/espressif/esp-idf/blob/master/docs/en/api-guides/unit-tests.rst">Primary ESP-IDF guide ↗</a></article>
+<article class="card"><span class="tag">Verified example</span><h3>ESP-IDF system/unit_test</h3><p>Espressif's official example documents the Unity assertion macros and begin/end runner calls. That proves documented integration, <em>not</em> that Unity is qualified for any flight product.</p><a href="https://github.com/espressif/esp-idf/blob/master/examples/system/unit_test/README.md">Official example ↗</a></article>
+<article class="card"><span class="tag">Project capability</span><h3>Host or embedded tests</h3><p>The maintainers describe native, simulated-target, and embedded test setups; standard I/O can be replaced using Unity's output hooks.</p><a href="https://www.throwtheswitch.org/unity">Maintainer instructions ↗</a></article>
+<article class="card"><span class="tag idea">Suggested, not verified</span><h3>RISCue / VeloSim / SharpHDL</h3><p>Use it to verify RISCue's queue overflow contract, C-facing VPI boundary checks, or a board bring-up helper. <strong>No actual adoption by these projects was verified.</strong></p></article></div></section>
+<section id="lab"><p class="eyebrow">04 / Interactive browser experiment</p>
+<div class="lab"><h2>Bug hunt: the vanishing event</h2>
+<p>A 4-slot queue must reject a fifth push without replacing old events. Run the five checks, then inject a <em>deliberate overwrite bug</em>. Which assertion catches it?</p>
+<div class="buttons" role="group" aria-label="Bug hunt controls"><button type="button" id="run">Run five checks</button><button type="button" id="bug" class="secondary" aria-pressed="false">Injected bug: OFF</button><button type="button" id="reset" class="secondary">Repair and reset</button></div>
+<strong id="status" role="status" aria-live="polite">Starting test bench</strong><ol id="results" aria-label="Test outcomes"></ol>
+<p style="font-size:13px">This interactive simulation is written in plain JavaScript. It models the same queue scenarios; it does <strong>not</strong> execute Unity itself or qualify firmware.</p></div>
+<h3>Test the reasoning</h3>
+<details><summary>Why reject a full queue?</summary><p>Silent overwrites may erase an alarm, message or state transition. Overwrite is possible as a separately specified policy, but this queue's contract requires explicit refusal.</p></details>
+<details><summary>Why run the same test sequence more than once?</summary><p>Fixed inputs make regressions comparable. They detect some errors reliably, but do not explore every possible interleaving or concurrency bug.</p></details></section>
+<section id="code"><p class="eyebrow">05 / Code you can build</p><h2>A four-slot queue, five tests.</h2>
+<p>Save these three files together. The production header uses caller-owned storage, checks full/empty, and makes failed push preserve the queued messages. <code>q</code> must be non-null. In this simple C11/C++20-compatible module, the operations do not request heap allocation.</p>
+<div class="file">bounded_queue.h — production header</div><pre tabindex="0"><code>#ifndef BOUNDED_QUEUE_H
+#define BOUNDED_QUEUE_H
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+#define QUEUE_CAPACITY 4u
+typedef struct {
+    uint8_t slots[QUEUE_CAPACITY];
+    uint8_t head, tail, count;
+} BoundedQueue;
+/* Contract: q must be non-NULL; caller owns storage. */
+static inline void queue_reset(BoundedQueue *q) {
+    q-&gt;head = q-&gt;tail = q-&gt;count = 0;
+}
+static inline bool queue_push(BoundedQueue *q, uint8_t value) {
+    if (q-&gt;count == QUEUE_CAPACITY) return false;
+    q-&gt;slots[q-&gt;tail] = value;
+    q-&gt;tail = (uint8_t)((q-&gt;tail + 1u) % QUEUE_CAPACITY);
+    ++q-&gt;count;
+    return true;
+}
+static inline bool queue_pop(BoundedQueue *q, uint8_t *out) {
+    if (q-&gt;count == 0 || out == 0) return false;
+    *out = q-&gt;slots[q-&gt;head];
+    q-&gt;head = (uint8_t)((q-&gt;head + 1u) % QUEUE_CAPACITY);
+    --q-&gt;count;
+    return true;
+}
+#endif</code></pre>
+<div class="file">test_queue.c — five Unity tests</div><pre tabindex="0"><code>#include "unity.h"
+#include "bounded_queue.h"
+void setUp(void) {}
+void tearDown(void) {}
+
+void test_fifo_order(void) {
+    BoundedQueue q; uint8_t out = 0;
+    queue_reset(&amp;q);
+    TEST_ASSERT_TRUE(queue_push(&amp;q, 10));
+    TEST_ASSERT_TRUE(queue_push(&amp;q, 20));
+    TEST_ASSERT_TRUE(queue_pop(&amp;q, &amp;out));
+    TEST_ASSERT_EQUAL_UINT8(10, out);
+    TEST_ASSERT_TRUE(queue_pop(&amp;q, &amp;out));
+    TEST_ASSERT_EQUAL_UINT8(20, out);
+}
+void test_full_queue_rejects_without_damage(void) {
+    BoundedQueue q; uint8_t out = 0;
+    queue_reset(&amp;q);
+    for (uint8_t i = 1; i &lt;= 4; ++i)
+        TEST_ASSERT_TRUE(queue_push(&amp;q, i));
+    TEST_ASSERT_FALSE(queue_push(&amp;q, 99));
+    TEST_ASSERT_EQUAL_UINT8(4, q.count);
+    TEST_ASSERT_TRUE(queue_pop(&amp;q, &amp;out));
+    TEST_ASSERT_EQUAL_UINT8(1, out);
+}
+void test_wraparound_preserves_fifo(void) {
+    BoundedQueue q; uint8_t out = 0;
+    queue_reset(&amp;q);
+    for (uint8_t i = 1; i &lt;= 4; ++i)
+        TEST_ASSERT_TRUE(queue_push(&amp;q, i));
+    TEST_ASSERT_TRUE(queue_pop(&amp;q, &amp;out));
+    TEST_ASSERT_TRUE(queue_pop(&amp;q, &amp;out));
+    TEST_ASSERT_TRUE(queue_push(&amp;q, 5));
+    TEST_ASSERT_TRUE(queue_push(&amp;q, 6));
+    for (uint8_t i = 3; i &lt;= 6; ++i) {
+        TEST_ASSERT_TRUE(queue_pop(&amp;q, &amp;out));
+        TEST_ASSERT_EQUAL_UINT8(i, out);
+    }
+}
+void test_empty_pop_keeps_output(void) {
+    BoundedQueue q; uint8_t out = 77;
+    queue_reset(&amp;q);
+    TEST_ASSERT_FALSE(queue_pop(&amp;q, &amp;out));
+    TEST_ASSERT_EQUAL_UINT8(77, out);
+}
+void test_reset_discards_pending_events(void) {
+    BoundedQueue q; uint8_t out = 0;
+    queue_reset(&amp;q);
+    TEST_ASSERT_TRUE(queue_push(&amp;q, 42));
+    queue_reset(&amp;q);
+    TEST_ASSERT_EQUAL_UINT8(0, q.count);
+    TEST_ASSERT_FALSE(queue_pop(&amp;q, &amp;out));
+}
+int main(void) {
+    UNITY_BEGIN();
+    RUN_TEST(test_fifo_order);
+    RUN_TEST(test_full_queue_rejects_without_damage);
+    RUN_TEST(test_wraparound_preserves_fifo);
+    RUN_TEST(test_empty_pop_keeps_output);
+    RUN_TEST(test_reset_discards_pending_events);
+    return UNITY_END();
+}</code></pre>
+<div class="file">CMakeLists.txt — pinned Unity v2.7.0</div><pre tabindex="0"><code>cmake_minimum_required(VERSION 3.20)
+project(QueueUnityLab LANGUAGES C)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+include(FetchContent)
+FetchContent_Declare(unity
+    GIT_REPOSITORY https://github.com/ThrowTheSwitch/Unity.git
+    GIT_TAG v2.7.0)
+FetchContent_MakeAvailable(unity)
+add_executable(queue_tests test_queue.c)
+target_include_directories(queue_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(queue_tests PRIVATE unity)
+enable_testing()
+add_test(NAME queue_tests COMMAND queue_tests)</code></pre>
+<div class="file">Terminal — build and test (requires CMake, Ninja, Git and a C compiler)</div>
+<pre tabindex="0"><code>cmake -S . -B build -G Ninja
+cmake --build build
+ctest --test-dir build --output-on-failure</code></pre>
+<div class="callout info"><strong>What was validated:</strong> the queue and five scenarios compiled and passed in GCC C11 with a local assertion shim; a separate C++20 caller compiled and passed the queue header. The complete test executable was <strong>not</strong> compiled against the actual Unity v2.7.0 sources because dependency download was unavailable in the local validation environment. The Unity API and <code>unity</code> CMake target were independently inspected against the tagged upstream release.</div></section>
+<section id="integration"><p class="eyebrow">06 / License &amp; build</p><h2>Put the dependency where tests live.</h2>
+<p>Unity is <strong>MIT-licensed</strong> (copyright Throw The Switch contributors; retain the upstream copyright and license notice). Its v2.7.0 release was published <strong>July 16, 2026</strong>. The example <code>FetchContent</code> pins the release tag; for highly reproducible offline builds, vendor the audited source or pin its immutable commit SHA. First-time FetchContent requires network access.</p>
+<p>On an MCU, override <code>UNITY_OUTPUT_CHAR</code> for serial, semihosting or another appropriate output channel. Measure real binary size, static data, stack high-water mark, and any transitive allocator calls. Unity's minimal core is not a global <em>zero-allocation guarantee</em>, especially when standard C library output and optional runners are used.</p>
+<p>Isolate <code>unity.c</code> to the test target. The same <code>bounded_queue.h</code> can compile in firmware; nothing about this toy sample obliges an embedded production build to include the test framework. Unity's MIT license permits modifications and redistribution with its notice, without making safety-certification or warranty claims.</p></section>
+<section id="tradeoffs"><p class="eyebrow">07 / Tradeoffs</p><h2>Small does not mean automatically qualified.</h2><div class="tablewrap"><table><thead><tr><th scope="col">Concern</th><th scope="col">Strength</th><th scope="col">Engineering caveat</th></tr></thead><tbody>
+<tr><td>Footprint</td><td>One C implementation and two headers</td><td>Measure ROM/RAM/stack on your compiler and target.</td></tr>
+<tr><td>Reproducibility</td><td>Named deterministic input cases</td><td>Real hardware clocks and interrupt interleavings need separate controls.</td></tr>
+<tr><td>Heap</td><td>Shown queue makes no allocation requests</td><td>Do not extrapolate to Unity, printf, instrumentation, CI runners or target libc.</td></tr>
+<tr><td>Concurrency</td><td>Easy single-runner mental model</td><td>Global state is not a reentrant test harness; serialize runs.</td></tr>
+<tr><td>C++20</td><td>C and C++ caller compatibility for the queue</td><td>Failure control flow may violate C++ RAII expectations.</td></tr>
+<tr><td>Coverage</td><td>Good exact regression contracts</td><td>Coverage, fuzzing, mutation tests, hardware-in-loop still needed.</td></tr>
+<tr><td>Deployment</td><td>Actual ESP-IDF integration documented</td><td>That does not certify RISCue's behavior or timing.</td></tr>
+</tbody></table></div><div class="callout warn"><strong>Explicit nonclaims:</strong> hard-real-time timing, thread safety, production certification, universal zero-heap execution, and correctness of untested conditions are not established by this report.</div></section>
+<section id="plan"><p class="eyebrow">08 / Next useful experiment</p><h2>Kill a mutant; preserve its trace.</h2>
+<ol><li>Isolate one RISCue C-facing bounded queue or peripheral utility with explicit full/empty behavior.</li>
+<li>Run this five-case suite plus capacity boundary vectors in Debug and Release with GCC and Clang.</li>
+<li>Introduce a one-line “overwrite when full” mutation; verify a test fails and preserve the message sequence.</li>
+<li>Add CTest in CI; capture return status and compiler identity with the test evidence.</li>
+<li>Measure runtime, stack, output, allocation and integration separately on any target hardware before claiming platform qualification.</li></ol>
+<div class="callout"><strong>Recommendation:</strong> a practical small assertion framework for embedded C surfaces. Pair its precise regression cases with host-side RapidCheck sequence exploration; use a C++-aware harness for nontrivial C++ objects.</div></section>
+<section id="sources"><p class="eyebrow">09 / References · reviewed 2026-11-10</p><h2>Primary documents.</h2>
+<ol>
+<li><a href="https://github.com/ThrowTheSwitch/Unity">ThrowTheSwitch Unity repository</a> — implementation and documented embedded scope.</li>
+<li><a href="https://github.com/ThrowTheSwitch/Unity/releases/tag/v2.7.0">Unity v2.7.0 release</a> — release dated July 16, 2026.</li>
+<li><a href="https://github.com/ThrowTheSwitch/Unity/blob/v2.7.0/src/unity.h">v2.7.0 public API header</a> — assertion names, C linkage, configuration.</li>
+<li><a href="https://github.com/ThrowTheSwitch/Unity/blob/v2.7.0/src/unity_internals.h">v2.7.0 runner definitions</a> — begin/end, <code>RUN_TEST</code>.</li>
+<li><a href="https://github.com/ThrowTheSwitch/Unity/blob/v2.7.0/CMakeLists.txt">Upstream CMake source</a> — inspected <code>unity</code> target.</li>
+<li><a href="https://github.com/ThrowTheSwitch/Unity/blob/v2.7.0/LICENSE.txt">Unity's MIT license</a> — redistribution terms.</li>
+<li><a href="https://github.com/espressif/esp-idf/blob/master/docs/en/api-guides/unit-tests.rst">ESP-IDF's unit-test guide</a> — actual integration evidence.</li>
+<li><a href="https://github.com/espressif/esp-idf/blob/master/examples/system/unit_test/README.md">ESP-IDF unit-test example</a> — official runnable project documentation.</li>
+</ol><p><strong>Source distinction:</strong> ESP-IDF use is documented; the RISCue/VeloSim/SharpHDL suggestions are original prospective applications, not claims of adoption.</p></section>
+</main></div>
+<footer><div class="wrap"><strong>DeepDives — 10 November 2026</strong><p>A self-contained technical report: no remote scripts, fonts, images or tracking. Original teaching example and page offered under MIT reuse terms; Unity retains its upstream MIT copyright. Compiler and target qualification not implied.</p><p><a href="https://github.com/jeffadickson/but-does-it-do-anything/tree/main/DeepDives">Browse the DeepDives collection ↗</a></p></div></footer>
+<script>"use strict";
+(() => {
+  const summary = document.getElementById('status');
+  const results = document.getElementById('results');
+  const bugButton = document.getElementById('bug');
+  let broken = false;
+  function queue(buggy) {
+    const slots = [0,0,0,0];
+    let head=0,tail=0,count=0;
+    return {
+      get count(){return count;},
+      reset(){head=tail=count=0;},
+      push(x) {
+        if(count===4) {
+          if(!buggy)return false;
+          // Intentional defect: overwrite oldest instead of rejecting.
+          slots[tail]=x; tail=(tail+1)%4; head=(head+1)%4; return true;
+        }
+        slots[tail]=x; tail=(tail+1)%4; count++; return true;
+      },
+      pop() {
+        if(count===0)return null;
+        const x=slots[head]; head=(head+1)%4; count--; return x;
+      }
+    };
+  }
+  function assert(ok,msg) {if(!ok)throw new Error(msg);}
+  const suite=[
+    ['FIFO', q=>{assert(q.push(10)&&q.push(20),'push rejected'); assert(q.pop()===10&&q.pop()===20,'wrong order');}],
+    ['Overflow is rejected',q=>{for(let i=1;i<=4;i++)assert(q.push(i),'premature full'); assert(q.push(99)===false,'push(99) should return false'); assert(q.count===4,'count changed');assert(q.pop()===1,'oldest overwritten');}],
+    ['Wraparound',q=>{for(let i=1;i<=4;i++)assert(q.push(i),'push rejected');assert(q.pop()===1&&q.pop()===2,'first pops');assert(q.push(5)&&q.push(6),'wrap push');for(let i=3;i<=6;i++)assert(q.pop()===i,'wrap order');}],
+    ['Empty pop preserves output',q=>{let output=77;const x=q.pop();if(x!==null)output=x;assert(x===null&&output===77,'output changed');}],
+    ['Reset clears work',q=>{assert(q.push(42),'push');q.reset();assert(q.count===0&&q.pop()===null,'not empty');}]
+  ];
+  function execute(){
+    const frag=document.createDocumentFragment();
+    let passed=0;
+    for(const [name,fn] of suite){
+      const row=document.createElement('li');
+      try{fn(queue(broken));row.className='pass';row.textContent='PASS · '+name;passed++;}
+      catch(e){row.className='fail';row.textContent='FAIL · '+name+' — '+e.message;}
+      frag.appendChild(row);
+    }
+    results.replaceChildren(frag);
+    summary.textContent=passed+' of '+suite.length+' checks passed — '+(broken?'deliberately broken':'correct')+' queue';
+    summary.className=passed===suite.length?'good':'bad';
+    bugButton.textContent=broken?'Injected bug: ON':'Injected bug: OFF';
+    bugButton.setAttribute('aria-pressed',String(broken));
+  }
+  document.getElementById('run').addEventListener('click',execute);
+  bugButton.addEventListener('click',()=>{broken=!broken;execute();});
+  document.getElementById('reset').addEventListener('click',()=>{broken=false;execute();});
+  execute();
+})();</script></body></html>
