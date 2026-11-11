@@ -124,12 +124,12 @@ footer{padding:3rem 0 4rem;color:var(--muted);font-size:.88rem}footer a{color:#c
 </section>
 <section id="code">
 <h2>05 / A concrete C++20 stress probe</h2>
-<p>The following complete example launches two producers and two consumers. Every event carries a unique ID. It checks that all 20,000 events were received once, with a valid producer identifier. It is intended as an initial host-side regression test, not a substitute for TSAN, formal analysis, or target-specific qualification.</p>
+<p>The following complete example launches two producers and two consumers. Every event carries a unique ID. It checks that all 20,000 events were received once, with a valid producer identifier; failures return a nonzero exit code even in optimized Release builds. It is intended as an initial host-side regression test, not a substitute for TSAN, formal analysis, or target-specific qualification.</p>
 <pre><code>// main.cpp — host-side stress probe, NOT a hard-real-time guarantee.
 #include &lt;rigtorp/MPMCQueue.h&gt;
 #include &lt;array&gt;
 #include &lt;atomic&gt;
-#include &lt;cassert&gt;
+#include &lt;cstdlib&gt;
 #include &lt;cstdint&gt;
 #include &lt;iostream&gt;
 #include &lt;thread&gt;
@@ -177,9 +177,17 @@ int main() {
   std::thread p1(produce, 0), p2(produce, 1);
   p1.join(); p2.join(); c1.join(); c2.join();
 
-  assert(consumed.load() == total);
-  assert(invalid.load() == 0);
-  for (auto&amp; count : seen) assert(count.load() == 1);
+  // Checks stay active in optimized Release / NDEBUG builds.
+  if (consumed.load() != total || invalid.load() != 0) {
+    std::cerr &lt;&lt; &quot;FAIL: missing/invalid event\n&quot;;
+    return EXIT_FAILURE;
+  }
+  for (auto&amp; count : seen) {
+    if (count.load() != 1) {
+      std::cerr &lt;&lt; &quot;FAIL: duplicate or missing event\n&quot;;
+      return EXIT_FAILURE;
+    }
+  }
   std::cout &lt;&lt; &quot;PASS: &quot; &lt;&lt; total
             &lt;&lt; &quot; events delivered exactly once\n&quot;;
 }</code></pre>
