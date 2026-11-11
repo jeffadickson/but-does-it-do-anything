@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Frame Forge is a colorful offline eight-frame hockey flipbook lab for nine-year-old makers.">
+<title>Frame Forge! The Hockey Flipbook Lab · DeepDivesKids · 2026-11-11</title>
+<style>
+:root{--ink:#172d51;--blue:#273c86;--purple:#6742b8;--pink:#ffdbeb;--ice:#e7f9ff;--gold:#ffe299;--mint:#dbfff2}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f6f8ff;color:var(--ink);font:17px/1.65 system-ui,Segoe UI,Arial,sans-serif}
+a{color:#4033a5;text-underline-offset:3px}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:3px solid #f29227;outline-offset:3px}h1,h2,h3{line-height:1.14;letter-spacing:-.028em}h1{font-size:clamp(2.8rem,7vw,5.1rem);margin:12px 0}h2{font-size:clamp(1.65rem,4vw,2.5rem);margin:0 0 15px}h3{font-size:1.22rem;margin:0 0 10px}p{margin:0 0 14px}li{margin:.4rem 0}
+.wrap{width:min(1120px,calc(100% - 34px));margin:0 auto}.skip{position:absolute;top:-100px;left:15px;background:white;padding:10px;z-index:9}.skip:focus{top:10px}
+.hero{background:radial-gradient(circle at 90% 15%,#715ac3 0%,transparent 38%),linear-gradient(125deg,#10284c,#26397e);color:white;padding:32px 0 57px}.hero h1{max-width:800px;color:white}.hero h1 span{color:var(--gold)}.hero p{font-size:1.17rem;max-width:710px;color:#f0f4ff}.label{font-size:.81rem;font-weight:850;letter-spacing:.1em;text-transform:uppercase}.hero .label{color:#d7eaff}.tag{display:inline-block;padding:3px 12px;border-radius:18px;background:#ffe397;color:#132a50;font-size:.85rem;font-weight:850;letter-spacing:0;text-transform:none}.art{font-size:clamp(2.6rem,8vw,5.5rem);margin:22px 0 3px}.links{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0}.links a{display:inline-block;padding:11px 17px;border-radius:14px;background:var(--gold);color:var(--ink);font-weight:850;text-decoration:none}.links a+ a{background:#ffffff24;color:white;border:1px solid #ffffff90}
+.toc{position:relative;margin-top:-22px;background:white;border:1px solid #d6ddef;border-radius:21px;padding:20px 27px;box-shadow:0 10px 32px #152c591a}.toc ul{display:flex;gap:6px 24px;flex-wrap:wrap;list-style:none;margin:8px 0 0;padding:0}.toc li{margin:0}.toc a{font-weight:750}
+section{padding:31px 0 12px;scroll-margin-top:18px}.panel,.card,.lab{background:white;border:1px solid #d9e2f0;border-radius:23px;padding:clamp(18px,3vw,30px);box-shadow:0 12px 35px #12274c12}.columns{display:grid;grid-template-columns:1fr 1fr;gap:20px}.card{padding:21px;border-radius:18px;box-shadow:none}.pink{background:#fff0f5}.mint{background:#eafff8}.sun{background:#fff8db}.eyebrow{color:#6b45a5;text-transform:uppercase;letter-spacing:.1em;font-size:.78rem;font-weight:850}.steps{counter-reset:s;display:grid;gap:12px}.steps p{background:#f3f7ff;padding:14px 17px;border-radius:13px;margin:0}.steps p:before{counter-increment:s;content:counter(s);display:inline-grid;place-items:center;margin-right:10px;width:27px;height:27px;border-radius:50%;background:#273c86;color:#fff;font-weight:850}
+.formula{font-weight:850;font-size:1.4rem;padding:15px;background:#e8eeff;border-radius:13px}.lab{border:2px solid #9ea9dd;padding:0;overflow:hidden}.lab-head{padding:20px 24px;background:linear-gradient(95deg,#233875,#6543b9);color:white}.lab-head h3{color:white;font-size:1.55rem}.lab-head p{margin:0}.lab-body{padding:18px}.stage{background:#e6f7ff;border:2px solid #a6c5dc;border-radius:16px;overflow:hidden}.stage canvas{display:block;width:100%;height:auto;aspect-ratio:900/460;touch-action:none;cursor:crosshair}.readout,.status{background:#ecf2ff;color:#173969;padding:11px 13px;border-radius:12px;font-weight:760;margin-bottom:11px}.status{margin-top:12px;min-height:48px}.bar{display:flex;gap:9px;flex-wrap:wrap;margin:15px 0}.btn{font:inherit;font-weight:850;border-radius:11px;padding:9px 13px;border:2px solid #233c74;color:#20335f;background:white;cursor:pointer}.btn:hover{background:#e7ebff}.btn.main{background:#253b82;color:white}.btn.save{background:var(--mint);border-color:#168573}.btn.reset{background:var(--pink);border-color:#a14c7a}
+.timeline{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;margin:12px 0}.frame{min-height:46px;border-radius:12px;border:2px solid #b7bfdc;background:#f3f6ff;font:inherit;font-weight:900;color:#233c79;cursor:pointer}.frame[aria-pressed="true"]{background:#ffdd87;border-color:#926f21}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:14px}.control{background:#f4f6ff;border:1px solid #dce3f4;border-radius:16px;padding:15px}.control label{display:block;font-weight:750;margin:8px 0 4px}.control input[type=range]{width:100%;accent-color:#5d47bb}.control select{width:100%;padding:9px;font:inherit;border:1px solid #8597be;border-radius:9px;color:#132b54;background:white}.check{display:flex!important;align-items:center;gap:9px}.check input{width:20px;height:20px;accent-color:#6247b4}
+.experiment{background:linear-gradient(125deg,#fff1c8,#ffe6e9);border:1px solid #f3c6be;border-radius:22px;padding:23px}.code{background:#17284a;color:#f0f8ff;white-space:pre;overflow:auto;padding:20px;border-radius:16px;font:14px/1.6 ui-monospace,Consolas,monospace}.note{border-left:5px solid #8c66d3;background:#f0ebff;padding:16px;border-radius:0 12px 12px 0}.question{border:1px solid #d4def0;background:white;border-radius:13px;padding:13px 16px;margin:10px 0}.question summary{font-weight:800;cursor:pointer}.foot{padding:31px 0;background:#17274c;color:#eaf2ff;margin-top:30px}.foot h2{color:white}.foot a{color:#ffdb88}.small{font-size:.92rem;color:#53617b}.source{padding:12px 0;border-bottom:1px solid #dce2ef}
+@media(max-width:750px){.columns,.controls{grid-template-columns:1fr}.timeline{grid-template-columns:repeat(4,minmax(0,1fr))}.bar .btn{flex:1}.lab-body{padding:11px}section{padding:22px 0 10px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}@media print{body{background:white}.hero{background:white;color:#182b51}.hero h1,.hero p{color:#182b51}.panel,.lab{box-shadow:none}}
+</style>
+</head>
+<body><a class="skip" href="#main">Skip to the lesson</a>
+<header class="hero"><div class="wrap"><div class="label"><span class="tag">DeepDivesKids · Edition 18</span> &nbsp; Wednesday, November 11, 2026</div>
+<div class="art" aria-hidden="true">🎬 🏒 🥅 ✨</div><h1>Frame Forge! <span>The Hockey Flipbook Lab</span></h1>
+<p>Quinn and Reagan: Can you make a hockey puck fly across the ice <strong>without filming any movement</strong>? Eight still pictures are your secret superpower.</p>
+<div class="links"><a href="#studio">🎨 Make a mini-movie</a><a href="#how">🔎 Discover the trick</a></div></div></header>
+<main class="wrap" id="main">
+<nav class="toc" aria-label="Table of contents"><strong>🎟️ Your adventure map</strong><ul>
+<li><a href="#mission">The challenge</a></li><li><a href="#how">How motion works</a></li><li><a href="#studio">Movie studio</a></li>
+<li><a href="#real">Real-world makers</a></li><li><a href="#paper">Paper experiment</a></li><li><a href="#code">Code notebook</a></li><li><a href="#quiz">Quiz</a></li><li><a href="#sources">Sources &amp; licensing</a></li></ul></nav>
+<section id="mission"><div class="columns"><div class="panel"><span class="eyebrow">Today's creative challenge</span><h2>Can eight pictures make one amazing save?</h2>
+<p>Imagine Quinn winds up for a shot. Reagan is ready in goal. <strong>Freeze</strong> the play. Move the puck a tiny bit. Freeze it again. When the pictures flash by, your brain sees a moving play.</p>
+<p>Artists call this <strong>frame-by-frame animation</strong>. In stop-motion, artists actually move puppets and photograph them one frame at a time. In our lab, JavaScript draws pictures instead of taking photos.</p><span class="tag">Predict · Create · Replay</span></div>
+<div class="card sun"><div style="font-size:3rem" aria-hidden="true">🎞️</div><h3>Two kinds of movie magic</h3><p><b>Stop-motion:</b> Move a real puppet → photograph it → move it again → take another picture.</p><p><b>Digital flipbook:</b> Put drawings at slightly different positions in a sequence → play them in order.</p><p class="small">Important: This is a digital frame animator, not a camera-based stop-motion application.</p></div></div></section>
+<section id="how"><div class="panel"><span class="eyebrow">How it works</span><h2>How can still pictures move?</h2><div class="columns"><div class="steps">
+<p><b>One frame is one picture.</b> A still image does not move by itself.</p>
+<p><b>Make one small change.</b> Put the puck a little farther along in the next picture.</p>
+<p><b>Play the pictures in order.</b> Your visual system combines rapid changes into apparent motion.</p>
+<p><b>Adjust the timing.</b> Faster playback means more pictures shown each second, but smooth motion also needs enough different positions.</p></div>
+<div class="card mint"><h3>⏱️ The mathematical secret</h3><div class="formula">time = number of frames ÷ frames per second</div>
+<p style="margin-top:15px">Eight frames at <b>4 frames per second</b> make a <b>2-second</b> movie.</p>
+<p>Eight frames at <b>8 frames per second</b> make a <b>1-second</b> movie.</p><p class="small">Professional films can display 24 frames each second. Some drawings are held for two display frames. Our eight-frame experiment makes each decision visible.</p></div></div></div></section>
+<section id="studio"><div class="lab"><div class="lab-head"><span class="label">★ Interactive Mission Control</span><h3>Your eight-frame hockey movie</h3><p>The save is already animated. Pick a frame, choose puck or goalie, and change the picture!</p></div><div class="lab-body">
+<div class="readout" id="info">Frame 1 of 8 · Ready to direct.</div>
+<div class="stage"><canvas id="rink" width="900" height="460" tabindex="0" role="group" aria-label="Hockey rink editor. Select a frame and move the puck or goalie by touch, mouse, arrow keys, or position sliders below.">Interactive rink. Use the sliders beneath it if canvas is unavailable.</canvas></div>
+<div class="bar"><button class="btn main" type="button" id="play">▶ Play</button><button class="btn" type="button" id="prev">← Previous</button><button class="btn" type="button" id="next">Next →</button><button class="btn save" type="button" id="export">⬇ Save storyboard PNG</button><button class="btn reset" type="button" id="reset">↺ Reset</button></div>
+<strong>Select one of your eight pictures:</strong><div id="timeline" class="timeline" role="group" aria-label="Eight pictures to edit"></div>
+<div class="controls"><div class="control"><label for="subject">Which character?</label><select id="subject"><option value="puck">🏒 Puck</option><option value="goalie">🥅 Goalie</option></select>
+<label for="x">Left / right: <output id="xOut" for="x">205</output></label><input id="x" type="range" min="70" max="820" step="1" value="205">
+<label for="y">Up / down: <output id="yOut" for="y">255</output></label><input id="y" type="range" min="75" max="385" step="1" value="255">
+<p class="small">You can also tap the rink, drag on the ice, or focus the rink and use arrow keys. The sliders work with keyboards and screen readers.</p></div>
+<div class="control"><label for="speed">Pictures per second: <output id="speedOut" for="speed">4</output></label><input id="speed" type="range" min="2" max="12" step="1" value="4">
+<label for="onion" class="check"><input id="onion" type="checkbox" checked> Show onion-skin ghosts</label>
+<p class="small">Pale shapes are faint guides to nearby pictures—not extra hockey players!</p><p id="duration"><b>One loop: 2 seconds.</b></p>
+<p>Try 2 pictures per second, then 12. What changes?</p></div></div>
+<p class="status" id="status" role="status" aria-live="polite">Ready to create. Your eight-frame save is loaded.</p>
+<noscript><p>JavaScript is needed for the interactive rink. The paper flipbook activity works without it.</p></noscript></div></div></section>
+<section id="real"><span class="eyebrow">Evidence versus imagination</span><h2>Who really uses animation like this?</h2><div class="columns">
+<article class="card pink"><h3>🎥 Aardman and Wallace &amp; Gromit</h3><p>In a June 2025 behind-the-scenes article, Aardman described planning a film with an <b>animatic</b> (timed storyboard), building physical props, and using phones to capture a stop-motion film a frame at a time.</p><p><b>Verified real use:</b> <a href="https://www.aardman.com/latest-news/2025/june/behind-the-craft-wallace-gromit-shot-on-iphone/">Aardman's production account</a>.</p></article>
+<article class="card mint"><h3>🧵 LAIKA and Coraline</h3><p>LAIKA and the Museum of Pop Culture explain that <em>Coraline</em> used puppet animation and describe shooting on <b>ones</b> (a change each of 24 frames per second) compared with <b>twos</b> (a change every other frame).</p><p><b>Verified real use:</b> <a href="https://www.laikahiddenworlds.com/coraline">LAIKA's Coraline exhibit</a>.</p></article>
+<article class="card"><h3>🖍️ Blender's Grease Pencil</h3><p>Blender supports digital frame-by-frame drawing and <b>onion skinning</b>, which shows pale neighboring frames to help artists judge motion. Our lab makes a simpler version of this idea.</p><p><b>Verified capability:</b> <a href="https://docs.blender.org/manual/en/latest/grease_pencil/animation/introduction.html">Blender's official manual</a>.</p></article>
+<article class="card sun"><h3>🥅 Quinn's shot; Reagan's save</h3><p><b>Imaginary learning scenario:</b> Our hockey animation is a made-up example. We are not claiming that those studios, a real sports team, or Dad's engineering projects use this eight-frame program.</p><p>The positions are chosen by you; no realistic puck physics is calculated.</p></article>
+</div></section>
+<section id="paper"><div class="experiment"><span class="eyebrow">Off-screen maker mission</span><h2>Make a real paper flipbook</h2><div class="columns"><div><ol>
+<li>Get eight sticky notes or small sheets of paper.</li><li>Number the pages 1–8.</li><li>Draw the <b>same hockey net</b> in the same place on each page.</li>
+<li>Draw a puck a little closer to the net each time. Let the goalie block it near the end.</li><li>Stack the pages, hold one side and flip with your thumb.</li></ol></div>
+<div class="card"><h3>🔬 One-variable experiment</h3><p><b>Predict:</b> Will smaller changes between pictures look smoother?</p><p><b>Test:</b> Draw a second eight-picture flipbook with smaller steps.</p><p><b>Observe:</b> Compare both at approximately the same flipping speed.</p><p><b>Explain:</b> A movie is a series of separate observations, presented in order.</p></div></div></div></section>
+<section id="code"><div class="panel"><span class="eyebrow">Coder corner</span><h2>How do eight numbers become motion?</h2><p>One short JavaScript pattern does most of the magic. These values record the puck's horizontal location in eight drawings:</p>
+<pre class="code"><code>const positions = [205,285,365,450,540,632,688,645];
+let frame = 0;
+function drawNext(ctx) {
+  ctx.clearRect(0,0,900,460);
+  ctx.fillStyle = '#152d4d';
+  ctx.beginPath();
+  ctx.arc(positions[frame],255,13,0,Math.PI*2);
+  ctx.fill();
+  frame = (frame+1) % positions.length;
+}
+const ctx = document.querySelector('#rink').getContext('2d');
+setInterval(() =&gt; drawNext(ctx),250); // 4 pictures/second</code></pre>
+<p class="small">This fragment is a simplified example for a page containing a canvas named <code>rink</code>. It shows a moving dot on a blank canvas. The full working studio above also draws the rink, supports editing, and lets you export a PNG contact sheet. All CSS and JavaScript are included in this page; no external coding library is necessary.</p>
+<div class="columns"><div class="card mint"><h3>🧠 Connection to Dad's engineering</h3><p>A simulator like <b>VeloSim</b> examines a system one step at a time. An animation keeps track of a <b>frame number</b>; a circuit simulator keeps track of <b>simulation time</b>. Both replay ordered changes. This is an analogy, not an actual hardware simulator.</p></div>
+<div class="card pink"><h3>🏒 Connection to hockey</h3><p>Look at individual pictures of a pretend goalie save. How does the goalie line up with the puck? Real coaches sometimes review real slow-motion video, too. This toy draws imagined positions; it does not measure actual athletes.</p></div></div></div></section>
+<section id="quiz"><div class="panel"><span class="eyebrow">Director's badge</span><h2>Three mystery questions</h2>
+<details class="question"><summary>1. Eight pictures at four pictures per second last how long?</summary><p><b>Two seconds.</b> Eight divided by four is two.</p></details>
+<details class="question"><summary>2. Are the pale shapes on the ice real extra players?</summary><p><b>No.</b> Onion-skin ghosts let artists see neighboring frames.</p></details>
+<details class="question"><summary>3. Does our studio photograph real puppets?</summary><p><b>No.</b> It draws with code. In stop-motion, real objects are photographed at slightly different positions.</p></details>
+<p class="note"><strong>Bonus quest:</strong> Make the puck go straight in frames 1–4, then change direction in frame 5. Is it a deflection? How would you animate a goalie save?</p></div></section>
+<section id="sources"><div class="panel"><span class="eyebrow">Sources, code and responsible reuse</span><h2>What we checked</h2>
+<div class="source"><b>1. Aardman Animations (June 9, 2025).</b> <a href="https://www.aardman.com/latest-news/2025/june/behind-the-craft-wallace-gromit-shot-on-iphone/">Behind the Craft: Wallace &amp; Gromit, Shot on iPhone</a>. Direct description from the filmmakers.</div>
+<div class="source"><b>2. LAIKA / Museum of Pop Culture.</b> <a href="https://www.laikahiddenworlds.com/coraline">Coraline, Hidden Worlds</a>. Studio/exhibit documentation of actual puppet filming and frame timing.</div>
+<div class="source"><b>3. Blender Foundation.</b> <a href="https://docs.blender.org/manual/en/latest/grease_pencil/animation/introduction.html">Grease Pencil animation manual</a>. Official frame-by-frame and onion-skin documentation.</div>
+<div class="source"><b>4. Mozilla MDN Web Docs.</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D">Canvas 2D reference</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toDataURL">PNG export reference</a>.</div>
+<h3 style="margin-top:20px">Licensing and integration</h3><p><b>This page's original HTML, CSS and JavaScript:</b> MIT License, Copyright (c) 2026 DeepDivesKids contributors. Permission is granted free of charge to anyone obtaining a copy of the original code to use, copy, modify, merge, publish, distribute, sublicense, and sell it, provided the copyright and permission notice are included. The code is supplied “as is,” without warranty of any kind. This does not grant rights to Aardman/LAIKA films, characters, photos, trademarks or third-party documentation.</p>
+<p><b>Run it:</b> Open this HTML file in a modern browser, online or offline. No CDN, web font, outside script, or installed dependency is required. The storyboard button exports eight frames as a PNG image, not an MP4 or GIF movie. Blender is independent, optional GNU-GPL-licensed software and is not distributed here.</p>
+<p><b>Limits:</b> This is an artistic flipbook, not a physically accurate hockey simulation. Internet links to references do not work offline. Browser playback timing and image-download policies can differ by device. The HTML still explains the paper experiment when JavaScript is disabled.</p></div></section>
+</main><footer class="foot"><div class="wrap"><div class="label">DEEPDIVESKIDS · 11 NOV 2026</div><h2>Every great movie starts with one picture.</h2><p>Make another ending. Invent another save. And watch the pictures come to life. 🎬</p><p>Original learning code · Self-contained · Accessible controls · MIT</p></div></footer>
+<script>
+'use strict';
+(() => {
+  const $=id=>document.getElementById(id),canvas=$('rink'),ctx=canvas.getContext('2d');
+  if(!ctx){$('status').textContent='Canvas is unavailable; please try the paper activity.';return;}
+  const BASE=[
+    {puck:{x:205,y:255},goalie:{x:735,y:230}},
+    {puck:{x:285,y:262},goalie:{x:735,y:230}},
+    {puck:{x:365,y:270},goalie:{x:732,y:230}},
+    {puck:{x:450,y:275},goalie:{x:724,y:233}},
+    {puck:{x:540,y:279},goalie:{x:710,y:237}},
+    {puck:{x:632,y:260},goalie:{x:695,y:236}},
+    {puck:{x:688,y:230},goalie:{x:680,y:228}},
+    {puck:{x:645,y:215},goalie:{x:678,y:221}}
+  ];
+  const fresh=()=>BASE.map(f=>({puck:{...f.puck},goalie:{...f.goalie}}));
+  let frames=fresh(),current=0,playing=false,timer=null,dragging=false;
+  const fps=()=>Number($('speed').value),subject=()=>$('subject').value;
+  const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+  const announce=s=>{$('status').textContent=s;};
+  function line(g,a,b,c,d,col,w=3){g.beginPath();g.moveTo(a,b);g.lineTo(c,d);g.strokeStyle=col;g.lineWidth=w;g.stroke();}
+  function oval(g,x,y,rx,ry,fill,edge){g.beginPath();g.ellipse(x,y,rx,ry,0,0,Math.PI*2);g.fillStyle=fill;g.fill();if(edge){g.strokeStyle=edge;g.lineWidth=3;g.stroke();}}
+  function rink(g){
+    g.fillStyle='#e4f7ff';g.fillRect(0,0,900,460);
+    g.fillStyle='#f9fdff';g.fillRect(28,24,844,410);
+    g.strokeStyle='#61a1ce';g.lineWidth=8;g.strokeRect(28,24,844,410);
+    line(g,285,28,285,432,'#3576b2',5);line(g,580,28,580,432,'#3576b2',5);
+    line(g,450,28,450,432,'#d14d6b',4);line(g,785,28,785,432,'#d14d6b',5);
+    oval(g,450,230,70,70,'#ffffff00','#d14d6b');
+    for(const [x,y] of [[155,115],[155,345],[670,115],[670,345]])oval(g,x,y,14,14,'#e0effa','#c55268');
+    g.fillStyle='#f3d0df';g.fillRect(790,169,47,122);
+    g.strokeStyle='#b7335a';g.lineWidth=7;g.strokeRect(790,169,47,122);
+    g.font='bold 20px system-ui';g.fillStyle='#173862';g.fillText('THE ICE',50,70);g.fillText('GOAL',782,151);
+    oval(g,156,255,32,32,'#ffdf85','#765025');oval(g,156,244,20,17,'#384b92','#142b52');oval(g,159,253,14,13,'#f4b898');
+    line(g,172,268,195,293,'#b87b41',6);line(g,195,293,225,292,'#493434',6);
+    g.font='bold 17px system-ui';g.fillText('SHOOTER',102,311);
+  }
+  function goalie(g,x,y,alpha=1){g.save();g.globalAlpha=alpha;
+    oval(g,x,y+33,45,11,'#557da344');oval(g,x,y+20,32,29,'#fff0cd','#1f4b79');
+    g.fillStyle='#ffb0c3';g.fillRect(x-29,y+4,13,31);g.fillRect(x+16,y+4,13,31);
+    oval(g,x,y-14,26,28,'#7453bf','#33236d');oval(g,x,y-28,18,18,'#fff4d1','#213455');
+    line(g,x+15,y+8,x+56,y+39,'#8c5826',6);line(g,x+53,y+39,x+75,y+38,'#47333b',6);g.restore();}
+  function puck(g,x,y,alpha=1){g.save();g.globalAlpha=alpha;oval(g,x,y+5,18,7,'#54718a66');oval(g,x,y,14,10,'#17273a','#526b83');g.restore();}
+  function draw(g,i,ghost){rink(g);
+    if(ghost){for(const j of [(i+7)%8,(i+1)%8]){const n=frames[j];goalie(g,n.goalie.x,n.goalie.y,.20);puck(g,n.puck.x,n.puck.y,.26);}}
+    const f=frames[i];goalie(g,f.goalie.x,f.goalie.y);puck(g,f.puck.x,f.puck.y);
+    g.fillStyle='#163b75';g.fillRect(44,370,174,49);g.fillStyle='white';g.font='bold 24px system-ui';g.fillText('FRAME '+(i+1)+' / 8',54,403);
+  }
+  function sync(){
+    const v=frames[current][subject()];$('x').value=v.x;$('y').value=v.y;
+    $('xOut').textContent=v.x;$('yOut').textContent=v.y;$('speedOut').textContent=fps();
+    $('duration').textContent='One loop: '+(8/fps()).toFixed(2).replace(/0+$/,'').replace(/\.$/,'')+' seconds.';
+    $('info').textContent='Frame '+(current+1)+' of 8 · Editing '+subject()+(playing?' · Playing':' · Paused');
+    Array.from($('timeline').children).forEach((b,j)=>b.setAttribute('aria-pressed',String(j===current)));
+  }
+  function render(){draw(ctx,current,!playing && $('onion').checked);sync();}
+  function pause(){if(timer!==null)clearInterval(timer);timer=null;playing=false;$('play').textContent='▶ Play';render();}
+  function step(){current=(current+1)%8;render();}
+  function play(){if(playing){pause();announce('Paused.');return;}playing=true;$('play').textContent='⏸ Pause';render();timer=setInterval(step,1000/fps());announce('Playing '+fps()+' pictures every second.');}
+  function select(i){if(playing)pause();current=i;render();announce('Editing picture '+(current+1)+'.');}
+  function move(x,y){if(playing)pause();const v=frames[current][subject()];v.x=clamp(Math.round(x/5)*5,70,820);v.y=clamp(Math.round(y/5)*5,75,385);render();}
+  for(let i=0;i<8;i++){const b=document.createElement('button');b.type='button';b.className='frame';b.textContent=i+1;b.setAttribute('aria-label','Edit picture '+(i+1));b.addEventListener('click',()=>select(i));$('timeline').appendChild(b);}
+  $('play').addEventListener('click',play);$('prev').addEventListener('click',()=>select((current+7)%8));$('next').addEventListener('click',()=>select((current+1)%8));
+  $('reset').addEventListener('click',()=>{pause();frames=fresh();current=0;render();announce('Your original eight-frame goalie save is restored.');});
+  $('subject').addEventListener('change',()=>{if(playing)pause();render();});
+  $('x').addEventListener('input',()=>move(Number($('x').value),frames[current][subject()].y));
+  $('y').addEventListener('input',()=>move(frames[current][subject()].x,Number($('y').value)));
+  $('speed').addEventListener('input',()=>{const was=playing;if(was)pause();render();if(was)play();});
+  $('onion').addEventListener('change',render);
+  function put(e){const box=canvas.getBoundingClientRect();if(box.width>0&&box.height>0)move((e.clientX-box.left)*900/box.width,(e.clientY-box.top)*460/box.height);}
+  canvas.addEventListener('pointerdown',e=>{if(e.button!==0)return;dragging=true;canvas.setPointerCapture(e.pointerId);put(e);});
+  canvas.addEventListener('pointermove',e=>{if(dragging)put(e);});canvas.addEventListener('pointerup',()=>dragging=false);canvas.addEventListener('pointercancel',()=>dragging=false);
+  canvas.addEventListener('keydown',e=>{const d={ArrowLeft:[-5,0],ArrowRight:[5,0],ArrowUp:[0,-5],ArrowDown:[0,5]}[e.key];if(!d)return;e.preventDefault();const v=frames[current][subject()];move(v.x+d[0],v.y+d[1]);announce(subject()+' position '+frames[current][subject()].x+', '+frames[current][subject()].y);});
+  $('export').addEventListener('click',()=>{
+    const sheet=document.createElement('canvas');sheet.width=1800;sheet.height=920;const g=sheet.getContext('2d');if(!g){announce('Could not create a storyboard on this device.');return;}
+    for(let i=0;i<8;i++){g.save();g.translate(i%4*450,Math.floor(i/4)*230);g.scale(.5,.5);draw(g,i,false);g.restore();}
+    const a=document.createElement('a');a.download='frame-forge-hockey-storyboard.png';a.href=sheet.toDataURL('image/png');a.click();announce('Storyboard PNG requested. Check your downloads.');
+  });
+  render();console.assert(frames.length===8&&frames[0].puck.x===205,'Frame setup failed');
+})();
+</script>
+</body></html>
