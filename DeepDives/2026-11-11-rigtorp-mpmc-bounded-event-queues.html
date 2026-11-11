@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="November 11, 2026 engineering deep dive: rigtorp MPMCQueue, a bounded C++ multi-producer multi-consumer queue, with interactive event-ring lab, RISCue fit and C++20 stress probe.">
+<title>Every Thread Wants the Queue | rigtorp MPMCQueue — DeepDives, 2026-11-11</title>
+<style>
+:root{color-scheme:dark;--bg:#07101d;--card:#101f30;--card2:#13273a;--line:#2b475c;--ink:#ecf6fc;--muted:#b3c8d7;--mint:#67edd5;--yellow:#ffd37a;--pink:#ff8dba;--blue:#8db5ff;--radius:18px}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:2rem}body{margin:0;background:radial-gradient(circle at 95% 5%,#17364b 0,transparent 35%),radial-gradient(circle at 0 28%,#1a2446 0,transparent 35%),var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72}
+a{color:var(--mint);text-underline-offset:.22em}a:hover{color:#fff}a:focus-visible,button:focus-visible,select:focus-visible{outline:3px solid var(--yellow);outline-offset:4px}
+.skip{position:absolute;top:-10rem;left:1rem;background:var(--yellow);color:#101a25;padding:.7rem 1rem;z-index:10}.skip:focus{top:.7rem}
+.container{width:min(1140px,calc(100% - 2.5rem));margin:0 auto}
+header{padding:4.3rem 0 2.3rem}.eyebrow{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--mint)}
+h1,h2,h3{line-height:1.18;letter-spacing:-.035em}h1{font-size:clamp(2.8rem,7vw,5.5rem);margin:.65rem 0 1rem;max-width:900px}h1 em{font-style:normal;color:var(--mint)}h2{font-size:clamp(1.7rem,3.5vw,2.45rem);margin:.2rem 0 1.1rem}h3{font-size:1.18rem;margin:1.5rem 0 .3rem}p{margin:1rem 0}header .lede{font-size:clamp(1.08rem,2.25vw,1.3rem);max-width:800px;color:var(--muted)}.pills{display:flex;flex-wrap:wrap;gap:.55rem;margin:1.5rem 0}.pill{border:1px solid #355c69;border-radius:30px;padding:.3rem .8rem;font-size:.78rem;color:#cee7ec;background:#132b35}
+.hero-art{display:flex;align-items:center;gap:.8rem;background:linear-gradient(110deg,#173e4b,#253252);padding:1rem 1.5rem;border:1px solid #406676;border-radius:16px;max-width:650px;margin:1.8rem 0}.hero-art span{font-size:clamp(.7rem,2vw,1rem)}.hero-art strong{font-size:clamp(1rem,3vw,1.6rem);color:#fff}.arrow{color:var(--mint);font-size:1.8rem}
+.layout{display:grid;grid-template-columns:minmax(200px,245px) minmax(0,1fr);gap:2.6rem;align-items:start}.toc{position:sticky;top:1rem;border:1px solid var(--line);padding:1.3rem;border-radius:var(--radius);background:#0e1c2bbb}.toc h2{font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.toc ol{list-style:none;padding:0;margin:0}.toc li{margin:.55rem 0}.toc a{color:#d7e6f2;text-decoration:none;font-size:.9rem}.toc a:hover{text-decoration:underline}
+article>section{padding:2.3rem 0;border-bottom:1px solid var(--line)}article>section:first-child{padding-top:.5rem}
+.lead{font-size:1.06rem;color:#dcecf3}.box{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:clamp(1rem,3vw,1.8rem);margin:1.2rem 0}.box h3:first-child{margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.metric{background:#132938;padding:1rem;border-radius:12px;border:1px solid #315365}.metric b{display:block;color:var(--mint);font-size:1.2rem}.metric small{color:var(--muted)}
+.note{border-left:4px solid var(--yellow);padding:.35rem 1rem;background:#2b281e;border-radius:0 9px 9px 0}.danger{border-left-color:var(--pink);background:#30212f}
+table{width:100%;border-collapse:collapse;margin:1rem 0}th,td{border-bottom:1px solid var(--line);text-align:left;padding:.8rem;vertical-align:top}th{color:var(--mint);font-size:.86rem}caption{color:var(--muted);text-align:left;margin-bottom:.5rem}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#c3e4ff;font-size:.91em}pre{background:#07111b;padding:1.25rem;border:1px solid #2c5065;border-radius:14px;overflow:auto;tab-size:2;line-height:1.6}pre code{color:#d2eaff;font-size:.85rem}
+.lab{background:linear-gradient(145deg,#122c40,#1b243c);border:1px solid #3b6b75;border-radius:20px;padding:clamp(1rem,3vw,2rem);margin-top:1rem;box-shadow:0 12px 40px #0002}.lab h3{margin-top:0}.lab-intro{color:#cddfec}.controls{display:flex;align-items:end;flex-wrap:wrap;gap:.65rem;margin:1rem 0}.controls label{display:grid;gap:.35rem;color:var(--muted);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}select{font:inherit;background:#0c1c2b;color:white;border:1px solid #527888;padding:.7rem .8rem;border-radius:10px;min-height:46px}button{font:inherit;font-weight:750;background:#214961;border:1px solid #508393;border-radius:10px;color:#fff;padding:.72rem 1.05rem;cursor:pointer;min-height:46px;transition:background .15s,transform .15s}button:hover{background:#2a6272;transform:translateY(-1px)}button.secondary{background:#172d42}button.a{background:#14594e;border-color:#3f9b88}button.b{background:#513c79;border-color:#9b83c7}button.consumer{background:#664a27;border-color:#b99455}
+.ring{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.65rem;margin:1.25rem 0}.slot{min-width:0;min-height:105px;display:flex;flex-direction:column;justify-content:center;gap:.45rem;padding:.85rem;background:#0e2031;border:1px dashed #547185;border-radius:12px;text-align:center;overflow-wrap:anywhere}.slot.occupied{background:#214e4d;border:1px solid #5dcfb6}.slot-index{font-weight:800;font-size:.72rem;color:#aecadb;letter-spacing:.1em}.slot strong{font-size:1.2rem;color:white}.slot small{font-size:.72rem;line-height:1.4;color:#d5e5e9}
+.counters{display:flex;flex-wrap:wrap;gap:.7rem}.counters span{border:1px solid #456578;background:#102435;border-radius:8px;padding:.35rem .65rem;color:#d1e3ef}
+.live{background:#102638;border:1px solid #3c6570;padding:.8rem 1rem;border-radius:10px;min-height:3rem;font-weight:650}.live[data-kind=warning]{border-color:#be9660;color:#ffe5a9}.live[data-kind=success]{border-color:#66a997;color:#aaf8db}
+.timeline{max-height:235px;overflow-y:auto;margin:1rem 0 0;padding-left:1.5rem;font-size:.89rem;color:#d3e6ef}.timeline li{margin-bottom:.35rem}
+.steps{counter-reset:step}.steps>li{margin-bottom:.8rem}.callout{color:#eaf9fa;border-radius:12px;background:#143640;border:1px solid #266b70;padding:1rem}
+.badge{font-size:.68rem;letter-spacing:.08em;border:1px solid #587481;border-radius:50px;padding:.13rem .6rem;text-transform:uppercase;color:#e4f4f6;display:inline-block;margin-right:.5rem}
+footer{padding:3rem 0 4rem;color:var(--muted);font-size:.88rem}footer a{color:#c7edf7}ul li{margin:.5rem 0}.sources li{overflow-wrap:anywhere}
+@media(max-width:850px){.layout{grid-template-columns:minmax(0,1fr);gap:.5rem}.toc{position:static}.toc ol{columns:2}.ring{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.container{width:min(100% - 1.3rem,1140px)}header{padding-top:2rem}.grid{grid-template-columns:1fr}.toc ol{columns:1}.ring{grid-template-columns:repeat(2,minmax(0,1fr))}.controls button{flex:1 1 44%}th,td{padding:.55rem .45rem;font-size:.9rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button{transition:none}button:hover{transform:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the lesson</a>
+<header class="container">
+<div class="eyebrow">DeepDives / Wednesday, November 11, 2026 / Embedded C++20 &amp; concurrency</div>
+<h1>Every Thread Wants<br><em>the Queue.</em></h1>
+<p class="lede">A close look at <strong>rigtorp/MPMCQueue</strong>: how a fixed-capacity queue hands work between many producers and consumers—and where “lock-free” stops being a real-time guarantee.</p>
+<div class="pills"><span class="pill">C++11 library · C++20 example</span><span class="pill">MIT</span><span class="pill">Bounded capacity</span><span class="pill">Construction allocates</span><span class="pill">Interactive lab</span></div>
+<div class="hero-art" aria-label="Two producers deliver events into one bounded ring queue, then two consumers read from it."><strong>P₁ + P₂</strong><span class="arrow" aria-hidden="true">→</span><strong>▣ ▣ ▣ ▣</strong><span class="arrow" aria-hidden="true">→</span><strong>C₁ + C₂</strong></div>
+<p><strong>Bottom line:</strong> An excellent <em>candidate</em> for a pre-initialized, high-throughput host pipeline. For hard-real-time RISCue dispatch, first prove progress guarantees, target atomics, and worst-case tail latency—bounded storage is not bounded execution.</p>
+</header>
+<div class="layout container">
+<nav class="toc" aria-label="Table of contents">
+<h2>In this edition</h2>
+<ol>
+<li><a href="#why">01 / Why MPMC?</a></li>
+<li><a href="#mechanism">02 / Tickets and turns</a></li>
+<li><a href="#lab">03 / Interactive ring</a></li>
+<li><a href="#real">04 / Real use: evidence</a></li>
+<li><a href="#code">05 / C++20 stress probe</a></li>
+<li><a href="#integrate">06 / CMake &amp; installation</a></li>
+<li><a href="#tradeoffs">07 / Honest tradeoffs</a></li>
+<li><a href="#fit">08 / RISCue qualification</a></li>
+<li><a href="#sources">09 / Primary references</a></li>
+</ol>
+</nav>
+<main id="main"><article>
+<section id="why">
+<h2>01 / Why would you need MPMC?</h2>
+<p class="lead">Imagine two sensors or worker threads producing events while two processing threads compete to handle the next event. A classic SPSC queue—<em>single</em> producer, <em>single</em> consumer—does not support that topology without extra coordination.</p>
+<div class="grid">
+<div class="metric"><b>MPMC</b><small>Multiple producers; multiple consumers. Each successful pop transfers one queued item to one consumer, not a broadcast.</small></div>
+<div class="metric"><b>N slots</b><small>The user chooses the capacity at construction. No automatic growth.</small></div>
+<div class="metric"><b><code>try_*</code></b><small>Return success/failure without waiting for an empty/full condition; retries remain your responsibility.</small></div>
+<div class="metric"><b>Ticketed ring</b><small>Monotonically advancing head/tail tickets identify slots and their reuse cycles.</small></div>
+</div>
+<p>The library is header-only and targets C++11 or newer. The project’s <a href="https://github.com/rigtorp/MPMCQueue/blob/master/README.md">README</a> defines the API; the <a href="https://github.com/rigtorp/MPMCQueue/blob/master/include/rigtorp/MPMCQueue.h">actual header</a> is the authority for the memory ordering and allocation behavior.</p>
+<div class="note"><strong>Important topology point:</strong> MPMC consumers <em>divide</em> work. If VeloSim needs every observer to see every event, a single MPMC queue is the wrong primitive; use fan-out or per-subscriber queues.</div>
+</section>
+<section id="mechanism">
+<h2>02 / Tickets, turns, and the ring</h2>
+<p>Each producer claims a head ticket and each consumer claims a tail ticket. A ticket <code>t</code> maps to <code>index = t % capacity</code>. The reuse cycle is <code>turn = floor(t / capacity)</code>.</p>
+<div class="box">
+<h3>A slot's three important states</h3>
+<ol class="steps">
+<li><strong>Write permitted:</strong> its turn counter equals <code>2 × turn</code>.</li>
+<li><strong>Item published:</strong> producer constructs the item, then stores <code>2 × turn + 1</code> with <code>memory_order_release</code>.</li>
+<li><strong>Item consumed:</strong> consumer observes the published state with <code>memory_order_acquire</code>, moves the item, destroys it, and releases the slot by storing <code>2 × turn + 2</code>.</li>
+</ol>
+<p>That acquire/release relationship is central to publishing the payload safely. The code pads slots and the head/tail counters to reduce cache-line false sharing; actual benefit depends on the architecture.</p>
+</div>
+<p><strong>Subtlety:</strong> <code>push()</code>/<code>pop()</code> spin while waiting for their slot. The nonblocking-flavored <code>try_push()</code>/<code>try_pop()</code> can also retry compare-and-exchange when other threads contend. Neither API provides a proven constant step bound for all scheduling scenarios.</p>
+</section>
+<section id="lab">
+<h2>03 / Event-ring laboratory</h2>
+<p>Operate two imaginary producers and two imaginary consumers. Watch the ticket, ring index, and turn change when a slot wraps around. This is a <strong>deterministic sequential teaching model</strong>, not a browser implementation of concurrent atomics.</p>
+<div class="lab" role="group" aria-label="Interactive bounded event queue simulator">
+<h3>Try to fill it. Empty it. Wrap it.</h3>
+<p class="lab-intro">Choose capacity, push events, and read one from either consumer. A full queue rejects another push; an empty queue rejects a pop.</p>
+<div class="controls">
+<label for="capacity-choice">Ring capacity
+<select id="capacity-choice"><option value="2">2 slots</option><option value="3">3 slots</option><option value="4" selected>4 slots</option><option value="8">8 slots</option></select>
+</label>
+<button class="a" id="push-a" type="button">Producer A: push</button>
+<button class="b" id="push-b" type="button">Producer B: push</button>
+<button class="consumer" id="pop-c1" type="button">Consumer 1: pop</button>
+<button class="consumer" id="pop-c2" type="button">Consumer 2: pop</button>
+<button class="secondary" id="run-scenario" type="button">Run full/overflow scenario</button>
+<button class="secondary" id="reset-lab" type="button">Reset</button>
+<button class="secondary" id="self-test" type="button">Check teaching model</button>
+</div>
+<div class="counters" aria-label="Ring counters"><span>Head ticket: <strong id="head-value">0</strong></span><span>Tail ticket: <strong id="tail-value">0</strong></span><span>Occupancy: <strong id="occupancy-value">0 / 4</strong></span></div>
+<div class="ring" id="ring-slots" aria-label="Event ring slots"><div class="slot">Enable JavaScript for the interactive simulation; the rest of this article remains readable.</div></div>
+<p id="live-message" class="live" role="status" aria-live="polite">Choose a producer.</p>
+<h3>Most recent operations</h3><ol id="timeline" class="timeline" aria-label="History of queue operations"></ol>
+</div>
+<div class="note"><strong>Scope:</strong> These buttons make one completed operation at a time. They do not demonstrate thread interference, linearizability, lock-free progress, interrupts, or hardware memory models. “Check teaching model” validates the simplified FIFO oracle only.</div>
+</section>
+<section id="real">
+<h2>04 / Where is it used? Separate the evidence.</h2>
+<div class="box">
+<p><span class="badge">Author-reported production</span><strong>Electronic Arts Frostbite.</strong> The author’s README says the queue was used in the Frostbite engine, naming <em>Battlefield V</em>, <em>Anthem</em>, <em>FIFA 18</em> and others. This is a concrete upstream production claim, <strong>not</strong> an independently audited EA source-code confirmation.</p>
+<p><span class="badge">Author-reported production</span><strong>Trading systems.</strong> The same README names Charlesworth Research and Marquette Partners. Again, this is an upstream maintainer statement; implementation details are not publicly demonstrated in the referenced material.</p>
+<p><span class="badge">Verifiable distribution</span><strong>Microsoft vcpkg.</strong> The published <a href="https://vcpkg.io/en/package/mpmcqueue.html">mpmcqueue package listing</a> identifies the library as a distributable MIT package and lists <code>bark</code> as a dependent package. Packaging/dependency evidence is not proof of any particular production runtime behavior.</p>
+<p><span class="badge">Source-verified example</span><strong>Producer/consumer handoff.</strong> The upstream README includes executable-style C++ showing two consumer threads and a shared queue. This verifies the intended API, not a benchmark of your workload.</p>
+</div>
+<p><strong>Imagined application, not a deployment claim:</strong> a VeloSim host test runner using a queue for independent test jobs; a RISCue <em>host-side</em> event collector; or a SharpTestBench multi-worker scenario dispatcher. None is asserted to use MPMCQueue today.</p>
+</section>
+<section id="code">
+<h2>05 / A concrete C++20 stress probe</h2>
+<p>The following complete example launches two producers and two consumers. Every event carries a unique ID. It checks that all 20,000 events were received once, with a valid producer identifier. It is intended as an initial host-side regression test, not a substitute for TSAN, formal analysis, or target-specific qualification.</p>
+<pre><code>// main.cpp — host-side stress probe, NOT a hard-real-time guarantee.
+#include &lt;rigtorp/MPMCQueue.h&gt;
+#include &lt;array&gt;
+#include &lt;atomic&gt;
+#include &lt;cassert&gt;
+#include &lt;cstdint&gt;
+#include &lt;iostream&gt;
+#include &lt;thread&gt;
+#include &lt;type_traits&gt;
+
+struct Event {
+  std::uint32_t id;
+  std::uint32_t producer;
+};
+static_assert(std::is_nothrow_copy_constructible_v&lt;Event&gt;);
+static_assert(std::is_nothrow_move_assignable_v&lt;Event&gt;);
+static_assert(std::is_nothrow_destructible_v&lt;Event&gt;);
+
+int main() {
+  constexpr std::uint32_t perProducer = 10'000;
+  constexpr std::uint32_t total = 2 * perProducer;
+  rigtorp::MPMCQueue&lt;Event&gt; q(64); // Allocates at initialization.
+  std::array&lt;std::atomic&lt;unsigned&gt;, total&gt; seen{};
+  std::atomic&lt;std::uint32_t&gt; consumed{0};
+  std::atomic&lt;std::uint32_t&gt; invalid{0};
+
+  auto produce = [&amp;](std::uint32_t producer) {
+    for (std::uint32_t i = 0; i &lt; perProducer; ++i) {
+      Event e{producer * perProducer + i, producer};
+      while (!q.try_push(e)) { std::this_thread::yield(); }
+    }
+  };
+  auto consume = [&amp;] {
+    Event e{};
+    while (consumed.load(std::memory_order_relaxed) &lt; total) {
+      if (q.try_pop(e)) {
+        if (e.id &gt;= total || e.producer != e.id / perProducer) {
+          invalid.fetch_add(1, std::memory_order_relaxed);
+        } else {
+          seen[e.id].fetch_add(1, std::memory_order_relaxed);
+        }
+        consumed.fetch_add(1, std::memory_order_relaxed);
+      } else {
+        std::this_thread::yield();
+      }
+    }
+  };
+
+  std::thread c1(consume), c2(consume);
+  std::thread p1(produce, 0), p2(produce, 1);
+  p1.join(); p2.join(); c1.join(); c2.join();
+
+  assert(consumed.load() == total);
+  assert(invalid.load() == 0);
+  for (auto&amp; count : seen) assert(count.load() == 1);
+  std::cout &lt;&lt; &quot;PASS: &quot; &lt;&lt; total
+            &lt;&lt; &quot; events delivered exactly once\n&quot;;
+}</code></pre>
+<div class="note"><strong>Code review:</strong> <code>Event</code> is trivially copyable, assignable, and destructible; the library demands noexcept-compatible operations. The queue is constructed before threads start and destructed after they join. No consumer counts its input by relying on approximate <code>size()</code>. <strong>This example was reviewed against upstream signatures but not compiled against the library in this run.</strong></div>
+<p>Then increase contention, run longer stress campaigns, test with sanitizers where supported, inject artificial producer stalls, and preserve failing seeds. Be careful: a queue stress test can hang on a broken implementation. Run CI scenarios under an external timeout.</p>
+</section>
+<section id="integrate">
+<h2>06 / CMake, Ninja, and deployment</h2>
+<p>Vendor a reviewed upstream revision into <code>external/MPMCQueue</code>, then build its header-only interface target. The upstream CMake project exports <code>MPMCQueue::MPMCQueue</code>.</p>
+<pre><code>cmake_minimum_required(VERSION 3.20)
+project(mpmc_probe LANGUAGES CXX)
+add_subdirectory(external/MPMCQueue) # Vendor a reviewed revision.
+find_package(Threads REQUIRED)
+add_executable(mpmc_probe main.cpp)
+target_compile_features(mpmc_probe PRIVATE cxx_std_20)
+target_link_libraries(mpmc_probe PRIVATE
+    MPMCQueue::MPMCQueue Threads::Threads)
+enable_testing()
+add_test(NAME mpmc_probe COMMAND mpmc_probe)
+
+# Configure and run:
+# cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+# cmake --build build
+# ctest --test-dir build --output-on-failure</code></pre>
+<p>The upstream repository also has a <a href="https://github.com/rigtorp/MPMCQueue/blob/master/CMakeLists.txt">CMake project</a> and can be installed through <a href="https://vcpkg.io/en/package/mpmcqueue.html">vcpkg</a>. Pin a specific commit and record its SHA, compiler version, target architecture, and exception policy. Do not fetch a moving branch during reproducible builds.</p>
+<p><strong>Footprint and ownership:</strong> the constructor checks that capacity is at least one and allocates <code>capacity + 1</code> padded slots with an allocator. Destruction releases them. This is <em>not</em> a static-allocation-only container as shipped. A custom allocator template argument is supported, but would require its own alignment, lifecycle, and exception-policy review.</p>
+</section>
+<section id="tradeoffs">
+<h2>07 / Tradeoffs worth deciding up front</h2>
+<div class="box">
+<table><caption>Fit for deterministic and embedded workloads</caption>
+<thead><tr><th>Property</th><th>What is supported</th><th>What is not guaranteed</th></tr></thead>
+<tbody>
+<tr><td>Memory growth</td><td>Fixed queue capacity; slot allocation at construction</td><td>No allocation at startup, no payload allocation, or bounded byte overhead without measurement</td></tr>
+<tr><td>Concurrency</td><td>Thread-safe pushes/pops and acquire/release slot transfer</td><td>Freedom from starvation, bounded scheduling delay, or ISR safety</td></tr>
+<tr><td>Backpressure</td><td><code>try_push</code> can report failure</td><td>Automatic loss policy, retries, drop counters, or deadline enforcement</td></tr>
+<tr><td>Type safety</td><td>Compile-time noexcept constraints on construction/assignment/destruction</td><td>Correct lifetime of referenced payload memory outside the queue</td></tr>
+<tr><td>Observability</td><td>Approximate <code>size()</code>/<code>empty()</code> snapshots</td><td>A reliable admission-control decision under concurrency</td></tr>
+<tr><td>Portability</td><td>C++11 interface; C++20 client compiles in principle</td><td>Lock-free atomics, low latency, or any specific microcontroller/RTOS support</td></tr>
+</tbody></table>
+</div>
+<h3>Don't confuse three different claims</h3>
+<p><strong>Bounded</strong> means the container has a fixed number of element slots. <strong>Lock-free</strong> is a system-wide progress property, not a synonym for “there are atomics.” <strong>Wait-free</strong> would require a bound on each operation's progress. Spinning and CAS contention make hard real-time admission especially sensitive. Classify the implementation on your actual compiler and target; do not assume a formal lock-free guarantee just because the project is described as lock-free elsewhere.</p>
+<p>Unlike the earlier <a href="2026-11-02-boost-lockfree-spsc-queue.html">Boost.Lockfree SPSC deep dive</a>, this queue solves the multiple-producer/multiple-consumer topology. But SPSC remains the cleaner default when every event channel naturally has one writer and one reader.</p>
+</section>
+<section id="fit">
+<h2>08 / Proposed RISCue / VeloSim qualification gate</h2>
+<ol>
+<li><strong>Map the topology.</strong> Prove whether each event stream is really MPMC. Reject broadcast use cases. Prefer SPSC when possible.</li>
+<li><strong>Bound memory.</strong> Record construction-time heap use, per-slot padding and the custom allocator contract; instrument any payload allocations separately.</li>
+<li><strong>Define overflow behavior.</strong> Distinguish drop, retry, deferred handling and fault escalation, with counters and explicit deadlines.</li>
+<li><strong>Check scheduling.</strong> Establish whether the consumer can be preempted while holding the slot; test stalled writers/readers and priority inversion scenarios.</li>
+<li><strong>Verify target atomics.</strong> Check required atomic width, lock-free status, cache coherence, alignment and interrupt legality on actual silicon.</li>
+<li><strong>Measure worst-case behavior.</strong> Report P50/P99/P99.9 only as supplementary diagnostics; WCET and guaranteed deadlines need stronger evidence.</li>
+<li><strong>Capture reproducibility.</strong> Preserve library SHA, compiler flags, target, sanitizer outcomes, stress traces and negative tests as verification evidence.</li>
+</ol>
+<p class="callout"><strong>Recommendation:</strong> Trial rigtorp/MPMCQueue in a <em>host-side VeloSim or SharpTestBench workload</em> before considering it on an RTOS dispatch path. Its simplicity and bounded queue slots are attractive, but no compiled target data or timing qualification was obtained for this report.</p>
+</section>
+<section id="sources">
+<h2>09 / Primary sources &amp; license</h2>
+<p>The library is <strong>MIT licensed</strong>. Retain its copyright and license notice when distributing copies or substantial portions. The article's original diagrams, explanatory text and teaching-model JavaScript are provided for reuse under MIT terms with attribution; third-party source code retains its own license.</p>
+<ol class="sources">
+<li><a href="https://github.com/rigtorp/MPMCQueue">Erik Rigtorp, MPMCQueue (official repository)</a> — overview and API.</li>
+<li><a href="https://github.com/rigtorp/MPMCQueue/blob/master/include/rigtorp/MPMCQueue.h">Official MPMCQueue.h source</a> — tickets, atomics, allocation, noexcept rules.</li>
+<li><a href="https://github.com/rigtorp/MPMCQueue/blob/master/README.md">Official README</a> — sample code, testing notes and maintainer-reported deployments.</li>
+<li><a href="https://github.com/rigtorp/MPMCQueue/blob/master/CMakeLists.txt">Official CMakeLists.txt</a> — interface target and build setup.</li>
+<li><a href="https://github.com/rigtorp/MPMCQueue/blob/master/LICENSE">Official MIT license</a>.</li>
+<li><a href="https://vcpkg.io/en/package/mpmcqueue.html">Microsoft vcpkg package record</a> — verified packaging and downstream dependency metadata.</li>
+</ol>
+<div class="note danger"><strong>Verification boundary, November 11, 2026:</strong> Source-level API and documentation reviewed; the interactive model was implemented as a standalone teaching aid. The example has <strong>not</strong> been compiled against the real upstream library; no external benchmark, target memory measurement or lock-free progress proof is claimed. Upstream production references are maintainer assertions, not independent deployment audits.</div>
+</section>
+</article></main>
+</div>
+<footer class="container"><strong>DeepDives · 2026-11-11</strong> · Prepared for reproducible embedded engineering research. <span>Read the primary source before accepting a real-time guarantee.</span><p>© 2026 DeepDives original text and educational visualization; MIT license for original code. rigtorp/MPMCQueue © Erik Rigtorp, MIT.</p></footer>
+<script>
+(() => {
+  "use strict";
+  const byId = id => document.getElementById(id);
+  const slotsNode = byId("ring-slots");
+  const logNode = byId("timeline");
+  const messageNode = byId("live-message");
+  const headNode = byId("head-value");
+  const tailNode = byId("tail-value");
+  const occupancyNode = byId("occupancy-value");
+  const capNode = byId("capacity-choice");
+  let capacity = 4, head = 0, tail = 0;
+  let ring = [], serial = { A: 0, B: 0 };
+  let history = [];
+  const show = (message, kind = "info") => {
+    messageNode.textContent = message;
+    messageNode.dataset.kind = kind;
+  };
+  function log(message) {
+    history.unshift(message);
+    history = history.slice(0, 9);
+    logNode.replaceChildren();
+    for (const line of history) {
+      const li = document.createElement("li");
+      li.textContent = line;
+      logNode.append(li);
+    }
+  }
+  function render() {
+    slotsNode.replaceChildren();
+    for (let i = 0; i < capacity; i++) {
+      const slot = ring[i];
+      const card = document.createElement("div");
+      card.className = "slot" + (slot ? " occupied" : "");
+      const idx = document.createElement("span");
+      idx.className = "slot-index";
+      idx.textContent = "SLOT " + i;
+      const payload = document.createElement("strong");
+      payload.textContent = slot ? slot.token : "empty";
+      const phase = document.createElement("small");
+      phase.textContent = slot
+        ? "ticket " + slot.ticket + " · read phase " + (2 * slot.turn + 1)
+        : "ready for a future write";
+      card.append(idx, payload, phase);
+      slotsNode.append(card);
+    }
+    headNode.textContent = String(head);
+    tailNode.textContent = String(tail);
+    occupancyNode.textContent = String(head - tail) + " / " + capacity;
+  }
+  function reset() {
+    capacity = Number(capNode.value);
+    head = 0; tail = 0;
+    ring = Array(capacity).fill(null);
+    serial = { A: 0, B: 0 };
+    history = [];
+    log("Queue constructed; " + capacity + " slots available.");
+    show("Reset complete. Push from either producer to begin.");
+    render();
+  }
+  function push(source) {
+    if (head - tail === capacity) {
+      log(source + ": try_push → false (full; no new ticket).");
+      show("Backpressure: the bounded queue is full.", "warning");
+      return false;
+    }
+    serial[source]++;
+    const ticket = head++;
+    const turn = Math.floor(ticket / capacity);
+    const index = ticket % capacity;
+    const token = source + "-" + serial[source];
+    ring[index] = { token, ticket, turn };
+    log(source + ": ticket " + ticket + " → slot " + index +
+        ", published turn " + (2 * turn + 1) + ".");
+    show("Producer " + source + " published " + token + ".", "success");
+    render();
+    return true;
+  }
+  function pop(consumer) {
+    if (head === tail) {
+      log(consumer + ": try_pop → false (empty; no new ticket).");
+      show("No event is available to this consumer.", "warning");
+      return null;
+    }
+    const ticket = tail++;
+    const index = ticket % capacity;
+    const item = ring[index];
+    if (!item) throw new Error("Model invariant failed: empty occupied slot");
+    ring[index] = null;
+    log(consumer + ": ticket " + ticket + " → " + item.token +
+        "; released slot " + index + " at phase " +
+        (2 * Math.floor(ticket / capacity) + 2) + ".");
+    show(consumer + " consumed " + item.token + ".", "success");
+    render();
+    return item.token;
+  }
+  function scenario() {
+    capNode.value = "4";
+    reset();
+    push("A"); push("B"); push("A"); push("B");
+    push("A");  // Expected full rejection.
+    pop("C1"); push("B"); pop("C2"); pop("C1");
+    show("Scenario completed: the fifth push was rejected while full, then a slot was reused.");
+  }
+  function modelSelfCheck() {
+    // Pure deterministic oracle for the visual model, NOT a thread stress test.
+    const outcomes = [];
+    for (const cap of [2, 3, 4, 8]) {
+      const oracle = [];
+      for (let i = 0; i < cap; i++) oracle.push(i);
+      outcomes.push(oracle.length === cap);
+      outcomes.push(oracle.length >= cap); // full
+      const first = oracle.shift();
+      outcomes.push(first === 0);
+      oracle.push(cap);
+      for (let i = 1; i <= cap; i++) {
+        outcomes.push(oracle.shift() === i);
+      }
+      outcomes.push(oracle.length === 0);
+    }
+    const passed = outcomes.every(Boolean);
+    show(passed
+      ? "Model self-check passed " + outcomes.length + " assertions across four capacities."
+      : "Model self-check FAILED.", passed ? "success" : "warning");
+    log("Deterministic oracle: " + (passed ? "PASS" : "FAIL") +
+        " — no concurrent threads were tested.");
+  }
+  byId("push-a").addEventListener("click", () => push("A"));
+  byId("push-b").addEventListener("click", () => push("B"));
+  byId("pop-c1").addEventListener("click", () => pop("C1"));
+  byId("pop-c2").addEventListener("click", () => pop("C2"));
+  byId("reset-lab").addEventListener("click", reset);
+  byId("run-scenario").addEventListener("click", scenario);
+  byId("self-test").addEventListener("click", modelSelfCheck);
+  capNode.addEventListener("change", reset);
+  reset();
+})();</script>
+</body>
+</html>
