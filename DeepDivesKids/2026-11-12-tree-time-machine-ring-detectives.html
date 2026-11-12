@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="An offline, interactive tree-ring detective adventure for nine-year-old nature scientists. Read rings, match patterns, and explore what scientists can really learn.">
+<meta name="theme-color" content="#133b43">
+<title>Tree Time Machine! The Ring Detectives · DeepDivesKids · 2026-11-12</title>
+<style>
+:root{color-scheme:light;--forest:#164b43;--deep:#112f36;--teal:#146b68;--cream:#fffaf0;--paper:#f4f7f1;--ink:#1b303a;--soft:#e2f4e7;--sun:#ffd77c;--pink:#ffe3e5;--line:#bed8cf}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.68 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:#075b67;text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:4px solid #ed7e38;outline-offset:4px}
+button{font:inherit;cursor:pointer}
+button[disabled]{cursor:not-allowed;opacity:.7}
+h1,h2,h3{line-height:1.13;letter-spacing:-.025em}
+h1{font-size:clamp(2.7rem,7vw,5.2rem);margin:.5rem 0 1rem}
+h2{font-size:clamp(1.65rem,3.6vw,2.35rem);margin:0 0 1rem;color:var(--forest)}
+h3{font-size:1.15rem;margin:.2rem 0 .5rem}
+p{margin:.4rem 0 1.1rem}
+li{margin:.4rem 0}
+small{font-size:.85rem}
+.wrap{width:min(1120px,calc(100% - 32px));margin:auto}
+.skip{position:absolute;left:12px;top:-90px;background:white;color:#102f36;padding:9px;z-index:10}
+.skip:focus{top:8px}
+.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 91% 24%,#447e6d 0%,transparent 34%),linear-gradient(115deg,#103340,#1e5746);color:#fff;padding:40px 0 72px}
+.hero:after{content:"";position:absolute;right:-45px;bottom:-132px;width:360px;height:360px;border:32px solid #d3a66d55;border-radius:50%;box-shadow:0 0 0 28px #fff4b315,0 0 0 68px #f2ca7f17,0 0 0 106px #ffffff10;pointer-events:none}
+.eyebrow{font-size:.8rem;font-weight:850;letter-spacing:.12em;text-transform:uppercase;color:#ffe7a9}
+.hero h1{max-width:720px}.hero h1 em{font-style:normal;color:var(--sun)}
+.hero p{max-width:670px;font-size:1.12rem;color:#f1fff6}
+.pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.pill{border:1px solid #ffffff9e;border-radius:99px;padding:6px 13px;font-size:.9rem;background:#ffffff19}
+.hero a{color:#fff5b2}
+main{margin-top:-38px;position:relative;padding-bottom:65px}
+.panel{background:#fff;border:1px solid #dcebe3;border-radius:22px;box-shadow:0 8px 30px #173e3412;padding:clamp(20px,3.5vw,38px);margin-bottom:22px}
+.toc{background:var(--cream)}.toc ol{columns:2;padding-left:24px;margin-bottom:0}.toc li{break-inside:avoid}
+.lead{font-size:1.12rem}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.mini{border-radius:17px;background:#eaf8ef;padding:18px}.mini:nth-child(2){background:#fff0dc}
+.ribbon{background:#eff6fd;border-left:6px solid #3795a0;padding:13px 18px;border-radius:6px;margin:16px 0}
+.ribbon.warn{background:#fff0ea;border-left-color:#dd723e}
+.steps{counter-reset:step;list-style:none;margin:0;padding:0}
+.steps li{position:relative;padding:11px 12px 11px 50px;margin:10px 0;background:#f3f7f3;border-radius:12px}
+.steps li:before{counter-increment:step;content:counter(step);position:absolute;left:12px;top:10px;background:var(--forest);color:white;width:27px;height:27px;border-radius:50%;display:grid;place-items:center;font-weight:850}
+.lab{background:#e7f5ed;border:1px solid #bfdccc;border-radius:22px;padding:clamp(15px,3vw,30px)}
+.labhead{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.stamp{background:#ffdf83;border-radius:30px;font-weight:800;padding:6px 12px;color:#46350d;font-size:.8rem}
+.labgrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:22px;align-items:start}
+.woodcard{background:#fcf6e7;border-radius:20px;padding:12px 12px 16px;border:1px solid #decab0;text-align:center}
+#treeSvg{display:block;max-width:100%;width:min(100%,420px);height:auto;margin:auto}
+.readout{background:white;border-radius:16px;padding:18px;box-shadow:0 3px 12px #274c3e12}
+.magnitude{font-size:clamp(2rem,5vw,3rem);font-weight:850;color:var(--forest);line-height:1.2}
+.yearbuttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.yearbuttons button,.action,.answer{border:2px solid #9fbeb2;background:#fff;color:#15363a;border-radius:12px;padding:9px 7px;font-weight:750}
+.yearbuttons button[aria-pressed="true"]{background:#144d47;border-color:#144d47;color:#fff;box-shadow:0 0 0 3px #f7b24d}
+.yearbuttons button:hover,.action:hover,.answer:hover{border-color:#0f7772}
+.action{background:#145c59;border-color:#145c59;color:white;padding:12px 18px}
+.action:hover{color:white;border-color:#083b40;background:#083b40}
+.action.secondary{background:#fff;color:#144d47}
+button:active{transform:translateY(1px)}
+.barlegend{display:flex;gap:16px;flex-wrap:wrap;font-size:.9rem;font-weight:750;margin:6px 0}
+.dot{display:inline-block;width:11px;height:11px;border-radius:4px;margin-right:5px;background:#247e72}.dot.second{background:#d58353}
+.bars{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;align-items:end;height:210px;border-bottom:2px solid #6b8d80;background:linear-gradient(to top, #cddfd233 1px,transparent 1px) 0 0 / 100% 25%;padding:6px 4px 0}
+.barcol{height:100%;display:flex;align-items:center;flex-direction:column;justify-content:end;gap:0}
+.barstack{display:flex;align-items:flex-end;justify-content:center;gap:2px;height:165px;width:100%}
+.bar{width:min(45%,17px);height:25px;background:#247e72;border-radius:5px 5px 0 0;min-height:6px}.bar.b{background:#d58353}
+.barcol strong{font-size:.68rem;white-space:nowrap;line-height:2.3}
+.barcol.selected{background:#fff5cb;border-radius:8px}
+.data-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;padding:9px 13px;border-bottom:1px solid #d6e6df}
+thead th{background:#e5f1eb}
+tbody tr:nth-child(even){background:#f5faf7}
+tbody tr.mark{background:#fff2c6}
+.quiz{background:#fff5e0;border:1px solid #ead19d;border-radius:17px;padding:18px}
+.answers{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.feedback{min-height:2.5em;font-weight:700}
+.good{color:#136445}.retry{color:#9c4528}
+.cards3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.fact{background:#f3f9f6;border-radius:16px;padding:17px;border-top:5px solid #287b70}
+.fact:nth-child(2){border-color:#bb794b}.fact:nth-child(3){border-color:#5b799c}
+.fact strong{color:#184b46}
+pre{background:#112934;color:#f2faee;border-radius:13px;padding:19px;overflow-x:auto;white-space:pre;font:14px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
+code{font-family:ui-monospace,Consolas,monospace}
+details{background:#f4f9f6;border:1px solid #d9e8dd;border-radius:12px;padding:12px 17px}
+details summary{cursor:pointer;font-weight:800}
+footer{margin:35px 0 20px;text-align:center;color:#415b56}
+@media(max-width:780px){.grid2,.labgrid,.cards3{grid-template-columns:1fr}.toc ol{columns:1}.hero{padding-bottom:65px}.bars{gap:3px}.barcol strong{font-size:.61rem}.panel{border-radius:17px}}
+@media(max-width:380px){.yearbuttons{grid-template-columns:repeat(3,1fr)}.barcol strong{font-size:.54rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button:active{transform:none}}
+@media print{body{background:white}.hero{background:white;color:black;padding:10px 0}.hero p,.hero .eyebrow{color:#153738}.hero:after{display:none}main{margin-top:0}.panel{box-shadow:none;break-inside:avoid}.labgrid{grid-template-columns:1fr 1fr}.yearbuttons button{color:#111}.toc{display:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the adventure</a>
+<header class="hero">
+<div class="wrap">
+<div class="eyebrow">DeepDivesKids · November 12, 2026 · Nature + code lab · Ages 9+</div>
+<h1>🌲 Tree Time Machine! <em>The Ring Detectives</em></h1>
+<p>A tree cannot talk. But every year, many trees write another line of their life story in wood. Can you read a secret forest diary?</p>
+<div class="pills"><span class="pill">🔎 Count the years</span><span class="pill">🌧️ Hunt for clues</span><span class="pill">🧪 Build a tiny science lab</span><span class="pill">💻 Works offline</span></div>
+</div>
+</header>
+<main class="wrap" id="main">
+<nav class="panel toc" aria-label="Table of contents">
+<h2>🗺️ Pick your trail</h2>
+<ol>
+<li><a href="#mystery">The forest mystery</a></li>
+<li><a href="#science">How rings work</a></li>
+<li><a href="#real">Real scientists, real discoveries</a></li>
+<li><a href="#lab">Play the tree-ring lab</a></li>
+<li><a href="#compare">Compare two trees</a></li>
+<li><a href="#challenge">Detective challenge</a></li>
+<li><a href="#hands">Try it without a screen</a></li>
+<li><a href="#code">Peek at the code</a></li>
+<li><a href="#dad">Hockey, Yosemite &amp; Dad's engineering</a></li>
+<li><a href="#honesty">What rings cannot tell us</a></li>
+<li><a href="#sources">Sources, license &amp; review</a></li>
+</ol>
+</nav>
+
+<section id="mystery" class="panel">
+<h2>🕵️ A mystery hidden in a log</h2>
+<p class="lead">Imagine you discover a fallen branch with a beautiful spiral of light and dark stripes. Each stripe seems like a page in a diary. But who wrote it?</p>
+<p><strong>The tree did!</strong> For many species in places with clear growing seasons, a new ring of wood forms each year. The inner rings are older; the outer rings are younger. The scientific word is <strong>dendrochronology</strong> (den-dro-kruh-NOL-uh-jee): putting dates on tree rings.</p>
+<div class="grid2">
+<div class="mini"><h3>💭 Predict</h3><p>Which ring is the newest: the one near the middle or the one near the bark?</p><p><strong>Answer:</strong> The outside ring, just under the bark.</p></div>
+<div class="mini"><h3>🎯 Your mission</h3><p>Explore a pretend 12-year-old tree, spot two years of slow growth, then decide whether the evidence proves there was a drought.</p></div>
+</div>
+</section>
+
+<section id="science" class="panel">
+<h2>🪵 How a tree makes its time machine</h2>
+<ol class="steps">
+<li><strong>Spring and early growing season:</strong> A tree grows new wood just beneath its bark. In many trees, early wood looks lighter.</li>
+<li><strong>Later in the growing season:</strong> The wood may become denser and darker. Together, those parts often form one annual growth ring.</li>
+<li><strong>Next growing season:</strong> Another ring forms outside the old one. The trunk gets wider as the tree grows.</li>
+<li><strong>Scientists compare patterns:</strong> Narrow and wide rings in several trees can be matched, helping experts check dates. This is called <strong>crossdating</strong>.</li>
+</ol>
+<div class="ribbon">🌱 <strong>Important:</strong> One ring per year is a useful rule for many temperate trees, <em>not</em> a law for every tree everywhere. Missing rings, extra-looking boundaries, and confusing patterns can occur. Scientists use careful comparisons.</div>
+</section>
+
+<section id="real" class="panel">
+<h2>🌍 Real scientists really do this</h2>
+<div class="cards3">
+<div class="fact"><h3>🌦️ NOAA: climate clues</h3><p>NOAA explains that researchers measure ring widths, compare many samples, and check them against observed weather. Some trees are especially sensitive to water; others respond strongly to temperature. <a href="https://www.ncei.noaa.gov/news/how-can-tree-rings-teach-us-about-climate">Read NOAA's explanation</a>.</p></div>
+<div class="fact"><h3>🔥 National parks: fire clues</h3><p>In Sequoia and Kings Canyon, National Park Service researchers use accurately dated tree rings and fire scars to reconstruct when some past fires happened. <a href="https://www.nps.gov/seki/learn/nature/giant-sequoias-and-fire.htm">See the park's research</a>.</p></div>
+<div class="fact"><h3>📚 NOAA: real research data</h3><p>NOAA maintains the International Tree-Ring Data Bank, with measurements from thousands of sites. Those are real research records—not the invented numbers in our game. <a href="https://www.ncei.noaa.gov/products/paleoclimatology/tree-ring">Explore the data archive</a>.</p></div>
+</div>
+<p class="ribbon"><strong>Evidence vs. invention:</strong> The examples above are documented research activities. The two trees and all 2014–2025 measurements below are <strong>made-up teaching data</strong>. We are practicing the method, not reporting what happened to a real forest.</p>
+</section>
+
+<section id="lab" class="panel">
+<div class="lab">
+<div class="labhead"><h2>🎮 The tree-ring detective lab</h2><span class="stamp">12 fictional annual rings</span></div>
+<p>Start at the middle with 2014 and travel outward to 2025. Choose a year using the buttons; the matching ring glows. Each width below is an <strong>invented number in millimeters</strong>.</p>
+<div class="labgrid">
+<div class="woodcard">
+<svg id="treeSvg" viewBox="0 0 400 400" role="img" aria-labelledby="treeTitle treeDesc">
+<title id="treeTitle">An illustrated tree-trunk cross section</title>
+<desc id="treeDesc">Twelve simulated annual rings from 2014 through 2025. Use the year buttons below to inspect each ring.</desc>
+<circle cx="200" cy="200" r="175" fill="#5b3925" stroke="#3c2a20" stroke-width="7"></circle>
+<g id="treeRings"></g><g id="highlightRing" aria-hidden="true"></g>
+<circle cx="200" cy="200" r="3" fill="#4b3122" aria-hidden="true"></circle>
+</svg>
+<small>The rings are exaggerated and perfectly round so they are easy to count. Real tree rings are often irregular.</small>
+</div>
+<div class="readout">
+<h3>📅 Inspect a year</h3>
+<div class="magnitude"><output id="selectedYear">2020</output></div>
+<p id="ringReport" aria-live="polite">Year 2020: model Tree A made 2 mm of wood.</p>
+<p><strong>Choose a ring:</strong></p>
+<div class="yearbuttons" id="yearButtons" role="group" aria-label="Choose an annual ring by year"></div>
+<p style="margin-top:16px"><button class="action secondary" id="nextYear" type="button">Next ring →</button></p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="compare" class="panel">
+<h2>📊 Two trees, one puzzle</h2>
+<p>The chart compares <strong>two imaginary trees</strong> in the same pretend valley. The green bar is Tree A; the orange bar is Tree B. Both have two small rings at about the same time. Is that a helpful clue?</p>
+<div class="barlegend" aria-hidden="true"><span><span class="dot"></span>Tree A</span><span><span class="dot second"></span>Tree B</span></div>
+<div id="barChart" class="bars" aria-hidden="true"></div>
+<p><button class="action" type="button" id="matchButton">🔍 Find the matching tiny years</button></p>
+<p id="patternReport" class="ribbon" aria-live="polite">Make your prediction first, then press the detective button.</p>
+<details><summary>Show the numerical evidence (accessible table)</summary>
+<div class="data-scroll">
+<table>
+<caption>Invented ring widths in millimeters for two pretend trees</caption>
+<thead><tr><th scope="col">Year</th><th scope="col">Tree A</th><th scope="col">Tree B</th></tr></thead>
+<tbody id="dataTable"></tbody>
+</table>
+</div>
+</details>
+<p><strong>Science twist:</strong> Similar patterns can support the idea that trees shared growing conditions. But researchers need more trees, good dating, and other information before making claims about real climate.</p>
+</section>
+
+<section id="challenge" class="panel">
+<h2>🧠 Detective challenge: What does a skinny ring prove?</h2>
+<div class="quiz">
+<p><strong>Question:</strong> Our made-up Tree A grew only 2 mm in 2020. Which conclusion is best?</p>
+<div class="answers" role="group" aria-label="Choose your scientific conclusion">
+<button class="answer" type="button" data-answer="rain">It proves exactly how much rain fell.</button>
+<button class="answer" type="button" data-answer="clue">It is a growth clue worth investigating.</button>
+<button class="answer" type="button" data-answer="fire">It proves a wildfire happened.</button>
+</div>
+<p id="quizFeedback" class="feedback" aria-live="polite">Choose what the evidence really supports.</p>
+</div>
+</section>
+
+<section id="hands" class="panel">
+<h2>✏️ Screen-free experiment: Invent a forest diary</h2>
+<p><strong>You need:</strong> paper, a pencil, two colored pencils, and a ruler. No tools, trees, or sharp equipment needed.</p>
+<ol class="steps">
+<li>Draw a tiny circle. This is the center of your pretend tree.</li>
+<li>Draw six more rings outside it. Make the gaps wide, narrow, wide, narrow, narrow, wide. Color alternating areas lightly and darkly.</li>
+<li>Label the oldest ring <strong>Year 1</strong> and the newest ring <strong>Year 7</strong>. Start at the center.</li>
+<li>Draw another “tree” with a similar wide-narrow pattern. Can a friend line up the two histories?</li>
+<li>Tell a scientist's story: “The ring is narrow” is an observation. “Maybe it had less water” is a <em>hypothesis</em>, not a proven fact.</li>
+</ol>
+<div class="ribbon warn"><strong>Forest care:</strong> Look at fallen wood from a safe distance; do not cut or core a living tree or take protected wood from a park. On a Yosemite walk, look for pinecones, bark textures, and giant trees without removing anything.</div>
+</section>
+
+<section id="code" class="panel">
+<h2>💻 The tiny computer detective</h2>
+<p>The interactive picture is made with ordinary browser JavaScript, SVG circles, and a fixed array. No downloads, accounts, or outside libraries are required.</p>
+<p>This working JavaScript example finds the years when the <em>invented</em> Tree A grew 2 mm or less. You can paste it into a browser console:</p>
+<pre><code>const years = Array.from({ length: 12 }, (_, i) => 2014 + i);
+const widths = [4, 6, 3, 7, 8, 4, 2, 2, 5, 9, 6, 4];
+const tinyYears = years.filter((year, i) => widths[i] &lt;= 2);
+console.log(tinyYears.join(", ")); // 2020, 2021</code></pre>
+<p><strong>Change one thing:</strong> What happens if the limit changes from 2 to 3? Predict before checking! The code does not know why growth was slow; it only compares numbers.</p>
+</section>
+
+<section id="dad" class="panel">
+<h2>🥅 From Yosemite trees to hockey and spaceships</h2>
+<div class="grid2">
+<div class="mini"><h3>🥅 Hockey pattern hunters</h3><p>Quinn and Reagan can notice repeated patterns in a hockey shift: when was a pass fast, when was it slow, and what changed? Like tree rings, a pattern is a <em>clue</em>, not proof of its cause.</p></div>
+<div class="mini"><h3>🏞️ Yosemite explorers</h3><p>Yosemite has giant sequoia groves. Before a nature walk, remember that a living tree is more valuable than a souvenir. <a href="https://www.nps.gov/yose/planyourvisit/sequoias.htm">National Park Service guide</a>.</p></div>
+<div class="mini"><h3>🛰️ Dad's GRACE-C engineering</h3><p>NASA's planned GRACE-C satellites will measure tiny changes in Earth's gravity to help scientists track moving water and ice. Tree rings and satellites are different kinds of evidence; scientists compare observations instead of guessing. <a href="https://science.nasa.gov/mission/grace-c/">NASA mission page</a>.</p></div>
+<div class="mini"><h3>🤖 Dad's simulations</h3><p>In projects like VeloSim and RISCue, engineers test a model repeatedly. Our fake tree widths are also a <em>repeatable model</em>: press the same year, get the same answer. That doesn't make the invented data real.</p></div>
+</div>
+</section>
+
+<section id="honesty" class="panel">
+<h2>⚖️ What the tree time machine cannot do</h2>
+<ul>
+<li><strong>It cannot directly read a rain gauge from the past.</strong> A narrow ring may be linked to water, cold, pests, competition, age, or damage.</li>
+<li><strong>It cannot date every tree perfectly just by counting.</strong> Species and environment matter; researchers crossdate and check unusual rings.</li>
+<li><strong>Our model cannot measure a real forest.</strong> The shapes are circles, widths are invented, and the “tiny year” cutoff is a game rule—not a scientific threshold.</li>
+<li><strong>One tree is rarely enough.</strong> Scientists gather many samples and compare them with other evidence.</li>
+</ul>
+<p>Being a good scientist means saying both what you <em>know</em> and what you <em>do not yet know</em>.</p>
+</section>
+
+<section id="sources" class="panel">
+<h2>📚 Source trail, reuse rights &amp; review</h2>
+<p>These official sources support the science and real-world examples. They are links for further reading; this page's experiment, pictures, styling, and interactions work offline.</p>
+<ol>
+<li><a href="https://www.ncei.noaa.gov/news/how-can-tree-rings-teach-us-about-climate">NOAA NCEI — How Can Tree Rings Teach Us About Climate? (2016)</a>. Annual growth, sampling, crossdating, and climate comparisons.</li>
+<li><a href="https://www.ncei.noaa.gov/news/what-are-proxy-data">NOAA NCEI — What Are Proxy Data?</a>. Why tree rings are indirect climate evidence.</li>
+<li><a href="https://www.ncei.noaa.gov/products/paleoclimatology/tree-ring">NOAA NCEI — International Tree-Ring Data Bank</a>. A real archive of research observations.</li>
+<li><a href="https://www.nps.gov/seki/learn/nature/giant-sequoias-and-fire.htm">U.S. National Park Service — Giant Sequoias and Fire</a>. Fire scars and dated fire history.</li>
+<li><a href="https://www.nps.gov/yose/planyourvisit/sequoias.htm">U.S. National Park Service — Giant Sequoias in Yosemite</a>. Real park groves.</li>
+<li><a href="https://science.nasa.gov/mission/grace-c/">NASA Science — GRACE-C</a>. Planned gravity measurements of moving water and ice.</li>
+</ol>
+<h3>Can we copy the code?</h3>
+<p>The original mini-lab JavaScript and illustration created for this lesson are provided under the <a href="https://opensource.org/license/mit">MIT License</a> (copyright © 2026 DeepDivesKids contributors): you may use, change, and redistribute the code if you keep the copyright and permission notice. No external code libraries are embedded. Official websites, photographs, names, and third-party materials are not relicensed by this statement.</p>
+<details><summary>Show the MIT permission notice for this original lab code</summary>
+<p>Copyright (c) 2026 DeepDivesKids contributors</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+</details>
+<p><small><strong>Review scope:</strong> Scientific claims were checked against the primary pages above. The invented data and educational simplifications are labeled. The mini-lab uses inline JavaScript, no network fetches, and no externally hosted scripts. The number and placement of rings, browser interactions, and keyboard controls should be tested on a target browser before classroom deployment.</small></p>
+</section>
+<footer><p>🌲 DeepDivesKids · November 12, 2026 · Curiosity is a superpower.</p><a href="#main">Back to the start ↑</a></footer>
+</main>
+
+<script>
+"use strict";
+(function () {
+  // Completely invented teaching measurements in millimeters, oldest first.
+  const years = Array.from({length: 12}, (_, i) => 2014 + i);
+  const treeA = [4, 6, 3, 7, 8, 4, 2, 2, 5, 9, 6, 4];
+  const treeB = [3, 5, 2, 6, 7, 3, 2, 1, 4, 8, 5, 3];
+  const ns = "http://www.w3.org/2000/svg";
+  const ringRoot = document.getElementById("treeRings");
+  const highlight = document.getElementById("highlightRing");
+  const yearsBox = document.getElementById("yearButtons");
+  const chart = document.getElementById("barChart");
+  const table = document.getElementById("dataTable");
+  const report = document.getElementById("ringReport");
+  const yearOutput = document.getElementById("selectedYear");
+  const ringDesc = document.getElementById("treeDesc");
+  const radii = [];
+  let radius = 0;
+  let selected = 6;
+  treeA.forEach(function (width) {
+    radius += width * 2.7;
+    radii.push(radius);
+  });
+
+  function circle(r, fill, stroke, strokeWidth) {
+    const el = document.createElementNS(ns, "circle");
+    el.setAttribute("cx", "200");
+    el.setAttribute("cy", "200");
+    el.setAttribute("r", String(r));
+    el.setAttribute("fill", fill);
+    el.setAttribute("stroke", stroke);
+    el.setAttribute("stroke-width", String(strokeWidth));
+    return el;
+  }
+
+  // Draw largest to smallest: each inner circle reveals one outer annual band.
+  for (let i = years.length - 1; i >= 0; i--) {
+    const colors = ["#dbaf70", "#f1d399", "#cf995c", "#f7ddaa"];
+    ringRoot.appendChild(circle(radii[i], colors[i % colors.length], "#98643f", 1.6));
+  }
+
+  years.forEach(function (year, i) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = String(year);
+    button.setAttribute("aria-pressed", "false");
+    button.addEventListener("click", function () { select(i); });
+    yearsBox.appendChild(button);
+
+    const col = document.createElement("div");
+    col.className = "barcol";
+    const stack = document.createElement("div");
+    stack.className = "barstack";
+    [treeA[i], treeB[i]].forEach(function (width, j) {
+      const bar = document.createElement("span");
+      bar.className = j === 0 ? "bar" : "bar b";
+      bar.style.height = String(width * 16) + "px";
+      stack.appendChild(bar);
+    });
+    const label = document.createElement("strong");
+    label.textContent = String(year).slice(2);
+    col.appendChild(stack);
+    col.appendChild(label);
+    chart.appendChild(col);
+
+    const tr = document.createElement("tr");
+    const th = document.createElement("th");
+    th.scope = "row";
+    th.textContent = String(year);
+    tr.appendChild(th);
+    [treeA[i], treeB[i]].forEach(function (w) {
+      const td = document.createElement("td");
+      td.textContent = String(w) + " mm";
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
+
+  function select(i) {
+    selected = i;
+    const inner = i === 0 ? 0 : radii[i - 1];
+    const outer = radii[i];
+    const middle = (inner + outer) / 2;
+    highlight.replaceChildren();
+    const glow = circle(middle, "none", "#fff6b0", Math.max(3, (outer - inner) * .78));
+    glow.setAttribute("pointer-events", "none");
+    highlight.appendChild(glow);
+    yearOutput.value = String(years[i]);
+    yearOutput.textContent = String(years[i]);
+    report.textContent = "In " + years[i] + ", invented Tree A grew " + treeA[i] +
+      " mm and invented Tree B grew " + treeB[i] + " mm. " +
+      (treeA[i] <= 2 ? "That's a tiny ring in our pretend dataset." : "Compare it with the other years.");
+    ringDesc.textContent = "Twelve invented annual rings. Year " + years[i] +
+      " is highlighted. Model Tree A width: " + treeA[i] + " millimeters.";
+    Array.from(yearsBox.children).forEach(function (button, j) {
+      button.setAttribute("aria-pressed", j === i ? "true" : "false");
+    });
+    Array.from(chart.children).forEach(function (col, j) {
+      col.classList.toggle("selected", j === i);
+    });
+    Array.from(table.children).forEach(function (tr, j) {
+      tr.classList.toggle("mark", j === i);
+    });
+  }
+
+  document.getElementById("nextYear").addEventListener("click", function () {
+    select((selected + 1) % years.length);
+    yearsBox.children[selected].focus();
+  });
+
+  document.getElementById("matchButton").addEventListener("click", function () {
+    const tiny = years.filter(function (year, i) {
+      return treeA[i] <= 2 && treeB[i] <= 2;
+    });
+    document.getElementById("patternReport").textContent =
+      "Both pretend trees have especially narrow rings in " + tiny.join(" and ") +
+      ". That's a pattern worth checking! It does not prove exactly what caused it.";
+  });
+
+  document.querySelectorAll("[data-answer]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      const correct = button.getAttribute("data-answer") === "clue";
+      const feedback = document.getElementById("quizFeedback");
+      feedback.className = "feedback " + (correct ? "good" : "retry");
+      feedback.textContent = correct ?
+        "✅ Correct! The width is evidence of slow growth. To figure out why, investigate other trees and conditions." :
+        "🔎 Try again. One skinny ring by itself cannot prove the amount of rain or a fire.";
+    });
+  });
+
+  select(6);
+}());
+</script>
+</body>
+</html>
