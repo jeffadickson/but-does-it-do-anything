@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="description" content="A source-verified engineering deep dive into fmt 12.2.1, C++20 compile-time format checks and bounded diagnostics for real-time systems, with an interactive fixed-buffer laboratory.">
+<title>{fmt}: Every Byte Has a Budget | Engineering Deep Dive — 2026-11-12</title>
+<style>
+:root{color-scheme:dark;--ink:#ecf5fc;--muted:#bacbd9;--edge:#39566c;--panel:#102637;--panel2:#142e42;--bg:#091923;--cyan:#73eff4;--lime:#c9f67b;--amber:#ffcf7b;--coral:#ff9a92;--blue:#9cbffc;--radius:20px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-wrap:anywhere}
+a{color:var(--cyan)}a:hover{text-decoration-thickness:2px}a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:4px}
+.skip{position:absolute;left:1rem;top:-8rem;background:#fff;color:#061b25;padding:.6rem 1rem;border-radius:10px;z-index:9}.skip:focus{top:1rem}
+header.hero{border-bottom:1px solid #31536b;background:radial-gradient(ellipse 70% 70% at 82% 18%,#1a6671 0%,transparent 65%),linear-gradient(155deg,#091923,#122d40 67%,#163c43);position:relative;isolation:isolate}
+.shell{width:min(1100px,calc(100% - 2.2rem));margin:auto}.hero-inner{padding:3.1rem 0 3.4rem;display:grid;grid-template-columns:1.35fr .65fr;gap:2.4rem;align-items:center}
+.eyebrow{color:var(--lime);font-size:.83rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase}.date{color:#d1e4f3;font-size:.94rem;margin:.4rem 0}
+h1,h2,h3{line-height:1.16;letter-spacing:-.03em}h1{font-size:clamp(2.7rem,6vw,5.2rem);margin:.8rem 0 1rem;max-width:14ch}h1 span{color:var(--cyan)}h2{font-size:clamp(1.6rem,3vw,2.25rem);margin:.2rem 0 1rem}h3{font-size:1.14rem;margin:.3rem 0 .6rem;color:var(--lime)}
+.lead{font-size:1.16rem;max-width:60ch;color:#d9ebf2}p{margin:.6rem 0 1.1rem}strong{color:#fff}
+.pills{display:flex;flex-wrap:wrap;gap:.55rem;margin:1.3rem 0}.pill{border:1px solid #4a7680;background:#153f4b;color:#e1ffff;border-radius:999px;padding:.2rem .7rem;font-size:.8rem;font-weight:750}
+.terminal{border:1px solid #638a97;border-radius:22px;background:#06151f;box-shadow:0 20px 50px #0005;transform:rotate(1deg);overflow:hidden}
+.terminal-top{display:flex;gap:.5rem;align-items:center;padding:.8rem 1rem;background:#163244;color:#d3e7f2;font-size:.8rem;border-bottom:1px solid #345264}.dot{width:10px;height:10px;border-radius:50%;background:#f18e90}.dot:nth-child(2){background:#ffce75}.dot:nth-child(3){background:#a8e8a7}
+.terminal pre{margin:0;padding:1.2rem 1rem 1.7rem;color:#d8fbc4;font:clamp(.75rem,1.8vw,.96rem)/1.85 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap}.terminal .dim{color:#99adc0}.terminal .warn{color:#ffd484}
+main .shell{display:grid;grid-template-columns:230px minmax(0,1fr);gap:2.3rem;align-items:start;padding-top:2.3rem;padding-bottom:4rem}
+nav.toc{position:sticky;top:1rem;background:#102535;border:1px solid var(--edge);border-radius:16px;padding:1.2rem;max-height:calc(100vh - 2rem);overflow:auto}
+nav.toc strong{color:var(--lime);font-size:.9rem}nav.toc ol{margin:.65rem 0 0;padding-left:1.3rem}nav.toc li{padding:.27rem 0;font-size:.91rem;line-height:1.4}nav.toc a{text-decoration:none;color:#d9eafa}nav.toc a:hover{text-decoration:underline}
+article{min-width:0}section{scroll-margin-top:1.5rem;margin:0 0 2.4rem}article section+section{border-top:1px solid #284456;padding-top:2.5rem}
+.kicker{font-size:.77rem;color:var(--cyan);text-transform:uppercase;letter-spacing:.17em;font-weight:850;display:block;margin-bottom:.45rem}
+.grid-2,.grid-3{display:grid;gap:1rem}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius);padding:1.25rem;min-width:0}
+.card p:last-child{margin-bottom:0}.accent{border-left:4px solid var(--cyan);padding-left:1rem;margin:1.2rem 0}
+.stat .number{font-size:2.15rem;font-weight:900;color:var(--lime);letter-spacing:-.05em;line-height:1.1}.stat .name{display:block;font-size:.86rem;color:var(--muted)}
+.rail{padding:1rem 1.2rem;border-radius:14px;background:#233746;border:1px solid #59758a;margin:1.25rem 0}.rail.warning{border-color:#a17d4f;background:#382b23}.rail strong{display:block;margin-bottom:.3rem;color:var(--amber)}
+pre.code{padding:1.25rem;border-radius:16px;background:#07131e;border:1px solid #375166;font:13px/1.62 ui-monospace,SFMono-Regular,Consolas,monospace;overflow:auto;white-space:pre;tab-size:2}
+code{font: .92em ui-monospace,SFMono-Regular,Consolas,monospace;color:#cbf6bc}pre code{font:inherit;color:#dcf0ff}
+small,.small{font-size:.88rem;color:var(--muted)}ul.checks,ol.steps{padding-left:1.3rem}li{padding:.2rem 0}li::marker{color:var(--cyan)}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.92rem}th,td{padding:.85rem .75rem;text-align:left;border-bottom:1px solid #395365;vertical-align:top}th{background:#143146;color:#ddf7ff}tr:nth-child(even) td{background:#102a3b}.tablewrap{overflow:auto}
+.lab{border:1px solid #668c8b;background:linear-gradient(155deg,#153747,#102330);border-radius:24px;padding:1.3rem;box-shadow:0 14px 40px #0003}
+.lab h3{font-size:1.45rem}.controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}
+.control label{display:block;font-weight:750;color:#dcf7fb;font-size:.86rem;margin-bottom:.2rem}
+.control input{width:100%;min-height:44px;border-radius:9px;border:1px solid #7893a7;padding:.55rem .7rem;background:#091e2a;color:#fff;font:inherit}
+.control input[type=range]{padding:0;accent-color:var(--lime);cursor:pointer}
+.actions{display:flex;flex-wrap:wrap;gap:.6rem;margin:1rem 0}
+button{background:#b8fa76;border:1px solid #d1ff9b;color:#142315;font:inherit;font-weight:800;border-radius:10px;padding:.55rem 1rem;cursor:pointer}
+button.secondary{background:#1a4655;color:#e5ffff;border-color:#5f98a4}button:hover{filter:brightness(1.09)}
+.snapshot{background:#081b26;border:1px solid #527085;border-radius:16px;padding:1rem;min-height:142px}.snapshot .title{color:#b9d0dc;font-size:.82rem;text-transform:uppercase;letter-spacing:.1em;font-weight:800}.snapshot .value{font:clamp(.82rem,2vw,1.13rem)/1.75 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;margin:.75rem 0}.status{display:inline-block;border-radius:999px;background:#173b31;color:#ccfacd;border:1px solid #468867;padding:.2rem .7rem;font-size:.88rem;font-weight:850}.status.fail{background:#4b2c26;color:#ffd9d4;border-color:#c27060}
+.bytes{display:flex;flex-wrap:wrap;gap:3px;margin:.7rem 0;min-height:42px}.byte{min-width:24px;min-height:32px;display:grid;place-items:center;border:1px solid #497a83;border-radius:5px;background:#234650;color:#eeffff;font:12px/1 monospace}.byte.nul{background:#3f3b24;border-color:#ac995e;color:#ffebbd}.byte.empty{border:1px dashed #657888;background:transparent;color:#7899a9}
+.byteLegend{display:flex;flex-wrap:wrap;gap:.9rem;color:#cde2eb;font-size:.78rem;margin-top:.5rem}
+.sample{display:inline-block;width:11px;height:11px;background:#234650;border:1px solid #4c8c9a;margin-right:.3rem}.sample.term{background:#3f3b24;border-color:#ac995e}.sample.free{background:transparent;border:1px dashed #7899a9}
+.mini-meta{display:flex;flex-wrap:wrap;gap:1.4rem;font-size:.92rem;margin:.8rem 0}.mini-meta b{color:var(--lime)}
+details{background:#122a3b;border:1px solid #355366;border-radius:14px;padding:.7rem 1rem;margin:1rem 0}summary{cursor:pointer;color:#e5fcff;font-weight:800}details p{margin-top:.7rem}
+.refs{padding-left:1.4rem}.refs li{margin-bottom:.55rem}.refs a{word-break:break-word}
+.footer{border-top:1px solid #3c5b6c;background:#0d2734;padding:1.6rem 0;color:var(--muted);font-size:.89rem}.footer p{margin:0}
+@media (max-width:900px){main .shell{grid-template-columns:1fr}nav.toc{position:static;max-height:none}nav.toc ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 1rem}.hero-inner{grid-template-columns:1fr}.terminal{max-width:560px;transform:none}}
+@media (max-width:610px){.shell{width:min(100% - 1.2rem,1100px)}.hero-inner{padding:2rem 0}.grid-2,.grid-3,.controls{grid-template-columns:1fr}nav.toc ol{grid-template-columns:1fr}.lab{padding:.9rem}h1{font-size:2.65rem}.stat .number{font-size:1.8rem}pre.code{font-size:12px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<a href="#main" class="skip">Skip to the article</a>
+<header class="hero">
+<div class="shell hero-inner">
+<div>
+<div class="eyebrow">Engineering Deep Dives / Volume 24</div>
+<p class="date"><time datetime="2026-11-12">Thursday, November 12, 2026</time> · C++20 · Source-reviewed against {fmt} 12.2.1</p>
+<h1>Every byte has <span>a budget.</span></h1>
+<p class="lead">How <strong>{fmt}</strong> can turn typed events into human-readable diagnostics inside a caller-owned character buffer—and why <em>bounded output</em> is not the same as a hard-real-time guarantee.</p>
+<div class="pills"><span class="pill">MIT license</span><span class="pill">C++11+ · C++20 checked</span><span class="pill">Fixed output capacity</span><span class="pill">Host-first qualification</span></div>
+</div>
+<div class="terminal" aria-label="Illustrative formatting output">
+<div class="terminal-top"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span style="margin-left:.4rem">bounded_record.cpp</span></div>
+<pre><span class="dim">// 64-byte destination</span>
+seq=0042 temp=-7 flags=0x0A
+<span class="dim">^ 27 ASCII bytes</span>
+<span class="dim">^ 1 null terminator</span>
+<span style="color:#b8f894">OK: deliver complete record</span>
+
+<span class="dim">// 12-byte destination</span>
+<span class="warn">REJECT: 27 bytes required</span>
+<span class="dim">Never forward a partial record.</span></pre>
+</div>
+</div>
+</header>
+<main id="main"><div class="shell">
+<nav class="toc" aria-label="Table of contents"><strong>IN THIS DEEP DIVE</strong><ol>
+<li><a href="#verdict">Engineering verdict</a></li>
+<li><a href="#problem">The diagnostic dilemma</a></li>
+<li><a href="#mechanics">What the API guarantees</a></li>
+<li><a href="#lab">Interactive buffer lab</a></li>
+<li><a href="#example">Complete C++20 example</a></li>
+<li><a href="#build">CMake / Ninja integration</a></li>
+<li><a href="#evidence">Verified adoption</a></li>
+<li><a href="#design">RISCue and VeloSim fit</a></li>
+<li><a href="#limits">Tradeoffs / failure modes</a></li>
+<li><a href="#qualification">Qualification checklist</a></li>
+<li><a href="#license">License and provenance</a></li>
+<li><a href="#references">Primary sources</a></li>
+</ol></nav>
+<article>
+<section id="verdict">
+<span class="kicker">01 / The practical answer</span>
+<h2>Useful for diagnostics. Not a license to print inside an ISR.</h2>
+<p><strong>{fmt}</strong> is Victor Zverovich's open-source C++ formatting library. Its format strings are type-checked at compile time in modern C++ modes, and its <code>format_to_n</code> API can stop writing after a caller-selected number of characters. It is broadly deployed software, with especially concrete integration evidence in the <strong>spdlog</strong> logging project. This analysis is based on upstream {fmt} <strong>12.2.1</strong>, released <strong>November 7, 2026</strong>, and the official API documentation. <a href="#references">[1–4]</a></p>
+<div class="grid-3">
+<div class="card stat"><span class="number">N − 1</span><span class="name">maximum payload bytes in a null-terminated buffer of N bytes</span></div>
+<div class="card stat"><span class="number">.size</span><span class="name">returned by format_to_n: full required character count, even after truncation</span></div>
+<div class="card stat"><span class="number">0</span><span class="name">verified embedded WCET, allocation, or interrupt-safety measurements from this review</span></div>
+</div>
+<div class="rail warning"><strong>Engineering boundary</strong>A fixed destination and compile-time format checks prevent a class of output mistakes. They do <em>not</em> establish bounded CPU time, no internal allocation on every possible path, no exceptions or aborts, thread synchronization, or safety inside an ISR.</div>
+</section>
+<section id="problem">
+<span class="kicker">02 / Motivation</span>
+<h2>A tiny event, a surprisingly expensive sentence</h2>
+<p>Consider a 32-bit event sequence, a signed sensor reading, and an 8-bit fault mask. In an RTOS trace or deterministic simulation, a readable line makes a captured failure easier to diagnose: <code>seq=0042 temp=-7 flags=0x0A</code>.</p>
+<p>The usual approaches each create a distinct problem. <code>sprintf</code> can overrun a destination; <code>snprintf</code> bounds writes but its C varargs do not provide C++ type checking. <code>fmt::format</code> returns a <code>std::string</code>, which is convenient on a host but unsuitable as an assumed allocation-free firmware path. <code>fmt::format_to</code> can write to a caller's iterator, but the unbounded overload does not know the raw buffer's capacity. <a href="#references">[1, 2]</a></p>
+<p>The useful middle ground is <strong>explicit capacity plus rejection of incomplete output</strong>. For compact integer diagnostics, <code>fmt::format_to_n</code> provides the two pieces a caller needs: the maximum write count you supplied, and the full text size it wanted to produce.</p>
+</section>
+<section id="mechanics">
+<span class="kicker">03 / Source-grounded semantics</span>
+<h2>The six rules worth memorizing</h2>
+<div class="tablewrap"><table><thead><tr><th>Contract</th><th>Consequence</th></tr></thead><tbody>
+<tr><td><code>format_to_n(out, n, ...)</code></td><td>Writes <strong>up to n characters</strong> to the output iterator.</td></tr>
+<tr><td><code>result.size</code></td><td>The <strong>complete required character count</strong>, not merely how many were written.</td></tr>
+<tr><td>Null terminator</td><td><strong>Not written</strong> by <code>format_to_n</code>. Reserve one slot and append it yourself.</td></tr>
+<tr><td>Truncation</td><td>May already have written a prefix. Never publish the buffer before the size check.</td></tr>
+<tr><td>Literal format in C++20</td><td>Format syntax and argument compatibility can be checked at compile time.</td></tr>
+<tr><td>Error / allocation handling</td><td>A caller-owned output buffer does not guarantee every formatting operation is no-throw or allocation-free; configure and test each used feature.</td></tr>
+</tbody></table></div>
+<p>With an array of <code>N</code> chars, call <code>format_to_n(data(), N - 1, ...)</code>. The record fits precisely when <code>result.size &lt; N</code>. On success, write the terminator to index <code>result.size</code>. Equality means <em>no room for the terminator</em>. The API's result and terminator semantics are documented explicitly. <a href="#references">[2]</a></p>
+<div class="accent"><strong>Important distinction:</strong> <code>fmt::memory_buffer</code> is optimized for small objects but can grow dynamically. Use a truly fixed array when fixed output capacity is the contract; do not mistake small-buffer optimization for a hard allocation ban.</div>
+</section>
+<section id="lab">
+<span class="kicker">04 / Touch the limits</span>
+<h2>Interactive: the fixed-buffer laboratory</h2>
+<p>Change the event values or shrink the buffer. The simulator reproduces the <em>documented capacity and return-size behavior</em> for this particular ASCII-only format. It does <strong>not</strong> execute the C++ library or prove allocation behavior.</p>
+<div class="lab" aria-label="Buffer formatting simulator">
+<h3>Build a telemetry record</h3>
+<div class="controls">
+<div class="control"><label for="seq">Sequence (0–9999)</label><input id="seq" type="number" min="0" max="9999" step="1" value="42"></div>
+<div class="control"><label for="temp">Temperature (−40 to 125)</label><input id="temp" type="number" min="-40" max="125" step="1" value="-7"></div>
+<div class="control"><label for="flags">Flags (0–255)</label><input id="flags" type="number" min="0" max="255" step="1" value="10"></div>
+<div class="control"><label for="capacity">Buffer size: <output id="capLabel" for="capacity">32</output> bytes</label><input id="capacity" type="range" min="8" max="64" step="1" value="32"></div>
+</div>
+<div class="actions"><button type="button" id="fit">Try 48 bytes</button><button type="button" class="secondary" id="overflow">Force 12-byte overflow</button><button type="button" class="secondary" id="reset">Reset</button></div>
+<div class="grid-2">
+<div class="snapshot">
+<div class="title">Desired complete message</div>
+<div id="fullRecord" class="value">seq=0042 temp=-7 flags=0x0A</div>
+<div class="mini-meta"><span>Required: <b id="required">27</b> chars</span><span>Capacity for text: <b id="payloadCapacity">31</b></span></div>
+</div>
+<div class="snapshot">
+<div class="title">What a correct caller publishes</div>
+<div class="value" id="published" aria-live="polite">seq=0042 temp=-7 flags=0x0A</div>
+<div><output id="decision" class="status" aria-live="polite">ACCEPT · complete</output></div>
+</div>
+</div>
+<div class="snapshot" style="margin-top:1rem">
+<div class="title">Destination memory — occupied characters, null byte, unused slots</div>
+<div id="bytes" class="bytes" role="img" aria-label="Buffer slots visualization"></div>
+<div class="byteLegend"><span><span class="sample"></span>payload byte</span><span><span class="sample term"></span>null terminator</span><span><span class="sample free"></span>unused byte</span></div>
+<div id="bufferNote" class="small" aria-live="polite"></div>
+</div>
+</div>
+<details><summary>What does the overflow experiment teach?</summary><p>A 12-byte array permits only eleven message characters plus the terminator. The full 27-character record cannot fit. The native API may write an eleven-character prefix, but the application must <strong>reject the entire record</strong>. The sample code clears the first byte on rejection; clearing it does not erase every byte of the partial write.</p></details>
+</section>
+<section id="example">
+<span class="kicker">05 / Full, bounded C++20 example</span>
+<h2>Make incomplete output impossible to mistake for success</h2>
+<p>The following translation unit uses only fixed-size storage for output, integer fields, an explicit success flag, and a two-case self-test. It intentionally avoids <code>assert()</code>, whose checks can disappear under <code>NDEBUG</code>. The expected text is ASCII, so a character count is also a byte count in this example.</p>
+<pre class="code"><code>// bounded_record.cpp — C++20; target {fmt} 12.2.1
+#include &lt;array&gt;
+#include &lt;cstddef&gt;
+#include &lt;string_view&gt;
+#include &lt;fmt/format.h&gt;
+
+template &lt;std::size_t N&gt;
+bool make_record(std::array&lt;char, N&gt;&amp; buffer,
+                 std::size_t&amp; written,
+                 unsigned sequence,
+                 int temperature,
+                 unsigned flags) {
+  static_assert(N &gt;= 2);
+  written = 0;
+  buffer[0] = '\0';
+
+  // N-1 bytes for text, one byte for '\0'.
+  const auto result = fmt::format_to_n(
+      buffer.data(), N - 1,
+      "seq={:04d} temp={:+d} flags=0x{:02X}",
+      sequence, temperature, flags);
+
+  // .size is the FULL required size, even if truncated.
+  if (result.size &gt;= N) {
+    buffer[0] = '\0';  // Reject; never send the prefix.
+    return false;
+  }
+
+  buffer[result.size] = '\0';
+  written = result.size;
+  return true;
+}
+
+int main() {
+  std::array&lt;char, 64&gt; good{};
+  std::size_t used = 0;
+  if (!make_record(good, used, 42U, -7, 10U))
+    return 1;
+  if (std::string_view(good.data(), used) !=
+      "seq=0042 temp=-7 flags=0x0A")
+    return 2;
+  if (used != 27)
+    return 3;
+
+  std::array&lt;char, 12&gt; too_small{};
+  if (make_record(too_small, used, 42U, -7, 10U))
+    return 4;
+  if (used != 0 || too_small[0] != '\0')
+    return 5;
+  return 0;
+}</code></pre>
+<p>Successful records have a known written length, not merely a terminator. For length-delimited logging, pass <code>(buffer.data(), written)</code> to a transport that copies or consumes the data before the buffer goes out of scope. Do not enqueue the pointer to this stack array for deferred use.</p>
+<div class="rail"><strong>Why the explicit flag?</strong>The C++ function returns <code>false</code> on truncation. The library itself does not turn truncation into a failure return. That decision is part of <em>your</em> diagnostic contract, so it should be tested alongside the formatting.</div>
+</section>
+<section id="build">
+<span class="kicker">06 / Reproducible integration</span>
+<h2>CMake + Ninja, with the dependency pinned</h2>
+<p>Use a project-managed {fmt} 12.2.1 package (for example via an internal artifact store or pinned vendoring) and expose its upstream <code>fmt::fmt</code> CMake target. The example below uses a previously installed CMake package; it does not download dependencies during the build.</p>
+<pre class="code"><code># CMakeLists.txt
+cmake_minimum_required(VERSION 3.20)
+project(BoundedDiagnostics LANGUAGES CXX)
+find_package(fmt 12.2.1 CONFIG REQUIRED)
+
+add_executable(bounded_record bounded_record.cpp)
+target_compile_features(bounded_record PRIVATE cxx_std_20)
+target_link_libraries(bounded_record PRIVATE fmt::fmt)
+
+enable_testing()
+add_test(NAME bounded_record COMMAND bounded_record)</code></pre>
+<pre class="code"><code># With a compatible fmt CMake package already installed:
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+ctest --test-dir build --output-on-failure
+
+# If fmt lives in a nonstandard prefix, also supply:
+# -DCMAKE_PREFIX_PATH=/path/to/fmt/prefix</code></pre>
+<p>Upstream also supports a header-only target <code>fmt::fmt-header-only</code> and build-size controls such as <code>FMT_OS=OFF</code>. Do not combine header-only and compiled configurations accidentally in the same binary. For firmware, measure text/rodata, stack, and link-map growth on the actual compiler and target. <a href="#references">[3, 5]</a></p>
+<details><summary>Should we use <code>std::format_to_n</code> instead?</summary><p>That is a reasonable comparison on a toolchain with a sufficiently complete C++20 standard library. {fmt} gives an independently versioned implementation and build configuration. Compare generated code, allocation behavior, format compatibility, and error policy; portability is target- and library-version-specific.</p></details>
+</section>
+<section id="evidence">
+<span class="kicker">07 / Evidence, not marketing</span>
+<h2>Where is {fmt} actually used?</h2>
+<div class="grid-2">
+<div class="card"><h3>Verified integration: spdlog</h3><p>The <strong>spdlog</strong> project includes CMake options <code>SPDLOG_FMT_EXTERNAL</code> and <code>SPDLOG_FMT_EXTERNAL_HO</code> to select an external compiled or header-only {fmt} rather than its bundled option. This is direct, source-level evidence of an actual integration point—not a hypothetical use case. <a href="#references">[6]</a></p></div>
+<div class="card"><h3>Reported adoption: upstream's list</h3><p>The {fmt} README lists projects including <strong>ClickHouse</strong>, <strong>Ceph</strong>, <strong>MongoDB</strong>, and <strong>Windows Terminal</strong>. These are maintainer-reported adopters in this review; their precise integration versions and usage paths were <em>not</em> separately audited here. <a href="#references">[1]</a></p></div>
+</div>
+<div class="rail"><strong>No claimed RISCue deployment</strong>Everything below describes <em>proposed experiments</em> in the user's projects. This report has not inspected a RISCue, VeloSim, or SharpHDL build that already uses {fmt}.</div>
+</section>
+<section id="design">
+<span class="kicker">08 / Target-specific fit</span>
+<h2>Where to try it first</h2>
+<div class="tablewrap"><table><thead><tr><th>Project</th><th>Suggested experiment (not verified adoption)</th><th>Acceptance gate</th></tr></thead><tbody>
+<tr><td><strong>VeloSim</strong></td><td>Fixed-size formatting of host-side simulation counterexamples: cycle number, event ID, and small integer values.</td><td>Bit-for-bit replay stability, complete/truncated return signaling, no format-generated nondeterminism.</td></tr>
+<tr><td><strong>RISCue</strong></td><td>Formatting at a non-interrupt diagnostics consumer, after compact event records have left time-critical producers.</td><td>No exceptions, measured WCET, zero observed allocations in hot path, bounded queue/backpressure policy.</td></tr>
+<tr><td><strong>SharpHDL</strong></td><td>Native C++ test harness traces for independently checking generated RTL sequences.</td><td>Reproducible formatting and test artifacts pinned to a library version.</td></tr>
+<tr><td><strong>MemForge</strong></td><td>Allocation instrumentation around integer-only formatting, including errors and oversized buffers.</td><td>Measured absence of allocations for the qualified operations, not a blanket library claim.</td></tr>
+</tbody></table></div>
+<p><strong>Preferred architecture:</strong> emit a compact, typed, fixed-size binary event at the most timing-sensitive boundary; format it into a human-readable string at a less-critical consumer. That separates deterministic event production from diagnostic presentation.</p>
+</section>
+<section id="limits">
+<span class="kicker">09 / What could go wrong</span>
+<h2>Useful tradeoffs to keep visible</h2>
+<div class="grid-2">
+<div class="card"><h3>Strengths</h3><ul class="checks"><li>C++20 checks format compatibility at compile time for literal format strings.</li><li><code>format_to_n</code> provides a maximum write count and full required size.</li><li>MIT license and a broadly used, documented CMake package.</li><li>Integer-only, locale-independent output can support repeatable test artifacts.</li></ul></div>
+<div class="card"><h3>Limitations</h3><ul class="checks"><li>Buffer capacity alone says nothing about worst-case execution time.</li><li>Non-default floating-point formatting may use fallback code; custom formatters can allocate or fail.</li><li>Disabling exceptions changes failure behavior; it does not create an error-return API.</li><li>The format-to-string API and dynamically growing buffers can allocate.</li><li>Full string messages are bulky compared with binary events.</li></ul></div>
+</div>
+<p>Upstream explicitly states that built-in and string formatting <em>normally</em> does not allocate, with exceptions for some non-default floating-point cases. That is an implementation claim, <strong>not</strong> a substitute for instrumented validation of a precise build and input domain. <a href="#references">[2]</a></p>
+<p>Also test negative signed values, zero, maximum integer widths, exact-fit capacities, no terminator room, corrupted records, and concurrent consumers. Format-time correctness does not establish wire framing, ISR safety, or data lifetime safety.</p>
+</section>
+<section id="qualification">
+<span class="kicker">10 / A measurement plan</span>
+<h2>Qualify the path you will actually ship</h2>
+<ol class="steps">
+<li><strong>Pin the version</strong> to {fmt} 12.2.1 and record compiler flags, target triple, and exact dependency SHA or package digest.</li>
+<li><strong>Compile the sample</strong> with GCC and Clang; then with target cross-compiler and your real exception/RTTI choices.</li>
+<li><strong>Run deterministic boundary tests</strong> for 0-byte payload allowance (a one-byte destination in a differently constrained wrapper), exact-fit and off-by-one lengths, integer extremes, and multi-record sequences.</li>
+<li><strong>Instrument allocations</strong> in the integer formatting call path, error path, and any custom formatter used. Test against the actual linked library.</li>
+<li><strong>Measure worst-case duration</strong> over bounded input ranges, including interrupt interaction if applicable; use a target trace or cycle counter rather than host-only averages.</li>
+<li><strong>Inspect the link map</strong> for code and data size, TLS, locale, exceptions/unwind dependencies, and accidental <code>fmt::format</code> usage.</li>
+<li><strong>Verify downstream ownership</strong> of each buffer and how records are rejected, counted, or recovered after truncation.</li>
+</ol>
+<p class="small">Review status of this edition: API signatures, return values, release/license metadata, and the spdlog integration were checked against primary sources. The sample was statically reviewed but could <strong>not</strong> be linked against {fmt} in the available environment; there is no claim of passing native C++ tests or target-level allocation/timing qualification. The interactive lab is a simplified JavaScript model, not a binding to the C++ library.</p>
+</section>
+<section id="license">
+<span class="kicker">11 / Licensing</span>
+<h2>MIT licensed; simple obligations still apply</h2>
+<p>Upstream {fmt} 12.2.1 is distributed under the <strong>MIT License</strong>, copyright Victor Zverovich and contributors. MIT permits commercial and closed-source use, modification, and redistribution, subject to including the copyright and permission notice in copies or substantial portions of the software. If you vendor its source or redistribute binaries containing it, follow your organization's notices policy and preserve the required notice. <a href="#references">[4]</a></p>
+<p>This article and its demonstration are original educational content. Its use of API names does not mean {fmt} itself is bundled into this page; the page's JavaScript model uses no external runtime dependencies. The example is offered for evaluation, without a safety certification.</p>
+</section>
+<section id="references">
+<span class="kicker">12 / Source trail</span>
+<h2>Official primary sources, checked November 12, 2026</h2>
+<ol class="refs">
+<li><a href="https://github.com/fmtlib/fmt/tree/12.2.1">fmtlib/fmt, pinned upstream repository at 12.2.1</a> — feature overview and maintainer-reported project adoption.</li>
+<li><a href="https://fmt.dev/latest/api/">Official {fmt} API reference</a> — <code>format_to_n</code> semantics, compile-time checking, allocation caveat, formatting APIs.</li>
+<li><a href="https://fmt.dev/latest/get-started/">Official getting-started guide</a> — installation and supported usage (see also upstream <a href="https://github.com/fmtlib/fmt/blob/12.2.1/CMakeLists.txt">CMakeLists.txt</a>).</li>
+<li><a href="https://github.com/fmtlib/fmt/blob/12.2.1/LICENSE">fmtlib/fmt MIT license text at 12.2.1</a>.</li>
+<li><a href="https://github.com/fmtlib/fmt/blob/12.2.1/doc/api.md">fmtlib/fmt versioned API source</a> — <code>FMT_USE_EXCEPTIONS</code>, <code>FMT_OPTIMIZE_SIZE</code>, <code>FMT_OS</code>.</li>
+<li><a href="https://github.com/gabime/spdlog/blob/v1.x/CMakeLists.txt">spdlog official CMakeLists.txt</a> — direct evidence of <code>SPDLOG_FMT_EXTERNAL</code> and <code>SPDLOG_FMT_EXTERNAL_HO</code>.</li>
+<li><a href="https://github.com/fmtlib/fmt/releases/tag/12.2.1">fmtlib/fmt 12.2.1 release record</a> — released November 7, 2026.</li>
+</ol>
+<p class="small">Source verification includes the release record, versioned MIT notice, header declarations, official reference documentation, and independent consumer build configuration. External performance claims are intentionally not imported as target measurements.</p>
+</section>
+</article>
+</div></main>
+<footer class="footer"><div class="shell"><p><strong>but does it do anything?</strong> · Engineering Deep Dives · 2026-11-12 · Source-first analysis · No tracking scripts, web fonts, or external runtime assets.</p></div></footer>
+<script>
+(function(){
+  "use strict";
+  var ids = ["seq","temp","flags","capacity"];
+  function el(id){ return document.getElementById(id); }
+  function integer(id,min,max,fallback){
+    var n=Number(el(id).value);
+    return Number.isFinite(n)?Math.min(max,Math.max(min,Math.trunc(n))):fallback;
+  }
+  function record(seq,temp,flags){
+    var s=String(seq).padStart(4,"0");
+    var t=temp>=0?("+"+temp):String(temp);
+    var f=flags.toString(16).toUpperCase().padStart(2,"0");
+    return "seq="+s+" temp="+t+" flags=0x"+f;
+  }
+  function update(){
+    var seq=integer("seq",0,9999,42);
+    var temp=integer("temp",-40,125,-7);
+    var flags=integer("flags",0,255,10);
+    var capacity=integer("capacity",8,64,32);
+    el("capLabel").textContent=String(capacity);
+    var full=record(seq,temp,flags);
+    var required=full.length; // Only ASCII characters are generated by this lab.
+    var fit=required<capacity;
+    var prefix=full.slice(0,capacity-1);
+    var used=fit?required:Math.min(required,capacity-1);
+    el("fullRecord").textContent=full;
+    el("required").textContent=String(required);
+    el("payloadCapacity").textContent=String(capacity-1);
+    el("published").textContent=fit?full:"NOT SENT — record rejected";
+    var decision=el("decision");
+    decision.textContent=fit?"ACCEPT · "+required+" of "+capacity+" bytes":"REJECT · "+required+" chars need "+(required+1)+" bytes";
+    decision.className=fit?"status":"status fail";
+    var bytes=el("bytes");bytes.textContent="";
+    var fragment=document.createDocumentFragment();
+    for(var i=0;i<capacity;i++){
+      var s=document.createElement("span");
+      if(i<used){s.className="byte";s.textContent=prefix.charAt(i)===" "?"·":prefix.charAt(i);}
+      else if(fit&&i===required){s.className="byte nul";s.textContent="\\0";}
+      else{s.className="byte empty";s.textContent="·";}
+      fragment.appendChild(s);
+    }
+    bytes.appendChild(fragment);
+    bytes.setAttribute("aria-label", capacity+" byte slots; "+used+" character positions written by format_to_n; "+(fit?"complete output followed by a null terminator":"output truncated; caller rejects and clears first byte"));
+    el("bufferNote").textContent=fit?"All "+required+" characters fit; reserve one more byte for the terminator.":"The underlying bounded write may leave a partial prefix. A correct caller reports failure and never forwards it.";
+  }
+  ids.forEach(function(id){el(id).addEventListener("input",update);});
+  el("fit").addEventListener("click",function(){el("capacity").value="48";update();});
+  el("overflow").addEventListener("click",function(){el("capacity").value="12";update();});
+  el("reset").addEventListener("click",function(){
+    el("seq").value="42";el("temp").value="-7";el("flags").value="10";el("capacity").value="32";update();
+  });
+  update();
+})();
+</script>
+</body>
+</html>
