@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="November 13, 2026 engineering deep dive: ankerl::nanobench v4.6.0, paired C++20 microbenchmarks, clock drift, RISCue event-priority dispatch, verified adoption, and an interactive synthetic measurement lab.">
+<title>The Clock Is Not the Truth — ankerl::nanobench | Engineering Deep Dive · 2026-11-13</title>
+<style>
+:root{color-scheme:dark;--bg:#08131f;--surface:#112437;--surface2:#162d42;--line:#37546a;--text:#e9f4fc;--muted:#b9cbd9;--lime:#cdf57b;--cyan:#87e6ee;--orange:#ffd18c;--pink:#ff9fb2;--violet:#c6b4ff;--shadow:#0006}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.69 system-ui,-apple-system,"Segoe UI",sans-serif;overflow-wrap:anywhere}
+a{color:var(--cyan);text-underline-offset:3px}a:hover{text-decoration-thickness:2px}a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+.skip{position:absolute;top:-8rem;left:1rem;background:#fff;color:#111;padding:.65rem 1rem;z-index:30;border-radius:10px}.skip:focus{top:.7rem}
+.wrapper{width:min(1140px,calc(100% - 2rem));margin:auto}.hero{background:radial-gradient(ellipse 68% 88% at 83% 7%,#23617c70,transparent 73%),linear-gradient(135deg,#0b1b2b 0%,#142d41 70%,#173b4a 100%);border-bottom:1px solid #395a68;overflow:hidden}
+.hero-inner{display:grid;grid-template-columns:1.14fr .86fr;gap:2rem;align-items:center;padding:3.7rem 0 4rem}.eyebrow{font-size:.78rem;letter-spacing:.18em;color:var(--lime);text-transform:uppercase;font-weight:850}
+.date{font-size:.94rem;color:#c6deea;margin:.6rem 0}.hero h1{font-size:clamp(2.8rem,6.5vw,5.7rem);max-width:11ch;line-height:1.04;letter-spacing:-.063em;margin:.8rem 0 1.1rem}.hero h1 em{font-style:normal;color:var(--cyan)}.lede{font-size:1.2rem;line-height:1.55;max-width:62ch;color:#d7e7f0}.pills{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 0}.pill{padding:.25rem .7rem;background:#1d4255;border:1px solid #4b7e87;border-radius:999px;font-size:.81rem;color:#e6fdff;font-weight:750}
+.hero-panel{border:1px solid #638895;border-radius:22px;overflow:hidden;background:#081822;box-shadow:0 18px 50px var(--shadow);transform:rotate(1deg)}.panel-head{padding:.7rem 1rem;border-bottom:1px solid #365365;background:#183446;display:flex;align-items:center;gap:6px;font-size:.81rem;color:#bcd6e4}.light{width:9px;height:9px;border-radius:50%;background:#fc8f9e}.light:nth-child(2){background:#f9cf7c}.light:nth-child(3){background:#bbf084}.panel-head b{margin-left:.45rem;font-weight:650}.hero-panel-inner{padding:1.3rem 1.2rem}.tiny{font-size:.78rem;letter-spacing:.11em;text-transform:uppercase;font-weight:850;color:#a6c5d6}.hero-metric{font-size:clamp(2.1rem,5vw,3.7rem);font-weight:900;letter-spacing:-.05em;line-height:1.2;color:var(--lime);margin:.5rem 0}.hero-metric small{font-size:.3em;color:var(--muted);letter-spacing:0}.hero-compare{display:flex;gap:.6rem;align-items:center;padding:.5rem 0;border-top:1px solid #274052;color:#cbdeeb;font: .93rem ui-monospace,Consolas,monospace}.hero-compare span:first-child{width:90px;color:#e1f1f6}.hbar{height:13px;border-radius:999px;background:var(--cyan);width:60%}.hbar.b{background:var(--pink);width:74%}.disclaimer{font-size:.83rem;color:#b7c9d7;margin:.9rem 0 0}
+.body-grid{display:grid;grid-template-columns:224px minmax(0,1fr);gap:2.4rem;padding:2.5rem 0 4rem;align-items:start}.toc{position:sticky;top:1rem;background:#102438;border:1px solid var(--line);border-radius:17px;padding:1.1rem;max-height:calc(100vh - 2rem);overflow:auto}.toc strong{font-size:.79rem;letter-spacing:.12em;color:var(--lime)}.toc ol{padding-left:1.35rem;margin:.7rem 0 0}.toc li{font-size:.9rem;line-height:1.42;margin:.45rem 0}.toc a{color:#d5e9f5;text-decoration:none}.toc a:hover{text-decoration:underline}article{min-width:0}section{scroll-margin-top:1.5rem;margin-bottom:2.7rem}section+section{border-top:1px solid #29445a;padding-top:2.5rem}
+.kicker{font-weight:900;letter-spacing:.15em;color:var(--cyan);text-transform:uppercase;font-size:.76rem;margin:0 0 .35rem}h2{font-size:clamp(1.65rem,3.4vw,2.45rem);line-height:1.18;letter-spacing:-.038em;margin:.2rem 0 1rem}h3{font-size:1.2rem;line-height:1.3;color:var(--lime);margin:.4rem 0 .7rem}p{margin:.55rem 0 1.1rem}strong{color:#fff}.intro{font-size:1.1rem;color:#d6e9f3}
+.grid2,.grid3{display:grid;gap:.9rem}.grid2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3{grid-template-columns:repeat(3,minmax(0,1fr))}.card{background:var(--surface);border:1px solid var(--line);border-radius:17px;padding:1.1rem;min-width:0}.card p:last-child{margin-bottom:0}.stat{font-size:1.75rem;font-weight:900;color:var(--lime);letter-spacing:-.03em}.stat-label{font-size:.85rem;color:var(--muted);line-height:1.4;display:block}.badge{display:inline-block;background:#194255;color:#c9faff;border:1px solid #547c8c;border-radius:8px;font-size:.75rem;font-weight:900;letter-spacing:.045em;padding:.1rem .43rem}.badge.proposed{background:#3a2e48;border-color:#8a6e96;color:#ead5fc}.warning{padding:1.1rem 1.3rem;background:#3a2b24;border:1px solid #9c7650;border-left:4px solid var(--orange);border-radius:13px;margin:1.2rem 0}.warning strong{color:var(--orange)}.note{padding:1.1rem 1.2rem;background:#193847;border:1px solid #558397;border-radius:13px;margin:1.2rem 0}.note strong{color:var(--lime)}
+.code{margin:1rem 0 1.25rem;border:1px solid #42617a;border-radius:14px;background:#07131e;overflow:auto;padding:1.2rem;white-space:pre;tab-size:4;font:12.4px/1.6 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;color:#dff5ff}code{font:.91em ui-monospace,Consolas,monospace;color:#c8eea0}pre code{font:inherit;color:inherit}summary{cursor:pointer;font-weight:800;color:#e8f7ff}details{background:#112b40;border:1px solid #42617a;border-radius:12px;padding:.8rem 1rem;margin:.7rem 0}
+.tablewrap{overflow-x:auto}table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.92rem}th,td{padding:.75rem .7rem;border-bottom:1px solid #355367;vertical-align:top;text-align:left}th{color:#ddf8ff;background:#18364b}tr:nth-child(even) td{background:#10293b}ul,ol{padding-left:1.35rem}li{padding:.2rem 0}li::marker{color:var(--cyan)}
+.lab{background:linear-gradient(146deg,#17384b,#102436);border:1px solid #5a8794;border-radius:22px;padding:1.4rem;box-shadow:0 12px 25px #0003}.lab-header{display:flex;justify-content:space-between;gap:.7rem;align-items:start;flex-wrap:wrap}.lab-header h3{font-size:1.5rem;margin:.1rem 0}.lab .small{color:#c7d9e3}.controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.9rem;margin:1.1rem 0}.control label{display:block;font-size:.85rem;color:#e5f5ff;font-weight:800;margin-bottom:.2rem}.control output{color:var(--lime);font-variant-numeric:tabular-nums}.control input{width:100%;accent-color:var(--lime);min-height:40px}.control input[type=number]{border:1px solid #6d95a5;background:#0a2031;color:#fff;border-radius:8px;padding:.5rem;font:inherit;min-width:0}
+button{cursor:pointer;padding:.6rem 1rem;border-radius:9px;border:1px solid #dafa91;background:#c9f27f;color:#14240a;font:inherit;font-weight:850;min-height:44px}button:hover{filter:brightness(1.08)}button.secondary{background:#24445a;border-color:#6e91a0;color:#e9f8ff}.buttons{display:flex;flex-wrap:wrap;gap:.7rem;margin:1rem 0}
+.lab-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.result{background:#071a29;border:1px solid #4b6f80;border-radius:16px;padding:1rem;min-width:0}.result h4{font-size:1.02rem;margin:.1rem 0 .15rem;color:#e5f3fc}.result .measurement{font-size:clamp(1.5rem,3vw,2.15rem);font-weight:900;font-variant-numeric:tabular-nums;line-height:1.3;color:var(--lime)}.result .measurement span{font-size:.47em;font-weight:650;color:#bfdae7;letter-spacing:0}.chart-scroll{overflow-x:auto}.timeline{display:grid;grid-template-columns:repeat(48,minmax(7px,1fr));align-items:end;height:105px;gap:2px;min-width:410px;border-bottom:1px solid #486374;margin:.95rem 0 .3rem}.timeline i{display:block;border-radius:3px 3px 0 0;min-height:3px;background:var(--cyan)}.timeline i.b{background:var(--pink)}.legend{display:flex;gap:1rem;flex-wrap:wrap;font-size:.8rem;color:#cddfe8}.swatch{width:11px;height:11px;display:inline-block;margin-right:.3rem;border-radius:2px;background:var(--cyan)}.swatch.b{background:var(--pink)}.readout{border:1px solid #597989;border-radius:13px;padding:.85rem 1rem;background:#153243;margin:1rem 0 0;color:#edf9fc}.readout b{color:var(--lime)}.plain{color:var(--muted);font-size:.85rem}.protocol{counter-reset:protocol}.protocol li{margin:.5rem 0}.refs li{margin:.4rem 0}.footer{background:#0e2736;border-top:1px solid #355668;padding:1.7rem 0;color:#b9d0dd;font-size:.9rem}.footer p{margin:.15rem 0}
+@media(max-width:940px){.hero-inner{grid-template-columns:1fr}.hero-panel{max-width:550px;transform:none}.body-grid{grid-template-columns:1fr}.toc{position:static;max-height:none}.toc ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:1.1rem}}
+@media(max-width:650px){.wrapper{width:min(100% - 1.15rem,1140px)}.hero-inner{padding:2.3rem 0 2.5rem}.hero h1{font-size:3rem}.grid2,.grid3,.controls,.lab-grid{grid-template-columns:1fr}.lab{padding:.85rem}.toc ol{grid-template-columns:1fr}.code{font-size:11.5px;padding:.85rem}.hero-panel-inner{padding:1rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to article</a>
+<header class="hero">
+  <div class="wrapper hero-inner">
+    <div>
+      <div class="eyebrow">Engineering Deep Dives / November 13, 2026</div>
+      <p class="date"><time datetime="2026-11-13">Friday, November 13, 2026</time> · C++20 · Source-checked against nanobench v4.6.0</p>
+      <h1>The clock is <em>not the truth.</em></h1>
+      <p class="lede">A 7% faster queue? Or a CPU that quietly sped up while you were measuring? Meet <strong>ankerl::nanobench</strong>: a compact MIT-licensed C++ microbenchmark library, and a surprisingly important lesson in experimental design.</p>
+      <div class="pills"><span class="pill">MIT licensed</span><span class="pill">C++11–20</span><span class="pill">52 paired epochs</span><span class="pill">CMake + Ninja</span><span class="pill">Host-only qualification</span></div>
+    </div>
+    <aside class="hero-panel" aria-label="Illustrative synthetic benchmark sketch">
+      <div class="panel-head"><span class="light"></span><span class="light"></span><span class="light"></span><b>benchmark / not a timing guarantee</b></div>
+      <div class="hero-panel-inner">
+        <div class="tiny">The experimenter's question</div>
+        <div class="hero-metric">± drift <small>vs actual speedup</small></div>
+        <div class="hero-compare"><span>baseline</span><span class="hbar" aria-hidden="true"></span></div>
+        <div class="hero-compare"><span>candidate</span><span class="hbar b" aria-hidden="true"></span></div>
+        <p class="disclaimer">A bar chart by itself cannot tell you which implementation is genuinely faster. Controlled pairing can help.</p>
+      </div>
+    </aside>
+  </div>
+</header>
+<main id="main"><div class="wrapper body-grid">
+<nav class="toc" aria-label="Table of contents"><strong>ON THIS PAGE</strong>
+<ol>
+<li><a href="#verdict">Engineering verdict</a></li><li><a href="#problem">The measurement trap</a></li>
+<li><a href="#mechanics">What nanobench actually does</a></li><li><a href="#lab">Interactive clock-drift lab</a></li>
+<li><a href="#example">Complete C++20 example</a></li><li><a href="#integration">CMake / Ninja integration</a></li>
+<li><a href="#adoption">Verified real use</a></li><li><a href="#fit">Fit with your projects</a></li>
+<li><a href="#limits">Tradeoffs and limitations</a></li><li><a href="#protocol">Qualification protocol</a></li>
+<li><a href="#license">License and provenance</a></li><li><a href="#references">Primary references</a></li>
+</ol>
+</nav>
+<article>
+<section id="verdict">
+  <p class="kicker">01 / Decision</p><h2>Excellent host-side evidence. Not hard-real-time proof.</h2>
+  <p class="intro">If you need to compare an event-selection loop, a bounded queue operation, a parser, or a memory-pool fast path, nanobench is worth trying. Its <strong>v4.6.0 <code>compare()</code></strong> interface measures competing operations in interleaved rounds, reducing systematic error from gradual frequency changes. The library itself is a <strong>benchmark harness</strong>, not an RTOS component or a worst-case execution-time analyzer. <a href="#references">[1–3]</a></p>
+  <div class="grid3">
+    <div class="card"><div class="stat">v4.6.0</div><span class="stat-label">Official GitHub release, published August 14, 2026</span></div>
+    <div class="card"><div class="stat">MIT</div><span class="stat-label">Permissive use, with copyright/license notice retention</span></div>
+    <div class="card"><div class="stat">Host</div><span class="stat-label">Keep instrumentation out of the production firmware image</span></div>
+  </div>
+  <div class="warning"><strong>Boundary of the claim.</strong> Faster median nanoseconds per operation does not establish a bounded interrupt latency, absence of heap allocations, safe lock-free progress, or worst-case task response time.</div>
+</section>
+<section id="problem">
+  <p class="kicker">02 / Experimental method</p><h2>When a benchmark races the CPU governor</h2>
+  <p>Suppose algorithm A runs first, then B. During the test the processor changes frequency, its caches warm up, and background tasks appear. The resulting difference mixes <em>algorithm</em> and <em>when it was measured</em>. More decimal places do not fix a biased experiment.</p>
+  <div class="grid2">
+    <div class="card"><h3>Sequential A → B</h3><p>All measurements of A happen earlier than all measurements of B. A smooth drift in clock rate can masquerade as a speedup or regression.</p><span class="badge">Confounded by time</span></div>
+    <div class="card"><h3>Interleaved A–B–B–A</h3><p>Mix the candidates throughout the same period. A balanced ordering can largely cancel a <em>linear</em> drift. It does not magically remove noise, thermal effects, or mismatched workloads.</p><span class="badge">Better controlled</span></div>
+  </div>
+  <p>Nanobench's <code>compare()</code> uses randomized cyclic Latin-square blocks, paired log-ratio measurements, and a documented sign-test interval. For two alternatives, its balancing yields ABBA/BAAB-style ordering. The teaching simulator below uses a simpler deterministic schedule: it is <strong>not</strong> nanobench's implementation or a claim to reproduce its statistical confidence intervals. <a href="#references">[2, 4]</a></p>
+</section>
+<section id="mechanics">
+  <p class="kicker">03 / API & semantics</p><h2>What the measurements mean</h2>
+  <div class="tablewrap"><table><caption class="plain" style="text-align:left">Verified terminology from the upstream tutorial and API reference</caption>
+  <thead><tr><th scope="col">Feature</th><th scope="col">What it means</th><th scope="col">Important caveat</th></tr></thead>
+  <tbody>
+  <tr><td><code>Bench().run()</code></td><td>Measures one repeated callable in automatically sized epochs.</td><td>Only what the callable actually does is measured.</td></tr>
+  <tr><td><code>ns/op</code></td><td>Median elapsed time per logical operation over epochs; <code>batch()</code> can change the denominator.</td><td>Not the worst observed time or WCET.</td></tr>
+  <tr><td><code>err%</code></td><td>Median absolute percentage error of epoch timings, a run-stability indicator.</td><td>Not a statistical confidence interval and not an A-versus-B error bar.</td></tr>
+  <tr><td><code>compare()</code></td><td>Interleaved alternatives, paired ratios, sign-test interval and significance verdict.</td><td>Requires enough rounds; no universal correctness or realtime guarantee.</td></tr>
+  <tr><td><code>doNotOptimizeAway()</code></td><td>Helps stop a result from vanishing under optimization.</td><td>Has measurable overhead; does not freeze all optimizer transformations.</td></tr>
+  <tr><td>Linux counters</td><td>Optional retired-instruction, cycle, branch and miss data on supported Linux setups.</td><td>Counter columns are not universally available on Windows/macOS or every Linux host.</td></tr>
+  </tbody></table></div>
+  <div class="note"><strong>Source-version detail:</strong> The official CMake tutorial still illustrates <code>v4.1.0</code>, but the repository's August 2026 release is <strong>v4.6.0</strong>. This report pins the actual v4.6.0 commit and uses the <code>compare()</code> API found in that version's source and tests. <a href="#references">[1, 3, 4, 5]</a></div>
+</section>
+<section id="lab">
+  <p class="kicker">04 / Change one variable at a time</p><h2>Interactive lab: the clock-drift trap</h2>
+  <p>Try <strong>0% true speedup</strong> with <strong>20% clock drift</strong>. Compare the apparent winner when A is timed entirely before B versus when both candidates are interleaved. This is an <strong>invented synthetic model</strong>, not measured hardware data and not a nanobench test run.</p>
+  <div class="lab" aria-label="Interactive synthetic benchmark">
+    <div class="lab-header"><div><h3>Which number would you trust?</h3><p class="plain">A = baseline, B = candidate. Higher A/B ratio suggests B is faster.</p></div><span class="badge proposed">SYNTHETIC DATA ONLY</span></div>
+    <div class="controls">
+      <div class="control"><label for="speed">B's real speedup: <output id="speedValue" for="speed">8%</output></label><input id="speed" type="range" min="0" max="25" step="1" value="8"></div>
+      <div class="control"><label for="drift">Total clock drift: <output id="driftValue" for="drift">15%</output></label><input id="drift" type="range" min="0" max="35" step="1" value="15"></div>
+      <div class="control"><label for="jitter">Random variation: <output id="jitterValue" for="jitter">2%</output></label><input id="jitter" type="range" min="0" max="20" step="1" value="2"></div>
+      <div class="control"><label for="seed">Repeatable seed (1–99999)</label><input id="seed" type="number" min="1" max="99999" step="1" value="7" inputmode="numeric"></div>
+    </div>
+    <div class="buttons"><button id="simulate" type="button">Run synthetic experiment</button><button id="reset" type="button" class="secondary">Reset controls</button></div>
+    <div class="lab-grid">
+      <div class="result"><h4>Experiment 1 · Sequential A then B</h4><div class="measurement" id="seqRatio">—</div><p class="plain" id="seqDetail">Simulating 24 observations per candidate.</p><div class="chart-scroll"><div id="seqTimeline" class="timeline" role="img" aria-label="Synthetic sequential A then B timeline of 48 observed latencies"></div></div><p class="plain">Order: A × 24, followed by B × 24.</p></div>
+      <div class="result"><h4>Experiment 2 · Interleaved blocks</h4><div class="measurement" id="pairRatio">—</div><p class="plain" id="pairDetail">Simulating 12 ABBA / BAAB blocks.</p><div class="chart-scroll"><div id="pairTimeline" class="timeline" role="img" aria-label="Synthetic interleaved ABBA and BAAB timeline of 48 observed latencies"></div></div><p class="plain">Order: ABBA, BAAB, ABBA, BAAB …</p></div>
+    </div>
+    <div class="legend"><span><i class="swatch"></i> A · baseline</span><span><i class="swatch b"></i> B · candidate</span></div>
+    <div class="readout" role="status" aria-live="polite" aria-atomic="true" id="labSummary">Choose settings, then run the experiment.</div>
+    <p class="plain">Model: true A latency = 100 fictional units; B = 100/(1+speedup). A linear time-dependent multiplier and independently sampled bounded jitter change each observation. Sequential estimator = ratio of candidate medians. Paired estimator = median of within-block geometric A/B ratios. Neither estimator computes the real library's sign-test interval.</p>
+  </div>
+  <details><summary>Why not display fabricated nanoseconds or fake 95% confidence?</summary><p>Real <code>ns/op</code> depends on a specific processor, compiler, build flags, frequency and workload. This toy lab displays <em>fictional latency units</em> and comparative ratios only. A confidence interval requires an explicit statistical model and sampling procedure; the lab does not pretend to implement nanobench's published significance method.</p></details>
+</section>
+<section id="example">
+  <p class="kicker">05 / Concrete C++20 application</p><h2>Two implementations, one dispatch contract</h2>
+  <p>Consider a 32-priority ready mask in a hypothetical RISCue-like scheduler. The lowest set bit wins; an all-zero mask means “no event” and returns 32. A portable loop and <code>std::countr_zero</code> implement the same contract. Test functional equivalence <em>before</em> measuring. Here is a complete host benchmark, using the actual v4.6.0 <code>compare()</code> interface.</p>
+  <pre class="code"><code>// priority_bench.cpp — C++20, host-only benchmark, nanobench v4.6.0
+#include &lt;nanobench.h&gt; // Implementation is compiled by the CMake target.
+#include &lt;array&gt;
+#include &lt;bit&gt;
+#include &lt;cstddef&gt;
+#include &lt;cstdint&gt;
+#include &lt;iostream&gt;
+
+unsigned scan_priority(std::uint32_t mask) noexcept {
+    for (unsigned bit = 0; bit &lt; 32; ++bit) {
+        if ((mask &amp; (std::uint32_t{1} &lt;&lt; bit)) != 0) {
+            return bit;
+        }
+    }
+    return 32; // No ready events.
+}
+
+unsigned bit_priority(std::uint32_t mask) noexcept {
+    // C++20 specifies 32 for countr_zero(uint32_t{0}).
+    return static_cast&lt;unsigned&gt;(std::countr_zero(mask));
+}
+
+int main() {
+    // Correctness is separate from speed. Never compare broken code.
+    for (std::uint32_t mask = 0; mask &lt; 65536u; ++mask) {
+        if (scan_priority(mask) != bit_priority(mask)) return 2;
+    }
+    for (unsigned bit = 0; bit &lt; 32; ++bit) {
+        const auto mask = std::uint32_t{1} &lt;&lt; bit;
+        if (scan_priority(mask) != bit_priority(mask)) return 3;
+    }
+    if (scan_priority(0u) != 32u || bit_priority(0u) != 32u) {
+        return 4;
+    }
+    std::cout &lt;&lt; "Correctness: 65,536 masks + 32 one-hot cases + zero\n";
+
+    // Generate identical deterministic inputs for both candidates.
+    std::array&lt;std::uint32_t, 256&gt; masks{};
+    std::uint32_t state = 0x9e3779b9u;
+    for (auto&amp; mask : masks) {
+        state ^= state &lt;&lt; 13;
+        state ^= state &gt;&gt; 17;
+        state ^= state &lt;&lt; 5;
+        mask = state;
+    }
+    masks[0] = 0u; // Explicit empty-ready-set workload.
+
+    std::size_t scan_index = 0;
+    std::size_t bit_index = 0;
+    const auto scan = [&amp;] {
+        const auto mask = masks[(scan_index++) &amp; 255u];
+        ankerl::nanobench::doNotOptimizeAway(scan_priority(mask));
+    };
+    const auto bits = [&amp;] {
+        const auto mask = masks[(bit_index++) &amp; 255u];
+        ankerl::nanobench::doNotOptimizeAway(bit_priority(mask));
+    };
+
+    // compare() pairs and interleaves candidates. This is a HOST
+    // microbenchmark; its timings are NOT an RTOS WCET qualification.
+    ankerl::nanobench::Bench()
+        .performanceCounters(false) // Portable Windows/Linux/macOS table.
+        .epochs(52)                  // More rounds for the comparison.
+        .compare("portable 32-bit scan", scan,
+                 "C++20 countr_zero", bits);
+    return 0;
+}</code></pre>
+  <div class="note"><strong>Interpretation:</strong> A faster bit scan on one compiler does not justify replacing a production scheduler path without checking architecture-specific code generation, actual priority semantics, zero handling, target timing and integration tests. Both candidates must receive equivalent input distributions; this example cycles separate indices over the same 256 precomputed masks.</div>
+  <p class="plain">Review scope: the two priority-selection kernels and their 65,569 contract checks were compiled and executed using GCC and Clang in C++20 mode. The complete nanobench-linked program was source-reviewed against its official v4.6.0 API, but not compiled against the downloaded library in this execution environment.</p>
+</section>
+<section id="integration">
+  <p class="kicker">06 / Build recipe</p><h2>Pin the library. Keep it off target firmware.</h2>
+  <p>Place the C++ sample in <code>priority_bench.cpp</code> beside this <code>CMakeLists.txt</code>. The upstream CMake target already compiles <code>ANKERL_NANOBENCH_IMPLEMENT</code> in its own translation unit, so <strong>do not</strong> define that macro again in your sample.</p>
+  <pre class="code"><code>cmake_minimum_required(VERSION 3.20)
+project(riscue_priority_bench LANGUAGES CXX)
+
+include(FetchContent)
+FetchContent_Declare(
+    nanobench
+    GIT_REPOSITORY https://github.com/martinus/nanobench.git
+    # Pinned v4.6.0 commit, verified against upstream tag.
+    GIT_TAG b709728dba4df0356d467abfb0ba20781a8031c0
+)
+FetchContent_MakeAvailable(nanobench)
+
+add_executable(priority_bench priority_bench.cpp)
+target_compile_features(priority_bench PRIVATE cxx_std_20)
+target_link_libraries(priority_bench PRIVATE nanobench)
+
+# Use a release build for meaningful comparisons.
+# Do not define ANKERL_NANOBENCH_IMPLEMENT in priority_bench.cpp:
+# the upstream CMake target already compiles that implementation.</code></pre>
+  <pre class="code"><code>cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+# Linux / macOS:
+./build/priority_bench
+# Windows (from a compiler-configured PowerShell):
+.\build\priority_bench.exe</code></pre>
+  <p>On Windows, run from a PowerShell or terminal where Visual Studio's <code>cl</code> or another selected C++20 compiler and Ninja are configured. First-time <code>FetchContent</code> configuration needs network access; CI can use a cached/pinned checkout or vendored source. Keep the benchmark executable as a separate host-only CMake target. For a cross-compiled firmware tree, do not pull it into the target binary or link its host-side dependencies.</p>
+  <p>Alternative upstream-documented integration: include the release <code>nanobench.h</code> and put <code>#define ANKERL_NANOBENCH_IMPLEMENT</code> in exactly one dedicated host-side <code>.cpp</code>. Do not mix that pattern with the compiled upstream CMake target. <a href="#references">[3, 5]</a></p>
+</section>
+<section id="adoption">
+  <p class="kicker">07 / Evidence, not association</p><h2>Where it is actually used</h2>
+  <div class="card"><span class="badge">VERIFIED SOURCE ADOPTION</span><h3>ankerl::unordered_dense benchmark suite</h3><p>Martin Leitner-Ankerl's <a href="https://github.com/martinus/unordered_dense/blob/main/test/bench/quick_overall_map.cpp">unordered_dense <code>quick_overall_map.cpp</code></a> includes <code>third-party/nanobench.h</code> and calls <code>ankerl::nanobench::Bench().run()</code> for hash-map insertion/erase, iteration, build, churn and lookup workloads. That is <strong>direct source evidence</strong> of an actual benchmark harness, rather than a generic claim about who uses nanobench.</p><p>The <a href="https://github.com/martinus/nanobench/blob/v4.6.0/src/test/tutorial_compare.cpp">nanobench project's own v4.6.0 comparison test</a> directly exercises <code>epochs(52).compare()</code> and the significance API. That proves the example API exists; it is <em>self-use</em>, not independent third-party adoption. <a href="#references">[4, 6]</a></p></div>
+  <div class="grid2" style="margin-top:1rem">
+    <div class="card"><span class="badge proposed">PROPOSAL, NOT EVIDENCE</span><h3>RISCue / VeloSim</h3><p>Benchmark priority-bit selection, event-queue operations, or simulation step kernels on a pinned host and compiler. There is no claim that these repositories currently use nanobench.</p></div>
+    <div class="card"><span class="badge proposed">PROPOSAL, NOT EVIDENCE</span><h3>MemForge / BomR</h3><p>Compare host memory-pool fast paths or deterministic resistor-search kernels. This is a suggested experiment, not documented existing adoption or a promise of speedup.</p></div>
+  </div>
+</section>
+<section id="fit">
+  <p class="kicker">08 / Integration boundaries</p><h2>Where it fits in the engineering stack</h2>
+  <div class="tablewrap"><table><thead><tr><th scope="col">Component</th><th scope="col">Good use</th><th scope="col">Do not infer</th></tr></thead><tbody>
+  <tr><td>RISCue RTOS</td><td>Host-compiled microbenchmarks of priority selection, queues, timer heaps or ready sets.</td><td>Hard-realtime dispatch deadlines on an MCU.</td></tr>
+  <tr><td>VeloSim / SharpHDL</td><td>Compare deterministic simulation kernels after correctness and output equality checks.</td><td>End-to-end throughput from one microkernel.</td></tr>
+  <tr><td>MemForge</td><td>Check fast-path regression under a controlled allocation and lifetime workload.</td><td>Allocation-free behavior from timing alone.</td></tr>
+  <tr><td>.NET 10 / Native AOT</td><td>Compare a native C++ component consumed by a managed system.</td><td>Managed GC pauses, Native AOT cold starts or cross-boundary cost from C++-only numbers.</td></tr>
+  </tbody></table></div>
+  <p>For real hardware, combine this with target-on-board traces, cycle-counter measurements where appropriate, scheduler response-time analysis, sustained load tests and allocation instrumentation. Preserve compiler flags, target CPU, data distributions and commit hashes with every recorded result.</p>
+</section>
+<section id="limits">
+  <p class="kicker">09 / What can go wrong</p><h2>Tradeoffs a benchmark can hide</h2>
+  <div class="grid2">
+    <div class="card"><h3>Measurement overhead</h3><p><code>doNotOptimizeAway</code> and lambda invocation may be significant beside a two-instruction operation. Measure batches and inspect optimized assembly; beware of measuring the harness instead of the workload.</p></div>
+    <div class="card"><h3>Workload fidelity</h3><p>A cache-hot array of 256 masks is not a full scheduler. Vary mask occupancy, zero frequency, realistic event arrival patterns and memory contention.</p></div>
+    <div class="card"><h3>Statistical ambiguity</h3><p>More digits or a small <code>err%</code> do not prove a causal difference. Prefer a paired comparison and its reported interval; repeat across machines and days.</p></div>
+    <div class="card"><h3>Not a target runtime</h3><p>The library uses host timing, reporting and benchmark infrastructure; it is not proposed for the firmware image or zero-allocation ISR code.</p></div>
+  </div>
+  <div class="warning"><strong>Unresolved performance questions:</strong> No actual timing or memory measurements of the illustrated priority-selector pair were taken here. The HTML simulator is synthetic. The whole program has not been compiled or run with the nanobench dependency, and no target microcontroller or real-time worst-case analysis was exercised.</div>
+</section>
+<section id="protocol">
+  <p class="kicker">10 / Acceptance criteria</p><h2>A fair first experiment for RISCue</h2>
+  <ol class="protocol">
+  <li><strong>Freeze a behavioral contract:</strong> lowest ready priority wins, empty mask returns 32, fixed 32-bit semantics. Add tests for all 65,536 low masks and every one-hot bit.</li>
+  <li><strong>Build twice:</strong> Release with compiler/CPU tuning documented, and sanitizer-enabled correctness builds with the optimization intent stated separately.</li>
+  <li><strong>Fix test inputs:</strong> include sparse/dense/empty ready masks and realistic event burst patterns; exclude setup/allocations only when that matches the production fast path.</li>
+  <li><strong>Use paired measurement:</strong> start with 52 epochs, inspect the library's interval and significance verdict, rerun reversed names/order, record outliers and machine utilization.</li>
+  <li><strong>Look at generated code:</strong> disassemble both callables; compiler lowering of <code>std::countr_zero</code> is target dependent.</li>
+  <li><strong>Qualify hardware separately:</strong> run the real target at defined frequency with interrupt and scheduling interference, then check latency upper bounds, stack, allocations and power.</li>
+  </ol>
+  <p><strong>Decision gate:</strong> adopt a change only if functional parity, reproducible target-relevant performance improvement, and all timing/memory budgets are independently established. Nanobench is one piece of that evidence.</p>
+</section>
+<section id="license">
+  <p class="kicker">11 / Legal & reproducibility</p><h2>MIT, with one small obligation</h2>
+  <p>Upstream nanobench is licensed under the <strong>MIT License</strong>, copyright 2019–2023 Martin Leitner-Ankerl. Copying or redistributing the library requires retaining the copyright and license notice in copies or substantial portions. The MIT license permits commercial use and modification and includes a no-warranty disclaimer. <a href="#references">[7]</a></p>
+  <p>This article's new commentary, teaching simulation, and sample code are offered under MIT terms as an original instructional work; the nanobench library itself remains covered by its upstream license. The sample's CMake dependency is pinned to <code>b709728dba4df0356d467abfb0ba20781a8031c0</code>, the upstream <code>v4.6.0</code> commit, to keep the API and build recipe reviewable.</p>
+</section>
+<section id="references">
+  <p class="kicker">12 / Source ledger</p><h2>Primary documentation and code</h2>
+  <ol class="refs">
+  <li><a href="https://github.com/martinus/nanobench/releases/tag/v4.6.0">Official nanobench v4.6.0 release</a> — published August 14, 2026, and release identity.</li>
+  <li><a href="https://nanobench.ankerl.com/reference.html">Official nanobench API reference</a> — epoch settings, comparison API, columns and performance counters.</li>
+  <li><a href="https://nanobench.ankerl.com/tutorial.html">Official tutorial</a> — implementation translation unit, CMake FetchContent, median and <code>err%</code> semantics.</li>
+  <li><a href="https://github.com/martinus/nanobench/blob/v4.6.0/src/test/tutorial_compare.cpp">Upstream <code>tutorial_compare.cpp</code></a> — working API calls for paired comparison, interval and verdict.</li>
+  <li><a href="https://github.com/martinus/nanobench/blob/v4.6.0/CMakeLists.txt">Upstream CMakeLists.txt</a> — <code>nanobench</code> static target and implementation compilation.</li>
+  <li><a href="https://github.com/martinus/unordered_dense/blob/main/test/bench/quick_overall_map.cpp">unordered_dense source benchmark</a> — verified real use of nanobench for C++ hash-map workloads.</li>
+  <li><a href="https://github.com/martinus/nanobench/blob/v4.6.0/LICENSE">Upstream MIT license</a> — obligations and disclaimer.</li>
+  <li><a href="https://en.cppreference.com/w/cpp/numeric/countr_zero.html">C++20 <code>std::countr_zero</code> reference</a> — zero-input behavior; normative standard library semantics, not library adoption evidence.</li>
+  </ol>
+  <p class="plain">Source access and release/tag inspected November 13, 2026. All sample benchmark results in the interactive lab are explicitly illustrative. The exact dependency-compiled benchmark and browser rendering were not part of this review.</p>
+</section>
+</article></div></main>
+<footer class="footer"><div class="wrapper"><p><strong>but-does-it-do-anything / DeepDives</strong> · Friday, November 13, 2026</p><p>A thoughtful benchmark measures a controlled question. A trustworthy system still needs a separately verified deadline.</p></div></footer>
+<script>
+(function () {
+  "use strict";
+  var $ = function(id) { return document.getElementById(id); };
+  var defaultValues = {speed:8, drift:15, jitter:2, seed:7};
+  function clamp(value, lo, hi, fallback) {
+    var n = Number(value);
+    return Number.isFinite(n) ? Math.max(lo, Math.min(hi, Math.trunc(n))) : fallback;
+  }
+  function median(values) {
+    if (!values.length) return NaN;
+    var sorted = values.slice().sort(function(a,b){return a-b;});
+    var middle = Math.floor(sorted.length/2);
+    return sorted.length % 2 ? sorted[middle] : (sorted[middle-1]+sorted[middle])/2;
+  }
+  function rngFor(seed) {
+    var x = (seed >>> 0) || 1;
+    return function () {
+      x ^= x << 13; x ^= x >>> 17; x ^= x << 5;
+      return (x >>> 0) / 4294967296;
+    };
+  }
+  function getValues() {
+    return {
+      speed:clamp($("speed").value,0,25,8),
+      drift:clamp($("drift").value,0,35,15),
+      jitter:clamp($("jitter").value,0,20,2),
+      seed:clamp($("seed").value,1,99999,7)
+    };
+  }
+  function series(order, values, seedOffset) {
+    var rng=rngFor((values.seed+seedOffset)>>>0);
+    var total=order.length, a=[], b=[], samples=[];
+    for(var i=0;i<total;i++) {
+      var kind=order[i];
+      var base=kind==="A" ? 100 : 100/(1+values.speed/100);
+      var drift=1+(values.drift/100)*(i/(total-1));
+      var noise=1+(values.jitter/100)*(2*rng()-1);
+      var observed=base*drift*noise;
+      samples.push({kind:kind,value:observed});
+      if(kind==="A") a.push(observed); else b.push(observed);
+    }
+    return {samples:samples,medianA:median(a),medianB:median(b)};
+  }
+  function fmt(x){return x.toFixed(3)+"×";}
+  function renderChart(id, samples) {
+    var host=$(id);
+    while(host.firstChild) host.removeChild(host.firstChild);
+    var max=Math.max.apply(null,samples.map(function(s){return s.value;}));
+    samples.forEach(function(s) {
+      var bar=document.createElement("i");
+      if(s.kind==="B") bar.className="b";
+      bar.style.height=(15+80*s.value/max)+"%";
+      bar.setAttribute("aria-hidden","true");
+      host.appendChild(bar);
+    });
+  }
+  function simulate() {
+    var v=getValues();
+    ["speed","drift","jitter","seed"].forEach(function(k){$(k).value=v[k];});
+    $("speedValue").textContent=v.speed+"%";
+    $("driftValue").textContent=v.drift+"%";
+    $("jitterValue").textContent=v.jitter+"%";
+    var sequential=[], paired=[], ratios=[];
+    for(var i=0;i<24;i++) sequential.push("A");
+    for(var j=0;j<24;j++) sequential.push("B");
+    for(var block=0;block<12;block++) {
+      var seq=block%2===0 ? ["A","B","B","A"] : ["B","A","A","B"];
+      for(var k=0;k<4;k++) paired.push(seq[k]);
+    }
+    var s=series(sequential,v,11);
+    var p=series(paired,v,19);
+    for(var n=0;n<12;n++) {
+      var row=p.samples.slice(n*4,n*4+4);
+      var va=row.filter(function(x){return x.kind==="A";}).map(function(x){return x.value;});
+      var vb=row.filter(function(x){return x.kind==="B";}).map(function(x){return x.value;});
+      ratios.push(Math.sqrt(va[0]*va[1]/(vb[0]*vb[1])));
+    }
+    var seqRatio=s.medianA/s.medianB;
+    var pairRatio=median(ratios);
+    $("seqRatio").textContent=fmt(seqRatio);
+    $("pairRatio").textContent=fmt(pairRatio);
+    $("seqDetail").textContent="A median: "+s.medianA.toFixed(1)+" · B median: "+s.medianB.toFixed(1)+" fictional units";
+    $("pairDetail").textContent="Median of 12 within-block A/B ratios (geometric pairing)";
+    renderChart("seqTimeline",s.samples);
+    renderChart("pairTimeline",p.samples);
+    var truth=1+v.speed/100;
+    var seqBias=100*(seqRatio/truth-1);
+    var pairBias=100*(pairRatio/truth-1);
+    $("labSummary").textContent="True B speedup: "+fmt(truth)+". Sequential estimate: "+fmt(seqRatio)+" ("+seqBias.toFixed(1)+"% bias). Interleaved estimate: "+fmt(pairRatio)+" ("+pairBias.toFixed(1)+"% bias). Smaller absolute bias wins this synthetic run; noise can still reverse that outcome.";
+  }
+  $("simulate").addEventListener("click",simulate);
+  $("reset").addEventListener("click",function(){
+    Object.keys(defaultValues).forEach(function(k){$(k).value=defaultValues[k];});
+    simulate();
+  });
+  ["speed","drift","jitter"].forEach(function(k){
+    $(k).addEventListener("input",function(){$(k+"Value").textContent=$(k).value+"%";});
+    $(k).addEventListener("change",simulate);
+  });
+  $("seed").addEventListener("change",simulate);
+  simulate();
+})();
+</script>
+</body></html>
