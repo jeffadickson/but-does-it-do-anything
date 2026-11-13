@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="An interactive 9-year-old-friendly NASA-inspired experiment: discover how reaction wheels turn spacecraft, aim a telescope, and test the physics.">
+  <title>Spacecraft Spin Doctor! | DeepDivesKids · 13 November 2026</title>
+  <style>
+    :root { color-scheme:light; --ink:#172a43; --muted:#45576a; --blue:#153b70; --night:#101d37; --sky:#dff4fc; --lime:#d6f378; --coral:#ff9b82; --violet:#eee5ff; --cream:#fffcf2; --line:#becfd5; --paper:#fff; --focus:#ffb433; }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font:17px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--cream)}
+    :focus-visible{outline:4px solid var(--focus);outline-offset:3px}
+    a{color:#0756a0;text-underline-offset:.18em} a:hover{color:#003e7e}
+    .skip{position:absolute;left:12px;top:-100px;z-index:100;background:#fff;padding:12px 18px;border-radius:10px}.skip:focus{top:12px}
+    .wrap{width:min(1120px,calc(100% - 36px));margin:auto}
+    header.hero{background:radial-gradient(circle at 9% 15%,#426ca1 0 2px,transparent 3px),radial-gradient(circle at 91% 30%,#f2fbff 0 2px,transparent 3px),radial-gradient(circle at 77% 74%,#b7eafa 0 2px,transparent 3px),linear-gradient(130deg,#0c1832,#244b79 74%,#2b6b8c);color:#fff;overflow:hidden}
+    .hero-inner{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(270px,.7fr);align-items:center;gap:22px;padding:44px 0 55px}
+    .eyebrow{font-size:.83rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#c2f4fb}
+    h1{font-size:clamp(2.6rem,6vw,5.1rem);letter-spacing:-.055em;line-height:1.02;margin:16px 0 18px;max-width:800px}
+    h1 span{color:var(--lime)}
+    .hero p{font-size:1.12rem;max-width:620px;color:#f1f8ff}
+    .hero-badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+    .pill{display:inline-flex;padding:7px 12px;border-radius:999px;background:#ffffff24;border:1px solid #ffffff45;font-size:.86rem;font-weight:700}
+    .hero-art{position:relative;min-height:265px;display:grid;place-items:center}
+    .planet{border-radius:50%;width:238px;height:238px;background:radial-gradient(circle at 32% 25%,#9df4e7,#3c99c9 45%,#295080 72%,#182b53);box-shadow:0 0 0 17px #d0f3fb15,0 0 0 35px #c2f4fb10,0 12px 45px #0006}
+    .planet:after{content:"";display:block;width:140px;height:110px;background:#aaf3c096;border-radius:60% 30% 52% 48%;transform:translate(30px,70px) rotate(-18deg);filter:blur(3px)}
+    .hero-art .tiny-sat{position:absolute;top:24px;right:17px;font-size:4rem;filter:drop-shadow(0 6px 5px #0008);transform:rotate(-20deg)}
+    .hero-art .orbit{position:absolute;width:310px;height:210px;border:2px dashed #d9eff78a;border-radius:50%;transform:rotate(-30deg)}
+    main{padding:28px 0 70px}
+    h2{font-size:clamp(1.55rem,3.4vw,2.1rem);line-height:1.18;letter-spacing:-.03em;margin:0 0 12px}
+    h3{font-size:1.15rem;line-height:1.3;margin:0 0 8px}
+    p{margin:0 0 15px}
+    section{scroll-margin-top:22px}
+    .opening{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin:14px 0 28px}
+    .panel{padding:clamp(20px,3vw,30px);background:#fff;border:2px solid var(--line);border-radius:22px;box-shadow:0 6px 0 #183d5412}
+    .opening .intro{background:#e7f5ff;border-color:#a6d4eb}
+    .opening .toc{background:#f4eeff;border-color:#d4c4f6}
+    .toc ol{margin:8px 0 0;padding-left:24px}.toc li{margin:4px 0}
+    .section{margin-top:30px}.section .lede{max-width:780px;color:var(--muted)}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .mini{padding:21px;border-radius:20px;background:#fff;border:2px solid var(--line)}
+    .mini:nth-child(1){background:#fef2e9;border-color:#f4c9ad}.mini:nth-child(2){background:#edf7d8;border-color:#c7dc9b}.mini:nth-child(3){background:#eaeaff;border-color:#b9bfe7}
+    .num{display:inline-grid;place-items:center;width:38px;height:38px;background:var(--ink);border-radius:50%;color:white;font-weight:850;margin-bottom:10px}
+    .lab{background:#e6f6fd;border:2px solid #8dc6e3;border-radius:26px;padding:clamp(16px,3vw,29px)}
+    .lab-head{display:flex;gap:16px;justify-content:space-between;align-items:start;flex-wrap:wrap}
+    .tag{font-size:.78rem;font-weight:850;letter-spacing:.07em;text-transform:uppercase;color:#225779}
+    .lab-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(260px,1fr);gap:18px;margin-top:16px}
+    .simview{background:linear-gradient(170deg,#0d1831,#203b65);border-radius:20px;padding:12px;display:grid;place-items:center;min-width:0}
+    svg{max-width:100%;height:auto;display:block}
+    .controls{background:#fff;border:2px solid #a8cce1;border-radius:20px;padding:20px}
+    .readouts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0}
+    .readout{background:#ecf4fc;border-radius:13px;padding:10px}
+    .readout .k{display:block;font-size:.77rem;color:#36566d;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+    output{font-weight:900;font-size:1.35rem;font-variant-numeric:tabular-nums}
+    .controls .hint{font-size:.91rem;color:#44596c}
+    .buttons{display:flex;flex-wrap:wrap;gap:9px;margin:10px 0 16px}
+    button{font:inherit;line-height:1.25;border:2px solid #173c67;border-radius:12px;background:#fff;padding:11px 12px;color:#16385a;font-weight:800;cursor:pointer;min-height:46px;transition:transform .12s,background .12s}
+    button:hover{background:#e1f1fa;transform:translateY(-1px)}
+    button.primary{background:#d8f27a;color:#1e3d10;border-color:#456c22}
+    button.danger{background:#ffe4dc;border-color:#ba674d}
+    button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .status{padding:13px 15px;border-left:5px solid #2879a5;border-radius:10px;background:#eef7fc;min-height:68px;font-weight:650}
+    .mission{background:#fff9df;border:2px dashed #d4a950;border-radius:16px;padding:16px;margin-top:14px}
+    .lesson-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .truth{background:#e9f5e7;border-color:#a9cca5}.make-believe{background:#fff1ec;border-color:#e2baa9}
+    .experiment{background:#f3ecff;border-color:#c4b5f0}.yellow{background:#fff9d5;border-color:#e4cd72}
+    ul,ol{padding-left:1.35em}li{margin:7px 0}
+    code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+    code{background:#e8eef7;border-radius:5px;padding:1px 5px;font-size:.91em}
+    pre{overflow:auto;background:#172640;color:#f3f8ff;padding:20px;border-radius:14px;line-height:1.6;font-size:.89rem;white-space:pre}
+    pre code{background:transparent;padding:0;color:inherit}
+    .factline{font-size:.92rem;color:#4a5c67}
+    .quiz-choice{display:block;width:100%;text-align:left;margin:7px 0;background:#fff}
+    .quiz-result{margin-top:10px;font-weight:750;min-height:44px}
+    .refs{overflow-wrap:anywhere}
+    .refs li{margin-bottom:12px}
+    footer{background:#10243c;color:#e1eaf4;padding:30px 0;font-size:.93rem}
+    footer a{color:#b4eaff}
+    .note{border-left:5px solid #7894b6;padding:14px 17px;background:#f2f5f9;border-radius:10px}
+    @media(max-width:780px){.hero-inner,.opening,.lab-grid,.lesson-grid{grid-template-columns:1fr}.hero-art{min-height:180px}.planet{width:165px;height:165px}.hero-art .orbit{width:245px;height:160px}.hero-art .tiny-sat{right:14%;font-size:3rem}.cards{grid-template-columns:1fr}.lab-grid{gap:12px}}
+    @media(max-width:450px){.wrap{width:min(100% - 24px,1120px)}.readouts{grid-template-columns:1fr 1fr}.buttons button{flex:1 1 44%}.hero-inner{padding-top:30px}.planet{width:135px;height:135px}.hero-art{min-height:150px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button{transition:none}button:hover{transform:none}}
+    @media print{.hero{background:#fff!important;color:#172a43!important}.hero p,.eyebrow{color:#172a43!important}.lab,.panel,.mini{break-inside:avoid}.buttons{display:none}a{color:#16385a}}
+  </style>
+</head>
+<body>
+<a href="#main" class="skip">Skip to the lesson</a>
+<header class="hero">
+  <div class="wrap hero-inner">
+    <div>
+      <div class="eyebrow">DeepDivesKids · 13 November 2026 · Mission 21</div>
+      <h1>Spacecraft <span>Spin Doctor!</span></h1>
+      <p>How can a giant space telescope turn to look at a new star <strong>without firing a rocket?</strong> The secret is a spinning wheel hidden inside.</p>
+      <div class="hero-badges"><span class="pill">🚀 Space + physics</span><span class="pill">🎮 Interactive mission</span><span class="pill">🕒 20–30 minutes</span><span class="pill">👩‍🚀 Ages 9+</span></div>
+    </div>
+    <div class="hero-art" aria-hidden="true"><div class="orbit"></div><div class="planet"></div><div class="tiny-sat">🛰️</div></div>
+  </div>
+</header>
+<main id="main" class="wrap">
+  <div class="opening">
+    <section class="panel intro" aria-labelledby="hook-title">
+      <h2 id="hook-title">A telescope with a secret trick</h2>
+      <p>Imagine you are in mission control. A spectacular new star appears to the left. Your telescope is pointing straight ahead. There is almost no air in space to push against, and you want to save fuel.</p>
+      <p><strong>Challenge:</strong> Can you turn the whole telescope just by spinning something <em>inside</em> it? NASA engineers can—and you can try a simplified version below!</p>
+      <p>Today's superpower is called <strong>conservation of angular momentum</strong>. That's a long name for a wonderfully simple idea: spinning motion has to balance.</p>
+    </section>
+    <nav class="panel toc" aria-label="Table of contents">
+      <h2>Choose your mission</h2>
+      <ol>
+        <li><a href="#how">The secret wheel</a></li>
+        <li><a href="#lab">Try the spin lab</a></li>
+        <li><a href="#real">Real NASA spacecraft</a></li>
+        <li><a href="#experiment">Try it without a screen</a></li>
+        <li><a href="#code">Peek inside the code</a></li>
+        <li><a href="#limits">Where this trick gets tricky</a></li>
+        <li><a href="#quiz">Mission-control quiz</a></li>
+        <li><a href="#sources">Check the evidence</a></li>
+      </ol>
+    </nav>
+  </div>
+  <section id="how" class="section">
+    <h2>1. The secret wheel 🔄</h2>
+    <p class="lede">A <strong>reaction wheel</strong> is a heavy wheel inside a spacecraft. A motor changes the wheel's spin. The spacecraft reacts by turning in the opposite direction. No air to push against. No rocket exhaust needed for that turn.</p>
+    <div class="cards">
+      <article class="mini"><span class="num">1</span><h3>Wheel spins clockwise ↻</h3><p>If the spacecraft starts with no spin and the motor spins the wheel clockwise, the spacecraft starts turning counterclockwise to balance it.</p></article>
+      <article class="mini"><span class="num">2</span><h3>Keep it spinning</h3><p>In our idealized mission, the wheel and spacecraft keep spinning in opposite directions. A steady wheel speed produces <em>no new torque</em>.</p></article>
+      <article class="mini"><span class="num">3</span><h3>Slow the wheel</h3><p>Bring the wheel back to rest, and our spacecraft also stops turning—now aimed somewhere new. Real spacecraft use feedback from sensors to get this just right.</p></article>
+    </div>
+    <p class="note" style="margin-top:17px"><strong>One important difference:</strong> an actual telescope may already have spinning wheels or outside disturbances. The exact motion depends on mass, wheel design, and other forces. Our classroom model starts perfectly still and follows just one turning axis.</p>
+  </section>
+  <section id="lab" class="section lab" aria-labelledby="lab-title">
+    <div class="lab-head"><div><div class="tag">Interactive engineering laboratory</div><h2 id="lab-title">2. Turn a spacecraft without fuel</h2><p>Speed up the inner wheel, advance time, then brake. Can you aim at the yellow dotted target?</p></div><span class="pill" style="background:#133f6a;color:#fff">One axis · ideal model</span></div>
+    <div class="lab-grid">
+      <div class="simview">
+        <svg id="scene" viewBox="0 0 480 380" role="img" aria-labelledby="shipTitle shipDesc">
+          <title id="shipTitle">Reaction wheel spacecraft simulation</title>
+          <desc id="shipDesc">The spacecraft begins pointing up. The dotted yellow line marks a target 30 degrees counterclockwise from up.</desc>
+          <defs>
+            <pattern id="stars" width="68" height="79" patternUnits="userSpaceOnUse"><circle cx="12" cy="15" r="1.4" fill="#d1f6ff" opacity=".8"/><circle cx="50" cy="51" r="1.1" fill="#fff" opacity=".5"/></pattern>
+          </defs>
+          <rect x="0" y="0" width="480" height="380" rx="16" fill="url(#stars)"/>
+          <circle cx="240" cy="190" r="139" fill="none" stroke="#95c9e1" opacity=".24" stroke-width="2" stroke-dasharray="6 9"/>
+          <line x1="240" y1="190" x2="240" y2="37" stroke="#e6f7ff" stroke-width="2" stroke-dasharray="3 8" opacity=".5"/>
+          <g transform="rotate(-30 240 190)" aria-hidden="true"><path d="M240 194 V47" stroke="#ffdd72" stroke-width="5" stroke-linecap="round" stroke-dasharray="7 8"/><path d="M228 60 L240 40 L252 60" stroke="#ffdd72" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+          <text x="14" y="25" fill="#c7e7f8" font-size="14" font-weight="700">YELLOW = TARGET −30°</text>
+          <g id="ship" transform="rotate(0 240 190)">
+            <rect x="80" y="153" width="104" height="75" rx="6" fill="#338bc4" stroke="#9be5ff" stroke-width="4"/>
+            <path d="M106 158V222M130 158V222M154 158V222M84 178H180M84 203H180" stroke="#c3effb" stroke-width="2" opacity=".8"/>
+            <rect x="297" y="153" width="104" height="75" rx="6" fill="#338bc4" stroke="#9be5ff" stroke-width="4"/>
+            <path d="M323 158V222M347 158V222M371 158V222M301 178H397M301 203H397" stroke="#c3effb" stroke-width="2" opacity=".8"/>
+            <path d="M184 190H298" stroke="#ced6e7" stroke-width="11" stroke-linecap="round"/>
+            <rect x="186" y="130" width="108" height="120" rx="17" fill="#eaf3fb" stroke="#9fbad3" stroke-width="5"/>
+            <path d="M213 131L240 86L267 131Z" fill="#ff9c83" stroke="#f7d2b7" stroke-width="3"/>
+            <path d="M240 86V62" stroke="#ffd16d" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="240" cy="190" r="36" fill="#23496c" stroke="#7ab5d8" stroke-width="4"/>
+            <g id="wheelSpokes" transform="rotate(0 240 190)" stroke="#d8f879" stroke-width="7" stroke-linecap="round">
+              <path d="M240 162V218M212 190H268M220 170L260 210M260 170L220 210"/>
+            </g>
+            <circle cx="240" cy="190" r="9" fill="#ffdb72" stroke="#fff" stroke-width="2"/>
+            <text x="240" y="270" font-size="15" font-weight="750" text-anchor="middle" fill="#e9f5ff">SPACECRAFT</text>
+          </g>
+          <text x="18" y="360" fill="#dbeaff" font-size="13">Drawing is not to scale · simplified physics</text>
+        </svg>
+      </div>
+      <div class="controls">
+        <h3>Mission controls</h3>
+        <p class="hint">Each click changes wheel speed by one pretend speed unit. The computer then predicts how fast the spacecraft rotates in the <em>opposite</em> direction.</p>
+        <div class="readouts" aria-label="Simulation measurements">
+          <div class="readout"><span class="k">Wheel speed</span><output id="speedOut">0 units</output></div>
+          <div class="readout"><span class="k">Pointing angle</span><output id="angleOut">0°</output></div>
+          <div class="readout"><span class="k">Body turn rate</span><output id="rateOut">0°/s</output></div>
+          <div class="readout"><span class="k">Mission time</span><output id="timeOut">0 s</output></div>
+        </div>
+        <div class="buttons" role="group" aria-label="Change wheel speed">
+          <button id="cw" type="button">↻ Spin wheel +1</button>
+          <button id="ccw" type="button">↺ Spin wheel −1</button>
+          <button id="brake" class="danger" type="button">■ Brake wheel</button>
+        </div>
+        <div class="buttons" role="group" aria-label="Advance simulated time">
+          <button id="one" class="primary" type="button">▶ Advance 1 s</button>
+          <button id="five" class="primary" type="button">▶ Advance 5 s</button>
+        </div>
+        <div class="buttons" role="group" aria-label="Mission actions">
+          <button id="check" type="button">🎯 Check aim</button>
+          <button id="reset" type="button">↺ Reset mission</button>
+        </div>
+        <p id="status" class="status" role="status" aria-live="polite">Ready! Try ↻ Spin wheel +1, then advance one second. Watch the spacecraft turn the other way.</p>
+        <div class="mission"><strong>🌟 Mission challenge:</strong> Point the orange nose along the yellow line at <strong>−30°</strong>, and bring the wheel to rest. <strong>Hint:</strong> Wheel speed +3 for 5 seconds turns −30° in this toy model.</div>
+      </div>
+    </div>
+    <p class="factline" style="margin-top:14px"><strong>Model rules:</strong> Body rate = −2 × wheel speed, with invented units; angle changes by body rate × elapsed seconds. Wheel speed is limited to −4 through +4. These are teaching choices, <strong>not actual NASA hardware measurements</strong>. The model ignores drag, changing inertia, wheel vibration, and 3D pointing.</p>
+  </section>
+  <section id="real" class="section">
+    <h2>3. Who uses this for real? 🔭</h2>
+    <div class="lesson-grid">
+      <article class="panel truth"><h3>✅ Documented NASA hardware</h3><p><strong>Hubble Space Telescope:</strong> NASA says Hubble has four large reaction wheels plus magnetic torquers. Its pointing system uses the wheels to turn the telescope and the torquers to help manage wheel speed. <a href="https://science.nasa.gov/mission/hubble/observatory/design/pointing-control/">NASA: Hubble pointing control</a>.</p><p><strong>James Webb Space Telescope:</strong> NASA documents <strong>six reaction wheels</strong>, along with star trackers and gyroscopes, to turn and point its observatory. <a href="https://science.nasa.gov/mission/webb/faqs-full/">NASA: Webb FAQs</a>.</p><p><strong>Small spacecraft:</strong> NASA's May 7, 2026 technology survey explains how reaction wheels provide precision pointing and why they sometimes need to unload their stored momentum. <a href="https://www.nasa.gov/smallsat-institute/sst-soa/guidance-navigation-and-control/">NASA: Small Spacecraft Technology</a>.</p></article>
+      <article class="panel make-believe"><h3>🎨 Our make-believe mission</h3><p>The square spacecraft, the orange pointing nose, the yellow target, and the +3 for 5 seconds challenge are <strong>invented</strong>. No real spacecraft obeys our made-up “2 degrees per second per speed unit” rule.</p><p>Real missions use <strong>multiple wheels and sensors</strong>. Engineers calculate torques, check limits, and control movement in three dimensions.</p><p>Dad's <strong>GRACE-C</strong> project is another spacecraft-engineering connection: NASA says its two satellites will track how Earth's water and ice change by measuring tiny changes in gravity. That is a <em>different mission</em>; we are <strong>not claiming</strong> GRACE-C uses the wheel arrangement in this toy. <a href="https://science.nasa.gov/mission/grace-c/">NASA: GRACE-C mission</a>.</p></article>
+    </div>
+  </section>
+  <section id="experiment" class="section">
+    <h2>4. Do the opposite-motion challenge 🧪</h2>
+    <div class="panel experiment">
+      <h3>Paper mission control (10 minutes)</h3>
+      <p>Gather paper, two pencils, a round paper plate (or a large drawn circle), and colored markers. No batteries, spinning chairs, or tools needed.</p>
+      <ol>
+        <li>Draw a spacecraft on a sheet of paper, with an arrow pointing “forward.” Draw a separate wheel on the paper plate, with an arrow on its edge.</li>
+        <li>Hold the wheel above the drawn spacecraft. Tell your partner: “Pretend the wheel starts speeding up clockwise.”</li>
+        <li>Predict which way the spacecraft would start to rotate. Now <strong>turn your spacecraft drawing by hand</strong> in the opposite direction to represent the effect.</li>
+        <li>Swap jobs: one person gives wheel commands; the other predicts and draws the new spacecraft direction. Try clockwise, counterclockwise, and brake.</li>
+      </ol>
+      <p><strong>What did you test?</strong> Your ability to predict <em>directions</em>. This paper activity is an analogy, not a physical experiment that measures angular momentum—your hands did the turning. For the real force and motion, read NASA's Hubble explanation and see the reaction wheel illustrations.</p>
+    </div>
+  </section>
+  <section id="code" class="section">
+    <h2>5. Make the computer predict a turn 💻</h2>
+    <p>This lesson's little simulator is built with plain <strong>JavaScript, HTML, CSS, and SVG</strong>—no downloads, accounts, or extra libraries. JavaScript does arithmetic; SVG draws the picture.</p>
+    <pre tabindex="0" aria-label="Small JavaScript angle calculation"><code>// A deliberately simplified 1-axis classroom model
+function newAngle(oldAngle, wheelSpeed, seconds) {
+  const bodyRate = -2 * wheelSpeed; // invented degrees/second
+  return oldAngle + bodyRate * seconds;
+}
+console.log(newAngle(0, 3, 5)); // -30 degrees</code></pre>
+    <p><strong>Try modifying the rule in your imagination:</strong> What if the spacecraft were twice as hard to turn? You could change the number 2 to 1, but you would have to recalibrate your mission target. That's what engineers do with more realistic physics models, tests, and measurements.</p>
+    <p><strong>A connection to Dad's engineering tools:</strong> RISCue, VeloSim, and SharpHDL involve telling a computer exactly what should happen, then checking whether the simulation or hardware follows the rules. Here, each button is a command and each “advance” runs a repeatable little simulation. Try the same commands after Reset: the result should match.</p>
+  </section>
+  <section id="limits" class="section">
+    <h2>6. What could go wrong? ⚠️</h2>
+    <div class="cards">
+      <article class="mini"><span class="num">!</span><h3>Wheels have speed limits</h3><p>When a real reaction wheel reaches its speed limit, it cannot keep storing more momentum in that direction. NASA calls this <strong>saturation</strong>. Real spacecraft may use magnetic torquers or thrusters to unload momentum.</p></article>
+      <article class="mini"><span class="num">!</span><h3>Space is not perfectly peaceful</h3><p>Tiny pushes from sunlight, weak atmosphere, and other disturbances can change a spacecraft's motion. Our picture leaves these effects out.</p></article>
+      <article class="mini"><span class="num">!</span><h3>Wheels aren't eyes</h3><p>Turning is only half the job. Star trackers, gyroscopes, and other sensors tell the computer where the spacecraft is aiming. Wheel motors can also use power, vibrate, or wear out.</p></article>
+    </div>
+  </section>
+  <section id="quiz" class="section">
+    <h2>7. Mission-control quiz 🏅</h2>
+    <div class="panel yellow">
+      <h3>What happens when a reaction wheel cannot speed up any more in the needed direction?</h3>
+      <div role="group" aria-label="Quiz answers">
+        <button class="quiz-choice" type="button" data-answer="no">A. The spacecraft instantly flies backward.</button>
+        <button class="quiz-choice" type="button" data-answer="yes">B. It may need to unload momentum using another actuator.</button>
+        <button class="quiz-choice" type="button" data-answer="no">C. It starts making air for its propeller.</button>
+      </div>
+      <p id="quizResult" class="quiz-result" role="status" aria-live="polite">Choose an answer to check your understanding.</p>
+    </div>
+  </section>
+  <section id="sources" class="section">
+    <h2>8. The evidence shelf 📚</h2>
+    <p>These links go to the organizations that design or operate the real missions. Our picture and code are original teaching material, not NASA flight software.</p>
+    <div class="panel refs">
+      <ol>
+        <li><a href="https://science.nasa.gov/mission/hubble/observatory/design/pointing-control/">NASA Science — Hubble Pointing Control</a>. Describes four reaction wheels, magnetic torquers, attitude sensors, and Newton's third law.</li>
+        <li><a href="https://science.nasa.gov/mission/webb/faqs-full/">NASA Science — Webb Frequently Asked Questions</a>. Documents Webb's six reaction wheels and sensor feedback for pointing.</li>
+        <li><a href="https://www.nasa.gov/smallsat-institute/sst-soa/guidance-navigation-and-control/">NASA — State of the Art of Small Spacecraft: Guidance, Navigation &amp; Control</a>, dated May 7, 2026. Explains wheel saturation, limitations, and momentum unloading.</li>
+        <li><a href="https://imagine.gsfc.nasa.gov/educators/programs/swift/classroom/law3_guide.html">NASA Goddard — Swift Classroom Guide to Newton's Third Law</a>. Uses spacecraft reaction wheels as an action/reaction lesson.</li>
+        <li><a href="https://science.nasa.gov/mission/grace-c/">NASA Science — GRACE-C Mission</a>. Documents the mission's goal to track changes in Earth's water and ice by measuring gravity.</li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">MDN Web Docs — JavaScript</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/SVG">SVG</a>. Background on the standard browser technologies used to build this interactive lesson.</li>
+      </ol>
+    </div>
+  </section>
+  <section class="section">
+    <div class="panel" style="background:#e8f9ed;border-color:#a9d6b7">
+      <h2>Mission complete! 🧑‍🚀</h2>
+      <p><strong>Tell someone at dinner:</strong> “A spacecraft can turn without rocket fuel by changing how fast its inside wheels spin. The rest of the spacecraft turns the other way!”</p>
+      <p><strong>Bonus question:</strong> If your telescope must turn in <em>two</em> directions, could a single wheel be enough? Think about how many axes a real spacecraft needs to control.</p>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap"><p><strong>DeepDivesKids · November 13, 2026</strong> · An original interactive learning page. Educational simulation, not flight software.</p><p><strong>Copyright &amp; license:</strong> Original HTML, CSS, SVG, and JavaScript on this page may be reused under the <a href="https://opensource.org/license/mit">MIT License</a> with attribution and the license notice. Linked NASA and MDN resources retain their own terms; NASA names and logos are not licensed by this page. There are no external code dependencies; save this HTML file to run the lab offline.</p></div></footer>
+<script>
+"use strict";
+(function () {
+  const MAX = 4;
+  const TARGET = -30;
+  const state = {speed:0, angle:0, seconds:0, wheelPhase:0};
+  const el = function(id){ return document.getElementById(id); };
+  const show = function(id,value){ el(id).textContent = value; };
+  const normalize = function(deg){ return ((deg + 180) % 360 + 360) % 360 - 180; };
+  // Idealized 1-axis, zero-initial-momentum model; 2 is an invented scale factor.
+  const bodyRate = function(speed){ return -2 * speed; };
+  const nextAngle = function(angle,speed,seconds){ return angle + bodyRate(speed) * seconds; };
+  function render(){
+    show("speedOut",(state.speed > 0 ? "+" : "") + state.speed + " units");
+    show("angleOut",normalize(state.angle) + "°");
+    show("rateOut",bodyRate(state.speed) + "°/s");
+    show("timeOut",state.seconds + " s");
+    el("ship").setAttribute("transform","rotate(" + state.angle + " 240 190)");
+    el("wheelSpokes").setAttribute("transform","rotate(" + state.wheelPhase + " 240 190)");
+    el("shipDesc").textContent = "Spacecraft pointing angle " + normalize(state.angle) + " degrees. Wheel speed " + state.speed + ". Yellow target is minus 30 degrees. The drawn spacecraft turns opposite the wheel.";
+    el("cw").disabled = state.speed >= MAX;
+    el("ccw").disabled = state.speed <= -MAX;
+    el("brake").disabled = state.speed === 0;
+  }
+  function announce(message){ show("status",message); }
+  function adjust(delta){
+    const old = state.speed;
+    state.speed = Math.max(-MAX,Math.min(MAX,state.speed + delta));
+    render();
+    if(state.speed === old){announce("Wheel speed limit reached. Try braking or spinning the other direction.");}
+    else{announce("Wheel now " + state.speed + ". When time advances, the spacecraft will turn at " + bodyRate(state.speed) + " degrees per second. Opposite directions!");}
+  }
+  function advance(seconds){
+    state.angle = nextAngle(state.angle,state.speed,seconds);
+    state.wheelPhase += state.speed * 45 * seconds;
+    state.seconds += seconds;
+    render();
+    announce("Advanced " + seconds + " second" + (seconds === 1 ? "" : "s") + ". Spacecraft at " + normalize(state.angle) + " degrees. " + (state.speed === 0 ? "The spacecraft is holding still." : "Now brake before checking the aim!"));
+  }
+  el("cw").addEventListener("click",function(){adjust(1);});
+  el("ccw").addEventListener("click",function(){adjust(-1);});
+  el("brake").addEventListener("click",function(){
+    state.speed = 0; render(); announce("Wheel braked to zero. In our idealized zero-momentum mission, the spacecraft now stops turning and keeps its new direction.");
+  });
+  el("one").addEventListener("click",function(){advance(1);});
+  el("five").addEventListener("click",function(){advance(5);});
+  el("check").addEventListener("click",function(){
+    const error = Math.abs(normalize(state.angle - TARGET));
+    if(error <= 4 && state.speed === 0){ announce("Mission success! Telescope aimed at " + normalize(state.angle) + " degrees, just " + error + " degrees from the target, and the wheel is stopped. Amazing engineering!");}
+    else if(error <= 4){ announce("Almost! Your nose points at the target, but the spacecraft is still turning. Brake the wheel and try again.");}
+    else{ announce("Not quite: you are " + error + " degrees from the target. Try a wheel speed of +3 for 5 seconds, then brake.");}
+  });
+  el("reset").addEventListener("click",function(){
+    state.speed=0;state.angle=0;state.seconds=0;state.wheelPhase=0;render();
+    announce("New mission! Start from zero. The yellow line is 30 degrees counterclockwise from straight up.");
+  });
+  document.querySelectorAll("[data-answer]").forEach(function(button){
+    button.addEventListener("click",function(){
+      show("quizResult",button.getAttribute("data-answer") === "yes"
+        ? "Correct! Engineers call this wheel saturation. Magnetic torquers or thrusters can supply an outside turning force to manage momentum."
+        : "Try again. A reaction wheel has a speed limit. How can a spacecraft manage the stored spin?");
+    });
+  });
+  render();
+})();
+</script>
+</body>
+</html>
