@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#123b69">
+<meta name="description" content="A hands-on science adventure about floating boats, buoyancy, density, and ocean robots, with a working interactive cargo-boat lab for curious nine-year-olds.">
+<title>FLOAT FORCE! The Cargo Boat Challenge | DeepDivesKids · 14 Nov 2026</title>
+<style>
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#153150;background:#f3f9ff;--navy:#123b69;--ink:#153150;--teal:#087e86;--yellow:#f9bb48;--orange:#ef7437;--light:#e9f9fc;--purple:#7554b6;--border:#ccdeea}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;line-height:1.65}a{color:#075f82;text-underline-offset:3px}a:hover{text-decoration-thickness:3px}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #fa8d3e;outline-offset:3px}
+.skip{position:absolute;left:-100vw;top:1rem;background:white;padding:.6rem 1rem;z-index:30}.skip:focus{left:1rem}
+header.hero{background:radial-gradient(circle at 85% 15%,#26aabe 0,#12618b 35%,#123b69 76%);color:white;overflow:hidden}.wrap{width:min(1110px,calc(100% - 2rem));margin:0 auto}.hero-inner{display:grid;grid-template-columns:1.2fr .8fr;gap:1.5rem;align-items:center;min-height:430px;padding:3.5rem 0}.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:.78rem;font-weight:850}.hero h1{font-weight:900;font-size:clamp(2.8rem,6vw,5.4rem);line-height:1.05;letter-spacing:-.045em;margin:.45rem 0 1rem}.hero h1 span{color:#ffe09c}.lede{font-size:clamp(1.05rem,1.5vw,1.25rem);max-width:53ch}.tagline{display:flex;gap:.55rem;flex-wrap:wrap;margin-top:1.6rem}.tagline span{background:#ffffff1f;border:1px solid #ffffff57;border-radius:20rem;padding:.25rem .75rem;font-size:.87rem;font-weight:750}.hero svg{width:100%;height:auto;filter:drop-shadow(0 15px 24px #08274665)}
+main{padding:1.5rem 0 5rem}nav.toc{background:white;border:1px solid var(--border);border-radius:1.2rem;padding:1rem 1.3rem;margin-bottom:1.8rem;box-shadow:0 4px 14px #1642630c}nav.toc strong{display:block;margin-bottom:.4rem}nav.toc ul{display:flex;gap:.45rem 1.4rem;flex-wrap:wrap;list-style:none;padding:0;margin:0}section{scroll-margin-top:1.5rem;margin:2.5rem 0}h2{font-size:clamp(1.55rem,3vw,2.3rem);letter-spacing:-.025em;line-height:1.22;margin:.2rem 0 .7rem}h3{line-height:1.3;margin:0 0 .6rem;font-size:1.15rem}p{margin:.7rem 0 1.1rem}.small{font-size:.88rem}.muted{color:#3e6074}.intro{font-size:1.1rem;max-width:80ch}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.1rem}.panel{background:white;border:1px solid var(--border);border-radius:1.15rem;padding:1.35rem;box-shadow:0 4px 18px #183e6010}.panel p:last-child{margin-bottom:0}.panel h3 .num{display:inline-grid;place-items:center;width:2.1rem;height:2.1rem;background:var(--light);color:var(--navy);border-radius:50%;margin-right:.25rem}.highlight{border-left:6px solid var(--yellow);background:#fff9e9;padding:1rem 1.3rem;border-radius:0 .8rem .8rem 0}.fact{border-left:5px solid var(--teal);background:#e9fbf9;padding:.9rem 1.2rem;border-radius:0 .8rem .8rem 0}
+.lab-shell{border:2px solid #83c9d7;background:#f5fcff;border-radius:1.4rem;padding:clamp(1rem,2.5vw,1.7rem);box-shadow:0 11px 35px #17436318}.lab-top{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap}.lab-top p{max-width:67ch}.mission-pills{display:flex;gap:.65rem;flex-wrap:wrap;margin:.8rem 0 1.1rem}.mission-pills button{border:2px solid #b6cddc;color:var(--navy);background:white;border-radius:2rem;padding:.55rem .95rem;font-weight:800}.mission-pills button[aria-pressed="true"]{border-color:#12618b;background:#d8f7fa}.lab-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(270px,.85fr);gap:1.1rem}.controls{display:grid;gap:.82rem}.control{display:grid;gap:.25rem}.control label{font-weight:750;display:flex;justify-content:space-between;gap:1rem}.control output{font-weight:900;color:#006d75}.control input[type=range]{width:100%;accent-color:#087e86;min-height:1.4rem}.buttons{display:flex;gap:.55rem;flex-wrap:wrap}.btn{border:0;background:var(--navy);color:#fff;border-radius:.8rem;padding:.64rem 1rem;font-weight:850;box-shadow:0 2px 0 #051d35}.btn:disabled{opacity:.43;cursor:not-allowed}.btn.secondary{background:#e6f1fb;color:var(--navy);border:1px solid #b4cde0;box-shadow:none}.btn.alt{background:#047e82}.stage{background:linear-gradient(#dff4fd,#effaff);border:1px solid #b1d7e6;border-radius:1rem;overflow:hidden}.stage svg{width:100%;height:auto;display:block}.stage figcaption{padding:.5rem .9rem;font-size:.8rem;color:#36556b}.stage figure{margin:0}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem;margin-top:.75rem}.stat{background:#fff;border:1px solid #cadfe8;padding:.73rem;border-radius:.65rem}.stat dt{font-size:.77rem;color:#486678;font-weight:700}.stat dd{font-weight:900;font-size:1.24rem;margin:0;font-variant-numeric:tabular-nums}.result{padding:.85rem 1.1rem;border-radius:.8rem;background:#d7f6ec;border:1px solid #9ac9b8;margin-top:1rem;font-weight:760}.result.warn{background:#fff1d5;border-color:#efc36e}.result.danger{background:#ffe3e2;border-color:#d88d90}.result p{margin:.35rem 0 0;font-weight:500}.experiment ol{padding-left:1.4rem}.experiment li{padding-left:.3rem;margin:.55rem 0}.source-list{display:grid;gap:.7rem;padding-left:1.35rem}.source-list li{padding-left:.2rem}.source-list small{display:block;color:#496879}.label{display:inline-block;text-transform:uppercase;font-size:.7rem;letter-spacing:.08em;font-weight:850;border-radius:30px;padding:.15rem .55rem;background:#d7f3ed;color:#125744;margin-bottom:.6rem}.label.make-believe{background:#f2e9ff;color:#5d388f}.question{background:#fff;border-radius:1rem;padding:1rem 1.3rem;border:1px solid var(--border)}.question fieldset{border:0;padding:0;margin:0}.question legend{font-size:1.06rem;font-weight:800;margin-bottom:.65rem}.choices{display:grid;gap:.35rem}.choices label{display:block;padding:.45rem .6rem;border:1px solid #d9e7ee;border-radius:.5rem}.choices label:has(input:checked){background:#ebf9fb;border-color:#6cb8c5}.choices input{margin-right:.5rem;accent-color:#087e86}.quiz-msg{min-height:1.5rem;font-weight:780}.codebox{background:#0f2441;color:#e5f7ff;border-radius:1rem;padding:1rem;overflow:auto;font-size:.91rem;line-height:1.6}.codebox code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre}.divider{border:0;border-top:1px solid #c4d9e6;margin:1.3rem 0}.foot{background:#102f52;color:#e1f1ff;padding:2rem 0}.foot a{color:#b8efff}.footer-inner{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}.notice{font-size:.89rem;color:#365c71}details{background:white;padding:1rem;border-radius:.75rem;border:1px solid var(--border)}summary{font-weight:800;cursor:pointer}table{border-collapse:collapse;width:100%;margin:.8rem 0}th,td{text-align:left;border-bottom:1px solid #d8e7ef;padding:.55rem;vertical-align:top}th{background:#edf8fc}svg text{font-family:inherit}
+@media(max-width:830px){.hero-inner{grid-template-columns:1fr;padding:2.5rem 0 1rem}.hero svg{max-width:520px;margin:auto}.grid3{grid-template-columns:1fr}.lab-grid{grid-template-columns:1fr}}@media(max-width:600px){.grid2{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.hero h1{font-size:3.1rem}.lab-shell{padding:.8rem}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}@media print{.hero{background:#fff!important;color:#102a42!important}.hero h1 span{color:#102a42!important}.buttons,.mission-pills,.skip{display:none!important}.panel,.lab-shell{box-shadow:none}body{background:white}section{break-inside:avoid}a{color:#153150}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the adventure</a>
+<header class="hero">
+<div class="wrap hero-inner">
+<div>
+<div class="eyebrow">DeepDivesKids · Saturday, November 14, 2026 · Physics + engineering</div>
+<h1>FLOAT <span>FORCE!</span><br>The Cargo Boat Challenge</h1>
+<p class="lede">Can you build a little boat that carries a mountain of cargo without taking a swim? Become a lake engineer, then uncover the clever trick behind gigantic ships and diving ocean robots.</p>
+<div class="tagline"><span>🌊 Interactive water lab</span><span>⛵ 20–35 minute adventure</span><span>🧪 Real-life experiment</span><span>📴 Works offline</span></div>
+</div>
+<svg viewBox="0 0 520 390" role="img" aria-labelledby="hero-title hero-desc">
+<title id="hero-title">A cheerful cargo boat carrying orange crates on a blue lake</title><desc id="hero-desc">A cartoon-style boat carries stacked cargo across rolling waves under a sunny sky.</desc>
+<circle cx="415" cy="74" r="48" fill="#ffdb70"/><g fill="#fff" opacity=".85"><ellipse cx="116" cy="75" rx="76" ry="20"/><ellipse cx="153" cy="57" rx="42" ry="25"/><ellipse cx="338" cy="139" rx="43" ry="12"/></g>
+<path d="M0 252 Q65 221 130 252 T260 252 T390 252 T520 252 L520 390 L0 390 Z" fill="#4cd0da"/><path d="M0 294 Q65 265 130 294 T260 294 T390 294 T520 294 L520 390 L0 390 Z" fill="#1497b9" opacity=".85"/>
+<g stroke="#163c66" stroke-width="6" stroke-linejoin="round"><path d="M100 192 L423 192 L389 274 L148 274 Z" fill="#ffd98c"/><path d="M167 175 H365 V192 H167 Z" fill="#fff2d1"/><path d="M206 119 h62 v56 h-62z" fill="#fd9753"/><path d="M272 119 h62 v56 h-62z" fill="#eac452"/><path d="M240 61 h62 v57 h-62z" fill="#ffbd63"/></g>
+<g fill="#163c66"><circle cx="197" cy="232" r="10"/><circle cx="273" cy="232" r="10"/><circle cx="349" cy="232" r="10"/></g><g fill="#ecfbff"><circle cx="197" cy="232" r="4"/><circle cx="273" cy="232" r="4"/><circle cx="349" cy="232" r="4"/></g>
+<path d="M30 327 Q61 309 92 327 M386 329 Q421 310 456 329" stroke="#b8f9f3" stroke-width="7" fill="none" stroke-linecap="round"/>
+</svg>
+</div>
+</header>
+<main id="main" class="wrap">
+<nav class="toc" aria-label="On this page"><strong>🧭 Choose your adventure</strong><ul><li><a href="#mystery">The mystery</a></li><li><a href="#science">How floating works</a></li><li><a href="#evidence">Real engineering</a></li><li><a href="#lab">Boat simulator</a></li><li><a href="#experiment">Try it for real</a></li><li><a href="#code">Under the hood</a></li><li><a href="#quiz">Captain's quiz</a></li><li><a href="#sources">Sources &amp; license</a></li></ul></nav>
+<section id="mystery">
+<div class="eyebrow" style="color:#087e86">01 / The mystery</div>
+<h2>How can a heavy boat stay on top of water?</h2>
+<p class="intro">Quinn and Reagan are preparing a <strong>make-believe lake expedition</strong>: science instruments, snacks, and hockey pucks need to reach a camp across the water. Their boat is strong—but cargo is heavy. Add too much, and water comes over the rim. How can they decide <em>before launching</em> how much it can carry?</p>
+<p class="highlight"><strong>Make a prediction:</strong> Will a wide boat or a narrow boat hold more boxes if both have the same rim height? Why might a ship float while a small metal coin sinks?</p>
+</section>
+<section id="science">
+<div class="eyebrow" style="color:#087e86">02 / The science</div><h2>Three secrets of floating</h2>
+<div class="grid3">
+<article class="panel"><h3><span class="num">1</span> Water moves aside</h3><p>A boat pushes some water out of the space it occupies. Scientists call this <strong>displacement</strong>. More underwater volume means more water pushed aside.</p></article>
+<article class="panel"><h3><span class="num">2</span> Water pushes up</h3><p>Water pressure pushes on the boat. The <strong>buoyant force</strong> equals the weight of the water displaced. That is Archimedes' principle.</p></article>
+<article class="panel"><h3><span class="num">3</span> Find the balance</h3><p>A floating boat settles until its downward weight matches that upward force. Add cargo and it sits <strong>deeper</strong>. Let water pour over the rim and things get messy!</p></article>
+</div>
+<p class="fact"><strong>Surprise:</strong> A huge steel ship can float because its hollow shape includes lots of air and lets it move aside enough water. It is not because steel itself is lighter than water. <a href="https://www.noaa.gov/office-education/outreach-communication/hands-on-science-activities/build-a-boat">NOAA explains the idea and demonstrates foil boats.</a></p>
+<p>One more clue: salty water is a little denser than fresh water, so the same boat usually floats a bit higher in the ocean. The <a href="https://www.usgs.gov/water-science-school/science/water-density">USGS Water Science School</a> explains density and why dissolved salt changes it.</p>
+</section>
+<section id="evidence">
+<div class="eyebrow" style="color:#087e86">03 / Real engineering, checked against sources</div><h2>People really use this science!</h2>
+<div class="grid2">
+<article class="panel"><span class="label">Documented real use</span><h3>🚢 Cargo ships and busy ports</h3><p>NOAA explains that extra cargo makes a ship sit deeper. Its <strong>draft</strong> is the depth of ship below the waterline, and port teams need accurate water-depth information to keep ships from hitting the bottom.</p><p><a href="https://oceanservice.noaa.gov/economy/inch-water/">Source: NOAA National Ocean Service, port navigation and draft</a></p></article>
+<article class="panel"><span class="label">Documented real use</span><h3>🤖 Argo's ocean robots</h3><p>Real Argo floats move oil into an outside bladder to increase their volume without changing their mass much. That helps them rise. Pumping oil back inside helps them sink. Onboard computers guide the journey and sensors measure the ocean.</p><p><a href="https://argo.ucsd.edu/how-do-floats-work/">Source: International Argo Program, how floats work</a></p></article>
+</div>
+<div class="panel" style="margin-top:1rem"><span class="label make-believe">Our invented adventure</span><h3>🏕️ Lake Expedition Cargo Rescue</h3><p>The little boat, its exact weights, and its missions below are <strong>fictional classroom examples</strong>. They are not tested boat designs. Our math demonstrates one real physical principle, but real boatbuilders must also test tipping, leaks, waves, and strength.</p></div>
+</section>
+<section id="lab">
+<div class="eyebrow" style="color:#087e86">04 / Your interactive lab</div><h2>Captain's desk: build, load, launch</h2>
+<p>Try to carry more science crates, but keep at least <strong>20% of your hull's height</strong> above water as a safety margin. Change one thing at a time to learn what makes the biggest difference.</p>
+<div class="lab-shell">
+<div class="lab-top"><div><h3>Choose a mission</h3><p id="missionText">Lake Camp: carry at least 8 supply crates in fresh water, with the safety margin intact.</p></div><div class="eyebrow" style="color:#12618b">Model version 1.0 · Classroom rules</div></div>
+<div class="mission-pills" role="group" aria-label="Choose a cargo challenge">
+<button type="button" id="lakeMission" aria-pressed="true">🏞️ Lake Camp · 8 crates</button>
+<button type="button" id="harborMission" aria-pressed="false">⚓ Harbor Dash · 10 crates</button>
+</div>
+<div class="lab-grid">
+<div class="panel">
+<h3>Design controls</h3>
+<div class="controls">
+<div class="control"><label for="length">Boat length <output id="lengthOut" for="length">18 cm</output></label><input id="length" type="range" min="14" max="30" step="1" value="18"></div>
+<div class="control"><label for="width">Boat width <output id="widthOut" for="width">14 cm</output></label><input id="width" type="range" min="10" max="26" step="1" value="14"></div>
+<div class="control"><label for="height">Side height <output id="heightOut" for="height">4 cm</output></label><input id="height" type="range" min="3" max="8" step="1" value="4"></div>
+<div class="control"><label for="water">Water type</label><select id="water"><option value="fresh">🏞️ Fresh lake water (1.000 g/cm³)</option><option value="salt">🌊 Model seawater (1.025 g/cm³)</option></select></div>
+<div class="control"><label for="cargo">Cargo crates (120 g each) <output id="cargoOut" for="cargo">4 crates</output></label><input id="cargo" type="range" min="0" max="18" step="1" value="4"></div>
+<div class="buttons"><button class="btn" id="add" type="button">+ Load a crate</button><button class="btn secondary" id="remove" type="button">− Unload</button><button class="btn secondary" id="reset" type="button">↺ Reset</button></div>
+</div>
+</div>
+<div>
+<div class="stage"><figure>
+<svg id="boatSvg" viewBox="0 0 800 360" role="img" aria-labelledby="diagramTitle diagramDesc">
+<title id="diagramTitle">Boat side-view diagram</title><desc id="diagramDesc">The boat moves downward as cargo is loaded; a horizontal waterline shows how deeply it floats. Measurements are explained in the text below.</desc>
+<defs><linearGradient id="waterGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#65cddd"/><stop offset="1" stop-color="#1687b4"/></linearGradient><pattern id="waves" width="88" height="28" patternUnits="userSpaceOnUse"><path d="M0 12 Q22 -2 44 12 T88 12" fill="none" stroke="#b7f7ff" stroke-width="4" opacity=".6"/></pattern></defs>
+<rect width="800" height="360" fill="#e0f4ff"/><circle cx="696" cy="57" r="34" fill="#ffdb82"/><path d="M0 212 H800 V360 H0Z" fill="url(#waterGradient)"/><path d="M0 212 H800 V360 H0Z" fill="url(#waves)"/><line x1="0" y1="212" x2="800" y2="212" stroke="#086b92" stroke-width="4"/>
+<text x="26" y="200" font-size="21" font-weight="800" fill="#13466c">WATERLINE</text><path id="boatShape" d="M220 140 L220 268 L580 268 L580 140" fill="#ffcc80" stroke="#15456c" stroke-width="9" stroke-linejoin="round"/><g id="cargoShapes"></g><g id="boatAccent"><path d="M237 267 H563" stroke="#fff3ce" stroke-width="5" opacity=".7"/></g>
+<text x="770" y="342" text-anchor="end" font-size="18" fill="#f0fcff">Side view · not to scale</text>
+</svg><figcaption>Illustration shows sinking depth, not real wave motion or tipping.</figcaption></figure></div>
+<dl class="stats" aria-label="Current boat measurements">
+<div class="stat"><dt>How deep it sits</dt><dd id="draftOut">0.00 cm</dd></div>
+<div class="stat"><dt>Rim above water</dt><dd id="freeboardOut">0.00 cm</dd></div>
+<div class="stat"><dt>Maximum safe crates</dt><dd id="safeOut">0</dd></div>
+<div class="stat"><dt>Boat + cargo mass</dt><dd id="massOut">0 g</dd></div>
+</dl>
+</div>
+</div>
+<div id="feedback" class="result" role="status" aria-live="polite" aria-atomic="true"><strong>Ready to launch.</strong><p>Change a control to start your experiment.</p></div>
+<p class="notice"><strong>Model rules, not a real launch certificate:</strong> We imagine a watertight, vertical-sided box. The dry mass is 60 + (length × width ÷ 4) grams; each crate is 120 g; water density is fixed to 1.000 or 1.025 g/cm³. Safe means no more than 80% of hull height is underwater. We ignore tipping, waves, water temperature, hull thickness, leaks, and changes in load balance. The actual waterline of a homemade foil boat will differ.</p>
+</div>
+</section>
+<section id="experiment" class="experiment">
+<div class="eyebrow" style="color:#087e86">05 / Take it off the screen</div><h2>The aluminum-foil shipyard</h2>
+<div class="grid2"><div class="panel">
+<h3>🔬 Your supplies</h3><p>Two equally sized pieces of aluminum foil, a bowl or tub of water, a towel, 15–30 small paper clips or pennies, paper, and a pencil. Ask an adult to help with water and any sharp foil edges.</p>
+<ol><li>Fold a <strong>narrow</strong> boat from the first sheet. Fold a <strong>wide</strong> boat from the second.</li><li>Predict which will carry more coins. Write down your guess.</li><li>Float each boat, then place weights near the center, one at a time.</li><li>Stop when the boat tips or water reaches the rim. Record the last successful count.</li><li>Change just one thing and try again. Does a taller rim help? How about moving coins to one side?</li></ol>
+</div><div class="panel">
+<h3>📓 Scientist's record</h3><table><thead><tr><th scope="col">Boat</th><th scope="col">My prediction</th><th scope="col">Last successful load</th></tr></thead><tbody><tr><th scope="row">Narrow hull</th><td>_____ coins</td><td>_____ coins</td></tr><tr><th scope="row">Wide hull</th><td>_____ coins</td><td>_____ coins</td></tr></tbody></table>
+<p><strong>Great question:</strong> Did the wider boat float better but become harder to keep level when all the coins sat on one side?</p>
+<p class="fact"><strong>Connection to real work:</strong> This experiment is adapted from NOAA's published <a href="https://www.noaa.gov/office-education/outreach-communication/hands-on-science-activities/build-a-boat">Build a Boat</a> activity; NOAA recommends comparing foil shapes and how much cargo they carry.</p>
+</div></div>
+</section>
+<section id="code">
+<div class="eyebrow" style="color:#087e86">06 / Peek inside the code</div><h2>Computers can test ideas before we build them</h2>
+<p>The boat simulation is written in plain JavaScript, the same language web pages use. No library, app install, account, or internet connection is needed once you have saved this HTML page.</p>
+<p>Here is the core idea, using the <strong>same formula</strong> as the working lab:</p>
+<pre class="codebox"><code>// Length, width, height: centimeters
+// Mass: grams; water density: grams per cubic centimeter
+const hullMass = 60 + (length * width / 4);
+const totalMass = hullMass + crates * 120;
+const density = water === "salt" ? 1.025 : 1.000;
+const displacedVolume = totalMass / density;
+const draft = displacedVolume / (length * width);
+const safe = draft &lt;= 0.8 * height;
+// A real boat also needs stability and strength checks.</code></pre>
+<p><strong>What happens?</strong> Divide the boat's mass by water density to find how many cubic centimeters of water must be displaced. Divide by the boat's flat bottom area to find depth underwater. One square centimeter times one centimeter equals one cubic centimeter.</p>
+<p class="highlight"><strong>Dad's engineering connection:</strong> With RISCue and VeloSim, an engineer checks how a system behaves step by step <em>before</em> trusting hardware. Our boat lab does the same kind of experiment: change one input, calculate a predictable result, and see whether a safety rule passes. This isn't actual RISCue or VeloSim software—just the same engineering habit.</p>
+</section>
+<section id="quiz">
+<div class="eyebrow" style="color:#087e86">07 / Captain's quiz</div><h2>Earn your science captain badge</h2>
+<div class="question"><fieldset><legend>When you put more cargo in a floating boat, why does it sit deeper?</legend><div class="choices">
+<label><input type="radio" name="answer" value="A"> Cargo makes gravity turn off for a moment.</label>
+<label><input type="radio" name="answer" value="B"> The boat must push aside more water to balance the added weight.</label>
+<label><input type="radio" name="answer" value="C"> Cargo makes water disappear.</label>
+</div></fieldset><p><button type="button" id="checkQuiz" class="btn alt">Check my answer</button></p><p id="quizMessage" class="quiz-msg" role="status" aria-live="polite"></p></div>
+<details style="margin-top:1rem"><summary>Bonus brain teaser: Can a boat float but still be unsafe?</summary><p>Yes! It might tip, leak, break, or have almost no rim left above the water. That's why real engineers check more than just whether an object floats.</p></details>
+</section>
+<section id="tradeoffs">
+<div class="eyebrow" style="color:#087e86">08 / Engineer's honest notebook</div><h2>What our game gets right—and what it can't</h2>
+<div class="grid2"><article class="panel"><h3>✅ Useful ideas</h3><p>It models weight balanced by displaced-water weight, uses explicit measurement units, shows added cargo increasing draft, and shows the small density difference between fresh and salty water.</p></article><article class="panel"><h3>⚠️ Simplifications</h3><p>Actual hulls curve; foil bends; cargo shifts; boats tip; wind and waves act on them. Our rectangular boat, fixed toy weights, and 20% margin are invented teaching choices, not safety standards.</p></article></div>
+</section>
+<section id="sources">
+<div class="eyebrow" style="color:#087e86">09 / Trustworthy sources &amp; reuse</div><h2>Explore the real science</h2>
+<ol class="source-list">
+<li><a href="https://www.noaa.gov/office-education/outreach-communication/hands-on-science-activities/build-a-boat">NOAA Office of Education — Build a Boat</a><small>Primary teaching activity: foil boats, buoyancy, displacement, and stability.</small></li>
+<li><a href="https://oceanservice.noaa.gov/economy/inch-water/">NOAA National Ocean Service — An Inch of Water: What's It Worth?</a><small>Real ships: vessel draft, cargo weight, and port navigation.</small></li>
+<li><a href="https://www.usgs.gov/water-science-school/science/water-density">USGS Water Science School — Water Density</a><small>Water density, temperature, ice, and the effect of dissolved substances.</small></li>
+<li><a href="https://www.usgs.gov/water-science-school/science/saline-water-and-salinity">USGS Water Science School — Saline Water and Salinity</a><small>How ocean water differs from freshwater.</small></li>
+<li><a href="https://argo.ucsd.edu/how-do-floats-work/">International Argo Program — How Do Floats Work?</a><small>Real ocean floats, oil reservoirs, pumps, bladders, and sensors.</small></li>
+</ol>
+<div class="panel"><h3>License &amp; integration notes</h3><p>The original code, illustrations, and explanations on <strong>this page</strong> are offered under the <a href="https://opensource.org/license/mit">MIT License</a> (copyright 2026, DeepDivesKids contributors). Permission is granted, free of charge, to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies, provided the copyright and permission notice are preserved. This material is provided “as is,” without warranty of any kind. Linked agency and Argo materials are separate works and retain their own terms; no third-party images or scripts are embedded.</p>
+<p>Integration: save the <code>.html</code> file and open it in a current browser. All CSS, SVG artwork, and JavaScript live in this file. There are <strong>zero external runtime dependencies</strong>; external links are optional reading, not required to run the lab.</p></div>
+</section>
+</main>
+<footer class="foot"><div class="wrap footer-inner"><div><strong>FLOAT FORCE! · DeepDivesKids</strong><div>Made for curious builders. Ask questions, test, improve, repeat.</div></div><div>November 14, 2026 · <a href="#main">Back to top ↑</a></div></div></footer>
+<script>
+"use strict";
+(function(){
+  const byId = function(id){return document.getElementById(id);};
+  const lengthEl = byId("length"), widthEl = byId("width"), heightEl = byId("height");
+  const cargoEl = byId("cargo"), waterEl = byId("water");
+  let mission = "lake";
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const DEFAULTS = {length:18, width:14, height:4, cargo:4, water:"fresh"};
+  function values(){
+    return {length:Number(lengthEl.value),width:Number(widthEl.value),height:Number(heightEl.value),
+      crates:Number(cargoEl.value),water:waterEl.value};
+  }
+  function calculate(v){
+    const rho = v.water === "salt" ? 1.025 : 1.000;
+    const area = v.length * v.width;
+    const hullMass = 60 + area / 4;
+    const mass = hullMass + v.crates * 120;
+    const displacedVolume = mass / rho;
+    const draft = displacedVolume / area;
+    const freeboard = v.height - draft;
+    const safeCrates = Math.max(0, Math.floor((rho * area * v.height * 0.8 - hullMass) / 120 + 1e-10));
+    return {rho:rho,area:area,hullMass:hullMass,mass:mass,displacedVolume:displacedVolume,
+      draft:draft,freeboard:freeboard,safeCrates:safeCrates,
+      withinMargin:draft <= 0.8 * v.height + 1e-9,
+      flooded:draft >= v.height - 1e-9};
+  }
+  function text(id,value){byId(id).textContent=String(value);}
+  function updateDiagram(v,c){
+    const center=400, halfWidth=v.length * 11;
+    const left=center-halfWidth, right=center+halfWidth;
+    const pixelsPerCm=23;
+    const top=212+(c.draft-v.height)*pixelsPerCm;
+    const bottom=212+c.draft*pixelsPerCm;
+    byId("boatShape").setAttribute("d","M"+left+" "+top+" L"+left+" "+bottom+" L"+right+" "+bottom+" L"+right+" "+top);
+    byId("boatShape").setAttribute("fill",c.flooded?"#f0a39a":"#ffcc80");
+    byId("boatAccent").setAttribute("transform","translate(0 "+(bottom-267)+")");
+    const stack=byId("cargoShapes");
+    while(stack.firstChild){stack.removeChild(stack.firstChild);}
+    for(let i=0;i<v.crates;i++){
+      const column=i%6, row=Math.floor(i/6);
+      const r=document.createElementNS(SVG_NS,"rect");
+      r.setAttribute("x",String(center-6*28/2+column*28+2));
+      r.setAttribute("y",String(top+12+row*30));
+      r.setAttribute("width","24");r.setAttribute("height","24");r.setAttribute("rx","3");
+      r.setAttribute("fill",i%2===0?"#e97345":"#e5ad43");
+      r.setAttribute("stroke","#734524");r.setAttribute("stroke-width","2");
+      stack.appendChild(r);
+    }
+  }
+  function update(){
+    const v=values(), c=calculate(v);
+    text("lengthOut",v.length+" cm");text("widthOut",v.width+" cm");
+    text("heightOut",v.height+" cm");text("cargoOut",v.crates+" crates");
+    text("draftOut",c.draft.toFixed(2)+" cm");
+    text("freeboardOut",Math.max(0,c.freeboard).toFixed(2)+" cm");
+    text("safeOut",c.safeCrates);
+    text("massOut",c.mass.toFixed(0)+" g");
+    updateDiagram(v,c);
+    byId("add").disabled=v.crates>=18; byId("remove").disabled=v.crates<=0;
+    const success=mission==="lake"
+      ? v.water==="fresh"&&v.crates>=8&&c.withinMargin
+      : v.water==="salt"&&v.width<=18&&v.crates>=10&&c.withinMargin;
+    const result=byId("feedback");
+    let heading,detail,kind;
+    if(c.flooded){heading="💦 The rim is underwater!";detail="Water would spill in. Reduce the load or redesign the boat.";kind="danger";}
+    else if(!c.withinMargin){heading="⚠️ Floating, but too little margin";detail="The water has not reached the rim yet, but our classroom safety rule fails.";kind="warn";}
+    else if(success){heading="🏅 Mission accomplished, Captain!";detail="You carried the required cargo and kept 20% of the hull above water. Can you find a smaller design that still passes?";kind="";}
+    else{heading="✅ Afloat with a safety margin";detail=mission==="lake"
+      ? "Reach 8 crates in fresh water to complete Lake Camp."
+      : "Reach 10 crates in salty water with width at most 18 cm to complete Harbor Dash.";kind="";}
+    result.className="result"+(kind?" "+kind:"");
+    result.replaceChildren();
+    const strong=document.createElement("strong");strong.textContent=heading;
+    const p=document.createElement("p");p.textContent=detail;
+    result.append(strong,p);
+  }
+  function selectMission(next){
+    mission=next;
+    byId("lakeMission").setAttribute("aria-pressed",String(next==="lake"));
+    byId("harborMission").setAttribute("aria-pressed",String(next==="harbor"));
+    text("missionText",next==="lake"
+      ? "Lake Camp: carry at least 8 supply crates in fresh water, with the safety margin intact."
+      : "Harbor Dash: carry at least 10 crates in salty water, with width at most 18 cm and the safety margin intact.");
+    waterEl.value=next==="lake"?"fresh":"salt";
+    update();
+  }
+  [lengthEl,widthEl,heightEl,cargoEl,waterEl].forEach(function(el){
+    el.addEventListener("input",update);el.addEventListener("change",update);
+  });
+  byId("add").addEventListener("click",function(){cargoEl.value=String(Math.min(18,Number(cargoEl.value)+1));update();});
+  byId("remove").addEventListener("click",function(){cargoEl.value=String(Math.max(0,Number(cargoEl.value)-1));update();});
+  byId("reset").addEventListener("click",function(){
+    lengthEl.value=String(DEFAULTS.length);widthEl.value=String(DEFAULTS.width);
+    heightEl.value=String(DEFAULTS.height);cargoEl.value=String(DEFAULTS.cargo);
+    waterEl.value=DEFAULTS.water;selectMission("lake");
+  });
+  byId("lakeMission").addEventListener("click",function(){selectMission("lake");});
+  byId("harborMission").addEventListener("click",function(){selectMission("harbor");});
+  byId("checkQuiz").addEventListener("click",function(){
+    const selected=document.querySelector('input[name="answer"]:checked');
+    text("quizMessage",!selected?"Choose an answer first. You can do it!"
+      :selected.value==="B"?"🏆 Correct! The boat displaces more water until the upward force balances its weight."
+      :"Nice try! Think about what the boat pushes aside. Try again.");
+  });
+  update();
+})();
+</script>
+</body>
+</html>
