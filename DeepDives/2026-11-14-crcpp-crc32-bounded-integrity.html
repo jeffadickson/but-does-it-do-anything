@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Engineering deep dive on CRC++ bounded error-detection for C++20 firmware and deterministic simulators: source-verified real applications, code, CMake, tradeoffs and an interactive fault lab.">
+<title>CRC++ — Every Bit Has a Witness | DeepDives | 2026-11-14</title><style>
+:root{--ink:#183044;--soft:#4d6276;--navy:#10263a;--line:#d5e4eb;--bg:#f4f8fb;--teal:#05626b;--mint:#a9ffe1;--gold:#ffe5ad;--red:#9d2635}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:var(--bg);font:16.5px/1.68 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:#005d70;text-underline-offset:3px}a:hover{text-decoration-thickness:2px}a:focus-visible,input:focus-visible,button:focus-visible,textarea:focus-visible,pre:focus-visible{outline:3px solid #dc8020;outline-offset:3px}
+.skip{position:absolute;top:0;left:-9999px;background:#fff;padding:.8rem;z-index:5}.skip:focus{left:1rem}
+header{background:radial-gradient(circle at 87% 16%,#2f5864,transparent 33%),linear-gradient(135deg,#12273a,#133b4f);color:#f6fcff;padding:4rem max(1rem,calc((100vw - 1110px)/2)) 3rem}
+header .over{color:var(--mint);font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:.17em}h1{font-size:clamp(2.65rem,6.8vw,5.8rem);line-height:1.01;letter-spacing:-.055em;max-width:850px;margin:.7rem 0}header p{font-size:1.2rem;max-width:780px;color:#e0eef2}
+.pills{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.25rem 0}.pills span{border-radius:99px;border:1px solid #7296a3;padding:.22rem .75rem;font-size:.77rem;font-weight:800;color:#e7fbf4}
+.bitline{margin:1.7rem 0 0;display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}.bitline span{background:#e7f7f5;border-radius:.6rem;padding:.6rem 1rem;color:#133e47;font:800 1rem ui-monospace,Consolas,monospace}.bitline span.bad{background:#ffe3e7;color:#812332}
+.container{display:grid;grid-template-columns:226px minmax(0,1fr);gap:1.9rem;max-width:1110px;margin:0 auto;padding:2rem 1rem 5rem}aside{align-self:start;position:sticky;top:1rem}
+nav{background:white;border:1px solid var(--line);padding:1rem 1.15rem;border-radius:1rem}nav h2{font-size:.76rem;text-transform:uppercase;letter-spacing:.12em;color:var(--soft)}nav ol{padding-left:1.3rem}nav li{font-size:.91rem;margin:.32rem 0}nav a{font-weight:650}
+main{min-width:0}section{margin-bottom:2.7rem;scroll-margin-top:1rem}.kicker{display:block;font-size:.72rem;color:var(--teal);font-weight:900;text-transform:uppercase;letter-spacing:.13em;margin-bottom:.35rem}h2{font-size:clamp(1.65rem,3.2vw,2.4rem);line-height:1.17;letter-spacing:-.035em;margin:.2rem 0 .8rem}h3{font-size:1.12rem;margin:1.35rem 0 .5rem}p{margin:.55rem 0 1.15rem;max-width:78ch}strong{font-weight:800}
+.panel{background:white;padding:1.35rem 1.45rem;border:1px solid var(--line);border-radius:1rem;box-shadow:0 7px 25px #18394a0b}.lead{font-size:1.13rem}.callout{background:#e7f7f4;border-left:5px solid #0a857c;border-radius:0 .6rem .6rem 0;padding:1rem 1.2rem;margin:1.25rem 0}.warn{background:#fff0df;border-color:#c46c27}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin:1.2rem 0}.stat{background:#ecf6f7;padding:1rem;border-radius:.65rem}.stat small{display:block;text-transform:uppercase;font-size:.73rem;color:#405e6d;font-weight:800;letter-spacing:.06em}.stat b{font-size:1.15rem;word-wrap:break-word;color:#134e59}
+table{border-collapse:collapse;width:100%;font-size:.91rem}th,td{padding:.67rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}thead th{background:#e9f4f5;color:#174e5a}tbody tr:nth-child(even){background:#f7fafb}caption{text-align:left;font-weight:750;padding:.4rem 0}.overflow{overflow-x:auto}
+code,kbd{font: .87em ui-monospace,SFMono-Regular,Consolas,monospace;background:#e9f0f4;border-radius:.2rem;padding:.1rem .24rem}pre{background:#102638;color:#d9f6ff;overflow:auto;padding:1.2rem;border-radius:.7rem;line-height:1.6;font-size:.84rem;border:1px solid #385a68}pre code{background:transparent;padding:0;color:inherit;font-size:inherit}
+.columns{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.tiny{font-size:.87rem;color:var(--soft)}.note{font-size:.87rem;font-weight:750;color:#075f68}.label{font-weight:800;display:block;margin:.8rem 0 .3rem}
+textarea{width:100%;min-height:80px;resize:vertical}textarea,input[type=number]{border:1px solid #9bb7c1;background:#fff;color:var(--ink);font:inherit;border-radius:.55rem;padding:.7rem}input[type=range]{width:100%;accent-color:#007a78;cursor:pointer}button{font:inherit;font-weight:800;cursor:pointer;border:2px solid #006878;background:#006878;color:white;border-radius:.65rem;padding:.7rem 1.05rem}button:hover{background:#00515f}button.secondary{color:#005966;border:2px solid #9fc6cc;background:white}button.secondary:hover{background:#e5f5f6}button:disabled{opacity:.52;cursor:not-allowed}
+.buttons{display:flex;gap:.65rem;flex-wrap:wrap;margin:1.1rem 0}.packet{display:flex;gap:.36rem;flex-wrap:wrap;background:#eff5f8;border-radius:.65rem;padding:.7rem;min-height:3.5rem;align-items:center}.byte{background:white;border:1px solid #b9cedb;border-radius:.4rem;padding:.3rem .52rem;font:800 .85rem ui-monospace,Consolas,monospace}.byte.changed{background:#ffe0e4;border:2px solid #bb3948;color:#82232e}
+.outputs{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin:1rem 0}.readout{border:1px solid var(--line);border-radius:.7rem;background:#f4f8fa;padding:1rem}.readout small{display:block;text-transform:uppercase;color:#526b7d;font-weight:800}.readout output{display:block;font:800 clamp(1rem,2.7vw,1.45rem) ui-monospace,Consolas,monospace;overflow-wrap:anywhere}
+#status{background:#e7f7ee;color:#235739;padding:1rem;border-radius:.65rem;font-weight:800}#status.fail{background:#ffe7ea;color:#842d36}
+footer{background:#10283c;color:#e5f4f7;padding:2rem max(1rem,calc((100vw - 1050px)/2));font-size:.9rem}footer a{color:#a4ffdc}
+@media(max-width:850px){.container{display:block}.container aside{position:static;margin:0 0 2rem}nav ol{columns:2}}@media(max-width:600px){.columns,.outputs{grid-template-columns:1fr}.stats{grid-template-columns:1fr}nav ol{columns:1}.panel{padding:1rem}.bitline span{font-size:.78rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style></head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<header>
+<div class="over">DeepDives / Saturday, November 14, 2026 / Engineering investigation</div>
+<h1>Every bit<br>has a witness.</h1>
+<p><strong>CRC++</strong> is a compact, single-header C++ library for detecting accidental byte corruption. Learn where the technique is proven, where the library is merely promising, and what you must still qualify before using it near a real-time system.</p>
+<div class="pills"><span>C++20 compatible</span><span>Single header</span><span>BSD-3-Clause</span><span>Fixed input buffers</span><span>Interactive lab</span></div>
+<div class="bitline" aria-label="A bit change causes a different 32-bit checksum"><span>123456789 → 0xCBF43926</span><strong aria-hidden="true">↝</strong><span class="bad">flip a bit → CRC changes</span></div>
+</header>
+<div class="container"><aside><nav aria-label="Contents"><h2>Contents</h2>
+<ol>
+<li><a href="#verdict">Engineering verdict</a></li>
+<li><a href="#method">How it works</a></li>
+<li><a href="#uses">Documented uses</a></li>
+<li><a href="#lab">Bit-flip lab</a></li>
+<li><a href="#example">C++20 example</a></li>
+<li><a href="#build">CMake / Ninja</a></li>
+<li><a href="#risks">Tradeoffs</a></li>
+<li><a href="#test">Qualification gates</a></li>
+<li><a href="#licensing">License</a></li>
+<li><a href="#refs">Primary sources</a></li>
+</ol></nav></aside>
+<main id="main">
+<section id="verdict"><span class="kicker">01 · Decision brief</span><h2>A small function with a narrow promise</h2>
+<p class="lead">Daniel Bahr’s <strong>CRC++</strong> is a portable, header-only C++ CRC implementation supporting bit-by-bit and lookup-table algorithms, many named CRC variants, and multipart data. The pinned upstream header, at <a href="https://github.com/d-bahr/CRCpp/tree/62d4791877a636fa4b51acc9181c65ac89364372"><code>62d4791877a636fa4b51acc9181c65ac89364372</code></a>, identifies itself as version <strong>1.2.3.0</strong>. The commit is dated November 5, 2026.</p>
+<div class="stats"><div class="stat"><small>Canonical CRC-32</small><b>0xCBF43926</b></div><div class="stat"><small>Output width</small><b>32 bits</b></div><div class="stat"><small>Lookup entries</small><b>256 × 4 bytes</b></div></div>
+<div class="callout"><strong>Recommendation:</strong> Pilot CRC++ for bounded RISCue trace records or VeloSim replay artifacts after explicitly serializing every field into an agreed byte order. Begin with the bitwise path, then evaluate table-driven throughput against the RAM/flash/timing budget.</div>
+<p><strong>Do not infer:</strong> allocation-free behavior for the whole process, a hard WCET bound, cryptographic authenticity, or schema compatibility merely because a CRC matches.</p></section>
+
+<section id="method"><span class="kicker">02 · The mathematics</span><h2>Shift, XOR, repeat</h2>
+<p>A cyclic redundancy check represents a bit stream as a polynomial over the two-element field GF(2). The remainder from division by a generator polynomial becomes a short integrity code. In a reflected software implementation, shifts and exclusive OR (XOR) compute the remainder; a lookup table can precompute the effect of byte-sized steps.</p>
+<div class="panel"><h3>The complete CRC-32/ISO-HDLC contract</h3><div class="overflow"><table>
+<caption>Published reference parameters, not just the vague label “CRC-32”</caption>
+<tbody>
+<tr><th scope="row">Width / polynomial</th><td><code>32 / 0x04C11DB7</code></td></tr>
+<tr><th scope="row">Reflected software polynomial</th><td><code>0xEDB88320</code></td></tr>
+<tr><th scope="row">Initial remainder</th><td><code>0xFFFFFFFF</code></td></tr>
+<tr><th scope="row">Input / output reflected</th><td><code>true / true</code></td></tr>
+<tr><th scope="row">Final XOR</th><td><code>0xFFFFFFFF</code></td></tr>
+<tr><th scope="row">ASCII “123456789” check</th><td><code>0xCBF43926</code></td></tr>
+</tbody></table></div><p class="tiny">Parameter set checked against the <a href="https://reveng.sourceforge.io/readme.htm">CRC RevEng manual</a>. Different polynomials, initialization or reflection settings yield different values.</p></div>
+<p>The actual pinned header declares <code>CRC::Calculate(data, size, parameters)</code>, overloads taking a <code>CRC::Table</code>, <code>CRC::CRC_32()</code>, and a continuation overload accepting a prior finalized CRC. The header’s table stores <code>table[1 &lt;&lt; CHAR_BIT]</code>; on an 8-bit-byte target, a CRC-32 table contributes <strong>1,024 bytes of entries</strong> plus parameters and layout overhead.</p></section>
+
+<section id="uses"><span class="kicker">03 · Evidence and proposed use</span><h2>CRCs in the real world ≠ adoption of CRC++</h2>
+<div class="panel"><div class="overflow"><table><caption>Actual documented applications of CRC technology</caption>
+<thead><tr><th scope="col">Application</th><th scope="col">What primary documentation confirms</th><th scope="col">Evidence</th></tr></thead>
+<tbody>
+<tr><th scope="row">PNG images</th><td>Each chunk has a four-byte CRC calculated over chunk type plus data, excluding the length, with the stored value most-significant byte first.</td><td><a href="https://www.w3.org/TR/png-3/#5CRC-algorithm">W3C PNG specification, §5.5</a></td></tr>
+<tr><th scope="row">Ethernet frames</th><td>A four-byte frame check sequence is recalculated at reception to detect damage in transit. Often handled in networking hardware, not an application library.</td><td><a href="https://www.cisco.com/en/US/docs/internetworking/troubleshooting/guide/tr1904.html">Cisco Ethernet documentation</a></td></tr>
+<tr><th scope="row">CRC++ project</th><td>Maintainer documents bitwise and table-based calculation, CRC variants, partial streams, a public header, and tests.</td><td><a href="https://github.com/d-bahr/CRCpp/blob/62d4791877a636fa4b51acc9181c65ac89364372/README.md">Upstream README</a> and <a href="https://github.com/d-bahr/CRCpp/blob/62d4791877a636fa4b51acc9181c65ac89364372/inc/CRC.h">API header</a></td></tr>
+</tbody></table></div></div>
+<p><strong>Evidence boundary:</strong> The first two entries establish real adoption of CRC algorithms, not adoption of Daniel Bahr’s CRC++ library. No independent customer deployment of that specific C++ library was confirmed in this review.</p>
+<div class="columns">
+<div class="panel"><h3>RISCue trace packets — proposal</h3><p>Record an explicitly encoded event ID, payload length, timestamp and data; save the CRC alongside each record; reject corrupt replay input. A CRC cannot prove the scheduler’s behavior was correct.</p></div>
+<div class="panel"><h3>VeloSim ↔ VeloFormal — proposal</h3><p>Fingerprint normalized serialized byte streams before/after transport to flag unintended alteration. A matching CRC would <em>not</em> resolve the structural <code>memories</code> schema mismatch; both sides must validate the same grammar.</p></div>
+</div></section>
+
+<section id="lab"><span class="kicker">04 · Interactive experiment</span><h2>The one-bit fault lab</h2>
+<p>Enter a UTF-8 message, choose a bit number, and corrupt exactly one bit in the receiver’s copy. The browser separately computes both CRCs using a small documented <strong>JavaScript CRC-32/ISO-HDLC model</strong>—not a port of CRC++’s full library.</p>
+<div class="panel" aria-labelledby="labheading"><h3 id="labheading">Simulated wire experiment</h3>
+<label class="label" for="msg">Transmitted message (maximum 256 characters)</label><textarea id="msg" maxlength="256" spellcheck="false">123456789</textarea>
+<label class="label" for="bit">Bit position</label><input id="bit" type="range" min="0" max="71" step="1" value="36" aria-describedby="location">
+<p class="tiny" id="location">Byte 4, bit 4</p>
+<div class="buttons"><button type="button" id="flip">Inject one-bit fault</button><button type="button" id="restore" class="secondary" disabled>Restore original</button></div>
+<div class="stats"><div class="stat"><small>Message bytes</small><b id="bytes">9</b></div><div class="stat"><small>Changed bits in CRC</small><b id="changed">0</b></div><div class="stat"><small>Algorithm</small><b>CRC-32 / ISO-HDLC</b></div></div>
+<h3>Sent bytes, hexadecimal</h3><div class="packet" id="sent" aria-label="Sent bytes"></div>
+<h3>Received bytes, hexadecimal</h3><div class="packet" id="received" aria-label="Received bytes"></div>
+<div class="outputs"><div class="readout"><small>Sender checksum</small><output id="before" aria-label="Sender checksum">—</output></div><div class="readout"><small>Receiver checksum</small><output id="after" aria-label="Receiver checksum">—</output></div></div>
+<p id="status" role="status" aria-live="polite">Starting lab…</p><p id="checks" class="tiny" aria-live="polite">Checking known values…</p>
+<p class="tiny">For legibility, at most 56 bytes are shown; the CRC always includes the entire input. Bit zero means the least-significant bit of its byte. Non-ASCII text can occupy multiple UTF-8 bytes.</p></div>
+<div class="callout warn"><strong>What a CRC cannot do:</strong> Checksum collisions are possible; a matching CRC is not proof that no change happened. An attacker can edit data and compute a matching CRC. Use a cryptographic MAC or authenticated encryption for malicious tampering, and use retransmission or error-correcting codes when recovery is required.</div></section>
+
+<section id="example"><span class="kicker">05 · Public API example</span><h2>Fixed-length C++20 verification</h2>
+<p>Here is an independent educational example based on the pinned upstream declarations. It exercises bitwise and table CRCs, incremental calculation, and a one-bit fault using an application-owned <code>std::array</code>. The test data are explicitly encoded bytes, not an ABI-dependent raw structure image.</p>
+<pre tabindex="0" aria-label="C++20 code example"><code>// main.cpp — compile with pinned upstream CRC.h
+#include "CRC.h"
+#include &lt;array&gt;
+#include &lt;cstdint&gt;
+#include &lt;cstdio&gt;
+int main() {
+    // Explicit serialized bytes, not a padded C++ struct.
+    constexpr std::array&lt;std::uint8_t, 9&gt; bytes{
+        '1','2','3','4','5','6','7','8','9'
+    };
+    constexpr std::uint32_t expected = 0xCBF43926u;
+    const auto bitwise = CRC::Calculate(
+        bytes.data(), bytes.size(), CRC::CRC_32());
+
+    // 256-entry lookup table; construct before the timed hot path.
+    const auto table = CRC::CRC_32().MakeTable();
+    const auto fast = CRC::Calculate(
+        bytes.data(), bytes.size(), table);
+
+    // CRC++ accepts the previous FINALIZED CRC to resume a stream.
+    const auto first = CRC::Calculate(bytes.data(), 4u, table);
+    const auto joined = CRC::Calculate(
+        bytes.data() + 4u, bytes.size() - 4u, table, first);
+
+    auto damaged = bytes;
+    damaged[4] ^= 0x01u;
+    const auto changed = CRC::Calculate(
+        damaged.data(), damaged.size(), table);
+
+    if (bitwise != expected || fast != expected ||
+        joined != expected || changed == expected) {
+        std::puts("FAIL: golden vector, chaining, or error detection");
+        return 1;
+    }
+    std::printf("PASS CRC-32: 0x%08lX\n",
+                static_cast&lt;unsigned long&gt;(fast));
+    return 0;
+}</code></pre>
+<p><strong>Expected when compiled and executed with the pinned header:</strong> <code>PASS CRC-32: 0xCBF43926</code>. This complete example was source-reviewed against upstream signatures, but <strong>not compiled against the actual CRC++ header here</strong>. The <code>printf</code> line is demonstration I/O, not an RTOS real-time primitive.</p></section>
+
+<section id="build"><span class="kicker">06 · Build integration</span><h2>Vendor once, build offline</h2>
+<p>Copy the pinned <code>inc/CRC.h</code> to <code>third_party/CRCpp/inc/CRC.h</code>, keep the upstream <code>LICENSE</code> and source SHA in a third-party manifest, and use an <code>INTERFACE</code> target. A local vendored header avoids network access at configure time and makes code review repeatable.</p>
+<pre tabindex="0" aria-label="CMake integration example"><code>cmake_minimum_required(VERSION 3.24)
+project(crc_integrity_lab LANGUAGES CXX)
+
+# Vendor CRC++ inc/CRC.h at upstream commit:
+# 62d4791877a636fa4b51acc9181c65ac89364372
+# Keep the original LICENSE alongside it.
+add_library(crcpp_headers INTERFACE)
+target_include_directories(crcpp_headers INTERFACE
+    third_party/CRCpp/inc)
+add_executable(crc_integrity_lab main.cpp)
+target_compile_features(crc_integrity_lab PRIVATE cxx_std_20)
+target_link_libraries(crc_integrity_lab PRIVATE crcpp_headers)
+
+if(MSVC)
+  target_compile_options(crc_integrity_lab PRIVATE /W4)
+else()
+  target_compile_options(crc_integrity_lab PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+enable_testing()
+add_test(NAME crc32_known_vector COMMAND crc_integrity_lab)
+
+# cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+# cmake --build build
+# ctest --test-dir build --output-on-failure</code></pre>
+<p>Because CRC++ is header-only, the consumer does not need a separately compiled binary. The project’s upstream CMake build can also run its own test suite, but a firmware integration should not silently import test and documentation targets. Verify the vendored include path and warning flags in the actual toolchain.</p></section>
+
+<section id="risks"><span class="kicker">07 · Failure modes</span><h2>The cost of a 32-bit witness</h2>
+<div class="overflow"><table><caption>Engineering tradeoffs, to be measured on the target</caption>
+<thead><tr><th scope="col">Choice</th><th scope="col">Upside</th><th scope="col">Cost / hazard</th></tr></thead><tbody>
+<tr><th scope="row">Bitwise CRC</th><td>Avoids 256-entry table storage</td><td>More operations per byte</td></tr>
+<tr><th scope="row">Byte lookup table</th><td>Potential throughput gain</td><td>1 KiB table entries for CRC-32, initialization, cache and stack/storage choices</td></tr>
+<tr><th scope="row">Multipart stream</th><td>No concatenating allocation required</td><td>Must use correct finalized continuation and exactly ordered bytes</td></tr>
+<tr><th scope="row">Fixed-size caller buffer</th><td>Predictable capacity</td><td>Does not prove no allocation in the wider process or bounded WCET</td></tr>
+<tr><th scope="row">CRC match</th><td>Evidence against some accidental corruptions</td><td>Not collision-free, not cryptographic and not a schema validator</td></tr>
+<tr><th scope="row">Raw struct bytes</th><td>Convenient-looking shortcut</td><td>Padding, endianness, versioning and uninitialized fields corrupt reproducibility</td></tr>
+</tbody></table></div>
+<p>The <code>CRC::Table</code> construction must be accounted for. If built on the stack it needs space, and if held in static storage initialization timing must be reviewed. A table’s 1,024 bytes refer only to its 256 <code>std::uint32_t</code> entries on an eight-bit-byte target, not complete object size.</p></section>
+
+<section id="test"><span class="kicker">08 · Next qualification</span><h2>Five gates before an RTOS pilot</h2>
+<div class="panel"><ol>
+<li><strong>Provenance:</strong> lock header SHA and three-clause BSD notice; record compiler/toolchain versions.</li>
+<li><strong>Golden vectors:</strong> test empty input, <code>123456789 → CBF43926</code>, one-bit flip, maximum allowed payload, multipart equivalence, and bitwise/table agreement.</li>
+<li><strong>Serialization:</strong> test length limits, explicit endian encoding, stable bytes across compilers, and no raw struct padding.</li>
+<li><strong>Real-time audit:</strong> instrument allocations, table initialization, stack/high-water mark, flash usage and timing on target hardware.</li>
+<li><strong>Decision:</strong> retain only if observed execution bounds meet budget and an independent host model reproduces all protected records.</li>
+</ol></div><p><strong>Suggested first experiment:</strong> a 64-byte RISCue replay record with an independently implemented reference CRC. This is a proposal, not a completed integration.</p></section>
+
+<section id="licensing"><span class="kicker">09 · Licensing &amp; provenance</span><h2>BSD-3-Clause, not MIT</h2>
+<p>The actual <a href="https://github.com/d-bahr/CRCpp/blob/62d4791877a636fa4b51acc9181c65ac89364372/LICENSE">CRC++ license</a> permits source and binary redistribution with retention of copyright, conditions and disclaimers, and restricts use of contributor names for endorsement. It is <strong>BSD-3-Clause</strong>. The original tutorial HTML/CSS/JavaScript here is made available under MIT terms; this does <em>not</em> relicense upstream CRC++.</p><p class="tiny">This is a technical summary of a license file, not legal advice. Preserve the original full notice and maintain an SBOM or equivalent third-party inventory.</p></section>
+
+<section id="refs"><span class="kicker">10 · Documentation ledger</span><h2>Primary sources and review scope</h2>
+<ol>
+<li><a href="https://github.com/d-bahr/CRCpp/tree/62d4791877a636fa4b51acc9181c65ac89364372">CRC++ repository — pinned source snapshot, November 5, 2026 commit</a>.</li>
+<li><a href="https://github.com/d-bahr/CRCpp/blob/62d4791877a636fa4b51acc9181c65ac89364372/inc/CRC.h">CRC++ public header</a>, version constants and <code>CRC::Calculate</code> / table declarations.</li>
+<li><a href="https://github.com/d-bahr/CRCpp/blob/62d4791877a636fa4b51acc9181c65ac89364372/README.md">CRC++ README</a>, official bitwise, lookup and multipart examples.</li>
+<li><a href="https://github.com/d-bahr/CRCpp/blob/62d4791877a636fa4b51acc9181c65ac89364372/LICENSE">CRC++ LICENSE</a>, BSD three-clause terms.</li>
+<li><a href="https://reveng.sourceforge.io/readme.htm">CRC RevEng reference manual</a>, polynomial / reflection model and check value.</li>
+<li><a href="https://www.w3.org/TR/png-3/#5CRC-algorithm">W3C PNG specification, section 5.5</a>, normative real-world CRC use.</li>
+<li><a href="https://www.cisco.com/en/US/docs/internetworking/troubleshooting/guide/tr1904.html">Cisco Ethernet troubleshooting guide</a>, 4-byte FCS field.</li>
+</ol>
+<div class="callout warn"><strong>Review limits:</strong> upstream API, current pinned version, license and external standards checked against official sources; JavaScript self-tests included. A full browser accessibility audit, C++ compilation against the real dependency, and target CPU, allocator, stack and timing tests have <strong>not</strong> been performed. No external adoption of CRC++ itself was independently established.</div></section>
+</main></div><footer><p><strong>DeepDives · November 14, 2026</strong> — source-grounded engineering, repeatable experiments, explicit uncertainty.</p><p>Self-contained HTML; no fonts, scripts, stylesheets or image downloads. Original lesson code: MIT; third-party works retain their licenses.</p><p><a href="#main">Back to beginning</a> · <a href="https://github.com/jeffadickson/but-does-it-do-anything/tree/main/DeepDives">DeepDives archive</a></p></footer>
+<script>
+(function(){
+"use strict";
+const input=document.getElementById("msg"),slider=document.getElementById("bit"),flip=document.getElementById("flip"),restore=document.getElementById("restore");
+const sent=document.getElementById("sent"),received=document.getElementById("received"),before=document.getElementById("before"),after=document.getElementById("after"),status=document.getElementById("status");
+const loc=document.getElementById("location"),nBytes=document.getElementById("bytes"),changed=document.getElementById("changed"),checks=document.getElementById("checks");
+const encoder=new TextEncoder();let corrupted=null,position=-1;
+function crc(bytes){let c=0xFFFFFFFF;for(const b of bytes){c=(c^b)>>>0;for(let i=0;i<8;i++){c=((c>>>1)^((c&1)?0xEDB88320:0))>>>0;}}return(c^0xFFFFFFFF)>>>0;}
+function hex(n){return"0x"+n.toString(16).toUpperCase().padStart(8,"0");}
+function count(v){v>>>=0;let n=0;while(v){v&=v-1;n++;}return n;}
+function show(host,array,focus){host.replaceChildren();const limit=Math.min(array.length,56);for(let i=0;i<limit;i++){const s=document.createElement("span");s.className="byte"+(i===focus?" changed":"");s.textContent=array[i].toString(16).toUpperCase().padStart(2,"0");s.title="Byte "+i;host.appendChild(s);}if(array.length>limit){const s=document.createElement("span");s.textContent="… and "+(array.length-limit)+" more bytes";host.appendChild(s);}if(!array.length){host.textContent="(no bytes)";}}
+function update(){
+const bytes=encoder.encode(input.value),max=Math.max(0,bytes.length*8-1);slider.max=String(max);
+if(Number(slider.value)>max)slider.value=String(max);
+const chosen=Number(slider.value);
+loc.textContent=bytes.length?"Byte "+Math.floor(chosen/8)+", bit "+(chosen%8)+" (bit 0 is least significant)":"No bits available; enter a message.";
+flip.disabled=!bytes.length;restore.disabled=corrupted===null;nBytes.textContent=String(bytes.length);
+const right=corrupted||bytes,a=crc(bytes),b=crc(right);show(sent,bytes,-1);show(received,right,position);
+before.textContent=hex(a);after.textContent=hex(b);changed.textContent=String(count(a^b));
+if(corrupted&&a!==b){status.className="fail";status.textContent="Mismatch detected: receiver should reject or request a retransmission.";}
+else if(corrupted){status.className="";status.textContent="Matching CRCs do not prove authenticity or perfect integrity.";}
+else{status.className="";status.textContent="Original and received bytes match. Inject a fault to test detection.";}
+}
+input.addEventListener("input",function(){corrupted=null;position=-1;update();});slider.addEventListener("input",update);
+flip.addEventListener("click",function(){const bytes=encoder.encode(input.value);if(!bytes.length)return;const b=Math.max(0,Math.min(bytes.length*8-1,Number(slider.value)||0));position=Math.floor(b/8);corrupted=new Uint8Array(bytes);corrupted[position]^=(1<<(b%8));update();});
+restore.addEventListener("click",function(){corrupted=null;position=-1;update();});
+const passed=crc(encoder.encode("123456789"))===0xCBF43926&&crc(new Uint8Array([]))===0&&crc(new Uint8Array([0]))!==crc(new Uint8Array([1]));
+checks.textContent=passed?"Browser check vectors passed: 123456789, empty input and one-bit mutation.":"Browser self-test FAILED: do not rely on this simulation.";
+if(!passed)flip.disabled=true;update();
+}());
+</script>
+<noscript><p style="padding:1rem;color:#503600;background:#fff2d6">The interactive bit-flip laboratory requires JavaScript; all explanatory text, C++ examples and references remain available without it.</p></noscript>
+</body></html>
