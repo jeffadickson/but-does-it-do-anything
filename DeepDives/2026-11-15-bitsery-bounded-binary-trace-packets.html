@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="November 15, 2026: bitsery 5.2.5, fixed-capacity C++ binary traces, real source evidence, CMake integration, and an interactive byte lab.">
+<meta name="color-scheme" content="dark">
+<title>Every Byte Needs a Contract — bitsery 5.2.5 | Engineering Deep Dive</title>
+<style>
+:root{--bg:#081521;--panel:#112537;--panel2:#183348;--ink:#f1f6fc;--muted:#b8cce0;--line:#38586a;--aqua:#73f4d9;--amber:#fdd788;--rose:#ffabb8;--good:#afeac5;--radius:17px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse 1300px 500px at 5% 0%,#184454,transparent 65%),var(--bg);font:16px/1.66 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink)}a{color:var(--aqua);text-underline-offset:3px}a:hover{color:#fff}
+:focus-visible{outline:3px solid var(--amber);outline-offset:3px}.skip{position:absolute;top:-100px;left:10px;padding:8px 15px;background:var(--amber);color:#0a1826}.skip:focus{top:10px}
+.wrap{max-width:1230px;margin:auto;padding:0 24px}.hero{border-bottom:1px solid var(--line);padding:55px 0 40px}.hero-inner{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,.8fr);gap:35px;align-items:center}.eyebrow,.kicker{text-transform:uppercase;letter-spacing:.14em;font-weight:800;font-size:.8rem;color:var(--aqua)}
+h1{font-size:clamp(2.4rem,5.5vw,4.9rem);letter-spacing:-.055em;line-height:1.08;margin:.25em 0}h1 em{color:var(--aqua);font-style:normal}h2{font-size:clamp(1.55rem,3vw,2.25rem);letter-spacing:-.03em;line-height:1.16;margin:0 0 18px}h3{color:var(--amber);font-size:1.18rem;margin:24px 0 9px}.lead{font-size:1.17rem;max-width:760px;color:#e0ebf5}.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.pill{font-size:.81rem;font-weight:800;border-radius:99px;padding:4px 11px;border:1px solid #468477;background:#1a3c42;color:#d4fff4}.pill.warn{color:var(--amber);border-color:#927442;background:#3a3026}
+figure{margin:0}.hero svg{display:block;width:100%;height:auto;border:1px solid #376e76;border-radius:18px;box-shadow:0 22px 50px #0005;background:linear-gradient(125deg,#16374b,#112333)}
+.layout{display:grid;grid-template-columns:235px minmax(0,1fr);gap:38px;padding-top:32px;padding-bottom:80px}.toc{position:sticky;top:17px;align-self:start;background:var(--panel);padding:17px;border:1px solid var(--line);border-radius:var(--radius)}.toc strong{font-size:.8rem;color:var(--amber);text-transform:uppercase;letter-spacing:.08em}.toc ol{padding-left:20px;margin:10px 0}.toc li{padding:5px 0;font-size:.9rem}.toc a{text-decoration:none;color:#dbe8f5}.toc a:hover{text-decoration:underline;color:var(--aqua)}
+section{padding:24px 0 36px;border-bottom:1px solid var(--line);scroll-margin-top:20px}section:first-child{padding-top:4px}.kicker{margin:0 0 10px}p{margin:0 0 17px}.minor{color:var(--muted);font-size:.91rem}
+.callout{border-left:4px solid var(--aqua);border-radius:0 12px 12px 0;background:#183b45;padding:17px 20px;margin:20px 0}.callout.warning{border-color:var(--rose);background:#3c2b37}.callout strong{display:block;color:#fff;margin-bottom:5px}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{border:1px solid var(--line);border-radius:15px;background:var(--panel);padding:20px}.card b{color:var(--aqua)}.card p:last-child{margin:0}
+.tabler{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px}table{border-collapse:collapse;width:100%;font-size:.93rem}th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}th{background:#1e4352;color:var(--amber)}tr:last-child td{border:0}
+code{font:.92em/1.55 ui-monospace,Consolas,monospace;color:#aaf6e0}pre{background:#071321;padding:19px 21px;margin:0;overflow-x:auto;white-space:pre;tab-size:2}pre code{color:#e1edfd;font-size:.82rem}.codebox{margin:20px 0;border:1px solid #3b6674;border-radius:13px;overflow:hidden}.codehead{background:#214153;color:var(--amber);padding:9px 14px;font-size:.85rem;font-weight:700}
+.lab{background:linear-gradient(135deg,#173a50,#132238);padding:24px;border:1px solid #5a8291;border-radius:20px}.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field label{display:block;font-weight:700;margin-bottom:5px}.field select,.field input{display:block;width:100%;min-height:42px;border:1px solid #8ca8b6;border-radius:8px;background:#091f2d;color:#fff;padding:9px;font:inherit}.field input[type=range]{accent-color:var(--aqua);padding:7px}.field small{display:block;color:#c0cfe0;font-size:.8rem}
+.action{display:flex;flex-wrap:wrap;gap:10px;margin:19px 0}.action button{background:var(--aqua);color:#0d2431;border:0;border-radius:9px;padding:10px 15px;font:800 .93rem system-ui;cursor:pointer}.action button.secondary{background:#2c5267;color:#fff;border:1px solid #729ab0}.action button:hover{filter:brightness(1.09)}
+.bytes{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:5px;margin:15px 0}.byte{text-align:center;border:1px solid #648695;background:#092334;padding:10px 1px;border-radius:9px;min-width:0}.byte b{display:block;color:var(--amber);font:800 clamp(.67rem,1.3vw,.97rem) ui-monospace,monospace}.byte small{display:block;font:.71rem ui-monospace,monospace;color:#c3d0df;margin-top:4px}.byte.changed{background:#4f3041;border-color:var(--rose)}.byte.empty{opacity:.35}
+.status{border:1px solid #57957e;background:#164538;padding:15px 18px;border-radius:12px;min-height:84px}.status.error{background:#462735;border-color:#b96c7c}.status strong{display:block}.status p{margin:5px 0 0}
+.sources li{padding:8px 0}.smallprint{font-size:.86rem;color:#acc0d2;margin:28px 0}
+@media(max-width:880px){.layout{display:block}.toc{position:static;margin:20px 0}.toc ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 8px}.hero-inner{grid-template-columns:1fr}.hero svg{max-width:600px}.bytes{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-width:560px){.wrap{padding:0 15px}.hero{padding:35px 0}.controls,.cards,.toc ol{grid-template-columns:1fr}.lab{padding:15px}pre{padding:14px}th,td{padding:10px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+</style></head><body>
+<a class="skip" href="#main">Skip to article</a>
+<header class="hero"><div class="wrap hero-inner">
+<div><p class="eyebrow">Daily Engineering Deep Dive · 15 November 2026 · C++20</p><h1>Every Byte Needs <em>a Contract.</em></h1>
+<p class="lead">Could a nine-byte event trace survive a round trip between your RTOS and simulator—with no dynamic buffer allocation and no ambiguity about its fields? <strong>bitsery 5.2.5</strong> makes binary layout an explicit engineering decision.</p>
+<div class="meta"><span class="pill">Header-only C++</span><span class="pill">MIT license</span><span class="pill">Fixed buffers supported</span><span class="pill warn">Not self-describing</span></div>
+<p class="minor" style="margin-top:20px">Source-based technical review and a live byte laboratory. The teaching visualizer models our demonstration protocol; it does not run bitsery in JavaScript.</p></div>
+<figure><svg viewBox="0 0 430 280" role="img" aria-labelledby="svg-title svg-desc">
+<title id="svg-title">Event trace encoded into nine explicit bytes</title><desc id="svg-desc">A recorder transfers a nine-byte packet to a replay engine. Fields include schema version, tick, event, actor and flags.</desc>
+<g fill="#17384b" stroke="#6bf0d1"><rect x="15" y="25" width="113" height="62" rx="12"/><rect x="302" y="25" width="113" height="62" rx="12"/></g>
+<g fill="#dbfcf6" font-family="system-ui" font-size="14" text-anchor="middle"><text x="71" y="52">RECORDER</text><text x="358" y="52">REPLAY</text></g>
+<path d="M134 56H290l-11-8m11 8-11 8" stroke="#86ebd6" fill="none" stroke-width="3"/>
+<text x="215" y="38" fill="#d6eaf4" text-anchor="middle" font-size="12">9 bytes</text>
+<g font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">
+<rect x="17" y="128" width="42" height="47" rx="6" fill="#274a5b"/><text x="38" y="158" fill="#f8d584">01</text>
+<rect x="61" y="128" width="42" height="47" rx="6" fill="#274a5b"/><text x="82" y="158" fill="#f8d584">04</text>
+<rect x="105" y="128" width="42" height="47" rx="6" fill="#274a5b"/><text x="126" y="158" fill="#f8d584">03</text>
+<rect x="149" y="128" width="42" height="47" rx="6" fill="#274a5b"/><text x="170" y="158" fill="#f8d584">02</text>
+<rect x="193" y="128" width="42" height="47" rx="6" fill="#274a5b"/><text x="214" y="158" fill="#f8d584">01</text>
+<rect x="237" y="128" width="42" height="47" rx="6" fill="#274a5b"/><text x="258" y="158" fill="#f8d584">34</text>
+<rect x="281" y="128" width="42" height="47" rx="6" fill="#274a5b"/><text x="302" y="158" fill="#f8d584">12</text>
+<rect x="325" y="128" width="42" height="47" rx="6" fill="#274a5b"/><text x="346" y="158" fill="#f8d584">07</text>
+<rect x="369" y="128" width="42" height="47" rx="6" fill="#274a5b"/><text x="390" y="158" fill="#f8d584">A5</text></g>
+<g fill="#d4e5ef" font-family="system-ui" font-size="11" text-anchor="middle"><text x="38" y="195">v1</text><text x="147" y="195">tick · 4 bytes</text><text x="281" y="195">event</text><text x="346" y="195">ID</text><text x="390" y="195">bits</text></g>
+<rect x="25" y="221" width="380" height="42" rx="9" fill="#0b2435"/><text x="215" y="247" fill="#bbd8e5" font-size="13" text-anchor="middle">Layout ≠ schema evolution ≠ integrity</text>
+</svg><figcaption class="minor" style="padding:9px 4px">Our invented v1 record; not a built-in bitsery schema.</figcaption></figure>
+</div></header>
+<div class="wrap layout">
+<nav class="toc" aria-label="Table of contents"><strong>Table of contents</strong><ol>
+<li><a href="#problem">The problem</a></li><li><a href="#mechanics">How bitsery works</a></li><li><a href="#evidence">Verified uses</a></li><li><a href="#lab">Interactive lab</a></li><li><a href="#cpp">C++20 example</a></li><li><a href="#build">CMake / Ninja</a></li><li><a href="#risks">Tradeoffs</a></li><li><a href="#plan">Qualification plan</a></li><li><a href="#refs">Primary sources</a></li></ol></nav>
+<main id="main"><article>
+<section id="problem"><p class="kicker">01 / Why it matters</p><h2>A checksum cannot explain a packet.</h2>
+<p>After yesterday's CRC++ deep dive, we know how to ask whether bytes were accidentally corrupted. Now ask: <strong>what do they mean?</strong> A C++ struct's raw memory includes ABI-defined padding and representation choices. It is not automatically a portable record format. When a RISCue actor posts an event or VeloSim replays a sequence, a byte-level contract has to identify field widths, order, endianness, and a version policy.</p>
+<div class="cards"><div class="card"><b>Good fit</b><p>Small, privately owned C++ binary protocols with explicit schema, predictable field types and an independently enforced capacity.</p></div><div class="card"><b>Less suitable</b><p>Long-lived, multi-language or externally published schemas that need discoverable fields, generated bindings and automatic migration tooling.</p></div></div>
+<div class="callout"><strong>Finding in one sentence</strong>bitsery supports fixed-capacity contiguous output buffers and explicit serialized widths, but it does <em>not</em> promise checked writes beyond a non-resizable buffer, automatic heap freedom, CRC integrity, or automatic schema evolution.</div>
+</section>
+<section id="mechanics"><p class="kicker">02 / Mechanics</p><h2>Write what you mean, not the struct's memory.</h2>
+<p>bitsery's documented <code>serialize(S&amp;, T&amp;)</code> function calls primitives such as <code>value1b</code>, <code>value2b</code> and <code>value4b</code> in a deliberate order. The default configuration uses <strong>little-endian</strong> representation and enables input adapter and data checks. A fixed <code>std::array&lt;uint8_t,N&gt;</code> can store output inline. <a href="#ref-config">Configuration source</a>.</p>
+<div class="tabler"><table><thead><tr><th>Offset</th><th>Field</th><th>Width</th><th>Example bytes</th></tr></thead><tbody>
+<tr><td>0</td><td>Version</td><td>1</td><td><code>01</code></td></tr>
+<tr><td>1–4</td><td>Tick counter</td><td>4</td><td><code>04 03 02 01</code></td></tr>
+<tr><td>5–6</td><td>Event ID</td><td>2</td><td><code>34 12</code></td></tr>
+<tr><td>7</td><td>Actor ID</td><td>1</td><td><code>07</code></td></tr>
+<tr><td>8</td><td>Flags</td><td>1</td><td><code>A5</code></td></tr>
+</tbody></table></div>
+<p>This nine-byte demonstration format is <strong>our example</strong>, not a standard bitsery message and not a deployed RISCue or VeloSim ABI. In a real protocol the application must also define units, reserved values, version handling, framing and corruption detection.</p>
+<div class="cards">
+<div class="card"><b>Input safety</b><p>The default reader returns an error and a full-consumption indication; both must be checked. Validate your own envelope version and length as well.</p></div>
+<div class="card"><b>Output safety</b><p>Critical finding from the current <code>OutputBufferAdapter</code>: non-resizable overflow is guarded by <code>assert</code>, not a returned error. That assertion may vanish in Release.</p></div>
+<div class="card"><b>Heap discipline</b><p>A fixed byte array does not allocate when initialized. A dynamic payload, extension or application helper still might. Audit the whole path.</p></div>
+<div class="card"><b>Size preflight</b><p>For variable-length payloads, mathematically prove a worst-case bound or use a verified <code>MeasureSize</code> pass; never write first and hope.</p></div>
+</div></section>
+<section id="evidence"><p class="kicker">03 / Source versus speculation</p><h2>What's actually used?</h2>
+<div class="tabler"><table><thead><tr><th>Evidence class</th><th>Verified fact</th><th>Limit</th></tr></thead><tbody>
+<tr><td>Upstream examples</td><td>Official bit-packing and compatibility examples use a <code>std::array&lt;uint8_t,10000&gt;</code> output buffer. <a href="#ref-examples">Source</a>.</td><td>Examples are not named production deployments.</td></tr>
+<tr><td>Independent distribution</td><td>Microsoft vcpkg distributes a <code>bitsery</code> port with manifest version <strong>5.2.5</strong>. <a href="#ref-vcpkg">Manifest</a>.</td><td>A package listing does not prove product adoption.</td></tr>
+<tr><td>Implementation review</td><td>The output adapter has assert-only non-resizable capacity checks; configuration source documents endian and reader checks. <a href="#ref-buffer">Source</a>.</td><td>Does not imply hard-real-time qualification.</td></tr>
+<tr><td>Suggested experiments</td><td>RISCue actor-event traces and VeloSim deterministic replay packets could use these patterns.</td><td>No integration has been demonstrated or benchmarked here.</td></tr>
+</tbody></table></div>
+<p><strong>Adoption statement:</strong> upstream demonstrations and vcpkg packaging are verified. No independently corroborated, named production adopter of bitsery was established. The project's README describes design intentions for real-time game networking; those intentions must not be promoted to deployment evidence.</p>
+</section>
+<section id="lab"><p class="kicker">04 / Hands-on experiment</p><h2>Byte Inspector: nine bytes, four failure modes.</h2>
+<p>This JavaScript tool implements the <em>illustrated</em> fixed little-endian record using <code>DataView</code>. It is not a JavaScript binding to bitsery. Try a too-small output capacity; then flip one actor bit, truncate a byte, and change the version. Watch which failures a version-and-length validator can actually detect.</p>
+<div class="lab">
+<div class="controls">
+<div class="field"><label for="tick">Simulation tick: <span id="tickval">16909060</span></label><input id="tick" type="range" min="0" max="16909060" value="16909060" step="1"><small>Signed off as an unsigned 32-bit field</small></div>
+<div class="field"><label for="event">Event ID</label><select id="event"><option value="4660">0x1234 · user event</option><option value="1">0x0001 · wake</option><option value="258">0x0102 · timer</option><option value="65535">0xFFFF · maximum</option></select></div>
+<div class="field"><label for="actor">Actor ID</label><select id="actor"><option value="7">7 · worker</option><option value="1">1 · scheduler</option><option value="66">66 · instrument</option><option value="255">255 · maximum</option></select></div>
+<div class="field"><label for="flags">Flags</label><select id="flags"><option value="165">0xA5 · sample flags</option><option value="0">0x00 · clear</option><option value="1">0x01 · ready</option><option value="128">0x80 · overflow</option></select></div>
+<div class="field"><label for="capacity">Available output capacity: <span id="capval">9</span> bytes</label><input id="capacity" type="range" min="5" max="16" step="1" value="9"><small>Less than 9 must be rejected before writing</small></div>
+<div class="field"><label for="fault">Fault injection</label><select id="fault"><option value="none">None</option><option value="flip">Flip one actor-ID bit</option><option value="truncate">Drop the final byte</option><option value="version">Change version from 1 to 2</option></select></div>
+</div>
+<div class="action"><button id="encode" type="button">Encode and inspect</button><button id="reset" class="secondary" type="button">Reset reference packet</button></div>
+<h3>Encoded packet <span id="size" class="minor">9 bytes</span></h3><div class="bytes" id="bytes" role="group" aria-label="Nine byte cells showing the packet in hexadecimal"></div>
+<p class="minor">Each cell shows the byte value in hex and its zero-based index. A pink cell was altered by a fault.</p>
+<h3>Decoder decision</h3><div class="status" id="status" role="status" aria-live="polite" aria-atomic="true"></div>
+<p class="minor" style="margin-top:17px">The actor-bit flip is especially instructive: the packet still has the correct length and version. A checksum is a <em>different</em> layer, not a feature provided by serialization alone.</p>
+</div><noscript><div class="callout warning">JavaScript is disabled. The text and C++20 experiment remain fully readable.</div></noscript></section>
+<section id="cpp"><p class="kicker">05 / Reproducible source example</p><h2>A complete C++20 golden-vector check.</h2>
+<p>Use the upstream public adapter and quick-helper APIs with a nine-byte <code>std::array</code>. The sample verifies explicit expected bytes, rather than relying solely on an encoder/decoder round-trip that could share the same mistake.</p>
+<div class="codebox"><div class="codehead">trace_demo.cpp · source-reviewed; not compiled against installed bitsery in this run</div><pre><code>#include &lt;array&gt;
+#include &lt;cstddef&gt;
+#include &lt;cstdint&gt;
+#include &lt;iostream&gt;
+#include &lt;tuple&gt;
+#include &lt;bitsery/bitsery.h&gt;
+#include &lt;bitsery/adapter/buffer.h&gt;
+#include &lt;bitsery/traits/array.h&gt;
+
+struct Trace {
+  std::uint8_t version{};
+  std::uint32_t tick{};
+  std::uint16_t event{};
+  std::uint8_t actor{};
+  std::uint8_t flags{};
+};
+
+template&lt;class S&gt;
+void serialize(S&amp; s, Trace&amp; t) {
+  s.value1b(t.version);
+  s.value4b(t.tick);
+  s.value2b(t.event);
+  s.value1b(t.actor);
+  s.value1b(t.flags);
+}
+
+using Bytes = std::array&lt;std::uint8_t, 9&gt;;
+using Out = bitsery::OutputBufferAdapter&lt;Bytes&gt;;
+using In = bitsery::InputBufferAdapter&lt;Bytes&gt;;
+
+int main() {
+  constexpr std::size_t wire_size = 9;
+  constexpr Bytes golden{
+    0x01, 0x04, 0x03, 0x02, 0x01,
+    0x34, 0x12, 0x07, 0xA5
+  };
+  static_assert(std::tuple_size_v&lt;Bytes&gt; == wire_size);
+
+  Trace original{1, 0x01020304u, 0x1234u, 7, 0xA5u};
+  Bytes wire{};
+  const auto count =
+      bitsery::quickSerialization&lt;Out&gt;(wire, original);
+  if (count != wire_size || wire != golden) {
+    std::cerr &lt;&lt; "Golden-vector mismatch\\n";
+    return 1;
+  }
+
+  // Validate the application-owned envelope first.
+  if (wire[0] != 1u || count != wire_size) return 2;
+
+  Trace restored{};
+  const auto result = bitsery::quickDeserialization&lt;In&gt;(
+      {wire.begin(), count}, restored);
+  if (result.first != bitsery::ReaderError::NoError ||
+      !result.second || restored.version != 1u ||
+      restored.tick != original.tick ||
+      restored.event != original.event ||
+      restored.actor != original.actor ||
+      restored.flags != original.flags) {
+    std::cerr &lt;&lt; "Decode mismatch\\n";
+    return 3;
+  }
+  std::cout &lt;&lt; "9-byte trace contract OK\\n";
+}</code></pre></div>
+<div class="callout warning"><strong>Do not generalize from a fixed nine-byte example.</strong>The 1+4+2+1+1 layout cannot exceed the provided nine-byte buffer, by construction. If you change this to strings or variable-length containers, a fixed output buffer's debug assertion is not sufficient Release-mode protection. Preflight or prove the maximum, check arithmetic, and test the actual library in your target build.</div>
+<p>For true interoperability you must publish the versioned record contract, test unknown versions and length mismatches, and verify multiple compiler/target architectures. For resilient telemetry, combine with an integrity layer and framing as appropriate.</p>
+</section>
+<section id="build"><p class="kicker">06 / Integration</p><h2>Pin upstream in CMake; use Ninja to test.</h2>
+<p>Upstream CMake declares an interface target aliased as <code>Bitsery::bitsery</code> and declares version 5.2.5, with <strong>CMake 3.25 minimum</strong>. The SHA below is the observed upstream <code>master</code> revision (commit dated October 8, 2025); it avoids relying on a moving branch in the example. <a href="#ref-cmake">CMake source</a>.</p>
+<div class="codebox"><div class="codehead">CMakeLists.txt</div><pre><code>cmake_minimum_required(VERSION 3.25)
+project(trace_packet LANGUAGES CXX)
+include(FetchContent)
+FetchContent_Declare(bitsery
+  GIT_REPOSITORY https://github.com/fraillt/bitsery.git
+  GIT_TAG 9bebfd4911b8ef52c5a67754ccb87a8fd5223414
+)
+FetchContent_MakeAvailable(bitsery)
+
+add_executable(trace_demo trace_demo.cpp)
+target_compile_features(trace_demo PRIVATE cxx_std_20)
+target_link_libraries(trace_demo PRIVATE Bitsery::bitsery)
+
+enable_testing()
+add_test(NAME golden_trace COMMAND trace_demo)</code></pre></div>
+<div class="codebox"><div class="codehead">Commands · shell / PowerShell</div><pre><code>cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
+ctest --test-dir build -C Release --output-on-failure</code></pre></div>
+<p>Alternatives include vendoring the single header tree or installing from <strong>vcpkg port version 5.2.5</strong> with a pinned baseline. Use your standard offline mirror and lockfile practices. Do not claim a benchmark or dependency compilation result merely because the configuration is plausible.</p>
+<p><strong>License:</strong> MIT, © Mindaugas Vinkelis; upstream LICENSE grants broad use, modification and distribution with preservation of copyright and license text in copies/substantial portions. The example protocol, analysis and browser visualizer here are original educational material.</p>
+</section>
+<section id="risks"><p class="kicker">07 / Tradeoff matrix</p><h2>Every promise has a boundary.</h2>
+<div class="tabler"><table><thead><tr><th>Concern</th><th>Risk</th><th>Required response</th></tr></thead><tbody>
+<tr><td>Output overflow</td><td>Non-resizable adapter uses <code>assert</code>; Release may remove it.</td><td>Prove or preflight capacity before any write; run sanitizers.</td></tr>
+<tr><td>Unrecognized fields</td><td>Packet contains no built-in schema identity.</td><td>Version/envelope, golden vectors, explicit migration policy.</td></tr>
+<tr><td>Corrupted packet</td><td>Any payload bit may flip to another legal value.</td><td>CRC for accidental error detection; authentication for hostile data.</td></tr>
+<tr><td>Truncated input</td><td>Partial record or surplus bytes.</td><td>Validate exact frame size, reader error and completion.</td></tr>
+<tr><td>Unexpected allocation</td><td>Resizable vectors, extensions or application code allocate.</td><td>Fixed members, allocator instrumentation, cold/steady tests.</td></tr>
+<tr><td>Non-deterministic latency</td><td>Memory/cache effects and variable-length processing.</td><td>Prove work bound and measure worst cases on target hardware.</td></tr>
+<tr><td>Different runtimes</td><td>C# consumers and foreign ABIs need exact byte contracts.</td><td>Independent decoder and cross-language golden vectors.</td></tr>
+</tbody></table></div>
+<h3>Compared with earlier deep dives</h3><p><strong>nanopb</strong> offers schema/code-generated C messaging; <strong>zcbor</strong> supports CBOR/CDDL; <strong>CRC++</strong> deals with accidental corruption but not layout. bitsery is most compelling when C++ producers and consumers deliberately share an optimized private binary contract. The comparison is architectural, not a measured speed ranking.</p>
+</section>
+<section id="plan"><p class="kicker">08 / Proposed project experiment</p><h2>One small event record; real proof gates.</h2>
+<p>For <strong>RISCue</strong>, prototype a test-only binary event trace from a bounded queue. For <strong>VeloSim</strong>, prototype a versioned host replay packet and test repeatability, without replacing the existing normalized JSON structural schema or claiming that this fixes current producer–consumer mismatches. These are proposals, <em>not</em> verified integrations.</p>
+<div class="tabler"><table><thead><tr><th>Check</th><th>Acceptance criterion</th></tr></thead><tbody>
+<tr><td>Golden vectors</td><td><code>01 04 03 02 01 34 12 07 A5</code> on actual bitsery GCC/Clang/MSVC builds.</td></tr>
+<tr><td>Malformed input</td><td>Zero through eight bytes, wrong version and extra suffix rejected.</td></tr>
+<tr><td>Capacity safety</td><td>Variable-length extension rejects insufficient buffer capacity before writing, in Release and Debug.</td></tr>
+<tr><td>Heap behavior</td><td>Instrument allocator paths and demonstrate zero steady-state heap allocations.</td></tr>
+<tr><td>Security / fuzzing</td><td>Malformed corpus, sanitizers, endian and field-boundary mutation checks.</td></tr>
+<tr><td>Real-time</td><td>Bounded execution and stack usage demonstrated on actual hardware; host throughput is not WCET.</td></tr>
+<tr><td>Replay fidelity</td><td>Deterministic event order, documented clock domain and version migration.</td></tr>
+</tbody></table></div>
+<div class="callout"><strong>Recommendation</strong>Try bitsery as an <em>opt-in host trace format</em> first. Adopt it for a real-time firmware path only after capacity, error, allocation and worst-case timing evidence exists. A compact packet is only useful if the recipient knows its contract.</div>
+</section>
+<section id="refs"><p class="kicker">09 / Source trail</p><h2>Primary documentation and source.</h2>
+<ol class="sources">
+<li><a href="https://github.com/fraillt/bitsery">Official project README</a> — goals, usage, C++ compatibility and MIT statement. Performance comparisons are author claims, not independent measurements.</li>
+<li><a href="https://github.com/fraillt/bitsery/blob/master/doc/tutorial/hello_world.md">Official quick-start</a> — field widths, traits, quick serialization and reader status.</li>
+<li id="ref-buffer"><a href="https://github.com/fraillt/bitsery/blob/master/include/bitsery/adapter/buffer.h">Buffer adapter implementation</a> — crucial non-resizable output assertion and input checks.</li>
+<li id="ref-config"><a href="https://github.com/fraillt/bitsery/blob/master/include/bitsery/common.h">DefaultConfig definition</a> — endian and data/adapter checking defaults.</li>
+<li><a href="https://github.com/fraillt/bitsery/blob/master/include/bitsery/adapter/measure_size.h">MeasureSize adapter</a> — supports preflight analysis; side effects and time remain application concerns.</li>
+<li id="ref-examples"><a href="https://github.com/fraillt/bitsery/blob/master/examples/bit_packing.cpp">Official bit-packing demonstration</a> — fixed <code>std::array</code> adapter and quantified-value extension.</li>
+<li><a href="https://github.com/fraillt/bitsery/blob/master/examples/forward_backward_compatibility.cpp">Official compatibility example</a> — <code>Growable</code> extension and size-bounded containers.</li>
+<li id="ref-cmake"><a href="https://github.com/fraillt/bitsery/blob/master/CMakeLists.txt">Project CMakeLists</a> — <code>Bitsery::bitsery</code> target, CMake 3.25 and version 5.2.5.</li>
+<li id="ref-vcpkg"><a href="https://github.com/microsoft/vcpkg/blob/master/ports/bitsery/vcpkg.json">Microsoft vcpkg port manifest</a> — independent package distribution at version 5.2.5.</li>
+<li><a href="https://github.com/fraillt/bitsery/blob/master/LICENSE">MIT license</a> — original upstream license text.</li>
+</ol>
+<p class="minor">Sources reviewed November 15, 2026. Upstream revision <code>9bebfd4911b8ef52c5a67754ccb87a8fd5223414</code> is dated October 8, 2025. Pin and re-audit if library source changes.</p></section>
+<footer class="smallprint"><p><strong>Review limitations:</strong> the wire mathematics, source-level API choices, source-confirmed overflow behavior, licensing, and JS inspector logic were reviewed. The C++ example has not yet been compiled against the actual upstream dependency in this run; no embedded allocation or timing claims are made. The HTML is self-contained with no externally loaded scripts, styles, fonts or images.</p><p>DeepDives / Original engineering analysis / November 15, 2026.</p></footer>
+</article></main></div>
+<script>
+(function(){
+'use strict';
+const get=id=>document.getElementById(id);
+const defaults={tick:'16909060',event:'4660',actor:'7',flags:'165',capacity:'9',fault:'none'};
+const hex=n=>Number(n).toString(16).toUpperCase().padStart(2,'0');
+function draw(){
+const cap=Number(get('capacity').value);
+get('capval').textContent=String(cap);
+get('tickval').textContent=Number(get('tick').value).toLocaleString('en-US');
+const frame=new Uint8Array(9);
+const view=new DataView(frame.buffer);
+view.setUint8(0,1);view.setUint32(1,Number(get('tick').value),true);
+view.setUint16(5,Number(get('event').value),true);
+view.setUint8(7,Number(get('actor').value));view.setUint8(8,Number(get('flags').value));
+const grid=get('bytes'),stat=get('status');grid.replaceChildren();
+let packet=frame,modified=-1,title='',detail='',error=false;
+if(cap<9){
+packet=new Uint8Array(0);error=true;
+title='Rejected before writing: output buffer too small.';
+detail='The format requires exactly 9 bytes, but available capacity is '+cap+'. Calling the non-resizable bitsery writer here would not be a safe overflow-handling strategy.';
+}else{
+const fault=get('fault').value;
+if(fault==='flip'){packet=frame.slice();packet[7]^=1;modified=7;}
+if(fault==='truncate'){packet=frame.slice(0,8);}
+if(fault==='version'){packet=frame.slice();packet[0]=2;modified=0;}
+if(packet.length!==9){error=true;title='Rejected: truncated input';detail='Received '+packet.length+' bytes, but the version-1 record requires exactly 9.';}
+else if(packet[0]!==1){error=true;title='Rejected: unknown schema version';detail='Version '+packet[0]+' is not a supported v1 record. Do not silently reinterpret it.';}
+else if(fault==='flip'){title='Accepted with silently corrupted actor ID!';detail='Actor '+frame[7]+' became '+packet[7]+'. Length and version checks cannot detect this. Add a CRC to detect accidental corruption.';}
+else{title='Accepted: exact version and length';detail='Decoded tick '+new DataView(packet.buffer).getUint32(1,true)+', event '+packet[6]*256+packet[5]+', actor '+packet[7]+', flags 0x'+hex(packet[8])+'.';}
+}
+get('size').textContent=packet.length+' of '+cap+' capacity bytes';
+for(let i=0;i<9;i++){
+const cell=document.createElement('div');
+cell.className='byte'+(i===modified?' changed':'')+(i>=packet.length?' empty':'');
+const value=document.createElement('b');value.textContent=i<packet.length?hex(packet[i]):'—';
+const index=document.createElement('small');index.textContent=String(i);
+cell.setAttribute('title','Byte index '+i);
+cell.append(value,index);grid.appendChild(cell);
+}
+stat.className='status'+(error?' error':'');stat.replaceChildren();
+const head=document.createElement('strong');head.textContent=title;
+const para=document.createElement('p');para.textContent=detail;stat.append(head,para);
+}
+['tick','event','actor','flags','capacity','fault'].forEach(id=>get(id).addEventListener('input',draw));
+get('encode').addEventListener('click',draw);
+get('reset').addEventListener('click',()=>{Object.keys(defaults).forEach(id=>{get(id).value=defaults[id]});draw()});
+draw();
+})();
+</script></body></html>
