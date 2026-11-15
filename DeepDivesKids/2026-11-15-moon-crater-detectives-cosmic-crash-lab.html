@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#102145">
+<meta name="description" content="A colorful, offline-friendly Moon crater science lab for curious nine-year-olds. Explore drop energy, build flour craters, and discover NASA's real crater detective work.">
+<title>Moon Crater Detectives! The Cosmic Crash Lab | DeepDivesKids | November 15, 2026</title>
+<style>
+:root{--night:#102145;--deep:#172d58;--ink:#20314d;--muted:#4b5d74;--paper:#f5f8ff;--white:#fff;--violet:#7240d9;--cyan:#0d778f;--orange:#c65316;--focus:#ffb438;--ring:#cddcf7;--shadow:0 16px 36px rgba(24,42,78,.12)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:18px}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:#175cb0;text-underline-offset:3px}a:hover{text-decoration-thickness:2px}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:4px solid var(--focus);outline-offset:3px}
+.skip{position:absolute;left:12px;top:-80px;background:#fff;color:#162246;padding:10px 16px;z-index:20;border-radius:10px}.skip:focus{top:12px}
+h1,h2,h3,p{margin-top:0}h1,h2,h3{line-height:1.16;letter-spacing:-.035em}
+h1{font-size:clamp(2.65rem,7vw,5.7rem);max-width:12ch;margin:0 0 16px}
+h2{font-size:clamp(1.65rem,3.4vw,2.4rem);margin-bottom:14px}
+h3{font-size:1.2rem;margin-bottom:10px}
+p{margin-bottom:14px}small,.small{font-size:.88rem}
+.container{width:min(1100px,calc(100% - 36px));margin-inline:auto}
+.hero{background:radial-gradient(circle at 78% 24%,#374d90 0,transparent 35%),radial-gradient(circle at 0% 80%,#174c67 0,transparent 46%),var(--night);color:#fff;overflow:hidden;padding:24px 0 52px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding-bottom:32px;font-size:.85rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.topbar .date{color:#c2d5fb}
+.hero-layout{display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:30px}
+.eyebrow{color:#ffd68b;text-transform:uppercase;letter-spacing:.16em;font-size:.78rem;font-weight:900;margin-bottom:16px}
+.hero p.lead{font-size:clamp(1.1rem,2.2vw,1.34rem);color:#e1eeff;max-width:48ch;line-height:1.55}
+.hero a,.hero a:visited{color:#ffe6a8}
+.hero-art{border-radius:30px;background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.16);padding:8px}
+.hero-art svg{width:100%;height:auto;display:block}
+.hero-sticker{display:inline-flex;align-items:center;gap:8px;background:#ffdc87;color:#32260e;border-radius:100px;padding:8px 15px;font-weight:900;font-size:.87rem;margin-bottom:20px}
+.pillrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:21px}
+.pill{font-size:.77rem;font-weight:800;border:1px solid #7b96c7;border-radius:30px;padding:5px 11px;color:#edf5ff}
+main{padding:24px 0 62px}
+.toc{background:white;border:2px solid var(--ring);border-radius:24px;padding:22px 26px;margin:0 auto 26px;box-shadow:var(--shadow)}
+.toc h2{font-size:1.15rem;letter-spacing:0;margin-bottom:12px}
+.toc ol{margin:0;padding-left:24px;columns:2;column-gap:30px}.toc li{padding:3px 0;break-inside:avoid}
+.card{background:white;border:1px solid #dce5f8;border-radius:24px;padding:clamp(20px,3vw,34px);margin:23px 0;box-shadow:var(--shadow)}
+.section-kicker{text-transform:uppercase;font-size:.74rem;letter-spacing:.15em;font-weight:900;color:#6740b7;margin-bottom:8px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.callout{background:#e9f6fc;border-left:5px solid #1288aa;border-radius:15px;padding:17px 20px;margin:15px 0}
+.callout.amber{background:#fff3de;border-color:#e3a322}
+.callout.violet{background:#f0eaff;border-color:#8753d6}
+.tag{display:inline-block;background:#def6ed;color:#146344;border-radius:30px;padding:4px 10px;font-size:.8rem;font-weight:900}
+.fact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:18px 0}
+.fact{background:#f0f3fd;border-radius:17px;padding:16px}.fact strong{display:block;font-size:1.1rem;color:#352b73}
+.steps{padding-left:23px}.steps li{padding:0 0 11px 6px}
+.lab{border:3px solid #ccdafa;background:#f8faff;border-radius:23px;padding:22px;margin-top:18px}
+.lab-grid{display:grid;grid-template-columns:minmax(220px,.85fr) minmax(270px,1.15fr);gap:25px}
+.control{margin:19px 0}.control label{display:flex;gap:10px;justify-content:space-between;align-items:center;font-weight:850;margin-bottom:6px;flex-wrap:wrap}
+.control output{background:#e6eefe;border-radius:10px;padding:2px 10px;color:#14396f;font-variant-numeric:tabular-nums}
+input[type=range]{display:block;width:100%;accent-color:#7240d9;cursor:pointer;min-height:30px}
+select{font:inherit;width:100%;background:#fff;border:2px solid #a2b6db;border-radius:12px;padding:11px;color:#20314d}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+button{font:inherit;cursor:pointer;border:2px solid #254b9a;border-radius:13px;background:#fff;color:#173d7e;font-weight:850;padding:10px 15px;min-height:48px}
+button:hover{background:#edf3ff}
+button.primary{background:#2249b6;color:white;border-color:#2249b6}
+button.primary:hover{background:#173689}
+button:disabled{cursor:not-allowed;opacity:.6}
+.readout{background:var(--night);color:white;border-radius:17px;padding:21px;text-align:center}
+.readout strong{font-size:clamp(2rem,5vw,3.45rem);line-height:1.1;color:#ffdf8b;display:block;font-variant-numeric:tabular-nums}
+.readout span{font-size:.88rem;color:#e4ecff}
+.labsvg{width:100%;height:auto;max-height:375px;display:block}
+.sim-visual{background:radial-gradient(circle at 50% 48%,#44547c,#172240 70%);border-radius:20px;padding:12px;position:relative}
+.sim-caption{font-size:.85rem;color:#4a5875;margin:8px 0 0}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:15px 0}
+.stat{padding:12px 15px;border-radius:14px;background:#f0eaff}.stat b{display:block;font-size:1.3rem;font-variant-numeric:tabular-nums}
+.log{overflow-x:auto}.log table{border-collapse:collapse;width:100%;min-width:520px}
+.log th,.log td{padding:10px 12px;border-bottom:1px solid #d9e3f4;text-align:left;white-space:nowrap}
+.log th{background:#eaf1ff;color:#233f74;font-size:.83rem}.log td{font-variant-numeric:tabular-nums}
+pre{background:#152346;color:#f5f8ff;border-radius:17px;overflow-x:auto;padding:20px;font-size:.88rem;line-height:1.55}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+:not(pre)>code{background:#eaf0fb;padding:2px 5px;border-radius:5px;font-size:.92em}
+.quiz-options{display:grid;grid-template-columns:1fr;gap:10px;margin:16px 0}
+.quiz-options button{text-align:left;background:#f1f5ff}
+.quiz-options button[aria-pressed=true]{border-color:#2b7c78;background:#ddf6ec}
+.quiz-feedback{min-height:54px;font-weight:800}
+.source-list{padding-left:21px}.source-list li{margin-bottom:12px;overflow-wrap:anywhere}
+.kids-note{font-size:1rem;background:#fff1f3;border:1px solid #f4bdc6;border-radius:14px;padding:16px}
+footer{background:#101f43;color:#d9e5fd;padding:30px 0;font-size:.91rem}
+footer a{color:#ffe6a8}
+@media(max-width:770px){.hero-layout,.split,.lab-grid{grid-template-columns:1fr}.hero-art{max-width:480px;justify-self:center}.fact-grid{grid-template-columns:1fr}.toc ol{columns:1}.topbar{padding-bottom:20px}.stats{grid-template-columns:1fr 1fr}}
+@media(max-width:430px){body{font-size:16px}.container{width:min(100% - 24px,1100px)}.card,.toc,.lab{padding:17px}.hero{padding-bottom:33px}.stats{grid-template-columns:1fr}button{width:100%}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
+@media print{body{background:white;color:#111}.hero{background:#fff;color:#111;padding-bottom:15px}.hero p.lead,.topbar .date{color:#111}.hero-art{display:none}.card,.toc{box-shadow:none;break-inside:avoid}.lab{background:#fff}.btn-row{display:none}a{color:#111}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the mission</a>
+<header class="hero">
+<div class="container">
+<div class="topbar"><span>🌟 DeepDivesKids / Mission 15</span><span class="date">Sunday · November 15, 2026</span></div>
+<div class="hero-layout">
+<div>
+<div class="hero-sticker">🔭 Space science + backyard experiment</div>
+<p class="eyebrow">Your next mission starts on the Moon</p>
+<h1>Moon Crater Detectives!</h1>
+<p class="lead">The Cosmic Crash Lab. An asteroid streaks across the sky. <strong>BOOM!</strong> How can a tiny rock leave a giant mark? Today, Quinn and Reagan are the scientists, artists, and space detectives.</p>
+<div class="pillrow"><span class="pill">Ages 9+</span><span class="pill">25–35 minutes</span><span class="pill">No installation</span><span class="pill">Runs offline</span></div>
+<p style="margin-top:20px"><a href="#interactive">Jump to the interactive crater lab ↓</a></p>
+</div>
+<div class="hero-art">
+<svg viewBox="0 0 500 410" role="img" aria-labelledby="hero-title hero-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="hero-title">Illustrated Moon with a space rock and a giant crater</title>
+<desc id="hero-desc">A colorful meteor approaches a gray moon with circular craters, while bright stars sparkle in space. This is original cartoon artwork, not a NASA photograph.</desc>
+<defs><radialGradient id="planet"><stop stop-color="#faf6ed"/><stop offset=".6" stop-color="#afb9ce"/><stop offset="1" stop-color="#687997"/></radialGradient><linearGradient id="trail"><stop stop-color="#ffca61"/><stop offset=".6" stop-color="#ef7138"/><stop offset="1" stop-color="#ef7138" stop-opacity="0"/></linearGradient></defs>
+<g fill="#d5e7ff"><circle cx="33" cy="44" r="3"/><circle cx="433" cy="72" r="3"/><circle cx="448" cy="209" r="2"/><circle cx="58" cy="295" r="2"/><circle cx="262" cy="36" r="2"/></g>
+<path d="M80 85 L128 104 L87 55 L207 117 L138 34 L228 105 L166 41 L263 151" fill="none" stroke="url(#trail)" stroke-width="16" stroke-linecap="round"/>
+<path d="M249 140 l-10 -18 25 -19 27 11 4 26 -20 17 z" fill="#ffbd68" stroke="#ffdf9c" stroke-width="5"/>
+<circle cx="263" cy="257" r="139" fill="url(#planet)" stroke="#dce4f6" stroke-width="5"/>
+<ellipse cx="286" cy="247" rx="69" ry="47" fill="#697993" stroke="#e3e6e9" stroke-width="10" transform="rotate(-17 286 247)"/>
+<ellipse cx="286" cy="251" rx="42" ry="25" fill="#4a5874" transform="rotate(-17 286 251)"/>
+<ellipse cx="193" cy="211" rx="23" ry="17" fill="#7c8ba4" stroke="#d4dbe6" stroke-width="7"/>
+<ellipse cx="326" cy="333" rx="29" ry="20" fill="#8b98b0" stroke="#dce3ed" stroke-width="8"/>
+<circle cx="190" cy="302" r="10" fill="#7886a1"/>
+<path d="M273 158 l-17 -33 M304 164 l15 -28 M352 214 l37 -15 M340 282 l34 28 M251 299 l-26 34" stroke="#fff1be" stroke-width="4" stroke-linecap="round"/>
+<g font-size="18" font-weight="900" fill="#fff"><text x="328" y="39">WHOOOSH!</text><text x="50" y="387">CAN YOU SOLVE THE MYSTERY?</text></g>
+</svg>
+</div>
+</div></div>
+</header>
+
+<main id="main" class="container">
+<nav class="toc" aria-label="Lesson table of contents">
+<h2>🧭 Mission map</h2>
+<ol>
+<li><a href="#mystery">The mystery</a></li>
+<li><a href="#science">How a crater forms</a></li>
+<li><a href="#real">NASA's real detective work</a></li>
+<li><a href="#interactive">Interactive crash lab</a></li>
+<li><a href="#experiment">Kitchen-table impact experiment</a></li>
+<li><a href="#code">The code behind the experiment</a></li>
+<li><a href="#quiz">Mission quiz</a></li>
+<li><a href="#honest">What our model can't do</a></li>
+<li><a href="#family">Hockey + Dad's engineering</a></li>
+<li><a href="#sources">Sources, credits, and licensing</a></li>
+</ol>
+</nav>
+
+<section id="mystery" class="card">
+<p class="section-kicker">01 / Look up!</p>
+<h2>🌙 Why is the Moon covered in circles?</h2>
+<p>Imagine an old sidewalk with footprints frozen in it. The Moon is a bit like that, but its marks are <strong>impact craters</strong>: dents left by space rocks colliding with the ground. Because the Moon has almost no atmosphere and little weather or flowing water, many impact marks remain for an incredibly long time.</p>
+<div class="fact-grid">
+<div class="fact"><strong>☄️ The rock</strong>A space rock, called a meteoroid before it hits, races toward the surface.</div>
+<div class="fact"><strong>💥 The crash</strong>Its motion energy moves and breaks the ground. Material flies outward.</div>
+<div class="fact"><strong>⭕ The clue</strong>A round crater, raised rim, and sometimes bright rays remain.</div>
+</div>
+<div class="callout amber"><strong>Detective question:</strong> Do you think a heavier marble dropped from the same height will make exactly the same dent as a lighter marble? Write down your prediction before trying the lab.</div>
+</section>
+
+<section id="science" class="card">
+<p class="section-kicker">02 / Know the science</p>
+<h2>⚡ Motion energy: the crash's secret ingredient</h2>
+<div class="split">
+<div>
+<p>Objects gain speed as they fall. A ball held higher above the ground has more energy waiting to turn into motion when released. In our simple drop experiment, the energy just before impact is:</p>
+<div class="callout violet" style="font-size:1.12rem"><strong>Energy = mass × gravity × drop height</strong><div class="small">E = m × g × h (joules, with kilograms and meters)</div></div>
+<p>This is the <em>gravitational potential energy</em> before the drop. If we ignore air resistance, it becomes motion (kinetic) energy just before the hit.</p>
+</div>
+<div>
+<h3>Our units are tiny!</h3>
+<p>A 20-gram marble is <strong>0.020 kilograms</strong>. A 50-centimeter drop is <strong>0.50 meters</strong>.</p>
+<p>On Earth: 0.020 × 9.81 × 0.50 = <strong>0.0981 joules</strong>, also called <strong>98.1 millijoules (mJ)</strong>.</p>
+<p>On the Moon, gravity is about one-sixth Earth's, but actual lunar meteoroids can hit at <em>enormous</em> speeds. Our gentle marble drops are not miniature copies of those crashes.</p>
+</div>
+</div>
+</section>
+
+<section id="real" class="card">
+<p class="section-kicker">03 / Evidence from the real world</p>
+<h2>🔬 NASA actually does crater detective work</h2>
+<div class="split">
+<div>
+<h3><span class="tag">Documented real use</span> Spacecraft spot new craters</h3>
+<p>NASA's <strong>Lunar Reconnaissance Orbiter</strong> has photographed the lunar surface before and after an impact, revealing a new crater about <strong>12 meters across</strong> and streaks of scattered material. Scientists also count craters to help estimate how old a lunar surface is. <a href="https://science.nasa.gov/moon/lunar-craters/why-study-craters/">NASA: Why Study Moon Craters?</a></p>
+</div>
+<div>
+<h3><span class="tag">Documented real use</span> Telescopes watch for flashes</h3>
+<p>NASA's Meteoroid Environment Office uses <strong>two video-equipped telescopes</strong> to look for brief flashes when rocks hit the Moon. Seeing the same flash in both helps scientists rule out camera noise or a cosmic ray striking just one sensor. <a href="https://www.nasa.gov/meteoroid-environment-office/lunar-impact-monitoring/">NASA: Lunar Impact Monitoring</a></p>
+</div>
+</div>
+<div class="callout"><strong>And yes, NASA makes impact craters in a laboratory!</strong> NASA describes using its Vertical Gun Range to shoot small projectiles at high speed into target materials. That helps scientists study what real, very fast impacts do. Our marble-and-flour activity is only a safe, gentle classroom analogy. <a href="https://science.nasa.gov/moon/lunar-craters/why-study-craters/">See NASA's explanation</a>.</div>
+</section>
+
+<section id="interactive" class="card">
+<p class="section-kicker">04 / Your mission console</p>
+<h2>🎛️ Interactive Cosmic Crash Lab</h2>
+<p>Choose a pretend space rock's mass and how far it falls. Then tap <strong>Drop the rock!</strong> The computer uses a real energy equation and draws an <strong>invented crater illustration</strong>. You are changing the experiment, not predicting a real lunar crater's diameter.</p>
+<div class="lab">
+<div class="lab-grid">
+<div>
+<div class="control"><label for="mass">Rock mass <output id="mass-value" for="mass">20 g</output></label><input id="mass" type="range" min="5" max="50" step="5" value="20"></div>
+<div class="control"><label for="height">Drop height <output id="height-value" for="height">50 cm</output></label><input id="height" type="range" min="10" max="100" step="10" value="50"></div>
+<div class="control"><label for="world">Gravity</label><select id="world"><option value="earth">🌍 Earth (real tabletop drop)</option><option value="moon">🌙 Moon (imaginary drop)</option></select></div>
+<div class="btn-row"><button type="button" id="gentle">Gentle test</button><button type="button" id="big">Big test</button></div>
+<div class="readout"><span>Calculated impact energy</span><strong id="energy">98.1 mJ</strong><span>Assumes release from rest with no air resistance</span></div>
+<div class="stats"><div class="stat">Speed before hit <b id="speed">3.13 m/s</b></div><div class="stat">Trial count <b id="trial-count">0</b></div></div>
+<div class="btn-row"><button type="button" class="primary" id="drop">☄️ Drop the rock!</button><button type="button" id="reset">↺ Reset lab</button></div>
+<p id="lab-status" role="status" aria-live="polite">Ready to investigate. Choose your settings and drop!</p>
+</div>
+<div>
+<div class="sim-visual">
+<svg class="labsvg" id="crater-scene" viewBox="0 0 420 375" role="img" aria-labelledby="scene-title scene-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="scene-title">Pretend overhead view of the crater laboratory</title>
+<desc id="scene-desc">Original artistic illustration of a gray surface, ejecta rays, and a central crater. The drawing's size is not a prediction of a real crater.</desc>
+<defs><radialGradient id="ground"><stop stop-color="#abb8cf"/><stop offset="1" stop-color="#566884"/></radialGradient><radialGradient id="hole"><stop stop-color="#26334d"/><stop offset=".75" stop-color="#3d4d68"/><stop offset="1" stop-color="#8291ab"/></radialGradient></defs>
+<circle cx="210" cy="184" r="160" fill="url(#ground)" stroke="#a6b6d0" stroke-width="3"/>
+<g fill="#465974" opacity=".75"><circle cx="111" cy="130" r="12"/><circle cx="278" cy="93" r="8"/><circle cx="305" cy="254" r="14"/><circle cx="148" cy="260" r="7"/><circle cx="231" cy="309" r="5"/></g>
+<g id="rays" stroke="#f4deae" stroke-width="4" stroke-linecap="round" opacity=".75">
+<path d="M210 105 V62"/><path d="M264 129 L307 88"/><path d="M289 184 H344"/><path d="M264 239 L303 274"/><path d="M210 262 V313"/><path d="M156 239 L113 282"/><path d="M132 184 H80"/><path d="M156 129 L111 90"/>
+</g>
+<circle id="crater-rim" cx="210" cy="184" r="54" fill="#d6dce7" stroke="#e8e2cb" stroke-width="8"/>
+<circle id="crater-hole" cx="210" cy="184" r="42" fill="url(#hole)"/>
+<circle cx="192" cy="166" r="7" fill="#c9d4e3" opacity=".5"/>
+<text x="210" y="359" fill="#f5f6fc" font-size="15" font-weight="800" text-anchor="middle">Illustration only • not to scale</text>
+</svg>
+</div>
+<p class="sim-caption"><strong>Important:</strong> This crater picture is a cartoon. Real crater size depends on speed, composition, impact angle, gravity, and surface material, not just drop energy.</p>
+</div>
+</div>
+</div>
+<h3 style="margin-top:25px">📋 Your most recent trials</h3>
+<p class="small">Same inputs always produce the same calculated numbers. Try doubling mass while keeping height fixed: does the energy double?</p>
+<div class="log"><table><caption class="small" style="text-align:left">The five most recent simulated drops; newest first</caption><thead><tr><th scope="col">Trial</th><th scope="col">World</th><th scope="col">Mass</th><th scope="col">Height</th><th scope="col">Energy</th></tr></thead><tbody id="trial-body"><tr id="empty-row"><td colspan="5">No trials yet — drop your first rock!</td></tr></tbody></table></div>
+</section>
+
+<section id="experiment" class="card">
+<p class="section-kicker">05 / Unplug and explore</p>
+<h2>🥣 Make real craters with flour!</h2>
+<p><strong>Gather:</strong> a shallow tray, flour, a little cocoa powder for contrast, one marble or small ball, a ruler, scrap paper, and an adult helper. Put newspaper underneath for easy cleanup.</p>
+<ol class="steps">
+<li>Spread 2–3 cm of flour in the tray and dust the top with cocoa. Smooth the surface.</li>
+<li>Hold the same marble <strong>10 cm</strong> above the surface and release it without pushing. Measure the widest part of its crater with the ruler.</li>
+<li>Smooth the flour. Repeat from <strong>30 cm</strong> and <strong>50 cm</strong>, using the same marble and landing position.</li>
+<li>Record the crater diameter each time. For a fair test, change just <strong>one thing</strong> — the height.</li>
+<li>Try the same drop height with a second, differently sized ball. Predict first, then compare.</li>
+</ol>
+<div class="callout amber"><strong>🧠 Prediction:</strong> A higher drop usually releases more energy. But the crater's width is NOT simply proportional to energy; your measurements may vary because flour packing, the ball, and the way it lands all matter.</div>
+<p class="kids-note"><strong>Safety:</strong> An adult should supervise small marbles and powder. Do not throw rocks or aim anything at people, animals, windows, or screens. Avoid breathing flour or cocoa dust; wash hands afterward and do not eat the experiment.</p>
+<p><strong>On paper:</strong> Draw three circles with the actual crater diameters you measured. Give your graph a title, label the heights, and write one sentence about whether your prediction matched what happened.</p>
+</section>
+
+<section id="code" class="card">
+<p class="section-kicker">06 / Code corner</p>
+<h2>💻 You're programming a science calculation!</h2>
+<p>Our live lab uses built-in JavaScript — no download or extra library. This is the core calculation, shown as a small piece of real working code:</p>
+<pre><code>function dropEnergy(massGrams, heightCm, gravity) {
+  const massKg = massGrams / 1000;
+  const heightM = heightCm / 100;
+  const joules = massKg * gravity * heightM;
+  const speedMps = Math.sqrt(2 * gravity * heightM);
+  return { joules, speedMps };
+}
+
+// A 20 g marble dropped 50 cm on Earth:
+const result = dropEnergy(20, 50, 9.81);
+console.log(result.joules);   // 0.0981 joules
+console.log(result.speedMps); // about 3.13 m/s</code></pre>
+<p>Try a detective trick: change only <code>20</code> to <code>40</code>. You'll double the energy, but the speed stays the same, because in this simplified model the speed depends on height and gravity — not mass.</p>
+<div class="callout"><strong>Why no library this time?</strong> The browser already supports range sliders, drawing with SVG, and JavaScript math. Adding a big coding library would make this little experiment harder to save and run offline. Learn more at <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sqrt">MDN's official Math.sqrt reference</a>.</div>
+</section>
+
+<section id="quiz" class="card">
+<p class="section-kicker">07 / Check your detective skills</p>
+<h2>🕵️ Crater mystery challenge</h2>
+<p id="quiz-progress" class="small">Question 1 of 3</p>
+<h3 id="quiz-question">What do bright rays around a crater often show?</h3>
+<div id="quiz-options" class="quiz-options" role="group" aria-label="Answer choices"></div>
+<p id="quiz-feedback" class="quiz-feedback" role="status" aria-live="polite">Choose your answer.</p>
+<button id="quiz-next" type="button" disabled>Next question</button>
+</section>
+
+<section id="honest" class="card">
+<p class="section-kicker">08 / Honest science</p>
+<h2>🧪 What's real? What's pretend?</h2>
+<div class="split">
+<div>
+<h3>✅ Real and checkable</h3>
+<p>NASA photographs craters, watches for lunar impact flashes, and uses high-speed experiments to study impacts. Our code correctly calculates <strong>idealized falling-object energy</strong> from mass, gravity, and height.</p>
+</div>
+<div>
+<h3>🎨 Simplified or imagined</h3>
+<p>The cartoon Moon, drawn crater sizes, trial labels, and mission story are made up. The lab is <strong>not</strong> a NASA crater simulator. It ignores air resistance, rock breaking, surface composition, and most of the physics of high-speed meteor impacts.</p>
+</div>
+</div>
+<p>The Moon setting is a <strong>thought experiment</strong> for dropping a marble from rest in lunar gravity. It is not the energy of a meteoroid arriving from space. A real meteoroid usually arrives vastly faster than a dropped marble.</p>
+</section>
+
+<section id="family" class="card">
+<p class="section-kicker">09 / Bring it home</p>
+<h2>🥅 Hockey, space, and Dad's computer projects</h2>
+<div class="split">
+<div><h3>For Quinn and Reagan</h3><p>Think of a hockey puck: a slow, soft tap and a booming slap shot do not have the same impact energy. Goalie gear is designed to help protect against collisions. Our crater activity explores how impacts can change a surface, but it's <strong>not</strong> a test of hockey safety equipment.</p><p>When you visit new places, look for circular landforms or rocks, but remember: not every round hole is a meteor crater! Scientists check many clues.</p></div>
+<div><h3>For Dad's engineering lab</h3><p>Dad's <strong>VeloSim</strong> and <strong>SharpHDL</strong> projects work with computer models and hardware logic. Your lab has a similar engineering habit: keep inputs clear, calculate results repeatably, and test whether changing one input gives an expected result. In engineering that is called <strong>verification</strong>.</p><p><strong>Mini challenge:</strong> Set Earth, 20 g, 50 cm; record energy. Press Drop twice without moving a slider. Do you see the same number both times?</p></div>
+</div>
+</section>
+
+<section id="sources" class="card">
+<p class="section-kicker">10 / Follow the evidence</p>
+<h2>📚 Primary sources and credits</h2>
+<p>These links go to the original organizations, not random summaries. The page itself works offline; opening the references requires internet access.</p>
+<ol class="source-list">
+<li><strong>NASA Science — <a href="https://science.nasa.gov/moon/lunar-craters/">Moon Craters</a>.</strong> Explains crater formation, ejecta, and why the Moon preserves records of impacts.</li>
+<li><strong>NASA Science — <a href="https://science.nasa.gov/moon/lunar-craters/why-study-craters/">Why Study Moon Craters?</a>.</strong> Describes impact experiments, crater counting, and LRO before-and-after imagery of a 12-meter-wide crater.</li>
+<li><strong>NASA Meteoroid Environment Office — <a href="https://www.nasa.gov/meteoroid-environment-office/lunar-impact-monitoring/">Lunar Impact Monitoring</a>.</strong> Documents two-telescope video observations of impact flashes and the need to exclude false detections.</li>
+<li><strong>NASA Science — <a href="https://science.nasa.gov/photojournal/bright-crater-rays-and-boulders/">Bright Crater Rays and Boulders</a>.</strong> Real LRO imaging of ejecta and a fresh crater.</li>
+<li><strong>MDN Web Docs — <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sqrt">JavaScript Math.sqrt()</a>.</strong> Reference for the square-root calculation used by the interactive lab.</li>
+</ol>
+<div class="callout violet"><strong>Licensing and integration:</strong> This lesson is original HTML, CSS, JavaScript, and SVG, offered under the <a href="https://opensource.org/license/mit">MIT License</a> (copyright © 2026, DeepDivesKids educational edition). It does not copy NASA photos, embed external libraries, use analytics, fetch data, or require a build step. Save the HTML file and open it in a modern browser. NASA's pages are linked as references, not relicensed or bundled.</div>
+<p class="small">Editorial review: facts checked against the NASA and MDN sources above on November 15, 2026. The interactive experiment calculates idealized drop energy; no material-impact calibration is claimed.</p>
+</section>
+</main>
+<footer><div class="container"><strong>🌙 Mission complete. Keep asking why.</strong><p>DeepDivesKids · Sunday, November 15, 2026 · Self-contained HTML · Original illustrations · Built for curious explorers.</p><p><a href="#main">Back to the mission ↑</a></p></div></footer>
+<script>
+(function () {
+  'use strict';
+  const el = function (id) { return document.getElementById(id); };
+  const mass = el('mass');
+  const height = el('height');
+  const world = el('world');
+  let trials = 0;
+  function gravity() { return world.value === 'moon' ? 1.62 : 9.81; }
+  function compute() {
+    const massKg = Number(mass.value) / 1000;
+    const heightM = Number(height.value) / 100;
+    const g = gravity();
+    return { joules: massKg * g * heightM, speedMps: Math.sqrt(2 * g * heightM) };
+  }
+  function drawNumbers() {
+    const result = compute();
+    el('mass-value').textContent = mass.value + ' g';
+    el('height-value').textContent = height.value + ' cm';
+    el('energy').textContent = (result.joules * 1000).toFixed(1) + ' mJ';
+    el('speed').textContent = result.speedMps.toFixed(2) + ' m/s';
+    return result;
+  }
+  function drawCrater(energyMj) {
+    // Decorative, deliberately nonphysical mapping. Do NOT interpret as crater diameter.
+    const radius = Math.max(25, Math.min(83, 28 + 3 * Math.sqrt(energyMj)));
+    el('crater-rim').setAttribute('r', String(radius + 12));
+    el('crater-hole').setAttribute('r', String(radius));
+    el('rays').setAttribute('opacity', energyMj >= 80 ? '0.94' : '0.45');
+  }
+  function doDrop() {
+    const result = drawNumbers();
+    const mj = result.joules * 1000;
+    drawCrater(mj);
+    trials += 1;
+    el('trial-count').textContent = String(trials);
+    const tbody = el('trial-body');
+    const empty = el('empty-row');
+    if (empty) empty.remove();
+    const row = document.createElement('tr');
+    const cells = [
+      String(trials),
+      world.value === 'moon' ? 'Moon (imagined)' : 'Earth',
+      mass.value + ' g',
+      height.value + ' cm',
+      mj.toFixed(1) + ' mJ'
+    ];
+    cells.forEach(function (value) {
+      const td = document.createElement('td');
+      td.textContent = value;
+      row.appendChild(td);
+    });
+    tbody.insertBefore(row, tbody.firstChild);
+    while (tbody.rows.length > 5) tbody.deleteRow(tbody.rows.length - 1);
+    el('lab-status').textContent = 'Trial ' + trials + ' saved. ' + mj.toFixed(1) +
+      ' millijoules! Try changing only one slider and compare.';
+  }
+  function choose(m, h, w) {
+    mass.value = String(m);
+    height.value = String(h);
+    world.value = w;
+    drawNumbers();
+    el('lab-status').textContent = 'Preset selected. Press Drop the rock to record a trial.';
+  }
+  function resetLab() {
+    trials = 0;
+    choose(20, 50, 'earth');
+    el('trial-count').textContent = '0';
+    el('crater-rim').setAttribute('r', '54');
+    el('crater-hole').setAttribute('r', '42');
+    el('rays').setAttribute('opacity', '0.75');
+    el('trial-body').replaceChildren();
+    const tr = document.createElement('tr');
+    tr.id = 'empty-row';
+    const td = document.createElement('td');
+    td.colSpan = 5;
+    td.textContent = 'No trials yet — drop your first rock!';
+    tr.appendChild(td);
+    el('trial-body').appendChild(tr);
+    el('lab-status').textContent = 'Lab reset. Ready for a new experiment.';
+  }
+  [mass, height, world].forEach(function (control) {
+    control.addEventListener('input', drawNumbers);
+    control.addEventListener('change', drawNumbers);
+  });
+  el('drop').addEventListener('click', doDrop);
+  el('reset').addEventListener('click', resetLab);
+  el('gentle').addEventListener('click', function () { choose(10, 20, 'earth'); });
+  el('big').addEventListener('click', function () { choose(40, 90, 'earth'); });
+  drawNumbers();
+
+  const questions = [
+    {
+      q: 'What do bright rays around a young crater often show?',
+      options: ['Material thrown out by the impact', 'Moon trees', 'Tracks made by astronauts'],
+      answer: 0,
+      why: 'Correct! Impact debris, called ejecta, can form bright streaks around a fresh crater.'
+    },
+    {
+      q: 'In our simple Earth drop model, if mass doubles but height stays the same, what happens to energy?',
+      options: ['Energy halves', 'Energy doubles', 'Energy stays the same'],
+      answer: 1,
+      why: 'Exactly. E = mass × gravity × height, so doubling just the mass doubles the energy.'
+    },
+    {
+      q: 'Can our cartoon crater tell the real size of a crater made by a lunar meteoroid?',
+      options: ['Yes, exactly', 'Only if the crater is blue', 'No, it is only an illustration'],
+      answer: 2,
+      why: 'Right! Real craters need many more physics inputs. Scientists test their models with evidence.'
+    }
+  ];
+  let questionIndex = 0;
+  let answered = false;
+  function renderQuestion() {
+    answered = false;
+    const question = questions[questionIndex];
+    el('quiz-progress').textContent = 'Question ' + (questionIndex + 1) + ' of ' + questions.length;
+    el('quiz-question').textContent = question.q;
+    el('quiz-feedback').textContent = 'Choose your answer.';
+    el('quiz-next').disabled = true;
+    el('quiz-next').textContent = questionIndex === questions.length - 1 ? 'Play again' : 'Next question';
+    const options = el('quiz-options');
+    options.replaceChildren();
+    question.options.forEach(function (answer, optionIndex) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = String.fromCharCode(65 + optionIndex) + '. ' + answer;
+      button.setAttribute('aria-pressed', 'false');
+      button.addEventListener('click', function () {
+        if (answered) return;
+        answered = true;
+        button.setAttribute('aria-pressed', 'true');
+        el('quiz-feedback').textContent = optionIndex === question.answer ?
+          question.why : 'Not quite. ' + question.why;
+        el('quiz-next').disabled = false;
+      });
+      options.appendChild(button);
+    });
+  }
+  el('quiz-next').addEventListener('click', function () {
+    questionIndex = (questionIndex + 1) % questions.length;
+    renderQuestion();
+  });
+  renderQuestion();
+}());
+</script>
+</body>
+</html>
