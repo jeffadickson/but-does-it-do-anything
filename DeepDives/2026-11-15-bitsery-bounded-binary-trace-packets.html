@@ -149,7 +149,7 @@ int main() {
   const auto count =
       bitsery::quickSerialization&lt;Out&gt;(wire, original);
   if (count != wire_size || wire != golden) {
-    std::cerr &lt;&lt; "Golden-vector mismatch\\n";
+    std::cerr &lt;&lt; "Golden-vector mismatch\n";
     return 1;
   }
 
@@ -165,10 +165,10 @@ int main() {
       restored.event != original.event ||
       restored.actor != original.actor ||
       restored.flags != original.flags) {
-    std::cerr &lt;&lt; "Decode mismatch\\n";
+    std::cerr &lt;&lt; "Decode mismatch\n";
     return 3;
   }
-  std::cout &lt;&lt; "9-byte trace contract OK\\n";
+  std::cout &lt;&lt; "9-byte trace contract OK\n";
 }</code></pre></div>
 <div class="callout warning"><strong>Do not generalize from a fixed nine-byte example.</strong>The 1+4+2+1+1 layout cannot exceed the provided nine-byte buffer, by construction. If you change this to strings or variable-length containers, a fixed output buffer's debug assertion is not sufficient Release-mode protection. Preflight or prove the maximum, check arithmetic, and test the actual library in your target build.</div>
 <p>For true interoperability you must publish the versioned record contract, test unknown versions and length mismatches, and verify multiple compiler/target architectures. For resilient telemetry, combine with an integrity layer and framing as appropriate.</p>
@@ -266,7 +266,7 @@ if(fault==='version'){packet=frame.slice();packet[0]=2;modified=0;}
 if(packet.length!==9){error=true;title='Rejected: truncated input';detail='Received '+packet.length+' bytes, but the version-1 record requires exactly 9.';}
 else if(packet[0]!==1){error=true;title='Rejected: unknown schema version';detail='Version '+packet[0]+' is not a supported v1 record. Do not silently reinterpret it.';}
 else if(fault==='flip'){title='Accepted with silently corrupted actor ID!';detail='Actor '+frame[7]+' became '+packet[7]+'. Length and version checks cannot detect this. Add a CRC to detect accidental corruption.';}
-else{title='Accepted: exact version and length';detail='Decoded tick '+new DataView(packet.buffer).getUint32(1,true)+', event '+packet[6]*256+packet[5]+', actor '+packet[7]+', flags 0x'+hex(packet[8])+'.';}
+else{title='Accepted: exact version and length';detail='Decoded tick '+new DataView(packet.buffer).getUint32(1,true)+', event '+(packet[6]*256+packet[5])+', actor '+packet[7]+', flags 0x'+hex(packet[8])+'.';}
 }
 get('size').textContent=packet.length+' of '+cap+' capacity bytes';
 for(let i=0;i<9;i++){
