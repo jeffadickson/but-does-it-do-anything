@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101b33">
+  <meta name="description" content="Engineering deep dive into Fake Function Framework (FFF): evidence-backed adoption, bounded call histories, failure injection, C++20 tests, CMake and deterministic RTOS seams.">
+  <title>Make Failure Boring — FFF Bounded Test Doubles | Engineering Deep Dive | 2026-11-16</title>
+  <style>
+    :root{color-scheme:dark;--ink:#eaf1ff;--muted:#aabbd1;--navy:#0b1427;--card:#15223b;--line:#344564;--aqua:#7ae7da;--gold:#ffda81;--rose:#ff9eb0;--good:#92efc0;--blue:#9dbffc}
+    *,*::before,*::after{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:radial-gradient(ellipse at 80% 0%,#18355a 0,transparent 39%),linear-gradient(180deg,#0d1930,#0b1427 48%);color:var(--ink);font:16px/1.72 system-ui,-apple-system,"Segoe UI",sans-serif}
+    a{color:var(--aqua);text-underline-offset:.19em} a:hover{color:#fff}
+    a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+    .wrap{max-width:1150px;margin:auto;padding:0 clamp(1rem,4vw,2.4rem)}
+    .hero{padding:clamp(3rem,8vw,6rem) 0 3rem;border-bottom:1px solid var(--line)}
+    .eyebrow{text-transform:uppercase;color:var(--aqua);font-size:.79rem;font-weight:800;letter-spacing:.18em}
+    h1,h2,h3{line-height:1.17;letter-spacing:-.035em}
+    h1{font-size:clamp(2.6rem,6vw,5.5rem);margin:.55rem 0 1rem;max-width:16ch}
+    h2{font-size:clamp(1.65rem,3vw,2.3rem);margin:0 0 1rem}
+    h3{font-size:1.23rem}
+    p{max-width:82ch}
+    .lede{font-size:clamp(1.05rem,1.65vw,1.32rem);max-width:70ch;color:#c9d8ef}
+    .date{display:flex;flex-wrap:wrap;gap:.7rem;margin:1.2rem 0 0}
+    .pill{padding:.25rem .78rem;border:1px solid #4b6891;border-radius:100px;font-size:.82rem;background:#13253f;color:#d8e8ff}
+    .pill.highlight{border-color:#639f9b;color:var(--aqua)}
+    main{padding-bottom:3rem}
+    section{padding:3rem 0;border-bottom:1px solid #2b3e5b;scroll-margin-top:1rem}
+    .section-kicker{color:var(--gold);font-size:.77rem;letter-spacing:.18em;text-transform:uppercase;font-weight:800;margin-bottom:.55rem}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+    .panel{padding:1.25rem 1.35rem;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+    .panel h3{margin:.2rem 0 .6rem}
+    .panel p{margin:.4rem 0}
+    .panel.good{border-color:#457b71}.panel.warn{border-color:#856849}
+    .metric{font-size:2.5rem;line-height:1.15;font-weight:800;color:var(--aqua);font-variant-numeric:tabular-nums}
+    .muted,.fig-note{color:var(--muted)}
+    .callout{padding:1.15rem 1.3rem;border-left:4px solid var(--gold);background:#24273a;border-radius:0 12px 12px 0}
+    .callout strong{color:var(--gold)}
+    .toc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem 2rem;list-style:none;padding:0;margin:0}
+    .toc a{display:block;padding:.5rem .65rem;border-bottom:1px solid #314662;text-decoration:none}
+    .toc a:hover{background:#1b3150}
+    .flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:.75rem;margin:1.25rem 0}
+    .node{border:1px solid #3f7191;border-radius:16px;padding:1rem;text-align:center;background:#122c46;min-width:0}
+    .node strong{display:block;font-size:1.05rem}.node small{display:block;color:#bccfe2}
+    .arrow{align-self:center;color:var(--gold);font-size:1.5rem;font-weight:800}
+    .code-shell{position:relative;background:#071121;border:1px solid #3c526d;border-radius:16px;overflow:hidden}
+    .code-title{background:#1a2b42;padding:.65rem 1rem;color:#d3e3fc;font-weight:700;font-size:.84rem;display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+    pre{margin:0;padding:1.2rem;overflow-x:auto;color:#d5f0ec;font: .84rem/1.58 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;tab-size:4;white-space:pre}
+    code{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;font-size:.89em}
+    :not(pre)>code{background:#233452;border-radius:4px;padding:.13rem .28rem;color:#e4f2ff}
+    .lab{background:linear-gradient(140deg,#162d49,#18253e);border:1px solid #56708f;border-radius:24px;padding:clamp(1rem,3vw,2rem);box-shadow:0 12px 40px #050e2030}
+    .labgrid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+    fieldset{border:0;padding:0;margin:0 0 1rem} legend{font-weight:750;margin-bottom:.5rem}
+    .button-row{display:flex;flex-wrap:wrap;gap:.55rem}
+    button{font:inherit;border:1px solid #627a98;color:#eaf2ff;background:#233c5a;border-radius:10px;padding:.56rem .85rem;cursor:pointer;min-height:44px}
+    button:hover{background:#335676}
+    button[aria-pressed="true"]{background:#164c56;border-color:var(--aqua);color:#d1fff7}
+    .primary{background:var(--aqua);color:#092028;border:0;font-weight:800}
+    .primary:hover{background:#a4fff2}
+    input[type=range]{width:100%;accent-color:#7ae7da;min-height:28px}
+    .checkrow{display:flex;align-items:flex-start;gap:.6rem;margin:.7rem 0 1rem}
+    input[type=checkbox]{width:21px;height:21px;flex:none;accent-color:#ffc983;margin-top:.3rem}
+    .status{border-radius:14px;border:1px solid #546a81;padding:.85rem 1rem;background:#0f2137;font-weight:650;min-height:3.3rem}
+    .status.pass{border-color:#67b69e;color:var(--good)}.status.fail{border-color:#ea778c;color:#ffb2bf}
+    .small{font-size:.9rem}
+    .eventlog{list-style:none;padding:0;margin:.6rem 0;display:flex;flex-wrap:wrap;gap:.35rem}
+    .eventlog li{background:#0c1f34;border:1px solid #3d637e;padding:.22rem .58rem;border-radius:9px;font-size:.8rem;font-family:ui-monospace,monospace}
+    .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid #3c5672}
+    table{border-collapse:collapse;width:100%;min-width:480px;font-size:.91rem}
+    th,td{text-align:left;padding:.54rem .7rem;border-bottom:1px solid #38516e}
+    th{background:#1c3553;color:#d8effe}tr:last-child td{border:0}
+    .bad{color:var(--rose);font-weight:800}.ok{color:var(--good);font-weight:800}
+    .numbers{font-variant-numeric:tabular-nums}
+    .twocol{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+    .sources li{margin:.7rem 0;overflow-wrap:anywhere}
+    footer{color:var(--muted);padding:2rem 0 4rem;font-size:.91rem}
+    .sr-only{position:absolute;clip:rect(0,0,0,0);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+    @media(max-width:800px){.grid,.labgrid,.twocol{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg);justify-self:center}.toc{grid-template-columns:1fr}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+    @media print{:root{color-scheme:light}body{background:white;color:#111}a{color:#065f69}.panel,.lab,.node,.callout{background:#f4f7fa;color:#111;border-color:#bbb}.lede,.muted,.fig-note{color:#444}section{break-inside:avoid}pre{white-space:pre-wrap;color:#111;background:#eee}.code-shell{background:#eee}.code-title{background:#ddd;color:#111}}
+  </style>
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to main content</a>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Engineering field guide / Volume 027 / verification</div>
+      <h1>Make failure <span style="color:var(--aqua)">boring.</span></h1>
+      <p class="lede">How a tiny C test-double library called <strong>Fake Function Framework (FFF)</strong> helps you make a sensor fail on purpose, observe exactly what the controller did, and test a fail-closed contract—without connecting a motor, sensor, or board.</p>
+      <div class="date"><span class="pill highlight">16 November 2026</span><span class="pill">C &amp; C++20 host tests</span><span class="pill">MIT</span><span class="pill">One-header library</span><span class="pill">Deterministic fault injection</span></div>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <section aria-labelledby="verdict">
+      <div class="section-kicker">01 / Executive verdict</div><h2 id="verdict">Test the dangerous case before it happens.</h2>
+      <div class="grid">
+        <div class="panel good"><div class="metric">0</div><h3>Real devices required</h3><p>FFF replaces link-time free-function seams with controlled fakes for a <strong>host test executable</strong>. It does not have to run in the deployed firmware.</p></div>
+        <div class="panel"><div class="metric">4</div><h3>Saved arguments in our example</h3><p>We configure a fixed history of four per fake. Calls beyond that are still counted, but their historical arguments are <em>not</em> retained.</p></div>
+        <div class="panel warn"><div class="metric">8</div><h3>Global call slots</h3><p>We configure eight cross-function call-history slots. Beyond eight, the global log stops recording; it is <strong>not</strong> a ring buffer.</p></div>
+      </div>
+      <p class="callout"><strong>Decision:</strong> Strong candidate for RISCue hardware abstraction and state-transition unit tests on a desktop. Weak candidate for mocking C++ virtual methods directly, multithreaded concurrent probes, or demonstrating hard-real-time target timing. The application examples on this page are <strong>proposed</strong>, not claims of RISCue deployment.</p>
+    </section>
+    <section aria-labelledby="contents">
+      <div class="section-kicker">Navigate</div><h2 id="contents">Table of contents</h2>
+      <nav aria-label="Table of contents"><ol class="toc">
+        <li><a href="#what">1. What is a fake?</a></li><li><a href="#evidence">2. Real, verified adoption</a></li>
+        <li><a href="#mechanics">3. Mechanics and memory</a></li><li><a href="#lab">4. Interactive failure lab</a></li>
+        <li><a href="#code">5. C++20 reference example</a></li><li><a href="#integration">6. Pinned CMake / Ninja</a></li>
+        <li><a href="#tradeoffs">7. Honest limitations</a></li><li><a href="#fit">8. Engineering fit</a></li>
+        <li><a href="#qualification">9. Qualification checklist</a></li><li><a href="#license">10. License and attribution</a></li>
+        <li><a href="#references">11. Primary sources</a></li>
+      </ol></nav>
+    </section>
+    <section id="what" aria-labelledby="what-title">
+      <div class="section-kicker">02 / The mental model</div><h2 id="what-title">A stand-in that remembers what happened</h2>
+      <p>Imagine a controller with two dependencies: <code>sensor_read()</code> reports <strong>1</strong> for ready, <strong>0</strong> for unsafe, or <strong>-1</strong> for a read error; <code>actuator_write(int)</code> turns an output on or off. We define a contract: <strong>enable only when status equals 1</strong>. A bug that treats <em>any nonzero value</em> as success will accidentally enable the actuator when the sensor reports -1.</p>
+      <div class="flow" role="img" aria-label="Controller reads a fake sensor, computes the fail-closed decision, and writes to a fake actuator; FFF records calls and arguments.">
+        <div class="node"><strong>Sensor fake</strong><small>Return 1, 0, or -1 on command</small></div><div class="arrow" aria-hidden="true">→</div>
+        <div class="node"><strong>Controller under test</strong><small>Enable only on exactly 1</small></div><div class="arrow" aria-hidden="true">→</div>
+        <div class="node"><strong>Actuator fake</strong><small>Record on/off without hardware</small></div>
+      </div>
+      <p>The test—not a physical sensor—chooses the fault sequence. FFF's generated fake records <code>call_count</code>, latest arguments, bounded argument history, and a shared call-order history. Tests assert behavior, including dangerous edge cases. <a href="#references">The upstream README</a> documents the actual macros and structures.</p>
+    </section>
+    <section id="evidence" aria-labelledby="evidence-title">
+      <div class="section-kicker">03 / Evidence versus proposal</div><h2 id="evidence-title">Who really uses it?</h2>
+      <div class="twocol">
+        <div class="panel good"><h3>Documented adoption: Zephyr RTOS</h3><p>Zephyr's <a href="https://docs.zephyrproject.org/latest/develop/test/ztest.html">Ztest documentation</a> explicitly documents FFF integration using <code>&lt;zephyr/fff.h&gt;</code>. Zephyr's <a href="https://docs.zephyrproject.org/latest/doxygen/html/group__can__fake.html">fake CAN controller</a> and <a href="https://docs.zephyrproject.org/latest/doxygen/html/group__regulator__fake.html">fake regulator</a> are described as FFF implementations with configurable responses and recorded call information.</p><p class="small muted">Evidence type: official project documentation and named test-driver APIs. This establishes real integration, not a claim about deployment in production CAN or regulator firmware.</p></div>
+        <div class="panel"><h3>Verified upstream demonstration: driver tests</h3><p>The <a href="https://github.com/meekrosoft/fff/tree/master/examples/driver_testing">FFF maintainer's driver_testing example</a> is a concrete example within the upstream repository. It demonstrates test usage, not third-party commercial adoption.</p><p class="small muted">Proposal only: RISCue scheduler and HAL tests, TinyTMR fault-injection seams, VeloSim bridge adapter callbacks. No evidence reviewed here shows these projects currently link FFF.</p></div>
+      </div>
+      <p class="callout"><strong>Evidence discipline:</strong> A popular pattern (using mocks in embedded systems) is not proof that a named product uses this exact library. Only the specifically linked Zephyr documentation and official FFF example are claimed as verified use.</p>
+    </section>
+    <section id="mechanics" aria-labelledby="mechanics-title">
+      <div class="section-kicker">04 / Behind the macros</div><h2 id="mechanics-title">Small enough to fit in your head, not automatically in your RAM budget</h2>
+      <div class="grid">
+        <div class="panel"><h3><code>FAKE_VALUE_FUNC</code></h3><p>Creates a free-function fake that returns a configured value or sequence, along with a named state object. <code>FAKE_VOID_FUNC</code> does the same for a function with no return value.</p></div>
+        <div class="panel"><h3><code>SET_RETURN_SEQ</code></h3><p>Supplies a caller-owned array of return values. The last element repeats when exhausted. That array must remain alive while the fake can use it.</p></div>
+        <div class="panel"><h3><code>RESET_FAKE</code></h3><p>Clears one fake's state before a case. <code>FFF_RESET_HISTORY()</code> separately clears the global call-order history. Reset both for isolated tests.</p></div>
+      </div>
+      <p>FFF's current checked header defaults to <strong>50 saved argument entries per fake</strong> and <strong>50 shared call-history slots</strong>; these are <em>compile-time configuration macros</em> (<code>FFF_ARG_HISTORY_LEN</code> and <code>FFF_CALL_HISTORY_LEN</code>). Our example overrides both to 4 and 8 <strong>before</strong> including the header. Note that some README prose refers to ten argument-history entries; the checked header is authoritative for this pinned snapshot.</p>
+      <p>FFF state lives in generated structs and static/global storage, not in an automatically allocated heap-backed history container. That does <strong>not</strong> prove that the <em>whole</em> test process makes no allocations; custom fakes and test frameworks can allocate. Moreover, <code>call_count</code> keeps increasing while stored arguments stop at capacity. The shared call log also stops at capacity—<strong>neither one is a rolling recorder</strong>.</p>
+      <p>Changing these macros across translation units that share fake declarations can cause incompatible structure layouts. Centralize configuration and define each fake in exactly one implementation unit; use <code>DECLARE_FAKE_*</code> in shared headers and <code>DEFINE_FAKE_*</code> in source files when splitting a suite. Never compile the test fake into the flight or embedded production image unintentionally.</p>
+    </section>
+    <section id="lab" aria-labelledby="lab-title">
+      <div class="section-kicker">05 / Try it</div><h2 id="lab-title">Interactive failure-injection lab</h2>
+      <p>Pick the fake sensor's response pattern, choose how many controller steps to execute, and test the <em>correct</em> or <em>buggy</em> controller. The model reproduces the selected observable history caps; it is an <strong>educational JavaScript model</strong>, not execution of FFF or the C++ program below.</p>
+      <div class="lab">
+        <div class="labgrid">
+          <div>
+            <fieldset><legend>Sensor return sequence</legend>
+              <div class="button-row" id="scenarios">
+                <button type="button" data-scenario="steady" aria-pressed="false">All ready</button>
+                <button type="button" data-scenario="mixed" aria-pressed="false">Intermittent</button>
+                <button type="button" data-scenario="fault" aria-pressed="true">Sensor errors</button>
+              </div>
+            </fieldset>
+            <label for="steps"><strong>Number of controller steps:</strong> <output id="steps-value" for="steps">5</output></label>
+            <input id="steps" type="range" min="1" max="7" value="5">
+            <label class="checkrow" for="bug"><input id="bug" type="checkbox"><span><strong>Inject a bug:</strong> treat any nonzero status as ready, including error -1.</span></label>
+            <div class="button-row"><button type="button" id="run" class="primary">Run the test</button><button type="button" id="reset">Reset lab</button></div>
+            <p class="small muted">Definitions: <strong>1</strong> = ready; <strong>0</strong> = unsafe; <strong>-1</strong> = read error. Desired actuator output is 1 only for status 1.</p>
+          </div>
+          <div>
+            <div id="status" class="status" role="status" aria-live="polite" aria-atomic="true">Ready: choose a scenario and run.</div>
+            <p id="summary" class="small">No test executed yet.</p>
+            <div class="panel" style="padding:.9rem"><strong>Bounded history counters</strong>
+              <div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:.45rem;margin-top:.6rem">
+                <div><div class="metric" id="count" style="font-size:1.6rem">0</div><span class="small">Writes called</span></div>
+                <div><div class="metric" id="saved" style="font-size:1.6rem">0</div><span class="small">Write args saved</span></div>
+                <div><div class="metric" id="dropped" style="font-size:1.6rem">0</div><span class="small">Write args dropped</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <h3>Step-by-step observed outputs</h3>
+        <div class="table-wrap"><table><caption class="sr-only">Results for simulated controller steps</caption><thead><tr><th scope="col">Step</th><th scope="col">Sensor</th><th scope="col">Should write</th><th scope="col">Actually wrote</th><th scope="col">Verdict</th></tr></thead><tbody id="results"><tr><td colspan="5">No run yet. Use “Run the test.”</td></tr></tbody></table></div>
+        <div class="twocol" style="margin-top:1.2rem">
+          <div><h3>Saved actuator arguments (max 4)</h3><ol id="argument-history" class="eventlog" aria-label="Saved actuator arguments"><li>None yet</li></ol></div>
+          <div><h3>Global call order (max 8)</h3><ol id="call-history" class="eventlog" aria-label="Global call order"><li>None yet</li></ol><p id="global-overflow" class="small muted">Overflow not yet calculated.</p></div>
+        </div>
+        <p class="fig-note small">The global call order records the earliest eight calls (read, write, read, write, …); the per-fake write history keeps the earliest four argument values. These separate limits illustrate what information you lose when captures fill up.</p>
+      </div>
+      <div class="twocol" style="margin-top:1.4rem">
+        <div class="panel"><h3>Try A — catch a safety bug</h3><p>Choose <strong>Sensor errors</strong>, enable <strong>Inject a bug</strong>, and run five steps. When status is -1, treating it as “true” energizes an output that should remain off. The lab should report a failed contract.</p></div>
+        <div class="panel"><h3>Try B — fill the recorder</h3><p>Run <strong>seven</strong> steps. There are fourteen simulated function calls, but the shared history retains only eight; the actuator fake retains only four arguments while reporting seven calls. A full history is not evidence that no further events occurred.</p></div>
+      </div>
+    </section>
+    <section id="code" aria-labelledby="code-title">
+      <div class="section-kicker">06 / Runnable host-side experiment</div><h2 id="code-title">A real C++20 test harness</h2>
+      <p>This is a deliberately self-contained, <strong>proposed</strong> application seam. It injects five sensor readings and checks the output, retained arguments, dropped-argument count, and global call-history saturation. It does <strong>not</strong> depend on GoogleTest and intentionally uses explicit checks rather than <code>assert()</code>, so <code>-DNDEBUG</code> does not silently erase its test logic.</p>
+      <div class="code-shell"><div class="code-title"><span>test_controller.cpp</span><span>Host test · C++20</span></div><pre><code>// test_controller.cpp — host-only C++20 contract test
+// Dependency: meekrosoft/fff, pinned to commit 5111c61e1ef7848e3afd3550044a8cf4405f4199
+#define FFF_ARG_HISTORY_LEN 4
+#define FFF_CALL_HISTORY_LEN 8
+#include &quot;fff.h&quot;
+#include &lt;cstdio&gt;
+
+DEFINE_FFF_GLOBALS;
+FAKE_VALUE_FUNC(int, sensor_read);
+FAKE_VOID_FUNC(actuator_write, int);
+
+// Illustrative application seam: 1 means READY; 0 or -1 means NOT READY.
+// This is a proposed RISCue-style contract, NOT existing RISCue source.
+bool controller_step() {
+    const int status = sensor_read();
+    const bool safe = (status == 1);
+    actuator_write(safe ? 1 : 0);
+    return safe;
+}
+
+int main() {
+    RESET_FAKE(sensor_read);
+    RESET_FAKE(actuator_write);
+    FFF_RESET_HISTORY();
+
+    // Storage remains alive for the duration of the test.
+    int readings[] = {1, 0, -1, 1, 1};
+    const bool expected[] = {true, false, false, true, true};
+    SET_RETURN_SEQ(sensor_read, readings, 5);
+
+    bool okay = true;
+    for (int i = 0; i &lt; 5; ++i) {
+        if (controller_step() != expected[i]) okay = false;
+    }
+
+    // Every call counted; the first four write arguments retained.
+    if (sensor_read_fake.call_count != 5u) okay = false;
+    if (actuator_write_fake.call_count != 5u) okay = false;
+    const int retained[] = {1, 0, 0, 1};
+    for (int i = 0; i &lt; 4; ++i) {
+        if (actuator_write_fake.arg0_history[i] != retained[i])
+            okay = false;
+    }
+    if (actuator_write_fake.arg_histories_dropped != 1u) okay = false;
+
+    // Five steps make ten calls; global history holds only eight.
+    if (fff.call_history_idx != 8u) okay = false;
+
+    if (!okay) {
+        std::fputs(&quot;FAIL: contract or bounded-history mismatch\n&quot;, stderr);
+        return 1;
+    }
+    std::puts(&quot;PASS: fail-closed behavior and bounded FFF histories&quot;);
+    return 0;
+}</code></pre></div>
+      <p>Expected test output: <code>PASS: fail-closed behavior and bounded FFF histories</code>. This output is a <strong>specified expectation, not a claimed observed run</strong>. On any mismatch, the program returns nonzero. For production code, move <code>controller_step()</code> into its own source file so the same implementation can link with real target drivers or with these test fakes.</p>
+      <p>Technical nuance: this example uses simple C++ free functions; it is <strong>not</strong> a fake for a class member, virtual method, coroutine, ISR context, or thread-safe event channel. It tests <em>which outputs were requested</em>, not what a real actuator physically did.</p>
+    </section>
+    <section id="integration" aria-labelledby="integration-title">
+      <div class="section-kicker">07 / Reproducible build</div><h2 id="integration-title">Pin the dependency, quarantine the fake</h2>
+      <p>The upstream <a href="https://github.com/meekrosoft/fff/blob/5111c61e1ef7848e3afd3550044a8cf4405f4199/CMakeLists.txt">CMakeLists.txt</a> declares an interface library target named <code>fff</code>, with upstream test generation disabled by default. Its own CMake configuration sets a C++11 baseline, but the <em>test executable</em> below explicitly requests C++20. The SHA below was read from the upstream master reference on 2026-11-16; no unverified release-version claim is made.</p>
+      <div class="code-shell"><div class="code-title"><span>CMakeLists.txt</span><span>Ninja + CTest + fixed upstream commit</span></div><pre><code># CMakeLists.txt — separate host-side test project
+cmake_minimum_required(VERSION 3.24)
+project(fff_contract_lab LANGUAGES C CXX)
+include(CTest)
+include(FetchContent)
+
+# Uses upstream's interface target; upstream tests and header generator
+# default to OFF. Pin an immutable commit, not 'master'.
+FetchContent_Declare(fff
+  GIT_REPOSITORY https://github.com/meekrosoft/fff.git
+  GIT_TAG 5111c61e1ef7848e3afd3550044a8cf4405f4199
+)
+FetchContent_MakeAvailable(fff)
+
+add_executable(fff_contract_lab test_controller.cpp)
+target_link_libraries(fff_contract_lab PRIVATE fff)
+target_compile_features(fff_contract_lab PRIVATE cxx_std_20)
+add_test(NAME fail_closed_contract COMMAND fff_contract_lab)
+
+# Run:
+# cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+# cmake --build build
+# ctest --test-dir build --output-on-failure</code></pre></div>
+      <p>For offline or controlled-build environments, vendor the pinned <code>fff.h</code> and <code>LICENSE</code> into a test-only third-party directory and use a local include path instead of an online FetchContent step. Keep all generated fakes in the host test target; avoid pulling FFF into the target's shipping build. Check upstream's license notice when redistributing the header.</p>
+    </section>
+    <section id="tradeoffs" aria-labelledby="tradeoffs-title">
+      <div class="section-kicker">08 / What FFF does not prove</div><h2 id="tradeoffs-title">Precise tests, limited observations</h2>
+      <div class="grid">
+        <div class="panel warn"><h3>Not thread-safe by default</h3><p>Shared counters and arrays are unsynchronized. A concurrent multi-producer test can race and invalidate observations. Use single-threaded deterministic seams or explicit external synchronization.</p></div>
+        <div class="panel warn"><h3>Memory is finite; evidence is partial</h3><p>When configured capture limits are reached, historical evidence is lost. Use <code>arg_histories_dropped</code>, <code>call_count</code>, and independent test bounds; never assume the saved list is complete.</p></div>
+        <div class="panel warn"><h3>Mocks are not hardware</h3><p>FFF cannot validate electrical timing, scheduler preemption, physical actuator behavior, actual fault injection on a board, or worst-case execution time. Separate HIL and target tests remain necessary.</p></div>
+      </div>
+      <div class="grid" style="margin-top:1rem">
+        <div class="panel"><h3>Macro ergonomics</h3><p>Great for C/free-function boundaries; awkward for C++ overloaded functions, methods, template-heavy APIs, complex types, and signatures with function pointer arguments.</p></div>
+        <div class="panel"><h3>Global reset hygiene</h3><p>Failure to reset both per-function fakes and the shared history can make tests order-dependent. A single generated fake definition must own storage across linked units.</p></div>
+        <div class="panel"><h3>Performance relevance</h3><p>Fixed-array history is appealing, but the measurement applies to the <em>test double</em>, not the genuine ISR/RTOS implementation. Do not turn mock timings into WCET evidence.</p></div>
+      </div>
+    </section>
+    <section id="fit" aria-labelledby="fit-title">
+      <div class="section-kicker">09 / Project-specific opportunities</div><h2 id="fit-title">Where would it earn its keep?</h2>
+      <div class="twocol">
+        <div class="panel"><h3>RISCue RTOS — proposed priority: high</h3><p>Put a free-function seam around timer reads, interrupt-enable requests, or actuator output commands. Inject a timer failure or absent peripheral and assert fail-closed transitions. Combine with your separate deterministic state-machine tests; do not replace them.</p></div>
+        <div class="panel"><h3>VeloSim — proposed priority: medium</h3><p>Use fakes at a C ABI or C-style adapter boundary to inject failed callbacks and record call ordering. For VeloSim's C# and C++ internal interfaces, choose fakes at narrow native boundaries rather than pretending FFF can replace managed abstractions directly.</p></div>
+        <div class="panel"><h3>Requirements traceability — proposed</h3><p>Name a unit test after its requirement ID. Record setup, injected fault, expected output and failure observation. FFF supplies evidence of <em>calls</em>; the report-to-requirement mapping still belongs to your test infrastructure.</p></div>
+        <div class="panel"><h3>SharpHDL / TinyTMR — proposed</h3><p>Fake host-facing board services or a deterministic I/O boundary before hardware build or place-and-route. This is not a substitute for formal checking, independent simulation, or measured synthesis evidence.</p></div>
+      </div>
+    </section>
+    <section id="qualification" aria-labelledby="qualification-title">
+      <div class="section-kicker">10 / Adoption gate</div><h2 id="qualification-title">A six-test qualification plan</h2>
+      <ol>
+        <li><strong>Reproduce:</strong> fetch the pinned upstream SHA, configure CMake/Ninja on Windows and Linux, compile and run the exact example above.</li>
+        <li><strong>Negative control:</strong> change <code>status == 1</code> to <code>status != 0</code>; confirm the injected <code>-1</code> reading causes test failure.</li>
+        <li><strong>Reset isolation:</strong> run the test twice in one process with explicit resets; verify no state leaks between cases.</li>
+        <li><strong>History boundary:</strong> check exactly four and five actuator calls and eight and ten global calls; document the first-entry retention behavior.</li>
+        <li><strong>Memory and concurrency:</strong> inspect static layout/footprint, prohibit unsynchronized concurrent fake use, and measure any test process allocations separately.</li>
+        <li><strong>Target independence:</strong> prove that the production firmware link map contains <em>no</em> FFF symbols and that hardware-in-the-loop/target timing tests remain in the plan.</li>
+      </ol>
+      <p class="callout"><strong>Review status as of 2026-11-16:</strong> upstream implementation, README, MIT license, CMake target, and Zephyr documentation were checked. The C++ example was inspected against these APIs, but a linked native compilation against <code>fff.h</code> and cross-platform target tests have <strong>not</strong> been completed for this article. Do not treat its expected output as an executed test result.</p>
+    </section>
+    <section id="license" aria-labelledby="license-title">
+      <div class="section-kicker">11 / Legal and reproducibility</div><h2 id="license-title">MIT permission, attribution duty</h2>
+      <p><strong>FFF is MIT-licensed.</strong> The upstream <a href="https://github.com/meekrosoft/fff/blob/master/LICENSE">LICENSE</a> identifies copyright © 2010 Michael Long and grants use, modification, distribution, sublicensing, and sale, provided the copyright and permission notices accompany copies or substantial portions. The library is supplied without warranty. This article's original presentation and teaching code are also offered under MIT terms; quotations, third-party names, and links remain credited to their owners.</p>
+      <p>Pin: <code>5111c61e1ef7848e3afd3550044a8cf4405f4199</code> (upstream <code>master</code> SHA checked 2026-11-16). The HTML, CSS, JavaScript, and original figures in this report are inline—no remote JavaScript, fonts, analytics, or CDNs are required to read or operate the page offline.</p>
+    </section>
+    <section id="references" aria-labelledby="references-title">
+      <div class="section-kicker">12 / Source dossier</div><h2 id="references-title">Primary documentation and code</h2>
+      <ol class="sources">
+        <li><a href="https://github.com/meekrosoft/fff">Michael Long / meekrosoft, Fake Function Framework official repository and README</a> — macro semantics, return sequences, examples, reset guidance.</li>
+        <li><a href="https://github.com/meekrosoft/fff/blob/5111c61e1ef7848e3afd3550044a8cf4405f4199/fff.h">FFF header at the pinned revision</a> — actual default history lengths, register-call and dropped-argument logic.</li>
+        <li><a href="https://github.com/meekrosoft/fff/blob/5111c61e1ef7848e3afd3550044a8cf4405f4199/CMakeLists.txt">FFF upstream CMake integration</a> — interface target, optional tests and header generation.</li>
+        <li><a href="https://github.com/meekrosoft/fff/blob/master/LICENSE">FFF MIT license</a> — exact copyright and redistribution terms.</li>
+        <li><a href="https://docs.zephyrproject.org/latest/develop/test/ztest.html">Zephyr Project: Ztest / Mocking via FFF</a> — explicit real integration with <code>&lt;zephyr/fff.h&gt;</code>.</li>
+        <li><a href="https://docs.zephyrproject.org/latest/doxygen/html/group__can__fake.html">Zephyr official fake CAN driver API</a> — named FFF-based test driver.</li>
+        <li><a href="https://docs.zephyrproject.org/latest/doxygen/html/group__regulator__fake.html">Zephyr official fake regulator driver API</a> — named FFF-based test driver with reset semantics.</li>
+        <li><a href="https://github.com/meekrosoft/fff/tree/master/examples/driver_testing">FFF upstream driver-testing example</a> — publisher-maintained practical example.</li>
+      </ol>
+      <p class="muted small">Research cutoff: 2026-11-16. Examples deliberately distinguish observed upstream/Zephyr facts from hypothetical engineering applications. External references are live URLs; the report's interactive content itself requires no network.</p>
+    </section>
+  </main>
+  <footer class="wrap">Engineering Deep Dives · 2026-11-16 · FFF: Make Failure Boring · Reader-tested design intent, source-reviewed engineering example, explicitly bounded claims.</footer>
+  <script>
+  (function () {
+    "use strict";
+    const patterns = Object.freeze({
+      steady: [1, 1, 1, 1, 1, 1, 1],
+      mixed: [1, 0, 1, 0, 1, 0, 1],
+      fault: [1, 0, -1, 1, -1, 0, 1]
+    });
+    const state = { scenario: "fault", steps: 5, bug: false };
+    const byId = id => document.getElementById(id);
+    const setText = (id, value) => { byId(id).textContent = String(value); };
+    const makeItem = text => {
+      const li = document.createElement("li");
+      li.textContent = text;
+      return li;
+    };
+    function renderHistory(id, entries) {
+      const host = byId(id);
+      host.replaceChildren();
+      if (entries.length === 0) host.appendChild(makeItem("None"));
+      for (const entry of entries) host.appendChild(makeItem(entry));
+    }
+    function selectScenario(name) {
+      if (!Object.prototype.hasOwnProperty.call(patterns, name)) return;
+      state.scenario = name;
+      for (const button of document.querySelectorAll("[data-scenario]")) {
+        button.setAttribute("aria-pressed", button.dataset.scenario === name ? "true" : "false");
+      }
+    }
+    function run() {
+      const data = patterns[state.scenario].slice(0, state.steps);
+      const writes = [];
+      const recordedCalls = [];
+      const tbody = byId("results");
+      tbody.replaceChildren();
+      let failures = 0;
+      for (let i = 0; i < data.length; i++) {
+        const sensor = data[i];
+        const expected = sensor === 1 ? 1 : 0;
+        const actual = state.bug ? (sensor !== 0 ? 1 : 0) : expected;
+        if (expected !== actual) failures++;
+        if (recordedCalls.length < 8) recordedCalls.push("sensor_read");
+        if (recordedCalls.length < 8) recordedCalls.push("actuator_write");
+        writes.push(actual);
+        const row = document.createElement("tr");
+        const cells = [i + 1, sensor, expected, actual, actual === expected ? "PASS" : "FAIL"];
+        for (let j = 0; j < cells.length; j++) {
+          const cell = document.createElement("td");
+          cell.textContent = String(cells[j]);
+          if (j === 4) cell.className = actual === expected ? "ok" : "bad";
+          row.appendChild(cell);
+        }
+        tbody.appendChild(row);
+      }
+      setText("count", writes.length);
+      setText("saved", Math.min(writes.length, 4));
+      setText("dropped", Math.max(0, writes.length - 4));
+      renderHistory("argument-history", writes.slice(0, 4).map((v, i) => "call " + (i + 1) + ": " + v));
+      renderHistory("call-history", recordedCalls.map((v, i) => (i + 1) + ". " + v));
+      setText("global-overflow", "Total calls: " + (data.length * 2) + "; recorded: " + recordedCalls.length +
+        "; unrecorded: " + Math.max(0, data.length * 2 - 8) + ".");
+      const status = byId("status");
+      status.className = "status " + (failures ? "fail" : "pass");
+      status.textContent = failures ? ("FAIL: " + failures + " unsafe output mismatch" + (failures === 1 ? "" : "es") + " detected.")
+        : ("PASS: " + data.length + " controller step" + (data.length === 1 ? "" : "s") + " met the fail-closed contract.");
+      setText("summary", "Sensor pattern: " + state.scenario + ". Controller: " +
+        (state.bug ? "buggy (nonzero means ready)" : "correct (only 1 means ready)") +
+        ". Compared " + data.length + " output(s) against the safety requirement.");
+    }
+    function reset() {
+      state.steps = 5;
+      state.bug = false;
+      byId("steps").value = "5";
+      byId("bug").checked = false;
+      setText("steps-value", "5");
+      selectScenario("fault");
+      byId("status").className = "status";
+      setText("status", "Ready: choose a scenario and run.");
+      setText("summary", "No test executed yet.");
+      for (const id of ["count", "saved", "dropped"]) setText(id, 0);
+      renderHistory("argument-history", []);
+      renderHistory("call-history", []);
+      setText("global-overflow", "Overflow not yet calculated.");
+      const tbody = byId("results"); tbody.replaceChildren();
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+      cell.colSpan = 5; cell.textContent = "No run yet. Use “Run the test.”";
+      row.appendChild(cell); tbody.appendChild(row);
+    }
+    document.querySelectorAll("[data-scenario]").forEach(b => b.addEventListener("click", () => selectScenario(b.dataset.scenario)));
+    byId("steps").addEventListener("input", event => {
+      state.steps = Number(event.target.value);
+      setText("steps-value", state.steps);
+    });
+    byId("bug").addEventListener("change", event => { state.bug = event.target.checked; });
+    byId("run").addEventListener("click", run);
+    byId("reset").addEventListener("click", reset);
+    reset();
+  }());
+  </script>
+</body>
+</html>
