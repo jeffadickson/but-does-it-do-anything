@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0d1831">
+<meta name="description" content="2026-11-17 engineering deep dive: Boost.SafeNumerics, overflow policy design, compile-time traps, real-time queue admission, and a tested C++20 reference implementation.">
+<title>Make Overflow a Design Decision | Boost.SafeNumerics | 17 Nov 2026</title>
+<style>
+:root{--navy:#0c1930;--navy2:#172c4b;--ink:#152844;--body:#2d4058;--teal:#007f79;--teal-light:#d4f6ef;--gold:#ffd56a;--orange:#c35420;--coral:#bf3b48;--pale:#f4f7fd;--white:#fff;--line:#d7e0ed;--r:18px;--shadow:0 14px 50px rgba(15,35,66,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--pale);color:var(--ink);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:1rem;line-height:1.68}a{color:#065c92;text-underline-offset:3px}a:hover{color:#003a5d}a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #db7c16;outline-offset:3px}.skip{position:absolute;left:12px;top:-100px;background:white;color:#000;padding:10px;z-index:50}.skip:focus{top:12px}.hero{background:radial-gradient(circle at 89% 3%,rgba(34,214,190,.22),transparent 30%),linear-gradient(135deg,#0d1931 0%,#173655 80%);color:white;padding:clamp(2rem,6vw,5.5rem) max(20px,calc((100vw - 1140px)/2)) 4.8rem;overflow:hidden}.eyebrow{color:#91f3dc;font-weight:800;letter-spacing:.13em;text-transform:uppercase;font-size:.77rem}.hero h1{font-size:clamp(2.3rem,6vw,5rem);line-height:1.04;letter-spacing:-.046em;max-width:960px;margin:14px 0 20px}.hero p{font-size:clamp(1.02rem,2vw,1.3rem);max-width:850px;color:#dbe9f5}.hero strong{color:#fff}.meta{display:flex;flex-wrap:wrap;gap:.7rem;margin:25px 0}.pill{display:inline-flex;align-items:center;border:1px solid #65849c;border-radius:100px;padding:5px 12px;color:white;font-size:.86rem}.sparkline{width:min(560px,100%);margin:35px 0 0;display:block}.wrap{max-width:1140px;margin:-2.2rem auto 5rem;padding:0 24px;position:relative}.layout{display:grid;grid-template-columns:245px minmax(0,1fr);gap:28px;align-items:start}.toc{position:sticky;top:24px;background:white;border:1px solid var(--line);border-radius:var(--r);padding:22px;box-shadow:var(--shadow)}.toc h2{font-size:.88rem;letter-spacing:.1em;text-transform:uppercase;margin:0 0 13px}.toc a{display:block;text-decoration:none;padding:7px 0;font-size:.93rem;border-bottom:1px solid #eef1f7}main{min-width:0}section{background:var(--white);border:1px solid var(--line);box-shadow:0 4px 28px rgba(15,35,66,.05);border-radius:var(--r);padding:clamp(20px,3vw,36px);margin-bottom:25px;scroll-margin-top:18px}h2{font-size:clamp(1.38rem,2.6vw,2.08rem);letter-spacing:-.03em;line-height:1.2;margin:0 0 18px}h3{font-size:1.15rem;margin:27px 0 9px;line-height:1.25}p{margin:12px 0}.lede{font-size:1.18rem;color:#294460}.sectiontag{font-size:.76rem;font-weight:850;color:var(--teal);text-transform:uppercase;letter-spacing:.12em;display:block;margin-bottom:10px}.callout{border-left:5px solid #17988c;border-radius:0 11px 11px 0;padding:15px 19px;background:#edfbf8;margin:22px 0}.callout.warn{border-color:#d28c1a;background:#fff8e9}.callout strong{display:block;color:#18324f}.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.mini{background:#f5f8fc;border:1px solid var(--line);padding:17px 18px;border-radius:14px}.mini h3{margin:0 0 7px}.mini p{margin:0}.badge{display:inline-block;border:1px solid #b7d8d1;border-radius:6px;padding:2px 7px;font-size:.74rem;font-weight:850;color:#075e55;background:#ecfaf6}.badge.maybe{color:#8b4615;background:#fff7e6;border-color:#e4be80}.num{font-variant-numeric:tabular-nums;font-weight:800}.lab{background:linear-gradient(170deg,#eef9f6,#f2f6ff);border:1px solid #b6dcd6;padding:20px;border-radius:16px}.controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}label{font-weight:750;display:block;color:#1d3d59}label output{float:right;color:#075d67;font-variant-numeric:tabular-nums}input[type=range]{display:block;width:100%;margin-top:16px;accent-color:#008c7d;cursor:pointer}.presets{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0}button{border:1px solid #0d736b;background:white;border-radius:9px;padding:10px 12px;color:#075b56;font:inherit;font-weight:740;cursor:pointer}button:hover{background:#d9f3ee}.rail{display:flex;height:36px;background:repeating-linear-gradient(135deg,#e7edf3,#e7edf3 10px,#dbe4ec 10px,#dbe4ec 20px);border:2px solid #70899e;border-radius:10px;overflow:hidden;margin:13px 0 3px}.used{background:#136eab;width:0;transition:width .2s}.incoming{background:#e6a82f;width:0;transition:width .2s}.railkey{display:flex;gap:18px;font-size:.84rem;flex-wrap:wrap}.dot{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px}.status{border-left:5px solid #0d8e73;background:white;border-radius:10px;padding:14px 16px;margin:20px 0 0}.status.bad{border-color:#bd4450}.status h3{margin:0 0 5px}.status p{margin:6px 0}.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:15px 0}.metric{background:white;border:1px solid #c8dcd9;border-radius:10px;padding:12px}.metric small{display:block;font-size:.8rem}.metric strong{font-size:1.65rem;font-variant-numeric:tabular-nums}.codebar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:22px}.codebar h3{margin:0}pre{background:#0b182c;color:#dbecff;border-radius:13px;padding:19px;overflow-x:auto;font-size:.89rem;line-height:1.55;tab-size:4;white-space:pre}code,kbd{font-family:ui-monospace,SFMono-Regular,Consolas,'Liberation Mono',monospace}p code,li code,td code{background:#ecf1f6;padding:.05em .28em;border-radius:4px;overflow-wrap:anywhere}.codebar button{font-size:.83rem}.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:510px}th{background:#eaf2f8;text-align:left}td,th{border:1px solid #cfdbe8;padding:10px 12px;vertical-align:top}tr:nth-child(even) td{background:#f8fafc}.refs{padding-left:25px}.refs li{padding:8px 0;border-bottom:1px solid #e8edf2}.refs li span{display:block;font-size:.88rem;color:#5b6d83}.check li{margin:9px 0}footer{color:#6c7c90;font-size:.85rem;max-width:1140px;margin:auto;padding:0 24px 36px}.footbox{background:#14263e;color:#ebf3fc;padding:22px 26px;border-radius:15px;margin-top:20px}.footbox strong{color:#a0f3e2}.inlineproof{font-family:ui-monospace,monospace;font-size:1.03rem;background:white;padding:11px 14px;border-radius:8px;display:block;overflow:auto}@media(max-width:920px){.layout{display:block}.toc{position:static;margin-bottom:22px}.toc a{display:inline-block;margin:0 12px 5px 0;border:0}}@media(max-width:650px){.wrap{padding:0 13px}.hero{padding-left:20px;padding-right:20px}.cols,.controls,.metrics{grid-template-columns:1fr}section{padding:20px}.metric strong{font-size:1.35rem}pre{font-size:.78rem}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.used,.incoming{transition:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to article</a>
+<header class="hero">
+<div class="eyebrow">Engineering library deep dive · 17 November 2026 · C++20 / bounded systems</div>
+<h1>Make overflow a <em style="color:#94ecd5;font-style:normal">design decision.</em></h1>
+<p>When a queue counter wraps from 250 + 10 into 4, the CPU did exactly what the type allowed. <strong>Boost.SafeNumerics</strong> helps make the mistake visible—before it quietly becomes a scheduling or telemetry defect.</p>
+<div class="meta"><span class="pill">Boost.SafeNumerics</span><span class="pill">BSL-1.0</span><span class="pill">Header-only · C++14+</span><span class="pill">Host test: GCC 14.2 / Boost 1.83</span></div>
+<svg class="sparkline" viewBox="0 0 560 110" role="img" aria-labelledby="diagramTitle diagramDesc" xmlns="http://www.w3.org/2000/svg">
+<title id="diagramTitle">Eight-bit count boundary</title><desc id="diagramDesc">A safe region up to 255 followed by a warning region for an attempted sum of 260.</desc>
+<rect x="2" y="34" width="500" height="22" rx="11" fill="#317d88"/><rect x="2" y="34" width="470" height="22" rx="11" fill="#5ed9bb"/><path d="M472 28 V65" stroke="#fff" stroke-width="3" stroke-dasharray="5 5"/><circle cx="522" cy="45" r="16" fill="#ffce66"/><text x="522" y="51" fill="#10263b" text-anchor="middle" font-size="15" font-weight="bold">!</text><text x="2" y="22" fill="white" font-size="15">0</text><text x="450" y="22" fill="white" font-size="15">255</text><text x="499" y="91" fill="#ffdc8f" font-size="15" font-weight="bold">260</text>
+</svg>
+</header>
+<div class="wrap"><div class="layout">
+<nav class="toc" aria-label="Article table of contents"><h2>In this edition</h2>
+<a href="#decision">01 · The engineering decision</a><a href="#mechanism">02 · What it actually checks</a><a href="#lab">03 · Overflow control room</a><a href="#policy">04 · Policy selection</a><a href="#code">05 · Compiled C++20 lab</a><a href="#integration">06 · CMake / Ninja</a><a href="#evidence">07 · Evidence vs proposals</a><a href="#tradeoffs">08 · Tradeoffs &amp; hazards</a><a href="#qualification">09 · Qualification checklist</a><a href="#references">10 · Primary sources</a>
+</nav>
+<main id="main">
+<section id="decision"><span class="sectiontag">01 / Executive decision</span><h2>Catch the bug in a host model; keep the RTOS path proven and boring.</h2>
+<p class="lede">For <strong>RISCue</strong>, this library is most immediately useful as a <strong>reference oracle in host-side tests</strong>, not as an unchecked drop-in replacement for counters in a non-throwing ISR or scheduler path.</p>
+<div class="cols"><div class="mini"><h3>What it buys you</h3><p>Checked arithmetic and narrowing, range-aware types, configurable result promotion, and policy-controlled error handling.</p></div><div class="mini"><h3>What it does not buy you</h3><p>Automatic proof of WCET, hard-real-time behavior, zero allocation under the throwing policy, or freedom from application-level range mistakes.</p></div></div>
+<div class="callout"><strong>Proposed experiment</strong> Independently implement a queue-admission predicate with no exceptions and compare its results against SafeNumerics across the <code>uint8_t</code> input domain. A test oracle is valuable even when the embedded build never links it.</div>
+</section>
+<section id="mechanism"><span class="sectiontag">02 / Mechanics</span><h2>Three separate places an integer can go wrong</h2>
+<div class="cols"><div class="mini"><h3>1. Arithmetic overflow</h3><p>A signed integer overflow is undefined behavior in ordinary C++. For unsigned integers, modulo arithmetic is well-defined—but the wrapped result can violate a design requirement.</p></div><div class="mini"><h3>2. Narrowing conversion</h3><p>Two <code>uint8_t</code> operands are generally promoted to <code>int</code> for addition. <code>250 + 10</code> evaluates to <code>260</code>; assigning that to an 8-bit unsigned type yields <code>4</code>.</p></div><div class="mini"><h3>3. Invalid state</h3><p>A queue with capacity 64 cannot legitimately start with 65 occupied slots. No checked addition can repair a broken state invariant; validate the initial state separately.</p></div><div class="mini"><h3>What SafeNumerics adds</h3><p><code>safe&lt;T&gt;</code> checks operations and conversions; bounded <code>safe_unsigned_range&lt;MIN,MAX&gt;</code> encodes legal domains. Policies choose promotion and how an error is handled.</p></div></div>
+<div class="callout warn"><strong>Important C++ subtlety</strong> <code>uint8_t</code> addition is not normally an eight-bit addition. The surprising defect is often the <em>conversion back</em> to eight bits, rather than overflow during the intermediate <code>int</code> expression.</div>
+</section>
+<section id="lab"><span class="sectiontag">03 / Interactive thought experiment</span><h2>Overflow control room</h2>
+<p>The controls below model a fictional 8-bit-count queue. The <strong>ground truth</strong> uses ordinary mathematical integers. The displayed “8-bit result” simulates what storing the sum into a <code>uint8_t</code> would do. This is a <strong>JavaScript teaching model</strong>, not the Boost library running inside the browser.</p>
+<div class="lab">
+<div class="controls"><div><label for="cap">Queue capacity <output id="capOut" for="cap">64</output></label><input id="cap" type="range" min="0" max="255" step="1" value="64"></div><div><label for="used">Slots occupied <output id="usedOut" for="used">60</output></label><input id="used" type="range" min="0" max="255" step="1" value="60"></div><div><label for="incoming">Incoming slots <output id="incomingOut" for="incoming">8</output></label><input id="incoming" type="range" min="0" max="255" step="1" value="8"></div></div>
+<div class="presets" aria-label="Load a test case"><button type="button" data-case="60,4,64">Exact fit</button><button type="button" data-case="60,8,64">Full queue</button><button type="button" data-case="250,10,255">Byte overflow</button><button type="button" data-case="65,0,64">Broken invariant</button><button type="button" id="reset">Reset</button></div>
+<div class="rail" role="img" id="rail" aria-label="Queue capacity 64, 60 occupied slots and 8 requested slots"><div class="used" id="usedBar"></div><div class="incoming" id="incomingBar"></div></div>
+<div class="railkey"><span><i class="dot" style="background:#136eab"></i>Occupied</span><span><i class="dot" style="background:#e6a82f"></i>Incoming up to available capacity</span><span><i class="dot" style="background:#dbe4ec"></i>Free</span></div>
+<div class="metrics"><div class="metric"><small>Exact sum</small><strong id="mathSum">68</strong></div><div class="metric"><small>Stored in 8 bits</small><strong id="byteSum">68</strong></div><div class="metric"><small>Free before request</small><strong id="freeSlots">4</strong></div></div>
+<div class="status bad" id="status" role="status" aria-live="polite" aria-atomic="true"><h3 id="verdict">Reject: capacity exceeded</h3><p id="explain">Requested eight slots but only four remain.</p><p id="proof" class="inlineproof">60 ≤ 64 and 8 ≤ (64 − 60) → false</p></div>
+</div>
+<p><strong>Try this:</strong> Select “Byte overflow.” The exact sum is 260, yet the eight-bit stored result would be 4. The safe check rejects the request, rather than mistaking wrapped storage for plenty of space. Then select “Broken invariant” to see why rejecting bad initial state comes first.</p>
+</section>
+<section id="policy"><span class="sectiontag">04 / Explicit contracts</span><h2>Pick a failure policy on purpose</h2>
+<div class="scroll"><table><thead><tr><th>Facility</th><th>Behavior / upside</th><th>Engineering boundary</th></tr></thead><tbody>
+<tr><td><code>safe&lt;T&gt;</code></td><td>Checked integer arithmetic and conversions with default native promotions</td><td>Default <code>strict_exception_policy</code> may throw <code>std::system_error</code></td></tr>
+<tr><td><code>safe_unsigned_range&lt;0,N&gt;</code></td><td>Embeds a legal interval in the type</td><td>Runtime assignments outside that interval need a defined error policy</td></tr>
+<tr><td><code>native</code> promotion</td><td>Matches standard C++ promotion rules</td><td>May require checks on the result or its narrowing assignment</td></tr>
+<tr><td><code>automatic</code> promotion</td><td>Chooses wider result types when ranges permit</td><td>Not unbounded arithmetic; changes types / C++ expression semantics</td></tr>
+<tr><td><code>strict_trap_policy</code></td><td>Rejects at compile time operations that could fail</td><td>Potential errors cause compilation errors even if the current input data happens to be safe</td></tr>
+<tr><td><code>ignore_exception</code></td><td>Permits execution to continue</td><td>Defeats the safety argument for a critical counter; not recommended</td></tr>
+</tbody></table></div>
+<p>With trap policies, proving the range is often a <em>type-level</em> task. <code>safe_signed_literal</code> and bounded ranges communicate more to the compiler than a simple run-time variable. Consult the official policy and runtime-penalty chapters before treating a successful compile as an overall system proof.</p>
+</section>
+<section id="code"><span class="sectiontag">05 / Executable reference</span><h2>A tiny golden oracle and an allocation-free candidate</h2>
+<p>This standalone host program uses Boost.SafeNumerics to detect arithmetic narrowing and then checks the same cases with a narrow, <code>constexpr</code>, non-throwing predicate. The latter is the candidate for review in an embedded target. They serve different purposes.</p>
+<div class="codebar"><h3>bounded_queue_review.cpp</h3><button id="copyCpp" type="button" aria-label="Copy the complete C++20 example">Copy C++</button></div><pre><code id="cpp">// bounded_queue_review.cpp — host-side experiment, C++20
+// Tested with GCC 14.2 and Boost 1.83.0 (Linux x86-64).
+#include &lt;boost/safe_numerics/safe_integer.hpp&gt;
+#include &lt;array&gt;
+#include &lt;cassert&gt;
+#include &lt;cstdint&gt;
+#include &lt;iostream&gt;
+#include &lt;system_error&gt;
+
+using SafeByte = boost::safe_numerics::safe&lt;std::uint8_t&gt;;
+
+// Reference checker: catches narrowing from 260 to an 8-bit count.
+// Host-side only: the default SafeNumerics policy throws on errors.
+bool reference_admit(std::uint8_t used,
+                     std::uint8_t incoming,
+                     std::uint8_t capacity) {
+    try {
+        const SafeByte u{used};
+        const SafeByte n{incoming};
+        const SafeByte cap{capacity};
+        if (u &gt; cap) return false;  // Reject a corrupt starting state.
+        const SafeByte total = u + n; // Checked conversion into 8 bits.
+        return total &lt;= cap;
+    } catch (const std::system_error&amp;) {
+        return false;
+    }
+}
+
+// Small target candidate: no exceptions, no allocation, no subtraction
+// underflow. This function does NOT depend on SafeNumerics at runtime.
+constexpr bool bounded_admit(std::uint8_t used,
+                             std::uint8_t incoming,
+                             std::uint8_t capacity) noexcept {
+    return used &lt;= capacity &amp;&amp;
+           incoming &lt;= static_cast&lt;unsigned&gt;(capacity) - used;
+}
+
+static_assert(bounded_admit(60, 4, 64));
+static_assert(!bounded_admit(60, 8, 64));
+static_assert(!bounded_admit(250, 10, 255));
+
+struct Case {
+    std::uint8_t used, incoming, capacity;
+    bool expected;
+};
+
+int main() {
+    constexpr std::array cases{
+        Case{60, 4, 64, true},
+        Case{60, 8, 64, false},
+        Case{250, 10, 255, false},
+        Case{65, 0, 64, false},
+        Case{0, 0, 0, true},
+        Case{0, 255, 255, true}
+    };
+    for (const auto&amp; c : cases) {
+        assert(reference_admit(c.used, c.incoming, c.capacity)
+               == c.expected);
+        assert(bounded_admit(c.used, c.incoming, c.capacity)
+               == c.expected);
+    }
+    std::cout &lt;&lt; &quot;Six boundary cases agree.\n&quot;;
+}
+</code></pre>
+<div class="callout"><strong>Proven algebra for the target predicate</strong> If <code>used ≤ capacity</code>, the subtraction <code>capacity − used</code> cannot be negative. Requiring <code>incoming ≤ capacity − used</code> is equivalent to <code>used + incoming ≤ capacity</code> without evaluating that addition. On an 8-bit domain, values are promoted before subtraction.</div>
+<p><strong>Actual local checks (17 November 2026):</strong> Compiled the equivalent reference and predicate with <code>g++ 14.2 -std=c++20 -O2 -Wall -Wextra -Wconversion -pedantic</code> and Boost 1.83. Ran all 16,777,216 possible triples as native-predicate inputs, 16,827 sampled comparisons against the SafeNumerics oracle, and separately tested six named boundary cases. Both the exploratory test harness and the copyable program subsequently compiled without warnings under those flags after explicit eight-bit conversions were added to test-loop call sites. The reference oracle was compared in 16,827 sampled cases; the bounded predicate was evaluated in every 8-bit input triple. The six named boundary cases and the CMake/CTest build also passed.</p>
+<p>That is <em>not</em> exhaustive differential equivalence against SafeNumerics, nor a hardware timing test. It establishes a reproducible host correctness baseline, not WCET or allocator behavior for the library itself.</p>
+</section>
+<section id="integration"><span class="sectiontag">06 / Repeatable integration</span><h2>CMake + Ninja without folklore</h2>
+<p>SafeNumerics consists of C++ headers but depends on additional Boost header modules. Pin a coherent Boost distribution with your package manager or toolchain image, rather than copying a single header out of the repository. The following uses the stable <code>Boost::headers</code> imported target.</p>
+<div class="codebar"><h3>CMakeLists.txt</h3><button id="copyCmake" type="button" aria-label="Copy the CMake example">Copy CMake</button></div><pre><code id="cmake">cmake_minimum_required(VERSION 3.20)
+project(bounded_queue_review LANGUAGES CXX)
+
+# Lock the Boost release at the toolchain/package-manager level.
+# Locally tested with Boost 1.83.0; newer versions need requalification.
+find_package(Boost 1.83 REQUIRED)
+add_executable(bounded_queue_review bounded_queue_review.cpp)
+target_compile_features(bounded_queue_review PRIVATE cxx_std_20)
+target_link_libraries(bounded_queue_review PRIVATE Boost::headers)
+
+# cmake -S . -B build -G Ninja
+# cmake --build build
+enable_testing()
+add_test(NAME queue_boundaries COMMAND bounded_queue_review)
+# ctest --test-dir build --output-on-failure
+</code></pre>
+<p>Invoke <code>cmake -S . -B build -G Ninja</code>, <code>cmake --build build</code>, and <code>ctest --test-dir build --output-on-failure</code>. The CMake/Ninja configuration with Boost 1.83.0 was exercised locally. Newer versions and cross-compiled toolchains require their own validation.</p>
+<div class="callout warn"><strong>Not an ISR recipe</strong> The host-side oracle deliberately uses exceptions. Do not copy <code>reference_admit</code> into a no-exceptions firmware image or assume that the default policy is allocation-free. The <code>bounded_admit</code> function uses only primitive integer operations, but still requires target-specific timing and requirements verification.</div>
+<h3>Licensing</h3><p>Boost.SafeNumerics uses the <strong>Boost Software License 1.0 (BSL-1.0)</strong>, not MIT. It permits commercial and proprietary use, modification and redistribution, subject to retaining the copyright/license notice when distributing source or substantial portions of the software. This lesson's small original demonstration is distinct from Boost source. See the canonical license in the references.</p>
+</section>
+<section id="evidence"><span class="sectiontag">07 / Evidence ledger</span><h2>What is documented, and what is merely proposed?</h2>
+<div class="cols"><div class="mini"><span class="badge">Verified upstream</span><h3>Boost module</h3><p>The Boost project publishes SafeNumerics, its documentation, tests, examples and source code. Official docs state it is header-only and supports C++14 or later, for built-in integer types.</p></div><div class="mini"><span class="badge">Verified in this run</span><h3>Host execution</h3><p>The local 1.83 installation compiled under C++20. Tested boundary results and CMake/Ninja integration are directly reproducible; this is a local test, <em>not a public customer adoption claim</em>.</p></div><div class="mini"><span class="badge maybe">Proposed: RISCue</span><h3>Queue capacity invariants</h3><p>Use SafeNumerics in host regression tests to catch counter narrowing, then use an independently reviewed, exception-free predicate in production.</p></div><div class="mini"><span class="badge maybe">Proposed: VeloSim / MemForge</span><h3>Trace and pool limits</h3><p>Use a checked host reference for trace record lengths, ring-buffer offsets and bounded pool accounting; reject invalid input before copying bytes.</p></div></div>
+<p><strong>Adoption disclosure:</strong> I verified inclusion in the official Boost library distribution, upstream maintained source, and library examples. I did <em>not</em> identify a verified third-party production deployment of this exact library, so none is asserted. Generic examples of integer overflow in embedded systems are not evidence that a specific project uses SafeNumerics.</p>
+</section>
+<section id="tradeoffs"><span class="sectiontag">08 / Failure analysis</span><h2>What might make this the wrong tool?</h2>
+<div class="scroll"><table><thead><tr><th>Constraint</th><th>Risk</th><th>Mitigation</th></tr></thead><tbody>
+<tr><td>Hard real-time</td><td>Default throwing policy may introduce exception and timing paths</td><td>Keep reference on host; prove target predicate, instrument WCET</td></tr>
+<tr><td>No heap after boot</td><td>Exception construction/handling can allocate; header-only ≠ zero-heap</td><td>Do not assert allocation freedom without instrumentation</td></tr>
+<tr><td>Compile-time traps</td><td>Conservative rejection can prevent useful code from compiling</td><td>Express ranges/literals precisely; move checks to explicit boundaries</td></tr>
+<tr><td>Semantic change</td><td><code>automatic</code> promotion can widen results and change API types</td><td>Qualify binary layouts and all implicit conversions explicitly</td></tr>
+<tr><td>Type support</td><td>Built-in integer arithmetic only; not a floating-point or arbitrary-precision checker</td><td>Use domain-specific validation elsewhere</td></tr>
+<tr><td>Production ABI</td><td>New wrapper types are not automatically safe for FFI or wire formats</td><td>Serialize fixed-width plain integers only after validation</td></tr>
+<tr><td>Version drift</td><td>Tested Boost 1.83 is not the newest Boost release</td><td>Pin release; rerun target matrix before upgrading</td></tr>
+</tbody></table></div>
+</section>
+<section id="qualification"><span class="sectiontag">09 / Engineering exit criteria</span><h2>Proof obligations before merging into RISCue</h2>
+<ol class="check"><li><strong>REQ-QUEUE-001:</strong> Reject if <code>used &gt; capacity</code> before calculating space.</li><li><strong>REQ-QUEUE-002:</strong> Accept exactly when <code>incoming ≤ capacity − used</code> and the starting state is valid.</li><li><strong>REQ-QUEUE-003:</strong> Test all 8-bit input triples, preferably against an independent integer-domain oracle.</li><li><strong>REQ-QUEUE-004:</strong> Compile the target predicate with exceptions disabled and enforce zero post-init allocations.</li><li><strong>REQ-QUEUE-005:</strong> Measure best / median / tail and WCET-oriented upper bounds on the actual target; median host benchmarks are insufficient.</li><li><strong>REQ-QUEUE-006:</strong> Record the exact Boost release, compiler version, flags, code size and commit in retained evidence.</li><li><strong>REQ-QUEUE-007:</strong> Test reentrancy/interrupt masks and queue synchronization separately: arithmetic correctness does not prove concurrency correctness.</li></ol>
+<div class="footbox"><strong>Verdict:</strong> Qualified for exploration as a host-side numeric contract oracle; <strong>not qualified</strong> for RISCue real-time deployment by this study. The central win is to separate <em>correctness policy</em> from <em>runtime implementation</em>.</div>
+</section>
+<section id="references"><span class="sectiontag">10 / Source trail</span><h2>Primary documentation</h2><p>Research checked 17 November 2026. Library claims are tied to official Boost documentation, maintained upstream source and the canonical license.</p><ol class="refs"><li><a href="https://www.boost.org/library/latest/safe_numerics/" target="_blank" rel="noopener noreferrer">Boost.SafeNumerics official library page</a><span>Library identity, author, release and dependencies</span></li>
+<li><a href="https://www.boost.org/doc/libs/latest/libs/safe_numerics/doc/html/introduction.html" target="_blank" rel="noopener noreferrer">Official introduction and requirements</a><span>Header-only, C++14+, semantics and scope</span></li>
+<li><a href="https://www.boost.org/doc/libs/latest/libs/safe_numerics/doc/html/safe.html" target="_blank" rel="noopener noreferrer">safe&lt;T,PP,EP&gt; reference</a><span>Checked integer wrapper and conversion semantics</span></li>
+<li><a href="https://www.boost.org/doc/libs/latest/libs/safe_numerics/doc/html/exception_policies.html" target="_blank" rel="noopener noreferrer">Exception policy reference</a><span>strict/loose exception and trap policies</span></li>
+<li><a href="https://www.boost.org/doc/libs/latest/libs/safe_numerics/doc/html/eliminate_runtime_penalty.html" target="_blank" rel="noopener noreferrer">Runtime penalty and automatic promotion</a><span>Why compile-time ranges matter</span></li>
+<li><a href="https://www.boost.org/doc/libs/latest/libs/safe_numerics/doc/html/safe_range.html" target="_blank" rel="noopener noreferrer">Bounded range API</a><span>safe_unsigned_range and safe_signed_range</span></li>
+<li><a href="https://github.com/boostorg/safe_numerics" target="_blank" rel="noopener noreferrer">Maintained upstream repository and tests</a><span>Actual shipped code, tests and examples</span></li>
+<li><a href="https://www.boost.org/LICENSE_1_0.txt" target="_blank" rel="noopener noreferrer">Boost Software License 1.0</a><span>License terms</span></li>
+<li><a href="https://github.com/boostorg/cmake" target="_blank" rel="noopener noreferrer">Boost CMake infrastructure</a><span>Difference between Boost release archives and modular source tree</span></li></ol></section>
+</main></div></div>
+<footer>DeepDives · 2026-11-17 · Self-contained single-file HTML · No external JavaScript, fonts, CDN assets or cookies. Test and publication status belongs in the accompanying delivery report, not inferred from the presence of a link.</footer>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const cap = $('cap'), used = $('used'), incoming = $('incoming');
+function update() {
+  const c=Number(cap.value), u=Number(used.value), n=Number(incoming.value);
+  $('capOut').textContent=String(c);
+  $('usedOut').textContent=String(u);
+  $('incomingOut').textContent=String(n);
+  const sum=u+n, wrapped=sum%256, free=Math.max(0,c-u);
+  $('mathSum').textContent=String(sum);
+  $('byteSum').textContent=String(wrapped);
+  $('freeSlots').textContent=(u>c?'Invalid':String(free));
+  const invalid=u>c, overflow=sum>255, overcap=sum>c;
+  const accepted=(!invalid && n<=c-u);
+  let heading,reason;
+  if(invalid){heading='Reject: broken starting invariant';reason=`Occupied count ${u} exceeds declared capacity ${c}. Validate the starting state before admission.`;}
+  else if(overflow){heading='Reject: eight-bit narrowing would wrap';reason=`The exact total ${sum} is greater than 255. Storing it in an unsigned eight-bit count would produce ${wrapped}.`;}
+  else if(overcap){heading='Reject: capacity exceeded';reason=`Requested ${n} slots but only ${c-u} remain. The safe predicate rejects without evaluating a possibly unsafe addition.`;}
+  else{heading='Accept: request fits';reason=`The queue starts valid and ${n} incoming slots fit in the ${c-u} available positions.`;}
+  $('verdict').textContent=heading;
+  $('explain').textContent=reason;
+  $('proof').textContent=`${u} ≤ ${c} and ${n} ≤ (${c} − ${u}) → ${accepted?'true':'false'}`;
+  $('status').classList.toggle('bad',!accepted);
+  const width=c===0?0:Math.min(100,u/c*100);
+  const left=c===0?0:Math.min(Math.max(c-u,0),n)/c*100;
+  $('usedBar').style.width=width.toFixed(3)+'%';
+  $('incomingBar').style.width=left.toFixed(3)+'%';
+  $('rail').setAttribute('aria-label',`Capacity ${c}; occupied ${u}; incoming ${n}; ${accepted?'accepted':'rejected'}`);
+}
+for(const el of [cap,used,incoming]) el.addEventListener('input',update);
+for(const button of document.querySelectorAll('[data-case]')) button.addEventListener('click',()=>{
+  const [u,n,c]=button.dataset.case.split(',').map(Number);
+  used.value=String(u);incoming.value=String(n);cap.value=String(c);update();
+});
+$('reset').addEventListener('click',()=>{cap.value='64';used.value='60';incoming.value='8';update();});
+async function copyCode(id,button){
+  const original=button.textContent;
+  try { await navigator.clipboard.writeText($(id).textContent);button.textContent='Copied'; }
+  catch { button.textContent='Select text to copy'; }
+  button.setAttribute('aria-label',button.textContent);
+  // Keep status label persistent; no timers or script dependencies.
+}
+$('copyCpp').addEventListener('click',()=>copyCode('cpp',$('copyCpp')));
+$('copyCmake').addEventListener('click',()=>copyCode('cmake',$('copyCmake')));
+update();
+</script>
+</body></html>
