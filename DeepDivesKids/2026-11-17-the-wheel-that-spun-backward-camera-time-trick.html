@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0d183b">
+<meta name="description" content="A lively, interactive science and computing adventure for nine-year-olds: how cameras can make spinning wheels appear to go backward.">
+<title>The Wheel That Spun Backward! | DeepDivesKids | November 17, 2026</title>
+<style>
+:root{color-scheme:dark;--bg:#0d183b;--ink:#eff7ff;--muted:#c6d8f2;--yellow:#ffe179;--mint:#75edcf;--salmon:#ffb8a6;--line:#6077aa;--card:#192a56}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 3% 0%,#38447e,transparent 28rem),radial-gradient(circle at 95% 15%,#26496e,transparent 28rem),var(--bg);color:var(--ink);font:1.055rem/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--mint);text-underline-offset:3px}a:hover{text-decoration-thickness:3px}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:4px solid var(--yellow);outline-offset:3px}
+.skip{position:absolute;top:-8rem;left:1rem;background:var(--yellow);color:#10182d;padding:.6rem 1rem;border-radius:.6rem;z-index:10}.skip:focus{top:1rem}
+.container{max-width:1050px;padding:0 1.25rem;margin:auto}.hero{padding:3.5rem 0 2rem}.eyebrow{text-transform:uppercase;color:var(--mint);letter-spacing:.16em;font-size:.79rem;font-weight:900}.hero h1{font-size:clamp(3rem,8vw,6rem);letter-spacing:-.05em;line-height:1.04;margin:.6rem 0 1rem;max-width:880px}.hero h1 span{color:var(--yellow)}.lead{font-size:clamp(1.12rem,2.3vw,1.4rem);max-width:790px;color:#e1edff}.pill{display:inline-block;border:1px solid #8496c0;border-radius:99px;background:#1b2a55;padding:.24rem .75rem;font-size:.86rem;margin:.3rem .35rem .3rem 0}
+nav{border:1px solid var(--line);background:#152550;padding:1.2rem 1.55rem;border-radius:1.1rem;margin-bottom:2.5rem}nav strong{color:var(--yellow)}nav ol{display:flex;flex-wrap:wrap;gap:.3rem 1.8rem;margin:.5rem 0;padding-left:1.4rem}
+main section{scroll-margin-top:1.2rem;margin:2.5rem 0 3.8rem}h2{font-size:clamp(1.75rem,4vw,2.55rem);line-height:1.15;letter-spacing:-.035em;margin:0 0 1rem}h3{line-height:1.2;margin:0 0 .65rem;font-size:1.27rem}p{margin:.75rem 0 1rem}li{margin:.36rem 0}.tag{display:inline-block;color:#0b2033;background:var(--mint);text-transform:uppercase;letter-spacing:.08em;border-radius:99px;font-size:.75rem;font-weight:900;padding:.23rem .7rem;margin-bottom:.8rem}.tag.gold{background:var(--yellow)}.tag.pink{background:var(--salmon)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.card,.note{background:var(--card);border:1px solid var(--line);border-radius:1.2rem;padding:1.35rem;min-width:0}.note{border-left:5px solid var(--mint)}.card strong,.note strong{color:var(--yellow)}.number{font-size:clamp(2.2rem,6vw,3.5rem);line-height:1.15;color:var(--yellow);font-weight:900;letter-spacing:-.04em}.muted,.fine{color:var(--muted)}.fine{font-size:.88rem}
+.lab{background:linear-gradient(145deg,#1d3264,#101e43);border:2px solid #8198cb;border-radius:1.5rem;box-shadow:0 18px 45px #040b2090;padding:clamp(1rem,3vw,2rem)}.controls{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin:1.25rem 0}.control{background:#102145;border:1px solid #6880b4;border-radius:1rem;padding:1rem}.control label{display:block;font-weight:800;margin-bottom:.6rem}.control output{color:var(--yellow);font-variant-numeric:tabular-nums}input[type=range]{width:100%;height:2rem;accent-color:var(--mint)}select{background:#1d3365;color:white;border:2px solid #92a7cb;font:inherit;padding:.5rem;border-radius:.6rem;width:100%}
+.buttons{display:flex;flex-wrap:wrap;gap:.55rem;margin:.8rem 0 1.25rem}button{font:inherit;font-weight:800;border:2px solid transparent;border-radius:.7rem;min-height:44px;padding:.6rem .9rem;background:var(--mint);color:#102040;cursor:pointer}button:hover{filter:brightness(1.12)}button.secondary{background:#2b427a;border-color:#aec0e9;color:#f4f7ff}button.gold{background:var(--yellow)}
+.stages{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}.stage{text-align:center;background:#0b1838;border:1px solid #6177a4;border-radius:1rem;padding:1rem .3rem;min-width:0}.stage h3{color:var(--yellow)}.stage svg{display:block;width:100%;max-width:255px;height:auto;margin:auto}.stage figcaption{font-size:.93rem;color:#d7e6fa;margin:.5rem auto;max-width:24rem}.ring{fill:#172d59;stroke:#b1cef1;stroke-width:5}.spoke{stroke:var(--mint);stroke-width:11;stroke-linecap:round}.camera .spoke{stroke:var(--salmon)}.hub{fill:var(--yellow);stroke:#304977;stroke-width:4}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin:1rem 0}.stat{background:#0c1b3b;border:1px solid #607ba9;border-radius:.8rem;padding:.85rem}.stat small{display:block;color:#c8d9f0;font-size:.79rem;line-height:1.4}.stat b{display:block;font-size:clamp(1rem,2.3vw,1.3rem);color:var(--yellow);font-variant-numeric:tabular-nums;line-height:1.35;margin-top:.35rem}
+#result{background:#091e35;border-left:5px solid var(--mint);border-radius:.2rem .8rem .8rem .2rem;padding:1rem;margin:.9rem 0 1.4rem;min-height:4.2rem}
+#film{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.35rem}.filmcell{background:#102148;border:1px solid #5d73a2;border-radius:.7rem;text-align:center;padding:.45rem .2rem}.filmcell span{font-weight:800;font-size:.74rem}.filmcell svg{width:100%;max-width:95px;display:block;margin:auto}
+.steps{padding:0;list-style:none;counter-reset:mission}.steps li{position:relative;background:#192c5a;border-radius:.85rem;padding:.8rem .7rem .8rem 3.3rem;margin:.7rem 0}.steps li:before{counter-increment:mission;content:counter(mission);position:absolute;top:.75rem;left:.75rem;width:1.9rem;height:1.9rem;display:grid;place-items:center;border-radius:99px;background:var(--yellow);color:#142448;font-weight:900}
+.quiz{background:#23366a;border:1px solid #849cd0;border-radius:1.1rem;padding:1.3rem}.quiz button{margin:.3rem .4rem .3rem 0}.quiz button[aria-pressed=true]{outline:3px solid var(--yellow)}#feedback{min-height:3rem;color:var(--yellow);font-weight:800}
+pre{font:.86rem/1.58 ui-monospace,Consolas,monospace;background:#080f27;border:1px solid #566c9b;border-radius:.9rem;padding:1.1rem;overflow-x:auto}code{font-family:ui-monospace,Consolas,monospace;color:#ffe3a3}pre code{color:#e9f7ff}.formula{font-size:1.15rem;font-weight:900;background:#101f43;border:1px dashed #9aaed9;border-radius:.8rem;padding:1rem;color:var(--yellow)}.sources li{overflow-wrap:anywhere;margin:.8rem 0}footer{border-top:1px solid var(--line);padding:2rem 0 3rem;color:#d4e3f6}
+@media(max-width:640px){.grid,.controls,.stages{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.hero{padding-top:2.3rem}nav ol{display:block}.stage svg{max-width:215px}.card,.note{padding:1.1rem}.filmcell span{font-size:.65rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
+@media print{body{background:#fff;color:#172447}.card,.note,.lab,nav,.stage,.stat{background:#fff;color:#172447;border-color:#555}a{color:#17588e}button{display:none}h2,h3{break-after:avoid}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the adventure</a>
+<div class="container">
+<header class="hero">
+<div class="eyebrow">DeepDivesKids • Tuesday, November 17, 2026 • Science + computing + movie magic</div>
+<h1>The Wheel That <span>Spun Backward!</span> 🎬</h1>
+<p class="lead">The wheel spins <strong>forward</strong>. The camera shows it going <strong>backward</strong>. Is the camera playing tricks? Become a frame detective—and make your own tiny movie machine!</p>
+<p><span class="pill">🧠 Age 9 explorer edition</span><span class="pill">🏒 Hockey replay connection</span><span class="pill">🧪 Live experiment</span><span class="pill">📴 Works offline</span></p>
+</header>
+<nav aria-label="Table of contents"><strong>🗺️ Your mission map</strong>
+<ol><li><a href="#mystery">The mystery</a></li><li><a href="#how">How it works</a></li><li><a href="#lab">Frame detective lab</a></li><li><a href="#missions">Three challenges</a></li><li><a href="#reality">Real-life uses</a></li><li><a href="#paper">Paper experiment</a></li><li><a href="#code">Working code</a></li><li><a href="#limits">Tradeoffs</a></li><li><a href="#sources">Sources &amp; licensing</a></li></ol></nav>
+<main id="main">
+<section id="mystery"><span class="tag">Case 01 • The mystery</span><h2>Can two pictures tell a fib?</h2>
+<div class="grid"><article class="card"><h3>👀 In the real world</h3><p>A wheel with <strong>six identical spokes</strong> spins clockwise. Every instant it moves forward. Just like a hockey player going around the rink, it never changes direction.</p></article>
+<article class="card"><h3>📷 Inside the camera</h3><p>Videos are made of separate <strong>frames</strong> (pictures taken at moments in time). What happened <em>between</em> pictures might be missing! Sometimes the pictures seem to show the wrong direction. Engineers call this <strong>aliasing</strong>. <a href="#sources">[1]</a></p></article></div></section>
+<section id="how"><span class="tag gold">Case 02 • The secret</span><h2>Six spokes, six disguises</h2>
+<p>A wheel with six <em>identical</em> spokes looks exactly the same after a turn of <strong>60 degrees</strong>. The next spoke has replaced the previous spoke, like six friends wearing matching costumes.</p>
+<div class="grid"><div class="card"><div class="number">360° ÷ 6 = 60°</div><p>There are 360 degrees in a full circle. Divide by six identical spokes: every 60 degrees the pattern repeats.</p></div>
+<div class="card"><div class="number">+45° ≡ −15°</div><p>In a snapshot, a 45-degree step forward looks <em>exactly like</em> a 15-degree step backward. Both produce the same six-spoke pattern.</p></div></div>
+<p class="note"><strong>Detective warning:</strong> The wheel itself NEVER goes backward. The camera pictures are incomplete clues. If one spoke had a special sticker, the six spokes would no longer look identical—and the mystery might be easier to solve.</p></section>
+<section id="lab"><div class="lab"><header><span class="tag">Interactive • No download needed</span><h2>🎛️ The Frame Detective Lab</h2><p>Play with speed and snapshots. The mint wheel shows smooth <em>simulated real motion</em>. The coral wheel only jumps to the positions a camera captures.</p></header>
+<div class="controls"><div class="control"><label for="rpm">Wheel speed: <output for="rpm" id="rpmValue">50 RPM</output></label><input id="rpm" type="range" min="0" max="180" step="5" value="50"><p class="fine">RPM = complete revolutions per minute.</p></div>
+<div class="control"><label for="fps">Camera snapshots per second</label><select id="fps"><option value="4">4 frames/second</option><option value="8" selected>8 frames/second</option><option value="12">12 frames/second</option><option value="24">24 frames/second</option><option value="60">60 frames/second</option></select><p class="fine">FPS = frames (pictures) per second.</p></div></div>
+<div class="buttons"><button id="play" aria-pressed="false" type="button">▶ Start motion</button><button class="secondary" id="step" type="button">⏭ One camera frame</button><button class="gold" id="reset" type="button">↺ Reset</button></div>
+<div class="stages"><figure class="stage"><h3>🔎 Real wheel</h3>
+<svg viewBox="-112 -112 224 224" role="img" aria-label="A six-spoke mint wheel representing smooth continuous movement"><circle class="ring" r="96"/><g id="liveRotor"><line class="spoke" y1="-19" y2="-77"/><line class="spoke" y1="-19" y2="-77" transform="rotate(60)"/><line class="spoke" y1="-19" y2="-77" transform="rotate(120)"/><line class="spoke" y1="-19" y2="-77" transform="rotate(180)"/><line class="spoke" y1="-19" y2="-77" transform="rotate(240)"/><line class="spoke" y1="-19" y2="-77" transform="rotate(300)"/></g><circle class="hub" r="14"/></svg>
+<figcaption>The real wheel turns continuously clockwise at the RPM you picked.</figcaption></figure>
+<figure class="stage camera"><h3>🎥 Camera snapshots</h3>
+<svg viewBox="-112 -112 224 224" role="img" aria-label="A six-spoke coral wheel representing sampled camera images"><circle class="ring" r="96"/><g id="cameraRotor"><line class="spoke" y1="-19" y2="-77"/><line class="spoke" y1="-19" y2="-77" transform="rotate(60)"/><line class="spoke" y1="-19" y2="-77" transform="rotate(120)"/><line class="spoke" y1="-19" y2="-77" transform="rotate(180)"/><line class="spoke" y1="-19" y2="-77" transform="rotate(240)"/><line class="spoke" y1="-19" y2="-77" transform="rotate(300)"/></g><circle class="hub" r="14"/></svg>
+<figcaption>The pretend camera catches a position only at each frame.</figcaption></figure></div>
+<div class="stats" aria-label="Calculated motion results"><div class="stat"><small>True turn between pictures</small><b id="trueStep">37.5° forward</b></div><div class="stat"><small>Smallest-looking turn</small><b id="seenStep">22.5° backward</b></div><div class="stat"><small>Apparent speed</small><b id="apparent">−30 RPM</b></div></div>
+<p id="result" role="status" aria-live="polite">The camera makes the wheel look backward!</p>
+<h3>🎞️ Five frames from your pretend camera</h3><p class="fine">The same five time steps always begin at the starting position. Compare the spoke positions carefully.</p>
+<div id="film" aria-label="Five evenly spaced pictures showing the positions of six identical spokes"></div>
+<p class="fine">We choose when motion starts. Nothing is filmed, uploaded, tracked, or recorded. Tap One camera frame to inspect each snapshot without moving animation.</p>
+</div></section>
+<section id="missions"><span class="tag gold">Case 03 • Three missions</span><h2>Can you outsmart the camera?</h2><ol class="steps">
+<li><strong>Backward wheel:</strong> Choose <strong>50 RPM</strong> and <strong>8 fps</strong>, then Start. One frame arrives after the wheel advances 37.5°, which looks like 22.5° backward.</li>
+<li><strong>Save the replay:</strong> Keep <strong>50 RPM</strong>, but change to <strong>24 fps</strong>. Do the wheel and the camera now seem to agree? More frames can reveal more of the motion.</li>
+<li><strong>Freeze time:</strong> Choose <strong>80 RPM</strong> and <strong>8 fps</strong>. Every frame lands 60° later—one exact spoke gap. The wheel looks stopped, even though it's spinning!</li></ol>
+<div class="quiz"><h3>🕵️ Detective test</h3><p>Six identical spokes. The wheel turns clockwise at 50 RPM. The camera takes 8 pictures per second. What will the wheel <em>look</em> like it does?</p>
+<div role="group" aria-label="Choose an answer"><button type="button" class="secondary" data-answer="forward" aria-pressed="false">Spin clockwise</button><button type="button" class="secondary" data-answer="backward" aria-pressed="false">Spin backward</button><button type="button" class="secondary" data-answer="still" aria-pressed="false">Stand still</button></div><p id="feedback" aria-live="polite">Choose your answer to reveal the explanation.</p></div></section>
+<section id="reality"><span class="tag">Facts vs inventions</span><h2>Do real engineers work with this?</h2>
+<div class="grid"><article class="card"><h3>📚 Real fact: the wagon-wheel illusion</h3><p>An MIT computational photography text explains how filming repeating motion can produce the <em>wagon-wheel effect</em>: a moving wheel looks slow, stopped, or backward. This is the real science behind our lab. <a href="#sources">[1]</a></p></article>
+<article class="card"><h3>🔬 Real technology: industrial cameras</h3><p>Sony documents image sensors intended for fast inspection of precision objects. In a <strong>June 2024</strong> product announcement, Sony listed a global-shutter sensor with a mode of <strong>up to 134 fps</strong>. Those are manufacturer specifications, not a promise that any camera can capture every movement perfectly. <a href="#sources">[2]</a></p></article>
+<article class="card"><h3>🏒 Real hockey connection</h3><p>In <strong>June 2025</strong>, the NHL and Sony announced a technology partnership to expand uses of Hawk-Eye measurement and tracking and NHL EDGE puck and player tracking. The partnership is documented; we are <strong>not</strong> claiming the NHL uses this wheel demo or any particular frame rate. <a href="#sources">[3]</a></p></article>
+<article class="card"><h3>🛰️ Imagined family engineering mission</h3><p>Quinn could study a hockey clip frame by frame; Reagan could study a goalie-glove save. Their dad's <strong>VeloSim</strong> project also explores changing systems in repeatable steps, and <strong>SharpHDL</strong> explores digital circuits. The connection is a useful <em>analogy and proposed experiment</em>—not evidence those projects use this camera algorithm.</p></article></div></section>
+<section id="paper"><span class="tag gold">Hands-on • No computer</span><h2>✏️ Make a pocket flipbook</h2><p>Find five or more sticky notes, a ruler and pencil. Ask an adult to help with scissors if needed. No fans, motors, or bright flashing lights required.</p>
+<ol class="steps"><li>Draw an identical circle at the same spot on every card. Draw six evenly spaced identical spokes.</li><li>On each new card rotate the entire spoke pattern <strong>about 45° clockwise</strong> relative to the previous card. A protractor helps, but approximate drawings are fine.</li><li>Stack and flip the cards in order. Because a six-spoke pattern repeats every 60°, it can look like it moves <strong>15° backward</strong> per picture.</li><li>Try putting a small special mark on the same actual spoke in every picture. Does the extra clue help your brain see what's really happening?</li></ol>
+<p class="note"><strong>Experiment honesty:</strong> A real flipbook's effect depends on accurate drawing, timing, and your eyes. If you don't see it, use the on-page lab: it makes mathematically exact snapshots. Never use spinning powered fan blades for this experiment.</p></section>
+<section id="code"><span class="tag">Peek under the hood</span><h2>💻 A real piece of working code</h2>
+<p>This page uses built-in <strong>JavaScript and SVG</strong>, with no external coding library. It also uses the browser's <code>requestAnimationFrame()</code> to update the continuous wheel. Mozilla documents that animation timing depends on the screen refresh rate and can pause in background tabs. <a href="#sources">[4]</a></p>
+<pre><code>// Six identical spokes look the same every 60 degrees.
+function apparentRpm(realRpm, framesPerSecond, spokes = 6) {
+  const gap = 360 / spokes;
+  const realStep = realRpm * 6 / framesPerSecond;
+  const shortStep =
+    ((realStep + gap / 2) % gap + gap) % gap - gap / 2;
+  return shortStep * framesPerSecond / 6;
+}
+console.log(apparentRpm(50, 8));  // -30 (looks backward)
+console.log(apparentRpm(50, 24)); //  50 (looks forward)
+console.log(apparentRpm(80, 8));  //   0 (looks frozen)</code></pre>
+<p><strong>Why multiply RPM by six?</strong> One turn is 360 degrees, and one minute is 60 seconds. So a wheel turning at 1 RPM moves 360 ÷ 60 = <strong>6 degrees per second</strong>.</p>
+<p class="note"><strong>Super-important:</strong> This math finds the <em>shortest-looking</em> change, not necessarily the true direction or speed. At exactly half the gap, forward and backward guesses are equally possible.</p></section>
+<section id="limits"><span class="tag pink">The honest engineer check</span><h2>What our camera cannot do</h2><div class="grid"><div class="card"><h3>✅ It really models</h3><ul><li>Clockwise motion at a constant speed.</li><li>Six truly identical spokes.</li><li>Perfectly sharp, evenly spaced snapshots.</li><li>Repeatable angles and times.</li></ul></div>
+<div class="card"><h3>⚠️ It leaves out</h3><ul><li>Motion blur caused by long exposures.</li><li>Rolling shutters reading rows at different times.</li><li>Different-looking spokes, shaky cameras, light and noise.</li><li>All the extra clues people use to understand real video.</li></ul></div></div>
+<p>More frames <em>usually help</em> reveal motion, but they don't guarantee the correct answer for every spinning pattern. Some very different actual speeds can make <em>the same snapshots</em>. Our lab even labels one kind of tie as <strong>ambiguous</strong>.</p>
+<p class="formula">A picture shows what was captured—not everything that happened.</p></section>
+<section id="sources"><span class="tag">Check the evidence</span><h2>Primary sources, setup &amp; license</h2>
+<ol class="sources">
+<li><strong>MIT CSAIL, Computational Photography:</strong> <a href="https://people.csail.mit.edu/fredo/comp-photo-book/12-video-01-motion-blur-and-temporal-sampling.html">Motion blur and temporal sampling</a>. Academic explanation of the wagon-wheel illusion, temporal sampling and aliasing. Consulted November 17, 2026.</li>
+<li><strong>Sony Semiconductor Solutions:</strong> <a href="https://www.sony-semicon.com/en/info/2024/2024062701.html">Industrial global-shutter sensor announcement</a>, June 27, 2024. The 134-fps value is Sony's stated specification for an operating mode, not an independent measurement.</li>
+<li><strong>National Hockey League:</strong> <a href="https://www.nhl.com/news/nhl-sony-announce-multiyear-global-technology-partnership">NHL and Sony technology partnership</a>, June 4, 2025. Primary report of the tracking-related partnership.</li>
+<li><strong>Mozilla Developer Network:</strong> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame"><code>requestAnimationFrame()</code> reference</a>. Documents browser-driven animation frames and refresh timing. Consulted November 17, 2026.</li></ol>
+<h3>🔧 How to run it</h3><p>Save this single <code>.html</code> file and open it in a modern browser: it requires no Wi-Fi, sign-in, npm, account, camera, or network service. Works with touch, mouse and keyboard, with a dedicated frame-step button and a pause button. The page starts with animation <strong>paused</strong> for accessibility.</p>
+<p><strong>License:</strong> Original page text, illustrations, and teaching code © 2026 DeepDivesKids contributors, offered under the <a href="https://opensource.org/license/mit">MIT License</a>. Linked references and trademarks remain under their owners' terms. No third-party scripts or fonts are bundled.</p>
+<p class="fine">All visuals here are simplified educational simulations. Verified observations and products are attributed above; the family challenges and imagined camera missions are proposals, not claims of actual deployment.</p></section>
+</main>
+<footer><strong>🎬 Detective motto:</strong> Don't just ask, “What does the video show?” Ask, “What could the camera have missed?”<p class="fine">DeepDivesKids • November 17, 2026 • Curious minds, careful evidence.</p></footer>
+</div>
+<script>
+'use strict';
+(function () {
+  const gap = 60;
+  const byId = id => document.getElementById(id);
+  const rpmInput = byId('rpm');
+  const fpsInput = byId('fps');
+  const playButton = byId('play');
+  const state = { time: 0, running: false, last: null, frameHandle: null };
+  const filmRotors = [];
+  const svgNS = 'http://www.w3.org/2000/svg';
+
+  // Make five identical six-spoke thumbnail wheels without external assets.
+  for (let i = 0; i < 5; i += 1) {
+    const tile = document.createElement('div');
+    tile.className = 'filmcell';
+    const label = document.createElement('span');
+    label.textContent = 'Frame ' + (i + 1);
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '-52 -52 104 104');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'Sampled picture number ' + (i + 1));
+    const ring = document.createElementNS(svgNS, 'circle');
+    ring.setAttribute('r', '44'); ring.setAttribute('fill', '#172d59');
+    ring.setAttribute('stroke', '#b1cef1'); ring.setAttribute('stroke-width', '3');
+    const rotor = document.createElementNS(svgNS, 'g');
+    for (let j = 0; j < 6; j += 1) {
+      const arm = document.createElementNS(svgNS, 'line');
+      arm.setAttribute('x1', '0'); arm.setAttribute('x2', '0');
+      arm.setAttribute('y1', '-10'); arm.setAttribute('y2', '-34');
+      arm.setAttribute('stroke', '#ffb8a6'); arm.setAttribute('stroke-width', '6');
+      arm.setAttribute('stroke-linecap', 'round');
+      arm.setAttribute('transform', 'rotate(' + (j * gap) + ')');
+      rotor.appendChild(arm);
+    }
+    const hub = document.createElementNS(svgNS, 'circle');
+    hub.setAttribute('r', '6'); hub.setAttribute('fill', '#ffe179');
+    svg.append(ring, rotor, hub);
+    tile.append(label, svg);
+    byId('film').appendChild(tile);
+    filmRotors.push(rotor);
+  }
+
+  function apparentRpm(realRpm, framesPerSecond, spokes = 6) {
+    const spacing = 360 / spokes;
+    const realStep = realRpm * 6 / framesPerSecond;
+    const shortStep = ((realStep + spacing / 2) % spacing + spacing) % spacing - spacing / 2;
+    return shortStep * framesPerSecond / 6;
+  }
+  function calculate() {
+    const rpm = Number(rpmInput.value);
+    const fps = Number(fpsInput.value);
+    const realStep = rpm * 6 / fps;
+    const shortStep = ((realStep + gap / 2) % gap + gap) % gap - gap / 2;
+    const ambiguous = Math.abs(Math.abs(shortStep) - gap / 2) < 1e-9;
+    let message;
+    if (rpm === 0) message = 'This time the wheel really is stopped.';
+    else if (ambiguous) message = 'A tie! Equally short forward and backward steps fit these snapshots.';
+    else if (Math.abs(shortStep) < 1e-9) message = 'The wheel spins, but the camera makes it look frozen!';
+    else if (shortStep < 0) message = 'Aha! The real wheel goes clockwise, but the pictures look BACKWARD!';
+    else message = 'Here the camera pictures show the correct clockwise direction.';
+    return { rpm, fps, realStep, shortStep, ambiguous, message };
+  }
+  function render() {
+    const d = calculate();
+    const frameNumber = Math.floor(state.time * d.fps + 1e-9);
+    byId('liveRotor').setAttribute('transform', 'rotate(' + ((state.time * d.rpm * 6) % 360).toFixed(5) + ')');
+    byId('cameraRotor').setAttribute('transform', 'rotate(' + ((frameNumber * d.realStep) % 360).toFixed(5) + ')');
+    byId('rpmValue').textContent = d.rpm + ' RPM';
+    byId('trueStep').textContent = d.realStep.toFixed(1) + '°' + (d.rpm ? ' forward' : '');
+    byId('seenStep').textContent = d.ambiguous ? '30° either way' : Math.abs(d.shortStep).toFixed(1) + '° ' + (d.shortStep < -1e-9 ? 'backward' : d.shortStep > 1e-9 ? 'forward' : '(still)');
+    byId('apparent').textContent = d.ambiguous ? 'ambiguous' : (Math.abs(d.shortStep) < 1e-9 ? '0' : apparentRpm(d.rpm, d.fps).toFixed(0)) + ' RPM';
+    const text = d.message + ' Camera rate: ' + d.fps + ' frames per second.';
+    if (byId('result').textContent !== text) byId('result').textContent = text;
+    filmRotors.forEach((rotor, i) => rotor.setAttribute('transform', 'rotate(' + ((i * d.realStep) % 360).toFixed(5) + ')'));
+  }
+  function stop() {
+    state.running = false;
+    state.last = null;
+    if (state.frameHandle !== null) window.cancelAnimationFrame(state.frameHandle);
+    state.frameHandle = null;
+    playButton.textContent = '▶ Start motion';
+    playButton.setAttribute('aria-pressed', 'false');
+  }
+  function tick(timestamp) {
+    if (!state.running) return;
+    if (state.last !== null) state.time += Math.max(0, Math.min(0.08, (timestamp - state.last) / 1000));
+    state.last = timestamp;
+    render();
+    state.frameHandle = window.requestAnimationFrame(tick);
+  }
+  function start() {
+    if (state.running) return;
+    state.running = true;
+    state.last = null;
+    playButton.textContent = '⏸ Pause motion';
+    playButton.setAttribute('aria-pressed', 'true');
+    state.frameHandle = window.requestAnimationFrame(tick);
+  }
+  function resetTime() { state.time = 0; state.last = null; render(); }
+  rpmInput.addEventListener('input', resetTime);
+  fpsInput.addEventListener('change', resetTime);
+  playButton.addEventListener('click', () => state.running ? stop() : start());
+  byId('step').addEventListener('click', () => {
+    stop();
+    const fps = Number(fpsInput.value);
+    state.time = (Math.floor(state.time * fps + 1e-9) + 1) / fps;
+    render();
+  });
+  byId('reset').addEventListener('click', () => {
+    stop(); rpmInput.value = '50'; fpsInput.value = '8'; resetTime();
+    byId('feedback').textContent = 'Choose your answer to reveal the explanation.';
+    document.querySelectorAll('[data-answer]').forEach(b => b.setAttribute('aria-pressed', 'false'));
+  });
+  document.querySelectorAll('[data-answer]').forEach(button => button.addEventListener('click', () => {
+    document.querySelectorAll('[data-answer]').forEach(other => other.setAttribute('aria-pressed', String(button === other)));
+    byId('feedback').textContent = button.dataset.answer === 'backward'
+      ? '✅ Case solved! The wheel turns 37.5° forward between pictures, which looks like 22.5° backward.'
+      : '🔎 Try again. Six identical spokes repeat their pattern every 60°. What is the shortest-looking jump from 37.5° forward?';
+  }));
+  // Start paused: the visitor controls motion.
+  render();
+}());
+</script>
+</body>
+</html>
