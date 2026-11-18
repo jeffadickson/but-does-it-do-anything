@@ -170,7 +170,18 @@ constexpr bool bounded_vector_example()
     return values.size() == 2 &amp;&amp; values[1] == 20;
 }
 static_assert(bounded_vector_example());
-static_assert(std::is_trivially_copyable_v&lt;Event&gt;);</code></pre></figure>
+static_assert(std::is_trivially_copyable_v&lt;Event&gt;);
+
+int main()
+{
+    Inbox inbox{};
+    TraceTail trace{};
+    if (enqueue(inbox, Event{1, 42}) != Admission::Queued) return 1;
+    Event current{};
+    if (!dequeue(inbox, current) || current.tick != 42) return 2;
+    record_tick(trace, current.tick);
+    return trace.front() == 42 ? 0 : 3;
+}</code></pre></figure>
 <p>The wrapper returns <code>Admission::Full</code>, differentiates lossless and overwrite-only buffers, and avoids container-level growth allocation. Its correctness assumes a <strong>single-threaded access protocol</strong>: checking fullness and pushing is not an atomic transaction across concurrent producers.</p>
 <div class="callout caution"><p><strong>Interrupt and concurrency boundary:</strong> if an ISR and a task access the same queue, choose a separately qualified SPSC/MPMC primitive or protect the complete operation using documented platform synchronization. Fixed capacity alone does not confer interrupt safety.</p></div>
 <h3>Requirement-driven example test</h3>
@@ -214,7 +225,10 @@ find_package(fixed_containers CONFIG REQUIRED)
 add_executable(bounded_events event_queue.cpp)
 target_compile_features(bounded_events PRIVATE cxx_std_20)
 target_link_libraries(bounded_events
-    PRIVATE fixed_containers::fixed_containers)</code></pre></figure>
+    PRIVATE fixed_containers::fixed_containers)
+
+enable_testing()
+add_test(NAME bounded_events_smoke COMMAND bounded_events)</code></pre></figure>
 <figure class="code"><figcaption>PowerShell · vcpkg / Ninja</figcaption><pre><code># Ensure vcpkg, Ninja and a C++20 compiler are installed.
 vcpkg install fixed-containers
 
@@ -222,7 +236,7 @@ vcpkg install fixed-containers
 cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ctest --test-dir build --output-on-failure</code></pre></figure>
-<p class="small">The sample <code>event_queue.cpp</code> above has no <code>main()</code>; add an application entry point before linking this particular executable. <code>ctest</code> requires tests to be registered by the consumer; the example CMake file does not itself define tests. These commands are documented instructions, not an executed build log.</p>
+<p class="small">The example includes a simple executable <code>main()</code> and one CTest smoke check. Its standalone test assertions are shown separately for later integration into a real test target. These commands are documented instructions, not an executed build log.</p>
 <ol>
 <li>Pin the upstream commit or vcpkg baseline; never silently fetch changing <code>main</code> in qualification CI.</li>
 <li>Keep upstream testing dependencies out of production builds. Set <code>BUILD_TESTS=OFF</code> when appropriate for subproject inclusion.</li>
