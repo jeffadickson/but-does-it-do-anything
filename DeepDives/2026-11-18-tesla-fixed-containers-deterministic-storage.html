@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="A source-reviewed engineering deep dive into Tesla's C++20 fixed-containers: bounded queues, overflow semantics, memory layout, CMake/Ninja integration, tradeoffs, and qualification.">
+<title>Fixed Containers: Bounded by Design · Library Deep Dive · November 18, 2026</title>
+<style>
+:root{--ink:#152b37;--muted:#526874;--navy:#102733;--teal:#006a69;--gold:#ecb663;--bg:#f3f6f6;--paper:#fff;--line:#dce5e5;--max:1190px;color-scheme:light}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.67 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#006c73;text-underline-offset:3px}a:hover{color:#004c57}a:focus-visible{outline:3px solid var(--gold);outline-offset:4px;border-radius:3px}
+.skip{position:absolute;left:-9999px;top:10px;padding:.65rem 1rem;background:#fff;z-index:99}.skip:focus{left:12px}
+.hero{background:radial-gradient(ellipse at 95% 0%,#184f55 0%,transparent 53%),linear-gradient(135deg,#0b2633,#163941);color:#f5fbfa;padding:56px 24px 49px}
+.hero-inner{max-width:var(--max);margin:auto}.eyebrow{font-size:.76rem;letter-spacing:.15em;font-weight:800;text-transform:uppercase;color:#bfe4df}
+.hero h1{font-size:clamp(2.4rem,5.8vw,4.55rem);letter-spacing:-.045em;line-height:1.04;max-width:850px;margin:17px 0 18px}
+.hero .dek{font-size:clamp(1.05rem,2.2vw,1.35rem);line-height:1.55;color:#d9ebe8;max-width:850px;margin:0}
+.hero .meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}.hero .meta span{border:1px solid #4e7880;padding:5px 12px;border-radius:99px;font-size:.79rem;font-weight:650;color:#e8f7f3}.hero .accent{color:#ffc780}
+.shell{max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:230px minmax(0,1fr);gap:38px;padding:40px 24px 80px;align-items:start}
+aside{position:sticky;top:22px;max-height:calc(100vh - 32px);overflow:auto;border-left:2px solid #bdd4d3;padding:12px 12px 18px 21px}
+aside strong{font-size:.75rem;color:#526874;letter-spacing:.11em;text-transform:uppercase;display:block;margin-bottom:9px}
+aside a{display:block;color:#37535b;text-decoration:none;font-size:.88rem;padding:6px 0;line-height:1.35}
+aside a:hover{text-decoration:underline}
+article{min-width:0}article>section{scroll-margin-top:30px;margin:0 0 40px}
+h2{font-size:clamp(1.55rem,3vw,2rem);letter-spacing:-.035em;line-height:1.25;margin:0 0 17px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+h3{font-size:1.16rem;line-height:1.35;margin:24px 0 9px}p{margin:0 0 15px}p.lead{font-size:1.12rem;color:#314c55}
+ul,ol{padding-left:1.4rem;margin:12px 0 18px}li{margin:5px 0}strong{font-weight:740}
+.intro{background:var(--paper);border:1px solid var(--line);border-radius:17px;padding:25px 27px;box-shadow:0 13px 38px #172d360a;margin:0 0 35px}
+.intro h2{border:0;margin:0 0 10px;padding:0;font-size:1.47rem}
+.summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:17px 0 0}
+.metric{background:#f0f8f6;border:1px solid #d4e7e3;border-radius:10px;padding:15px}
+.metric .number{font-size:1.24rem;font-weight:800;letter-spacing:-.03em;color:#145b5c}.metric .caption{font-size:.81rem;color:#4f6770;line-height:1.43;margin-top:5px}
+.callout{background:#ecf7f5;border-left:4px solid var(--teal);border-radius:0 9px 9px 0;padding:15px 18px;margin:20px 0}
+.callout.caution{background:#fff5ed;border-color:#c77c3f}.callout.critical{background:#fff0ee;border-color:#b94e3f}.callout p:last-child{margin-bottom:0}
+.table-wrap{width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:#fff;margin:16px 0 23px}
+table{border-collapse:collapse;min-width:580px;width:100%;font-size:.91rem;line-height:1.45}th{text-align:left;background:#eaf3f1;color:#234a50;font-size:.79rem;letter-spacing:.015em}
+th,td{padding:11px 14px;border-bottom:1px solid #e7eded;vertical-align:top}tr:last-child td{border-bottom:0}td:first-child{font-weight:640}
+code{font:.87em ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;background:#e5eeec;border-radius:4px;padding:.1em .26em;overflow-wrap:anywhere}
+figure.code{margin:19px 0 24px;border-radius:12px;overflow:hidden;border:1px solid #253b47;background:#10232e}
+figure.code figcaption{font:.74rem system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#b8d2d1;padding:10px 15px;border-bottom:1px solid #314c55;background:#183542;font-weight:700}
+figure.code pre{margin:0;padding:17px 19px;overflow:auto;font:13.5px/1.62 ui-monospace,SFMono-Regular,Consolas,monospace;color:#e5f1ed;tab-size:4}
+figure.code code{font:inherit;background:none;color:inherit;padding:0;overflow-wrap:normal}
+.tag{display:inline-block;background:#e7f4ed;color:#166349;border-radius:6px;padding:2px 7px;font-size:.75rem;font-weight:750}.tag.amb{background:#fff1dc;color:#815622}
+.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0}
+.flow .block{background:#fff;border:1px solid var(--line);border-top:4px solid var(--teal);border-radius:10px;padding:18px 16px}
+.flow h3{font-size:1.02rem;margin:0 0 8px}.flow p{font-size:.89rem;line-height:1.51;margin:0;color:#526873}
+.refs li{padding-bottom:8px;overflow-wrap:anywhere}
+footer{margin-top:52px;border-top:2px solid var(--line);padding-top:24px;font-size:.86rem;color:#5e7077}
+.small{font-size:.89rem;color:#566a72}.kicker{font-size:.75rem;font-weight:750;letter-spacing:.11em;color:#087373;text-transform:uppercase;margin:0 0 10px}
+.status{display:flex;gap:12px;align-items:start;background:#f2f6f5;border-radius:9px;padding:13px 17px;margin:14px 0 0;font-size:.91rem}.status strong{min-width:125px}
+@media(max-width:900px){.shell{grid-template-columns:minmax(0,1fr);gap:16px;padding:25px 19px 60px}aside{position:static;max-height:none;border:1px solid var(--line);border-radius:12px;background:#fff;padding:13px 18px}aside a{display:inline-block;margin-right:14px}.hero{padding:44px 20px}.summary-grid,.flow{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.summary-grid,.flow{grid-template-columns:1fr}.intro{padding:20px 17px}.hero h1{font-size:2.38rem}figure.code pre{font-size:12px;padding:13px}th,td{padding:9px 11px}}
+@media print{body{background:white;font-size:11pt}.hero{background:#fff;color:#142b36;padding:0 0 15px}.hero .dek,.hero .eyebrow,.hero .meta span{color:#3d5960}.hero .meta span{border-color:#ccc}.shell{display:block;padding:0}aside,.skip{display:none}article>section,figure.code{break-inside:avoid}figure.code pre{white-space:pre-wrap;color:#172b32;background:#f1f5f5}figure.code figcaption{color:#244c51;background:#dce9e7}.intro,.metric,.flow .block{box-shadow:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to article</a>
+<header class="hero"><div class="hero-inner">
+<div class="eyebrow">Library Deep Dive · Embedded C++ / Deterministic Systems</div>
+<h1>Fixed containers.<br><span class="accent">Bounded by design.</span></h1>
+<p class="dek">Tesla's <em>fixed-containers</em> brings a broad family of in-object, compile-time-capacity C++20 containers to systems where heap allocation or an unexamined queue overrun is unacceptable.</p>
+<div class="meta"><span>18 November 2026</span><span>C++20 · Header-only</span><span>MIT license</span><span>Source-reviewed</span><span>10-minute read</span></div>
+</div></header>
+<div class="shell">
+<aside aria-label="Contents"><strong>In this report</strong><nav aria-label="Table of contents">
+<a href="#brief">Executive brief</a><a href="#why">Why this matters</a><a href="#inventory">What it provides</a><a href="#semantics">Overflow contracts</a><a href="#example">Worked code example</a><a href="#internals">Memory &amp; layout</a><a href="#integration">CMake / Ninja</a><a href="#applications">Potential applications</a><a href="#tradeoffs">Alternatives</a><a href="#verification">Qualification plan</a><a href="#adoption">Adoption &amp; licensing</a><a href="#sources">Primary references</a>
+</nav></aside>
+<main id="main"><article>
+<section class="intro" id="brief">
+<p class="kicker">The engineering decision in one minute</p>
+<h2>A useful addition to the bounded-memory toolbox</h2>
+<p class="lead"><strong>Consider it for fixed-size event queues, trace windows, command batches, and typed lookup tables.</strong> You gain STL-shaped APIs with capacity embedded in the type. But fixed storage is not synonymous with drop-free operation, thread safety, stable ABI, or proven timing bounds.</p>
+<div class="summary-grid">
+<div class="metric"><div class="number">Compile-time capacity</div><div class="caption">Capacity is a template argument; storage is owned by the object instead of a container heap.</div></div>
+<div class="metric"><div class="number">Two queue policies</div><div class="caption">Reject/full checking in ordinary queues versus intentional oldest-item replacement in circular queues.</div></div>
+<div class="metric"><div class="number">Modern C++20</div><div class="caption"><code>constexpr</code> mutation, familiar iteration, and structural-value use cases for supported types.</div></div>
+</div>
+<div class="status"><strong>Review boundary</strong><span>Inspected upstream README, source, CMake, manifest and license at <a href="https://github.com/teslamotors/fixed-containers/commit/76110158e904c83eca4c4a5f1dc36629be4d706e">commit 7611015</a> (24 September 2026). Example code is source-checked but <strong>not compiled or benchmarked</strong> in this review.</span></div>
+</section>
+
+<section id="why"><h2>01 / Why fixed capacity matters</h2>
+<p>Dynamic allocation raises questions a bounded RTOS would rather answer at design time: Can allocation fail? Is allocator latency bounded? Can fragmentation occur? Will a new code path allocate? What is the worst-case memory provision?</p>
+<p><code>std::vector</code> solves a different problem well: it grows. <code>std::array</code> owns exactly N elements, but does not directly represent a changing number of constructed elements. A fixed-capacity vector occupies the middle ground: <em>variable logical size, fixed maximum storage</em>.</p>
+<div class="callout"><p><strong>Critical distinction:</strong> a <em>heap-free container</em> does not imply a heap-free application. If element construction, copying, moving, comparisons, hashing, or destruction allocate, an operation may still allocate. Deterministic memory does not establish a worst-case execution-time (WCET) proof.</p></div>
+<p>For RISCue active objects or deterministic simulation, the container can encode a memory bound. The scheduler, event ownership, producer/consumer synchronization and overload contract still require independent design.</p></section>
+
+<section id="inventory"><h2>02 / More than a static vector</h2>
+<p>Upstream documents a broad fixed-capacity family. These are actual public API names, not an assertion of one-to-one behavioral equivalence with their standard-library counterparts.</p>
+<div class="table-wrap"><table><thead><tr><th>Family</th><th>Representative types</th><th>Possible role</th></tr></thead><tbody>
+<tr><td>Sequence</td><td><code>FixedVector</code>, <code>FixedDeque</code>, <code>FixedList</code></td><td>Ready lists, ordered work items, bounded batches</td></tr>
+<tr><td>Adapters</td><td><code>FixedQueue</code>, <code>FixedStack</code></td><td>FIFO event buffering, bounded nesting or undo history</td></tr>
+<tr><td>Overwrite-on-full</td><td><code>FixedCircularDeque</code>, <code>FixedCircularQueue</code></td><td>Recent-N trace samples; noncritical rolling diagnostics</td></tr>
+<tr><td>Associative</td><td><code>FixedMap</code>, <code>FixedSet</code>, <code>FixedUnorderedMap</code>, <code>FixedUnorderedSet</code></td><td>Bounded registries or indexed simulator objects</td></tr>
+<tr><td>Text &amp; bits</td><td><code>FixedString</code>, <code>FixedBitset</code></td><td>Constrained labels and status bitsets</td></tr>
+<tr><td>Enum-oriented</td><td><code>EnumMap</code>, <code>EnumSet</code>, <code>EnumArray</code></td><td>Finite state/event universes and policies</td></tr>
+</tbody></table></div>
+<p>The library also includes <code>StringLiteral</code> and rich-enum facilities. Enum-related functionality and the CMake interface depend on <code>magic_enum</code>.</p>
+<div class="flow" aria-label="Design model">
+<div class="block"><h3>01 · Domain limit</h3><p>Capacity appears as a template argument visible to code review.</p></div>
+<div class="block"><h3>02 · Storage model</h3><p>Elements live within the container object, without a growth allocator.</p></div>
+<div class="block"><h3>03 · Failure policy</h3><p>Caller-controlled rejection or explicit overwrite-on-full semantics.</p></div>
+</div></section>
+
+<section id="semantics"><h2>03 / The two overflow stories</h2>
+<h3>Ordinary queue: preserve data or fail</h3>
+<p><code>FixedQueue&lt;T,N&gt;</code> adapts <code>FixedDeque&lt;T,N&gt;</code>. Ordinary fixed sequences check invalid growth and element access. The default <code>SequenceContainerAbortChecking</code> invokes <code>std::abort()</code> on length errors, out-of-range access, empty access and invalid arguments. Upstream also documents full-container insertion as an invalid precondition; do not rely on deliberately triggering a checker to handle normal load.</p>
+<p>For critical messages, make full capacity an explicit result <strong>before</strong> calling <code>push()</code>. This makes backpressure observable, testable and traceable to requirements. The library provides <code>is_full()</code> helpers.</p>
+<h3>Circular queue: keep newest samples</h3>
+<p><code>FixedCircularQueue&lt;T,N&gt;</code> wraps <code>FixedCircularDeque</code>. Source inspection confirms that tail insertion on a full deque removes the front item first. A capacity-three trace pushed with <code>10,20,30,40</code> retains <code>20,30,40</code>. That is sensible for some rolling diagnostics and hazardous for a command inbox.</p>
+<div class="table-wrap"><table><thead><tr><th>Type</th><th>At capacity</th><th>Appropriate application</th><th>Dangerous assumption</th></tr></thead><tbody>
+<tr><td><code>FixedQueue&lt;T,N&gt;</code></td><td>Checking failure unless caller prevents insertion</td><td>Lossless work queue with explicit full result</td><td>“It simply returns false on overflow”</td></tr>
+<tr><td><code>FixedCircularQueue&lt;T,N&gt;</code></td><td>Oldest item is evicted, newest retained</td><td>Rolling trace history</td><td>“All submitted events survive”</td></tr>
+</tbody></table></div>
+<div class="callout critical"><p><strong>Design review gate:</strong> specify capacity, admission policy, overflow instrumentation, recovery, and thread/ISR ownership. These adapters are not advertised as lock-free multi-producer/multi-consumer queues or RTOS synchronization primitives.</p></div></section>
+
+<section id="example"><h2>04 / Worked example: active-object inbox and trace tail</h2>
+<p>The key is to keep <strong>messages that must not disappear</strong> separate from <strong>diagnostics that may discard history</strong>. This code is an illustrative API exercise, not a claim of actual RISCue integration.</p>
+<figure class="code"><figcaption>event_queue.cpp · illustrative C++20</figcaption><pre><code>#include "fixed_containers/fixed_queue.hpp"
+#include "fixed_containers/fixed_circular_queue.hpp"
+#include "fixed_containers/fixed_vector.hpp"
+
+#include &lt;cstdint&gt;
+#include &lt;type_traits&gt;
+
+namespace fc = fixed_containers;
+
+struct Event {
+    std::uint16_t kind;
+    std::uint32_t tick;
+};
+
+enum class Admission : std::uint8_t { Queued, Full };
+
+using Inbox = fc::FixedQueue&lt;Event, 16&gt;;
+using TraceTail = fc::FixedCircularQueue&lt;std::uint32_t, 8&gt;;
+
+Admission enqueue(Inbox&amp; inbox, const Event&amp; event)
+{
+    if (fc::is_full(inbox)) {
+        return Admission::Full;
+    }
+    inbox.push(event);
+    return Admission::Queued;
+}
+
+bool dequeue(Inbox&amp; inbox, Event&amp; out)
+{
+    if (inbox.empty()) {
+        return false;
+    }
+    out = inbox.front();
+    inbox.pop();
+    return true;
+}
+
+// Diagnostics: the oldest sample is discarded when full.
+void record_tick(TraceTail&amp; trace, std::uint32_t tick)
+{
+    trace.push(tick);
+}
+
+// Demonstrates compile-time mutation with FixedVector.
+constexpr bool bounded_vector_example()
+{
+    fc::FixedVector&lt;int, 3&gt; values{};
+    values.push_back(10);
+    values.push_back(20);
+    return values.size() == 2 &amp;&amp; values[1] == 20;
+}
+static_assert(bounded_vector_example());
+static_assert(std::is_trivially_copyable_v&lt;Event&gt;);</code></pre></figure>
+<p>The wrapper returns <code>Admission::Full</code>, differentiates lossless and overwrite-only buffers, and avoids container-level growth allocation. Its correctness assumes a <strong>single-threaded access protocol</strong>: checking fullness and pushing is not an atomic transaction across concurrent producers.</p>
+<div class="callout caution"><p><strong>Interrupt and concurrency boundary:</strong> if an ISR and a task access the same queue, choose a separately qualified SPSC/MPMC primitive or protect the complete operation using documented platform synchronization. Fixed capacity alone does not confer interrupt safety.</p></div>
+<h3>Requirement-driven example test</h3>
+<figure class="code"><figcaption>Illustrative assertions · expected behavior, not executed here</figcaption><pre><code>#include &lt;cassert&gt;
+
+void admission_contract_test()
+{
+    Inbox inbox{};
+    for (int i = 0; i &lt; 16; ++i) {
+        assert(enqueue(inbox, Event{1, unsigned(i)})
+               == Admission::Queued);
+    }
+    assert(enqueue(inbox, Event{9, 99}) == Admission::Full);
+    assert(inbox.size() == 16);
+
+    Event item{};
+    assert(dequeue(inbox, item));
+    assert(item.tick == 0);
+    assert(inbox.size() == 15);
+}</code></pre></figure>
+<p>Production tests should also cover the empty queue, alternating enqueue/dequeue, exact maximum capacity, overflow telemetry, circular wrap-around, exception-disabled builds and target-specific operation cost.</p></section>
+
+<section id="internals"><h2>05 / Memory, object model and <code>constexpr</code></h2>
+<p>The reviewed <code>FixedVectorBase</code> source holds logical size metadata and <code>std::array</code>-backed optional in-place element storage. Appending within capacity constructs objects in owned slots instead of reallocating. The project deliberately preserves suitable type traits and supports constant evaluation of many operations.</p>
+<p>The README's <em>self-referential, no stored pointers</em> claim is especially useful for embedded placement and in-memory snapshots, but it must not be overextended.</p>
+<div class="table-wrap"><table><thead><tr><th>Property</th><th>Useful interpretation</th><th>Qualification needed</th></tr></thead><tbody>
+<tr><td>Heap-free container</td><td>Storage bound is intrinsic to the instantiated container.</td><td>Payload operations may allocate; audit full call graph.</td></tr>
+<tr><td>Type trait retention</td><td>Appropriate instantiations retain traits such as trivial copyability.</td><td>Check exact type and toolchain with <code>static_assert</code>.</td></tr>
+<tr><td>No persistent pointers</td><td>Container implementation is designed around self-contained storage.</td><td>Payload types may contain pointers; temporary iterators may hold addresses.</td></tr>
+<tr><td>Direct memory image</td><td>Could help with controlled same-ABI in-memory copying.</td><td>Not a portable cross-machine wire format: padding, alignment, endian and version apply.</td></tr>
+<tr><td>Constant evaluation</td><td>Can validate some values/transformations at compile time.</td><td>Not evidence of runtime timing bounds.</td></tr>
+</tbody></table></div>
+<p>Expect <code>sizeof(FixedQueue&lt;T,N&gt;)</code> to include representation overhead, not necessarily <code>N * sizeof(T)</code> exactly. Measure <code>sizeof</code>, <code>alignof</code> and task stack high-water marks on your actual target. A fixed buffer placed on a small RTOS task stack can simply move a memory failure from heap to stack.</p></section>
+
+<section id="integration"><h2>06 / CMake + Ninja integration</h2>
+<p>The upstream README documents the imported target <code>fixed_containers::fixed_containers</code>. Its CMake source requires C++20, creates an interface library and links <code>magic_enum::magic_enum</code>. Its own tests additionally depend on GoogleTest and Google Benchmark when enabled. A vcpkg port is available: use a pinned vcpkg baseline for reproducibility.</p>
+<figure class="code"><figcaption>CMakeLists.txt · consumer project</figcaption><pre><code>cmake_minimum_required(VERSION 3.21)
+project(bounded_events LANGUAGES CXX)
+
+find_package(fixed_containers CONFIG REQUIRED)
+add_executable(bounded_events event_queue.cpp)
+target_compile_features(bounded_events PRIVATE cxx_std_20)
+target_link_libraries(bounded_events
+    PRIVATE fixed_containers::fixed_containers)</code></pre></figure>
+<figure class="code"><figcaption>PowerShell · vcpkg / Ninja</figcaption><pre><code># Ensure vcpkg, Ninja and a C++20 compiler are installed.
+vcpkg install fixed-containers
+
+# One command line; use a pinned vcpkg baseline in CI.
+cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+ctest --test-dir build --output-on-failure</code></pre></figure>
+<p class="small">The sample <code>event_queue.cpp</code> above has no <code>main()</code>; add an application entry point before linking this particular executable. <code>ctest</code> requires tests to be registered by the consumer; the example CMake file does not itself define tests. These commands are documented instructions, not an executed build log.</p>
+<ol>
+<li>Pin the upstream commit or vcpkg baseline; never silently fetch changing <code>main</code> in qualification CI.</li>
+<li>Keep upstream testing dependencies out of production builds. Set <code>BUILD_TESTS=OFF</code> when appropriate for subproject inclusion.</li>
+<li>Compile with your deployed exception, RTTI, warning and optimization policies; inspect map and binary size artifacts.</li>
+<li>Capture <code>compile_commands.json</code> and the toolchain version for repeatable source-level analysis.</li>
+</ol>
+<div class="callout"><p><strong>Compiler evidence:</strong> upstream's README lists Clang 13, GCC 11 and MSVC 14.29 as tested. That is its documented compatibility baseline, not a fresh cross-toolchain qualification for modern versions or any particular microcontroller/RTOS target.</p></div></section>
+
+<section id="applications"><h2>07 / Potential applications — not verified deployments</h2>
+<div class="table-wrap"><table><thead><tr><th>System</th><th>Suggested application</th><th>Evidence still required</th></tr></thead><tbody>
+<tr><td>RISCue active objects</td><td><code>FixedQueue</code> plus explicit full-result wrapper for event inboxes.</td><td>Task ownership, ISR protocol, synchronization and burst sizing.</td></tr>
+<tr><td>Deterministic simulation</td><td><code>FixedVector</code> for per-tick batches; circular queue for recent diagnostics.</td><td>Stable ordering, overflow counters and hidden-allocation audit.</td></tr>
+<tr><td>Requirements traceability</td><td><code>EnumMap</code> or <code>EnumArray</code> for finite requirement/status categories.</td><td>Completeness and schema consistency.</td></tr>
+<tr><td>Embedded telemetry</td><td><code>FixedString</code> for bounded labels; vector for staged frames.</td><td>Explicit encoding, packet lengths and portable serialization.</td></tr>
+<tr><td>SharpHDL test harness</td><td>Compile-time fixture tables or allocation-free runtime vectors.</td><td>Capacity bounds and harness object lifetimes.</td></tr>
+<tr><td>C# / Native AOT work</td><td>Architectural inspiration for managed fixed-capacity collections.</td><td>This is a C++ library, not a direct .NET dependency; a C# version needs separate design/tests.</td></tr>
+</tbody></table></div>
+<p><span class="tag amb">Engineering proposals only</span> These examples are not evidence that any named project currently depends on <em>fixed-containers</em>. Actual adoption must be confirmed from build/dependency manifests and source in that project.</p></section>
+
+<section id="tradeoffs"><h2>08 / Tradeoffs and alternatives</h2>
+<div class="table-wrap"><table><thead><tr><th>Alternative</th><th>When it wins</th><th>What fixed-containers adds</th></tr></thead><tbody>
+<tr><td><code>std::array</code></td><td>Exactly N active values and minimal complexity</td><td>Logical-size mutation and queue-style interfaces</td></tr>
+<tr><td>Boost.Container <code>static_vector</code></td><td>Already using Boost; only bounded contiguous storage is needed</td><td>Broader container family, including associative and enum variants</td></tr>
+<tr><td>ETL</td><td>Older compiler/language targets, established firmware integration</td><td>Modern C++20 and structural/constexpr design goals</td></tr>
+<tr><td>Boost.Lockfree SPSC queue</td><td>Qualified independent producer and consumer contexts</td><td>Ordinary fixed queue is a bounded adapter, not a lock-free primitive</td></tr>
+<tr><td>Hand-built ring</td><td>DMA alignment, custom ISR conditions or exact bit layout</td><td>More general APIs and familiar algorithms</td></tr>
+</tbody></table></div>
+<p>Before adopting, answer three concrete questions: <strong>what happens on overflow, how many bytes does the instantiated type consume, and who can access it concurrently?</strong> A library choice without those answers is premature.</p></section>
+
+<section id="verification"><h2>09 / Proposed qualification campaign</h2>
+<p>These tests and measurements are <strong>recommended future work</strong>, not completed results.</p>
+<div class="table-wrap"><table><thead><tr><th>Gate</th><th>What to run</th><th>Expected evidence</th></tr></thead><tbody>
+<tr><td>API / platform</td><td>Clang, GCC, MSVC and deployed cross-compiler; exceptions-off; sanitizers where supported</td><td>Recorded compilers, flags, hashes and build logs</td></tr>
+<tr><td>Capacity</td><td>Empty, one, N-1, N, rejected N+1, circular overrun</td><td>No silent loss for lossless queue; intentional history eviction documented</td></tr>
+<tr><td>Allocation</td><td>Instrument <code>operator new</code> through construction, copy, insert, clear and representative payload paths</td><td>Zero observed allocations within defined scope, limitations disclosed</td></tr>
+<tr><td>Order</td><td>Sequence-numbered burst insertion and repeated drain</td><td>FIFO order / exactly-once under specified single-owner protocol</td></tr>
+<tr><td>Footprint</td><td><code>sizeof</code>, alignment, stack high-water, flash and static data sections</td><td>Product RAM/flash budgets satisfied</td></tr>
+<tr><td>Timing</td><td>Cycle-count at target under full and mixed loads</td><td>Observed worst times, never mislabeled formal WCET</td></tr>
+<tr><td>Snapshots</td><td>Endian, ABI and cross-version probes; serializer golden packets</td><td>Explicit portable format; no unchecked raw memory dumps</td></tr>
+<tr><td>Faults</td><td>Bursts, malformed indices, reset while draining, overflow telemetry</td><td>State invariants, recovery and reported fault counts</td></tr>
+</tbody></table></div>
+<div class="callout caution"><p><strong>Review/build limitations:</strong> upstream source inspection and example API review completed. No upstream suite, local compile, target build, sanitizer campaign, allocation instrumentation or benchmark was executed. This article is not qualification evidence for flight-critical or hard-real-time deployment.</p></div></section>
+
+<section id="adoption"><h2>10 / License, provenance and adoption</h2>
+<p><strong>Official project:</strong> <a href="https://github.com/teslamotors/fixed-containers">teslamotors/fixed-containers</a>. <strong>License:</strong> MIT, with upstream copyright © 2021 Tesla, Inc. Commercial use, modification and redistribution are permitted subject to the MIT copyright/permission notice conditions.</p>
+<p><strong>Dependencies:</strong> upstream CMake links <code>magic_enum</code>; its repository manifest additionally lists GoogleTest and Google Benchmark for development/testing. Review third-party license notices and your actual consumer package graph rather than treating the project's MIT label as the license of every component.</p>
+<p><strong>Observed adoption evidence:</strong> the Tesla-owned public repository proves publication, not production use in Tesla cars, safety-rated firmware, or RISCue. The vcpkg port proves a distribution channel, not real-world deployment. No independently documented specific production adopter was verified for this report.</p>
+<p><strong>Review revision:</strong> <a href="https://github.com/teslamotors/fixed-containers/commit/76110158e904c83eca4c4a5f1dc36629be4d706e"><code>76110158e904c83eca4c4a5f1dc36629be4d706e</code></a>, main head committed 24 September 2026 UTC. Pin a reviewed commit in production build manifests.</p></section>
+
+<section id="sources"><h2>11 / Primary references</h2>
+<p>Upstream-controlled sources support the technical claims. The code links are pinned to the reviewed revision to avoid silent changes.</p>
+<ol class="refs">
+<li><a href="https://github.com/teslamotors/fixed-containers/blob/76110158e904c83eca4c4a5f1dc36629be4d706e/README.md">Official README</a> — feature matrix, examples, build methods, tested compilers, and declared properties.</li>
+<li><a href="https://github.com/teslamotors/fixed-containers/blob/76110158e904c83eca4c4a5f1dc36629be4d706e/include/fixed_containers/fixed_vector.hpp">fixed_vector.hpp</a> — in-object array, capacity preconditions and constant-evaluated operations.</li>
+<li><a href="https://github.com/teslamotors/fixed-containers/blob/76110158e904c83eca4c4a5f1dc36629be4d706e/include/fixed_containers/fixed_circular_deque.hpp">fixed_circular_deque.hpp</a> — eviction behavior when appending to full buffer.</li>
+<li><a href="https://github.com/teslamotors/fixed-containers/blob/76110158e904c83eca4c4a5f1dc36629be4d706e/include/fixed_containers/fixed_queue.hpp">fixed_queue.hpp</a> and <a href="https://github.com/teslamotors/fixed-containers/blob/76110158e904c83eca4c4a5f1dc36629be4d706e/include/fixed_containers/fixed_circular_queue.hpp">fixed_circular_queue.hpp</a> — queue adapter type declarations and fullness helpers.</li>
+<li><a href="https://github.com/teslamotors/fixed-containers/blob/76110158e904c83eca4c4a5f1dc36629be4d706e/include/fixed_containers/sequence_container_checking.hpp">sequence_container_checking.hpp</a> — default abort-based policy and checking interface.</li>
+<li><a href="https://github.com/teslamotors/fixed-containers/blob/76110158e904c83eca4c4a5f1dc36629be4d706e/CMakeLists.txt">CMakeLists.txt</a> and <a href="https://github.com/teslamotors/fixed-containers/blob/76110158e904c83eca4c4a5f1dc36629be4d706e/vcpkg.json">vcpkg.json</a> — build standard, interface target and dependency manifest.</li>
+<li><a href="https://github.com/teslamotors/fixed-containers/blob/76110158e904c83eca4c4a5f1dc36629be4d706e/LICENSE">MIT LICENSE</a> — copyright and notice obligations.</li>
+<li><a href="https://vcpkg.io/en/package/fixed-containers.html">vcpkg package record</a> — independent package catalog corroborating availability, not deployed use.</li>
+</ol></section>
+<footer><p><strong>Library Deep Dive · 18 November 2026.</strong> Research for deterministic, bounded-memory C++ systems. Verified upstream functionality is distinguished from proposed applications and unexecuted target qualification.</p><p><em>Fixed storage is a design constraint; deterministic behavior is a system-level argument.</em></p></footer>
+</article></main></div></body></html>
