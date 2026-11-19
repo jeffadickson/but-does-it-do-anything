@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111638">
+  <meta name="description" content="An original, offline planet-hunting adventure for young scientists: discover exoplanet transits, make a real light-curve model, and try a flashlight experiment.">
+  <title>The Star That Winked! | DeepDivesKids | November 19, 2026</title>
+  <style>
+    :root{color-scheme:dark;--night:#0c1230;--panel:#151c44;--panel2:#202955;--ink:#f8f9ff;--muted:#d4ddf2;--line:#7281ae;--sun:#ffdc74;--mint:#78f2d4;--pink:#ffc6d5;--blue:#9bcaff}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font:1.08rem/1.65 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:radial-gradient(ellipse at 8% 4%,#35316a 0,transparent 36rem),radial-gradient(ellipse at 96% 36%,#1b4a6c 0,transparent 42rem),var(--night)}
+    a{color:var(--mint);text-underline-offset:3px}
+    a:hover{text-decoration-thickness:3px}
+    :focus-visible{outline:3px solid var(--sun);outline-offset:4px;border-radius:4px}
+    .skip{position:absolute;top:-6rem;left:1rem;background:var(--sun);color:#111638;padding:.55rem 1rem;z-index:10;font-weight:800}
+    .skip:focus{top:.7rem}
+    .wrap{max-width:1120px;margin:auto;padding:0 clamp(1rem,4vw,2.6rem)}
+    .eyebrow{font-size:.78rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--mint)}
+    .hero{position:relative;overflow:hidden;padding:4.5rem 0 3rem;border-bottom:1px solid #6e72ac}
+    .hero:before{content:"✦  ·  ✧   ✦  ·   ✧    ✦   ·   ✧";position:absolute;right:3%;top:1.3rem;color:var(--sun);letter-spacing:.8rem;opacity:.55;pointer-events:none}
+    .heroGrid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(1.5rem,4vw,3.5rem);align-items:center}
+    h1,h2,h3{line-height:1.18;letter-spacing:-.03em}
+    h1{font-size:clamp(2.9rem,7vw,5.8rem);margin:.7rem 0}
+    h1 em{color:var(--sun);font-style:normal}
+    h2{font-size:clamp(1.8rem,3.2vw,2.55rem);margin:0 0 1rem}
+    h3{font-size:1.28rem;margin:0 0 .6rem}
+    p{margin:.65rem 0 1.1rem}
+    .lede{font-size:clamp(1.14rem,1.8vw,1.42rem);max-width:40rem}
+    .chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.4rem}
+    .chip{background:#273360;border:1px solid #8795c2;border-radius:999px;padding:.28rem .8rem;font-weight:750;font-size:.84rem}
+    .spaceArt{position:relative;min-height:325px;display:grid;place-items:center;isolation:isolate}
+    .spaceArt:before{content:"";position:absolute;width:min(95%,22rem);aspect-ratio:1;border:1.5px dashed #8c96c0;border-radius:50%;transform:rotate(-18deg) scaleY(.66)}
+    .heroStar{width:min(61%,13rem);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 34% 26%,#fff7c3 0%,#ffe17c 26%,#ffa24b 75%,#e86550 100%);box-shadow:0 0 24px #ffa64e,0 0 80px #ed755488}
+    .heroPlanet{position:absolute;width:4.2rem;aspect-ratio:1;background:radial-gradient(circle at 30% 30%,#697ad5,#1b2761 75%);border:3px solid #b1bde9;border-radius:50%;left:49%;top:42%;box-shadow:7px 8px 14px #080b25aa}
+    .artNote{position:absolute;bottom:.5rem;font-size:.82rem;color:var(--muted);text-align:center;background:#151c44d0;padding:.2rem .7rem;border-radius:20px}
+    main{padding-bottom:3rem}
+    .toc{margin:2rem auto 3rem;background:#222c58;border:1px solid #828fbe;border-radius:1.4rem;padding:1.2rem 1.6rem}
+    .toc strong{display:block;margin-bottom:.55rem}
+    .toc ul{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.45rem 1rem;list-style:none;margin:0;padding:0}
+    section{scroll-margin-top:1.25rem;margin:3rem 0}
+    .card{background:linear-gradient(145deg,#1b2452,#151c41);border:1px solid #6a79a7;border-radius:1.3rem;padding:clamp(1.15rem,3vw,1.85rem)}
+    .leadCard{border-left:6px solid var(--sun)}
+    .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.1rem}
+    .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+    .number{display:inline-grid;place-items:center;width:2.1rem;aspect-ratio:1;border-radius:50%;background:var(--sun);color:#171e45;font-weight:900;margin-right:.3rem}
+    .small{color:var(--muted);font-size:.92rem}
+    .pill{display:inline-block;background:#284454;color:#baffec;border-radius:999px;font-weight:900;font-size:.78rem;letter-spacing:.05em;padding:.18rem .65rem;margin-bottom:.55rem;text-transform:uppercase}
+    .pink{background:#553351;color:#ffe0ef}
+    .blue{background:#233d67;color:#cbe4ff}
+    .formula{display:block;background:#101835;border:1px solid #6b7ea5;padding:.9rem;border-radius:.75rem;font-size:1.23rem;font-weight:800;text-align:center;color:var(--sun);margin:.85rem 0}
+    .lab{background:linear-gradient(160deg,#13284a,#151b40 65%);border:2px solid #7dbbda;border-radius:1.4rem;padding:clamp(1rem,3vw,2rem)}
+    .labGrid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(270px,.95fr);gap:1.5rem;align-items:start}
+    .diagram{background:radial-gradient(circle at 50% 34%,#35426d,#0e1635 67%);border:1px solid #8191b8;border-radius:1rem;padding:.6rem}
+    .diagram svg{width:100%;height:auto;display:block}
+    .control{margin:.9rem 0 1.4rem}
+    label{font-weight:800;display:block}
+    .rangeRow{display:flex;align-items:center;justify-content:space-between;gap:.75rem}
+    input[type=range]{display:block;width:100%;min-height:2.4rem;accent-color:#86efd2;cursor:pointer}
+    output{font-variant-numeric:tabular-nums;color:var(--sun);font-weight:900}
+    button{border:2px solid #e9f0ff;background:#d9e6ff;color:#101736;border-radius:.65rem;font:inherit;font-size:.91rem;font-weight:900;padding:.53rem .82rem;cursor:pointer}
+    button:hover{background:#fff1bc}
+    button:disabled{opacity:.45;cursor:not-allowed}
+    .buttonRow{display:flex;flex-wrap:wrap;gap:.5rem}
+    .readouts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;margin:1rem 0}
+    .readout{background:#25335f;border:1px solid #7187b6;padding:.85rem;border-radius:.7rem}
+    .readout .big{font-weight:900;color:var(--mint);font-size:clamp(1.35rem,2.6vw,2rem);font-variant-numeric:tabular-nums}
+    .chart{background:#101936;border:1px solid #7688b4;border-radius:1rem;padding:.65rem;margin-top:1.1rem}
+    .chart svg{display:block;width:100%;height:auto}
+    .chart text{fill:#e7f3ff;font:16px system-ui,sans-serif}
+    .chart .gridline{stroke:#7185a8;stroke-dasharray:5 7;stroke-width:1}
+    .chart .axis{stroke:#c7d4e9;stroke-width:1.5}
+    .chart #lightCurve{stroke:#7ef4d4;stroke-width:5;stroke-linejoin:round;stroke-linecap:round;fill:none}
+    .chart #cursor{stroke:#ffe08e;stroke-width:2;stroke-dasharray:5 5}
+    .chart #dot{fill:#ffdf83;stroke:#fff;stroke-width:2}
+    table{width:100%;border-collapse:collapse;font-size:.94rem;margin-top:.8rem}
+    th,td{padding:.55rem .65rem;border-bottom:1px solid #6c7ca6;text-align:left;font-variant-numeric:tabular-nums}
+    th{background:#29355e}
+    .tableWrap{overflow-x:auto}
+    .status{color:var(--mint);font-weight:800}
+    .experiment li,.steps li{margin:.65rem 0}
+    .compare{border-left:5px solid var(--mint)}
+    details{border:1px solid #8b9bc5;background:#1e2850;border-radius:.8rem;padding:.75rem 1rem;margin:.75rem 0}
+    summary{cursor:pointer;font-weight:900;color:var(--sun)}
+    .quizChoices{display:grid;gap:.55rem;margin:1rem 0}
+    .quizChoices label{display:block;background:#25305c;border:1px solid #7685b1;border-radius:.6rem;padding:.65rem;font-weight:650;cursor:pointer}
+    .quizChoices input{accent-color:#ffe28b;margin-right:.5rem}
+    .sources li{padding:.4rem 0}
+    .foot{border-top:1px solid #6a77a4;padding:2.4rem 0 4rem;color:var(--muted);font-size:.94rem}
+    @media(max-width:760px){.heroGrid,.two,.three,.labGrid{grid-template-columns:1fr}.spaceArt{min-height:240px;order:-1}.hero{padding-top:2.2rem}.heroStar{width:9rem}.toc ul{grid-template-columns:repeat(2,minmax(0,1fr))}.readouts{grid-template-columns:1fr}}
+    @media(max-width:400px){.toc ul{grid-template-columns:1fr}.buttonRow button{flex:1 1 auto}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
+    @media print{body{color:#14162b;background:white}.card,.lab,.toc,details{color:#14162b;background:white;border-color:#555}a{color:#164b79}.eyebrow,.small,.foot{color:#333}.heroStar{box-shadow:none}button,input{display:none!important}section{break-inside:avoid}}
+  </style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the adventure</a>
+<header class="hero">
+  <div class="wrap heroGrid">
+    <div>
+      <div class="eyebrow">Deep Dives Kids · Thursday, <time datetime="2026-11-19">November 19, 2026</time></div>
+      <h1>The Star That <em>Winked!</em> ✨</h1>
+      <p class="lede">A star gets just a tiny bit darker. Is it blinking? Is there a secret planet? Become an exoplanet detective and uncover a whole new world using only a graph.</p>
+      <div class="chips"><span class="chip">🌎 Space science</span><span class="chip">🔍 Mystery-solving</span><span class="chip">💻 Real math in code</span><span class="chip">Ages 9+</span></div>
+    </div>
+    <div class="spaceArt" role="img" aria-label="Illustration: a dark planet crossing in front of a glowing orange star">
+      <div class="heroStar"></div><div class="heroPlanet"></div>
+      <div class="artNote">An imaginary distant solar system — not a photograph</div>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <nav class="toc" aria-label="Table of contents">
+    <strong>🗺️ Your mission map</strong>
+    <ul>
+      <li><a href="#mystery">1. The mystery</a></li>
+      <li><a href="#how">2. How it works</a></li>
+      <li><a href="#lab">3. Planet lab</a></li>
+      <li><a href="#real">4. Real discoveries</a></li>
+      <li><a href="#try">5. Kitchen experiment</a></li>
+      <li><a href="#detective">6. Detective challenge</a></li>
+      <li><a href="#limits">7. Be a careful scientist</a></li>
+      <li><a href="#connections">8. Your world + Dad's work</a></li>
+      <li><a href="#sources">9. Sources + code</a></li>
+    </ul>
+  </nav>
+
+  <section id="mystery">
+    <div class="card leadCard">
+      <span class="pill">The case of the disappearing light</span>
+      <h2>What if you found a planet without ever seeing it?</h2>
+      <p>Imagine standing a million miles from a lighthouse. A tiny moth flies across its bright lamp. You probably cannot see the moth — but with a very sensitive light meter, you might notice the lighthouse dim for a moment.</p>
+      <p>Astronomers use a similar clue. When a planet moves between its star and a telescope, it blocks <em>some</em> starlight. The telescope records a tiny dip. When the dips happen again and again on a regular schedule, that's exciting evidence that a planet might be orbiting the star.</p>
+      <p><strong>Mission:</strong> make a pretend star, invent a planet, and figure out how its size changes the dip. Then check a real NASA discovery.</p>
+    </div>
+  </section>
+
+  <section id="how">
+    <h2>🔭 How the light trick works</h2>
+    <div class="three">
+      <article class="card"><h3><span class="number">1</span>Watch</h3><p>Measure a star's light again and again. A spacecraft like NASA's <strong>TESS</strong> does this with cameras.</p></article>
+      <article class="card"><h3><span class="number">2</span>Notice</h3><p>Plot the light measurements. A small dip can happen when a planet crosses in front of the star. That's called a <strong>transit</strong>.</p></article>
+      <article class="card"><h3><span class="number">3</span>Check</h3><p>Watch for repeat dips, rule out other explanations, and use more observations. A dip is a clue, <strong>not proof</strong> by itself.</p></article>
+    </div>
+    <div class="two" style="margin-top:1rem">
+      <div class="card">
+        <span class="pill blue">Vocabulary power-up</span>
+        <h3>Light curve</h3>
+        <p>A graph of how bright something appears over time. A planet crossing a star makes a little valley, like a tiny smile turned upside down.</p>
+        <p class="small">In our lab, the bottom axis shows <em>position across the star</em>, not real clock time. We hold everything else steady.</p>
+      </div>
+      <div class="card">
+        <span class="pill pink">Secret math</span>
+        <h3>Why big planets make deeper dips</h3>
+        <p>For a planet completely in front of a uniformly bright star, the blocked fraction is approximately:</p>
+        <span class="formula">(planet radius ÷ star radius)²</span>
+        <p>So a planet with <strong>10%</strong> of the star's radius can hide about <strong>1%</strong> of its light. Double the planet's radius to 20%, and it hides about <strong>4%</strong>, not 2%!</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="lab">
+    <div class="lab">
+      <span class="pill">Hands-on interactive · works offline</span>
+      <h2>🪐 Build your own planet-hunting lab</h2>
+      <p>Move the planet in front of the star and watch the brightness graph change. Our computer uses circle geometry to find exactly how much area overlaps in this <em>simplified</em> model.</p>
+      <div class="labGrid">
+        <div>
+          <div class="diagram">
+            <svg viewBox="0 0 380 290" role="img" aria-labelledby="sceneTitle sceneDesc">
+              <title id="sceneTitle">A model planet passing in front of a model star</title>
+              <desc id="sceneDesc">Change the two sliders to control the dark planet's radius and horizontal position. The star remains still.</desc>
+              <defs><radialGradient id="starFill" cx="35%" cy="30%" r="73%"><stop offset="0" stop-color="#fff6c4"/><stop offset=".45" stop-color="#ffde81"/><stop offset="1" stop-color="#ff9a52"/></radialGradient></defs>
+              <circle cx="190" cy="142" r="94" fill="#ffca70" opacity=".13"/>
+              <circle cx="190" cy="142" r="82" fill="url(#starFill)" stroke="#fff3b8" stroke-width="2"/>
+              <path d="M20 142 H360" stroke="#bed8f4" stroke-opacity=".23" stroke-dasharray="6 9"/>
+              <circle id="planet" cx="40" cy="142" r="8.2" fill="#14204f" stroke="#c4d8ff" stroke-width="2"/>
+              <text x="190" y="269" fill="#ecf4ff" text-anchor="middle" font-size="15" font-family="system-ui">View from our imaginary telescope</text>
+            </svg>
+          </div>
+          <div class="readouts" aria-label="Live measurements">
+            <div class="readout"><div class="small">Light reaching telescope</div><div class="big" id="brightness">100.00%</div></div>
+            <div class="readout"><div class="small">Light blocked right now</div><div class="big" id="blocked">0.00%</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="control">
+            <div class="rangeRow"><label for="size">Planet radius (compared with star)</label><output id="sizeOut" for="size">10%</output></div>
+            <input id="size" type="range" min="5" max="25" step="1" value="10" aria-describedby="sizeHint">
+            <div class="small" id="sizeHint">Try 10% first. Larger means a deeper dip.</div>
+          </div>
+          <div class="control">
+            <div class="rangeRow"><label for="position">Planet position</label><output id="positionOut" for="position">-140%</output></div>
+            <input id="position" type="range" min="-140" max="140" step="1" value="-140" aria-describedby="positionHint">
+            <div class="small" id="positionHint">-140% = left of star; 0% = center; +140% = right.</div>
+          </div>
+          <div class="buttonRow" role="group" aria-label="Planet size presets">
+            <button type="button" data-size="8">Small · 8%</button>
+            <button type="button" data-size="12">Medium · 12%</button>
+            <button type="button" data-size="20">Large · 20%</button>
+            <button type="button" id="reset">Reset</button>
+          </div>
+          <p class="small">Real planets and stars come in many sizes. These numbers are invented for the activity; they're not measurements of a named exoplanet.</p>
+          <div class="readout"><div class="small">Biggest possible dip for this planet, centered</div><div class="big" id="maxDip">1.00%</div></div>
+        </div>
+      </div>
+      <div class="chart">
+        <svg viewBox="0 0 720 275" role="img" aria-labelledby="chartTitle chartDesc">
+          <title id="chartTitle">Predicted brightness curve across one transit</title>
+          <desc id="chartDesc">The line falls as the planet enters the star, stays lower while fully across it, and rises as the planet leaves. A yellow dot marks the current position.</desc>
+          <line class="gridline" x1="77" y1="46" x2="690" y2="46"/>
+          <line class="gridline" x1="77" y1="194" x2="690" y2="194"/>
+          <line class="axis" x1="77" y1="25" x2="77" y2="210"/>
+          <line class="axis" x1="77" y1="210" x2="690" y2="210"/>
+          <text id="topTick" x="67" y="50" text-anchor="end">100%</text>
+          <text id="bottomTick" x="67" y="198" text-anchor="end">99%</text>
+          <text x="77" y="238" text-anchor="start">Left</text>
+          <text x="383" y="238" text-anchor="middle">Center</text>
+          <text x="690" y="238" text-anchor="end">Right</text>
+          <text x="383" y="265" text-anchor="middle">Planet position across the star →</text>
+          <path id="lightCurve" d="M77 47 L690 47"/>
+          <line id="cursor" x1="77" y1="35" x2="77" y2="210"/>
+          <circle id="dot" cx="77" cy="47" r="7"/>
+        </svg>
+        <p class="small" id="curveSummary">The model predicts a 1.00% brightness dip when centered. There is no telescope noise in this imaginary signal.</p>
+      </div>
+      <div class="two" style="margin-top:1rem">
+        <div class="card">
+          <h3>📒 Become the data recorder</h3>
+          <p>Move the planet to three places, then capture the measurements in a little science notebook.</p>
+          <div class="buttonRow">
+            <button type="button" id="record">Record this reading</button>
+            <button type="button" id="clear" disabled>Clear readings</button>
+          </div>
+          <p id="recordStatus" role="status" class="status">No readings saved yet.</p>
+          <div class="tableWrap"><table><caption class="small" style="text-align:left">Your observations in this browser session</caption><thead><tr><th scope="col">#</th><th scope="col">Radius</th><th scope="col">Position</th><th scope="col">Brightness</th></tr></thead><tbody id="readings"></tbody></table></div>
+        </div>
+        <div class="card">
+          <h3>🎯 Three mini missions</h3>
+          <ol class="steps">
+            <li>Set radius to <strong>10%</strong> and position to <strong>0%</strong>. Do you get <strong>99.00%</strong> brightness?</li>
+            <li>Keep radius at 10%. Move toward the edge. When does the dip begin?</li>
+            <li>Try radius <strong>20%</strong>, then center it. Why is the dip <strong>four times</strong> deeper than at 10%?</li>
+          </ol>
+          <p class="small">No JavaScript? The science, paper activity, and sources still work; the interactive model requires a browser with JavaScript enabled.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="real">
+    <h2>🌟 Three real things space scientists did</h2>
+    <div class="three">
+      <article class="card">
+        <span class="pill">Verified NASA + MIT mission</span>
+        <h3>TESS watches stars</h3>
+        <p>Launched <strong>April 18, 2018</strong>, NASA's <strong>Transiting Exoplanet Survey Satellite</strong> uses four cameras to monitor enormous parts of the sky. It looks for repeatable changes in starlight that suggest transiting planets.</p>
+        <p class="small">Primary sources: <a href="https://science.nasa.gov/mission/tess/">NASA TESS mission</a>; <a href="https://tess.mit.edu/mission-overview/">MIT TESS mission overview</a>.</p>
+      </article>
+      <article class="card">
+        <span class="pill">Verified 2020 discovery</span>
+        <h3>A world called TOI 700 d</h3>
+        <p>On <strong>January 7, 2020</strong>, NASA described <strong>TOI 700 d</strong>, TESS's first discovered Earth-size planet in a star's <em>habitable zone</em> — a distance where liquid water <em>might</em> be possible under suitable conditions.</p>
+        <p class="small">Primary source: <a href="https://www.nasa.gov/image-article/tess-finds-first-earth-size-planet-habitable-zone/">NASA announcement</a>. A habitable zone is <strong>not evidence of life</strong>.</p>
+      </article>
+      <article class="card">
+        <span class="pill">Verified JPL 2023 discovery</span>
+        <h3>Then they found planet e!</h3>
+        <p>On <strong>January 10, 2023</strong>, NASA's Jet Propulsion Laboratory reported another Earth-size world, <strong>TOI 700 e</strong>. Scientists needed an <strong>extra year of TESS observations</strong> to detect its much fainter repeating signal.</p>
+        <p class="small">Primary source: <a href="https://www.jpl.nasa.gov/news/nasas-tess-discovers-planetary-systems-second-earth-size-world/">NASA/JPL report</a>.</p>
+      </article>
+    </div>
+    <div class="card compare" style="margin-top:1rem">
+      <h3>Evidence vs. imagination: don't mix them up</h3>
+      <div class="two">
+        <div><p><strong>✅ Observed and supported:</strong> TESS measures changing starlight. Scientists have identified transiting planets, including TOI 700 d and e, using observations and checks.</p><p><strong>✅ Mathematical model:</strong> our dark circle blocks a calculable area of a bright circle.</p></div>
+        <div><p><strong>💭 Invented for play:</strong> the colored star, little blue planet, graph settings, and smooth noiseless readings in the lab. They are <em>not</em> TESS data.</p><p><strong>❓ Still unknown:</strong> whether life exists on TOI 700 d or e, and exactly what their surfaces are like.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="try">
+    <h2>🔦 Kitchen-table experiment: eclipse a flashlight</h2>
+    <div class="card experiment">
+      <p><strong>Materials:</strong> LED flashlight, white sheet of paper, a coin or small cardboard circle, tape, a pencil, and a helpful grown-up. No special app needed.</p>
+      <ol>
+        <li>In a slightly dark room, shine the LED flashlight onto a white wall or another sheet of paper. <strong>Never stare into the flashlight.</strong></li>
+        <li>Tape a cardboard circle to a pencil so you can hold it by the handle. Move it across the flashlight beam between the light and the wall.</li>
+        <li>Observe how the bright patch changes. What happens with a larger cardboard circle? What happens when the circle moves out of the beam?</li>
+        <li>Draw a simple brightness-versus-position graph. Use words like <strong>bright</strong>, <strong>dimmer</strong>, and <strong>bright</strong> rather than pretending your eyes can measure precise percentages.</li>
+      </ol>
+      <p><strong>Important:</strong> this is a classroom analogy, not a true telescope measurement. The wall can show a shadow, the flashlight beam is uneven, and your eyes are not calibrated light meters. Our computer model is a cleaner demonstration of the geometry.</p>
+      <details><summary>Extra experiment: Can you trick the detector?</summary><p>Have a friend make the flashlight flicker or partly cover it with a different object. Your observer might see a dip — but the dip doesn't prove a planet! Scientists must test alternative explanations before naming a planet.</p></details>
+    </div>
+  </section>
+
+  <section id="detective">
+    <h2>🕵️ Junior scientist quiz</h2>
+    <div class="card">
+      <p><strong>A telescope sees a star dim once. Did it definitely discover a planet?</strong></p>
+      <fieldset style="border:0;padding:0;margin:0">
+        <legend class="small">Choose your best scientific answer.</legend>
+        <div class="quizChoices">
+          <label><input type="radio" name="guess" value="yes">Yes! One dip is enough to announce a new planet.</label>
+          <label><input type="radio" name="guess" value="maybe">Not yet! Look for repeat dips and check other causes.</label>
+          <label><input type="radio" name="guess" value="no">No. A planet could never cause that dip.</label>
+        </div>
+      </fieldset>
+      <button type="button" id="checkQuiz">Check my detective answer</button>
+      <p id="quizResult" role="status" aria-live="polite" class="status">Choose an answer, then press Check.</p>
+      <details><summary>Bonus: Why doesn't TESS find every planet?</summary><p>The orbit must line up so a planet passes in front of its star from <em>our</em> viewpoint. Many planets never cross their stars as we see them. Tiny dips also get lost among measurement noise and a star's own changing brightness.</p></details>
+    </div>
+  </section>
+
+  <section id="limits">
+    <h2>⚖️ Good scientists know the limits</h2>
+    <div class="two">
+      <div class="card">
+        <h3>What our model gets right</h3>
+        <p>A round dark planet can block part of a round bright star. More overlap means less light. A fully centered planet of 10% stellar radius hides about 1% of the star's light, in our uniformly bright-star model.</p>
+      </div>
+      <div class="card">
+        <h3>What our model skips</h3>
+        <p>Real stars are not equally bright across their faces (called <em>limb darkening</em>). Real light curves contain noise and starspots; planets take time to cross and orbit; multiple stars can imitate some signals. Astronomers fit far more careful models and seek confirming evidence.</p>
+      </div>
+    </div>
+    <p class="small">One more caution: a transit by itself mainly helps estimate planet-to-star <em>size ratio</em>; knowing actual size accurately requires information about the star too. It does not automatically tell us the planet's mass, air, water, or life.</p>
+  </section>
+
+  <section id="connections">
+    <h2>🏒 What this has to do with hockey and engineering</h2>
+    <div class="two">
+      <div class="card">
+        <h3>On the ice: spot the tiny clue</h3>
+        <p>A goalie watches the whole play, not just the puck. When a skater moves into the shooting lane, even a small change may signal what's coming. A planet hunter is similar: the star looks almost unchanged, but tiny patterns are worth noticing. <em>Not every clue means what you first think!</em></p>
+      </div>
+      <div class="card">
+        <h3>In Dad's engineering projects: test the model</h3>
+        <p>Spacecraft engineers write predictions, measure what actually happens, and check whether the results agree. Your planet lab does the same: the circle-overlap equations predict a brightness dip. A program draws a graph. Your job is to see whether the graph makes sense and find situations where the simple model isn't enough.</p>
+      </div>
+    </div>
+    <p><strong>Invent-a-mission challenge:</strong> imagine a tiny spacecraft that checks stars for dimming. What could make its measurements wrong — a wobbly camera, sunlight, or a changing detector? Write down how you'd test each one. That spacecraft is your <em>imagined design</em>, not a NASA mission.</p>
+  </section>
+
+  <section id="sources">
+    <h2>📚 Mission sources, licensing, and how to run this</h2>
+    <div class="card">
+      <h3>Primary sources — check the real story yourself</h3>
+      <ol class="sources">
+        <li><a href="https://science.nasa.gov/exoplanets/whats-a-transit/">NASA Science — What's a transit?</a> Transit definition, light curves, and what they can tell us.</li>
+        <li><a href="https://science.nasa.gov/mission/tess/">NASA Science — TESS mission</a> Mission description and launch date (April 18, 2018).</li>
+        <li><a href="https://tess.mit.edu/mission-overview/">MIT — TESS mission overview</a> Four cameras and the observing strategy.</li>
+        <li><a href="https://www.nasa.gov/image-article/tess-finds-first-earth-size-planet-habitable-zone/">NASA — TOI 700 d, January 7, 2020</a> Original NASA account.</li>
+        <li><a href="https://www.jpl.nasa.gov/news/nasas-tess-discovers-planetary-systems-second-earth-size-world/">NASA/JPL — TOI 700 e, January 10, 2023</a> Added observations and a second Earth-size habitable-zone world.</li>
+        <li><a href="https://ntrs.nasa.gov/citations/20210012802">NASA Technical Reports Server — Spitzer confirmation of TOI 700 d</a> Scientific paper illustrating why follow-up matters.</li>
+      </ol>
+      <h3>Tech and reuse notes</h3>
+      <p><strong>What runs:</strong> one HTML file with its own CSS, SVG illustrations, and plain JavaScript. No accounts, trackers, fonts, CDN, frameworks, or paid libraries. Save the file and open it in a modern browser; the interactive lab works without Internet access. Source links need Internet only when you follow them.</p>
+      <p><strong>How it works:</strong> JavaScript calculates the overlap of two circles at each position, divides that area by the star's area, then draws an SVG light curve. Sliders work with mouse, touch, or keyboard. Readings live in memory only and disappear when the page is reloaded. No personal data is collected.</p>
+      <p><strong>Licensing:</strong> the demonstration code and graphics in this edition are newly written; no third-party runtime packages or borrowed imagery are embedded. The public GitHub repository did not have a root <code>LICENSE</code> file when this edition was prepared (November 19, 2026), so do not assume reuse rights from its public visibility. Linked NASA and MIT materials remain credited to their publishers; no content from those pages is bundled into this file.</p>
+      <p class="small">Made for curious nine-year-olds. Model percentages are mathematical examples, not measured astronomy observations. Original illustration and interactive lesson dated <time datetime="2026-11-19">November 19, 2026</time>.</p>
+    </div>
+  </section>
+</main>
+<footer class="foot"><div class="wrap"><strong>DeepDivesKids · Keep asking good questions.</strong> 💫<p>Today's superpower: when you spot something surprising, investigate before you decide.</p></div></footer>
+<script>
+(function(){
+  "use strict";
+  var size=document.getElementById("size");
+  var position=document.getElementById("position");
+  var planet=document.getElementById("planet");
+  var curve=document.getElementById("lightCurve");
+  var dot=document.getElementById("dot");
+  var cursor=document.getElementById("cursor");
+  var records=[];
+  var maxRecords=8;
+  function clamp(x){return Math.max(-1,Math.min(1,x));}
+  function overlap(radius,distance){
+    var R=1,r=radius,d=Math.abs(distance);
+    if(d>=R+r)return 0;
+    if(d<=Math.abs(R-r))return Math.PI*Math.min(R,r)*Math.min(R,r);
+    var a=Math.acos(clamp((d*d+R*R-r*r)/(2*d*R)));
+    var b=Math.acos(clamp((d*d+r*r-R*R)/(2*d*r)));
+    var root=Math.sqrt(Math.max(0,(-d+R+r)*(d+R-r)*(d-R+r)*(d+R+r)));
+    return R*R*a+r*r*b-root/2;
+  }
+  function brightness(percent,where){
+    return 100*(1-overlap(percent/100,where/100)/Math.PI);
+  }
+  function fmt(value){return value.toFixed(2)+"%";}
+  function plotX(where){return 77+(where+140)/280*613;}
+  function redraw(){
+    var r=Number(size.value),p=Number(position.value);
+    var observed=brightness(r,p);
+    var deepest=brightness(r,0);
+    var minY=Math.max(0,100-(100-deepest)*1.3);
+    var topY=46,bottomY=194;
+    function plotY(b){return topY+(100-b)/(100-minY)*(bottomY-topY);}
+    var points=[];
+    for(var i=-140;i<=140;i+=2){points.push((i===-140?"M":"L")+plotX(i).toFixed(2)+" "+plotY(brightness(r,i)).toFixed(2));}
+    curve.setAttribute("d",points.join(" "));
+    var x=plotX(p),y=plotY(observed);
+    dot.setAttribute("cx",x.toFixed(2));dot.setAttribute("cy",y.toFixed(2));
+    cursor.setAttribute("x1",x.toFixed(2));cursor.setAttribute("x2",x.toFixed(2));
+    planet.setAttribute("cx",(190+82*p/100).toFixed(2));
+    planet.setAttribute("r",(82*r/100).toFixed(2));
+    document.getElementById("sizeOut").textContent=r+"%";
+    document.getElementById("positionOut").textContent=(p>0?"+":"")+p+"%";
+    document.getElementById("brightness").textContent=fmt(observed);
+    document.getElementById("blocked").textContent=fmt(100-observed);
+    document.getElementById("maxDip").textContent=fmt(100-deepest);
+    document.getElementById("topTick").textContent="100.00%";
+    document.getElementById("bottomTick").textContent=fmt(minY);
+    document.getElementById("curveSummary").textContent="For radius "+r+"%, the centered dip is "+fmt(100-deepest)+". At position "+p+"%, the predicted brightness is "+fmt(observed)+". The model contains no real telescope noise.";
+  }
+  size.addEventListener("input",redraw);
+  position.addEventListener("input",redraw);
+  document.querySelectorAll("[data-size]").forEach(function(button){
+    button.addEventListener("click",function(){size.value=button.getAttribute("data-size");position.value=0;redraw();});
+  });
+  document.getElementById("reset").addEventListener("click",function(){size.value=10;position.value=-140;redraw();});
+  function renderRecords(){
+    var body=document.getElementById("readings");
+    body.replaceChildren();
+    records.forEach(function(record,index){
+      var tr=document.createElement("tr");
+      [String(index+1),record.radius+"%",(record.position>0?"+":"")+record.position+"%",fmt(record.brightness)].forEach(function(value){
+        var td=document.createElement("td");td.textContent=value;tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+    document.getElementById("clear").disabled=records.length===0;
+    document.getElementById("record").disabled=records.length===maxRecords;
+    document.getElementById("recordStatus").textContent=records.length===0?"No readings saved yet.":records.length+" of "+maxRecords+" readings saved in this session.";
+  }
+  document.getElementById("record").addEventListener("click",function(){
+    if(records.length>=maxRecords)return;
+    var r=Number(size.value),p=Number(position.value);
+    records.push({radius:r,position:p,brightness:brightness(r,p)});
+    renderRecords();
+  });
+  document.getElementById("clear").addEventListener("click",function(){records=[];renderRecords();});
+  document.getElementById("checkQuiz").addEventListener("click",function(){
+    var selected=document.querySelector('input[name="guess"]:checked');
+    var message=!selected?"Choose one answer first.":selected.value==="maybe"?"Great science! One dip is a clue. Repeat observations and follow-up tests help confirm a planet.":"Not quite. One dip has several possible causes. Astronomers look for repeats and rule out other explanations.";
+    document.getElementById("quizResult").textContent=message;
+  });
+  redraw();renderRecords();
+})();
+</script>
+</body>
+</html>
