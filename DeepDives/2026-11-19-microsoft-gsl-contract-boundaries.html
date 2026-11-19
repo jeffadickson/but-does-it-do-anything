@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="A November 19, 2026 source-reviewed engineering deep dive into Microsoft Guidelines Support Library 5.0.1: fail-fast contracts, checked spans, non-null pointers, CMake/Ninja, allocation boundaries, v5 changes, and RTOS qualification.">
+<title>Microsoft GSL: The Boundary Is the Contract — Library Deep Dive · 19 November 2026</title>
+<style>
+:root{--ink:#182d39;--muted:#536873;--bg:#f3f6f6;--paper:#fff;--navy:#102936;--navy2:#183f49;--teal:#006f73;--gold:#f2bf75;--line:#d9e4e3;--max:1200px;color-scheme:light}
+*,:before,:after{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.68 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#006a73;text-decoration-thickness:1px;text-underline-offset:3px}a:hover{color:#004b58}a:focus-visible{outline:3px solid #e3a14a;outline-offset:4px;border-radius:2px}
+.skip{position:absolute;top:8px;left:-10000px;background:white;color:#152e39;padding:12px;z-index:3}.skip:focus{left:12px}
+header.hero{color:white;background:radial-gradient(ellipse at 100% 2%,#1a5960 0%,transparent 54%),linear-gradient(130deg,#102b3c,#163e46);padding:54px 24px 51px}
+.hero-inner{max-width:var(--max);margin:auto}.eyebrow{color:#c9e7e4;font-size:.76rem;letter-spacing:.17em;text-transform:uppercase;font-weight:800}
+.hero h1{font-size:clamp(2.35rem,5.6vw,4.5rem);line-height:1.05;letter-spacing:-.052em;margin:16px 0 18px;max-width:960px}.hero h1 span{color:var(--gold)}
+.dek{font-size:clamp(1.06rem,2vw,1.33rem);color:#deefee;line-height:1.53;max-width:920px;margin:0}.tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:25px}
+.tags span{border:1px solid #638b91;border-radius:999px;padding:4px 12px;color:#eaf7f5;font-size:.8rem;font-weight:660}
+.layout{max-width:var(--max);margin:auto;display:grid;grid-template-columns:230px minmax(0,1fr);gap:37px;align-items:start;padding:40px 24px 75px}
+aside.toc{position:sticky;top:22px;max-height:calc(100vh - 44px);overflow:auto;border-left:2px solid #bed3d4;padding:8px 8px 14px 18px}
+.toc strong{display:block;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#526973;margin-bottom:9px}
+.toc a{display:block;text-decoration:none;color:#39555e;font-size:.87rem;line-height:1.4;padding:6px 0}.toc a:hover{text-decoration:underline}
+article{min-width:0}article>section{margin:0 0 45px;scroll-margin-top:24px}
+article h2{font-size:clamp(1.48rem,2.6vw,2rem);letter-spacing:-.038em;line-height:1.24;border-bottom:1px solid var(--line);padding-bottom:11px;margin:0 0 18px}
+article h3{font-size:1.13rem;letter-spacing:-.012em;margin:25px 0 8px;line-height:1.35}
+article p{margin:0 0 15px}article ul,article ol{margin:12px 0 20px;padding-left:1.35rem}article li{padding-bottom:5px}
+.lead{font-size:1.12rem;color:#304a55}.intro{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px 28px;box-shadow:0 11px 33px #163b4c09}
+.intro h2{font-size:1.48rem;border:0;padding:0;margin:0 0 12px}.kicker{font-size:.76rem;color:var(--teal);letter-spacing:.12em;font-weight:780;text-transform:uppercase;margin:0 0 9px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin-top:19px}
+.stat{border:1px solid #d7e8e4;background:#f0f8f7;border-radius:10px;padding:15px}
+.stat .big{font-weight:800;letter-spacing:-.025em;font-size:1.18rem;color:#145d60;line-height:1.3}
+.stat .small{font-size:.82rem;line-height:1.46;margin:7px 0 0;color:#526b73}
+.note{padding:15px 18px;border-left:4px solid #158186;border-radius:0 10px 10px 0;background:#edf7f5;margin:20px 0}
+.note.warn{border-color:#bd803f;background:#fff5e9}.note.critical{border-color:#b85649;background:#fff1ee}.note p:last-child{margin-bottom:0}
+.table-wrap{overflow-x:auto;background:white;border:1px solid var(--line);border-radius:11px;margin:18px 0 24px}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:.91rem;line-height:1.47}
+th{background:#e8f3f0;color:#214751;font-size:.79rem;letter-spacing:.025em;text-align:left}
+th,td{padding:12px 14px;border-bottom:1px solid #e7eeee;vertical-align:top}tr:last-child td{border-bottom:0}td:first-child{font-weight:650}
+code{font:.875em ui-monospace,SFMono-Regular,Consolas,monospace;background:#e8f0ef;padding:.08em .25em;border-radius:4px;overflow-wrap:anywhere}
+figure.code{margin:20px 0 25px;border:1px solid #28414d;border-radius:12px;overflow:hidden;background:#112936}
+figure.code figcaption{font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;color:#c0dbd9;padding:10px 16px;background:#1c3a47;font-weight:730}
+figure.code pre{overflow:auto;margin:0;padding:18px 20px;tab-size:2;color:#e2f0ed;font:13.25px/1.67 ui-monospace,SFMono-Regular,Consolas,monospace}
+figure.code code{font:inherit;color:inherit;background:transparent;padding:0;overflow-wrap:normal}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:19px 0}
+.tile{padding:17px;background:#fff;border:1px solid var(--line);border-top:4px solid #268488;border-radius:11px}
+.tile h3{font-size:1.03rem;margin:0 0 7px}.tile p{font-size:.9rem;color:#506972;line-height:1.55;margin:0}
+.pill{display:inline-block;font-size:.75rem;font-weight:800;padding:2px 7px;border-radius:5px;background:#dff2e6;color:#165b3c}
+.pill.no{background:#fff0d9;color:#825b21}.pill.bad{background:#ffe7e2;color:#853d36}
+.refs li{overflow-wrap:anywhere;padding-bottom:10px}.refs a{font-weight:650}
+footer{border-top:2px solid var(--line);margin-top:48px;padding-top:21px;color:#587079;font-size:.86rem}
+.muted{color:#5a7078;font-size:.91rem}
+@media(max-width:930px){.layout{grid-template-columns:minmax(0,1fr);gap:22px;padding:28px 19px 65px}.toc{position:static!important;max-height:none!important;border:1px solid var(--line)!important;background:#fff;padding:13px 18px!important;border-radius:10px}.toc a{display:inline-block;margin-right:15px}.stats,.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){header.hero{padding:43px 20px}.intro{padding:20px 17px}.stats,.grid{grid-template-columns:1fr}figure.code pre{font-size:12px;padding:14px}table th,table td{padding:10px 11px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:white;font-size:10.5pt}.hero{background:#fff!important;color:#18333e!important;padding:0 0 15px!important}.hero .dek,.hero .eyebrow,.hero .tags span,.hero h1 span{color:#294f56!important}.hero .tags span{border-color:#bbb}.layout{display:block;padding:0}.toc,.skip{display:none}figure.code{break-inside:avoid}figure.code figcaption{background:#dfebeb;color:#17343c}figure.code pre{white-space:pre-wrap;color:#183541;background:#f1f5f5}.intro{box-shadow:none}section{break-inside:auto}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to article</a>
+<header class="hero"><div class="hero-inner">
+<div class="eyebrow">Engineering Library Deep Dive · 19 November 2026</div>
+<h1>Microsoft GSL.<br><span>The boundary is the contract.</span></h1>
+<p class="dek">Checked memory views and non-null interfaces for C++20 systems—plus a hard lesson for RTOS and simulation designers: terminating on a broken invariant is not the same thing as rejecting bad input.</p>
+<div class="tags"><span>Version 5.0.1</span><span>C++14+ / C++20-ready</span><span>Header-only core</span><span>MIT license</span><span>Source-reviewed</span><span>12-minute read</span></div>
+</div></header>
+<div class="layout">
+<aside class="toc" aria-label="Contents"><strong>Contents</strong><nav aria-label="Table of contents">
+<a href="#brief">Executive decision</a><a href="#relevance">Why this library</a><a href="#model">The contract model</a><a href="#span">Checked span semantics</a><a href="#demo">Packet decoder</a><a href="#nonnull">Non-null and ownership</a><a href="#v5">What changed in 5.x</a><a href="#errors">Error-policy boundary</a><a href="#integration">CMake / Ninja</a><a href="#usecases">Engineering applications</a><a href="#tradeoffs">Tradeoffs and alternatives</a><a href="#qualification">Qualification campaign</a><a href="#adoption">Evidence and license</a><a href="#sources">Primary references</a>
+</nav></aside>
+<main id="main"><article>
+
+<section class="intro" id="brief">
+<p class="kicker">The decision in one minute</p>
+<h2>Adopt selectively at internal boundaries; validate untrusted input first.</h2>
+<p class="lead">Microsoft's <strong>Guidelines Support Library</strong> makes certain assumptions visible in types and checked accesses. For RISCue-style active objects, packet processing and deterministic simulation, <code>gsl::span</code>, <code>gsl::not_null</code> and <code>Expects</code>/<code>Ensures</code> are the most immediately useful pieces.</p>
+<div class="stats">
+<div class="stat"><div class="big">No ownership in a span</div><p class="small">A checked view can refer to caller-owned, static or stack storage.</p></div>
+<div class="stat"><div class="big">Contract violation = terminate</div><p class="small">There is no recoverable “invalid index” return from <code>gsl::span</code>.</p></div>
+<div class="stat"><div class="big">5.0.1 · 22 Sep 2026</div><p class="small">Latest upstream release checked for this report; v5 adds heap-allocating <code>dyn_array</code>.</p></div>
+</div>
+<div class="note"><p><strong>Engineering verdict:</strong> <span class="pill">Evaluate</span> for application-owned buffers and internal invariants. <span class="pill no">Do not assume</span> the entire library, or even a safely checked view, constitutes a heap-free or recoverable-error abstraction.</p></div>
+<p class="muted">Evidence baseline: upstream <a href="https://github.com/microsoft/GSL/releases/tag/v5.0.1">v5.0.1 release</a>, tag <code>fbd20b8e8c52cba04dbc869cc9068a7800a5665d</code>, API reference, headers, CMake file and MIT license inspected on 19 November 2026. Code below is reviewed against those declarations; no upstream code was built or benchmarked in this run.</p>
+</section>
+
+<section id="relevance">
+<h2>01 / Why this matters in a bounded system</h2>
+<p>Embedded code often passes memory as a pointer and a length. That tells the compiler little about the relationship between the two. A <em>view</em> makes the relationship an API concept, while a <em>contract</em> specifies a condition the caller must satisfy.</p>
+<div class="grid">
+<div class="tile"><h3>Size-aware views</h3><p>Use a span instead of unrelated <code>data</code> and <code>count</code> arguments. The caller still owns the storage.</p></div>
+<div class="tile"><h3>Non-null dependencies</h3><p>Use a checked non-null wrapper when “no object” is not a valid state.</p></div>
+<div class="tile"><h3>Reviewable invariants</h3><p>Express programmer preconditions and postconditions explicitly; do not hide protocol errors in assertions.</p></div>
+</div>
+<p><strong>Actual provided capability:</strong> the GSL headers contain bounds-checked <code>span</code>, <code>not_null</code>, contract macros, scope-exit cleanup and narrowing utilities. <strong>Suggested application:</strong> using them in RISCue, VeloSim or embedded flight/telemetry systems is an engineering proposal, not evidence that those projects currently integrate Microsoft GSL. [<a href="#ref1">1</a>, <a href="#ref2">2</a>]</p>
+<p>A fixed-size <code>std::array</code> or statically allocated event pool can remain the storage owner. GSL then adds checking and documentation at access boundaries. Neither a view nor <code>not_null</code> provides lifetime tracking, queue capacity management, data-race prevention, lock-freedom or WCET evidence.</p>
+</section>
+
+<section id="model">
+<h2>02 / Three distinct promises</h2>
+<div class="table-wrap"><table><thead><tr><th>Feature</th><th>Promise it makes</th><th>Promise it does not make</th></tr></thead><tbody>
+<tr><td><code>gsl::span&lt;T&gt;</code></td><td>Contiguous non-owning view, checked element access and checked iterators.</td><td>Memory lifetime, thread safety, valid payload contents, no caller-side allocation.</td></tr>
+<tr><td><code>gsl::not_null&lt;T*&gt;</code></td><td>Non-null construction invariant with no wrapper-size overhead.</td><td>Object lifetime, pointer provenance, unique ownership, valid concurrent access.</td></tr>
+<tr><td><code>Expects</code>/<code>Ensures</code></td><td>Terminate if a programmer-specified condition is violated.</td><td>Error reporting or recovery for malformed external data.</td></tr>
+<tr><td><code>gsl::owner&lt;T*&gt;</code></td><td>A raw-pointer ownership annotation for humans and analyzers.</td><td>RAII deletion or runtime ownership checking—it is an alias.</td></tr>
+<tr><td><code>gsl::narrow&lt;T&gt;</code></td><td>Checked conversion, throwing <code>gsl::narrowing_error</code> on failure.</td><td>No-throw numeric conversion for <code>-fno-exceptions</code> firmware.</td></tr>
+<tr><td><code>gsl::narrow_cast&lt;T&gt;</code></td><td>Express an intentional cast; equivalent to <code>static_cast</code>.</td><td>Any range check whatsoever.</td></tr>
+<tr><td><code>gsl::dyn_array&lt;T&gt;</code> (v5)</td><td>Owning, checked, runtime-sized, fixed-after-construction array.</td><td>No heap allocation; fixed capacity is not static storage.</td></tr>
+</tbody></table></div>
+<p>In a deterministic system, these claims must remain separate. A fixed element count is not necessarily fixed-time initialization, and “bounds checked” does not imply recoverable failure.</p>
+</section>
+
+<section id="span">
+<h2>03 / <code>gsl::span</code> versus <code>std::span</code></h2>
+<p>Both express a non-owning contiguous view. In C++20, <code>std::span</code> is the standard choice when no mandatory runtime check is required. Microsoft's GSL adds explicit checks to element access and iterators; on a violation the implementation ultimately calls termination. The upstream API documentation also contrasts GSL with vendor-configured hardened standard spans. [<a href="#ref2">2</a>, <a href="#ref3">3</a>]</p>
+<div class="table-wrap"><table><thead><tr><th>Decision axis</th><th><code>std::span</code>, C++20</th><th><code>gsl::span</code>, 5.0.1</th></tr></thead><tbody>
+<tr><td>Ownership</td><td>Non-owning</td><td>Non-owning</td></tr>
+<tr><td>Bounds on indexing</td><td>Not universally guaranteed by C++20</td><td>Explicitly checked</td></tr>
+<tr><td>Iterator checks</td><td>No blanket C++20 guarantee</td><td>Checked iterator design</td></tr>
+<tr><td>Failure semantics</td><td>Invalid access can be undefined behavior</td><td>Contract failure terminates</td></tr>
+<tr><td>Language level</td><td>C++20+</td><td>C++14+</td></tr>
+<tr><td>Runtime cost</td><td>Typically minimal, vendor/build-dependent</td><td>Checks may cost time/code size; benchmark your target</td></tr>
+</tbody></table></div>
+<div class="note warn"><p><strong>Important:</strong> a checked span cannot establish that its underlying pointer is still live, that two threads are synchronized, or that the declared length matches the actual physical allocation. GSL checks operations against the view's recorded bounds, not external memory provenance.</p></div>
+<p>For a hot ISR or scheduler path, compare generated assembly and branch timing with your deployment compiler and optimization flags. A 2025 Microsoft release note reported large improvements in particular <code>gsl::span</code> iterator workloads under Clang; that report is upstream benchmark evidence, <em>not</em> a measured latency bound or a result reproduced here. [<a href="#ref8">8</a>]</p>
+</section>
+
+<section id="demo">
+<h2>04 / Worked example: untrusted telemetry stays recoverable</h2>
+<p>Suppose a four-byte telemetry header contains two big-endian 16-bit integers. The bad implementation would index immediately and depend on a contract abort to detect truncation. The correct boundary design returns an explicit protocol error <em>before</em> using checked indexing.</p>
+<figure class="code"><figcaption>C++20 · Parser boundary · Conceptual, source-reviewed example</figcaption><pre><code>#include &lt;gsl/span&gt;
+#include &lt;cstddef&gt;     // std::byte, std::to_integer
+#include &lt;cstdint&gt;
+
+struct FrameHeader {
+    std::uint16_t sequence;
+    std::uint16_t payload_bytes;
+};
+
+enum class DecodeError : std::uint8_t { none, too_short };
+
+[[nodiscard]] DecodeError decode_header(
+    gsl::span&lt;const std::byte&gt; wire,
+    FrameHeader&amp; output) noexcept
+{
+    // Untrusted packet length: recoverable error, not Expects().
+    if (wire.size() &lt; 4) {
+        return DecodeError::too_short;
+    }
+
+    const auto octet = [&amp;](std::size_t i) {
+        return std::to_integer&lt;unsigned&gt;(wire[i]);
+    };
+    FrameHeader parsed{
+        static_cast&lt;std::uint16_t&gt;((octet(0) &lt;&lt; 8) | octet(1)),
+        static_cast&lt;std::uint16_t&gt;((octet(2) &lt;&lt; 8) | octet(3))
+    };
+    output = parsed;       // Unchanged when input was too short
+    return DecodeError::none;
+}</code></pre></figure>
+<p><strong>What this demonstrates:</strong> the error path is visible, no heap allocation is requested by this function, and an undersized buffer leaves the output untouched. The <code>gsl::span</code> still provides a second line of defense if future edits introduce an index bug.</p>
+<div class="note"><p><strong>Review note:</strong> the expression shifts an <code>unsigned</code> value, avoiding the hazards of shifting a signed 8-bit type. Full byte-order and payload-length validation remain the caller's responsibility; this function only parses the header. It does not authenticate the packet or prove that <code>wire</code> points to live storage.</p></div>
+<h3>Fixed size at compile time</h3>
+<p>For a 16-register block, <code>gsl::span&lt;std::uint32_t, 16&gt;</code> can encode the expected element count in the type. It does not place the data in static storage; the caller decides whether the underlying array is global, stack allocated, memory mapped or borrowed.</p>
+</section>
+
+<section id="nonnull">
+<h2>05 / Make “must exist” visible at the call site</h2>
+<figure class="code"><figcaption>C++20 · A dependency contract, not ownership</figcaption><pre><code>#include &lt;gsl/pointers&gt;
+#include &lt;cstdint&gt;
+
+struct StatusRegisters {
+    std::uint32_t fault_flags;
+};
+
+// Caller owns registers and must preserve their lifetime.
+void clear_faults(gsl::not_null&lt;StatusRegisters*&gt; regs) noexcept
+{
+    regs-&gt;fault_flags = 0;
+}</code></pre></figure>
+<p><code>gsl::not_null&lt;T*&gt;</code> checks the non-null condition when constructed. That is a stronger, locally visible interface than accepting a nullable raw pointer and repeating a defensive null check in every callee. The wrapper does not make a dangling pointer safe. [<a href="#ref2">2</a>, <a href="#ref4">4</a>]</p>
+<p>By contrast, <code>gsl::owner&lt;T*&gt;</code> only annotates an owning raw pointer. It does not release the resource or prevent double deletion. Favor explicit ownership through static storage, RAII or a documented pool contract; treat <code>owner</code> as a migration aid for raw-pointer code.</p>
+<h3>Contracts are not telemetry errors</h3>
+<figure class="code"><figcaption>Internal invariant versus external input</figcaption><pre><code>#include &lt;gsl/assert&gt;
+
+void process_slot(unsigned slot, unsigned capacity) noexcept
+{
+    // Appropriate only if callers already guarantee this.
+    Expects(slot &lt; capacity);
+    // ... use a validated slot ...
+}
+
+// At the command boundary, handle invalid slot as a status first.
+// Do NOT use Expects() as a protocol-level error return.</code></pre></figure>
+<p>For an RTOS, choose explicitly between a fail-stop invariant and a serviceable rejection path. If the fault handler, termination sequence or watchdog recovery must log diagnostics, verify those platform behaviors independently. [<a href="#ref5">5</a>]</p>
+</section>
+
+<section id="v5">
+<h2>06 / September 2026 matters: what's new in GSL 5.x</h2>
+<p><strong>Version selection is not cosmetic.</strong> The latest published release found here is <strong>5.0.1 (22 September 2026)</strong>. Version 5.0.0 was published 26 August 2026 and introduced <code>gsl::dyn_array</code>, an owning, heap-allocated array whose size is fixed on construction. The 5.0.1 notes describe iterator interface and const-iterator conversion corrections for that new type. [<a href="#ref6">6</a>, <a href="#ref7">7</a>]</p>
+<div class="table-wrap"><table><thead><tr><th>5.x feature</th><th>Effect</th><th>Embedded implication</th></tr></thead><tbody>
+<tr><td>New <code>dyn_array</code></td><td>Runtime-length owning array with checked indices and iterators; cannot resize through container operations.</td><td><span class="pill bad">Heap allocation</span> at construction with the default allocator. Do not mistake it for <code>std::array</code> or a pool-backed fixed container.</td></tr>
+<tr><td><code>dyn_array</code> iterator fixes in 5.0.1</td><td>Const-iterator conversions and random-access behavior improved.</td><td>Relevant if using the new type, but not a reason to use it in hard no-heap paths.</td></tr>
+<tr><td>Checked <code>narrow</code> maintenance</td><td>5.0.0 notes include a floating-to-integer UB fix.</td><td>Still exception-oriented, so not a drop-in no-throw firmware converter.</td></tr>
+<tr><td>Core existing APIs</td><td><code>span</code>, <code>not_null</code>, <code>Expects</code>/<code>Ensures</code>, <code>final_action</code>.</td><td>Evaluate selectively without exposing exception-dependent APIs.</td></tr>
+</tbody></table></div>
+<p>The <code>dyn_array</code> source explicitly delegates allocation to <code>std::allocator_traits</code>, and the upstream README calls it heap-allocated. The header also contains exception-handling logic during construction. That is concrete source evidence, not speculation. [<a href="#ref9">9</a>]</p>
+</section>
+
+<section id="errors">
+<h2>07 / Decide failure semantics before choosing the type</h2>
+<div class="table-wrap"><table><thead><tr><th>Situation</th><th>Preferred policy</th><th>Why</th></tr></thead><tbody>
+<tr><td>Packet is truncated or has an invalid field</td><td>Return explicit error / reject packet</td><td>Untrusted inputs are normal operating conditions.</td></tr>
+<tr><td>Internal code addresses outside a validated span</td><td>Contract fail-stop, capture diagnostics</td><td>Indicates a programming invariant was broken.</td></tr>
+<tr><td>Pointer to a mandatory service is null</td><td>Reject before constructing wrapper, or terminate on impossible invariant</td><td>Separate startup validation from internal use.</td></tr>
+<tr><td>Integer will not fit in a narrower type</td><td>Explicit non-throwing range check + status in strict RTOS code</td><td><code>gsl::narrow</code> throws; <code>narrow_cast</code> does not check.</td></tr>
+<tr><td>Telemetry buffer is full</td><td>Queue-specific full/reject/overwrite policy</td><td>GSL is not an event queue and does not set overflow semantics.</td></tr>
+</tbody></table></div>
+<p>Upstream separates <code>&lt;gsl/narrow&gt;</code> because checked <code>narrow</code> requires exceptions; <code>&lt;gsl/util&gt;</code> contains non-throwing <code>narrow_cast</code> and related utilities. The project's release documentation discusses no-exceptions environments, but a complete firmware build must still be qualified with the exact compiler, exception flags and chosen GSL headers. [<a href="#ref2">2</a>, <a href="#ref8">8</a>]</p>
+<div class="note critical"><p><strong>Avoid the appealing but wrong shortcut:</strong> replacing <code>narrow</code> with <code>narrow_cast</code> does not preserve safety. It converts a checked operation into an unchecked cast. For fail-recoverable software, implement an explicit no-throw representability test and status result, then test signedness, floating-point special values and boundary cases.</p></div>
+</section>
+
+<section id="integration">
+<h2>08 / CMake, Ninja, and offline build discipline</h2>
+<p>The upstream CMake project publishes an <strong>INTERFACE</strong> library and an alias <code>Microsoft.GSL::GSL</code>. Its root build specifies CMake 3.14–3.16 policy compatibility and requires <code>cxx_std_14</code>; this does not prevent your application from targeting C++20. [<a href="#ref10">10</a>]</p>
+<h3>Option A: pinned FetchContent for developer machines</h3>
+<figure class="code"><figcaption>CMakeLists.txt · exact upstream v5.0.1 commit</figcaption><pre><code>cmake_minimum_required(VERSION 3.20)
+project(ContractsDemo LANGUAGES CXX)
+
+include(FetchContent)
+set(GSL_TEST OFF CACHE BOOL "" FORCE)
+set(GSL_INSTALL OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(MicrosoftGSL
+  GIT_REPOSITORY https://github.com/microsoft/GSL.git
+  GIT_TAG fbd20b8e8c52cba04dbc869cc9068a7800a5665d
+)
+FetchContent_MakeAvailable(MicrosoftGSL)
+
+add_executable(contracts_demo main.cpp)
+target_compile_features(contracts_demo PRIVATE cxx_std_20)
+target_link_libraries(contracts_demo PRIVATE Microsoft.GSL::GSL)</code></pre></figure>
+<figure class="code"><figcaption>Host development commands · Ninja</figcaption><pre><code>cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+ctest --test-dir build --output-on-failure</code></pre></figure>
+<p>The example disables upstream unit tests and installation during subproject configuration. <code>ctest</code> will only run if your project defines tests; no tests are magically added by these commands. The exact commit SHA avoids ambiguity from a moving branch or tag. It does not solve offline dependency availability.</p>
+<h3>Option B: vendor for hermetic CI or disconnected devices</h3>
+<p>Audit and vendor the versioned headers and license into a controlled source tree; create a local CMake interface target with an include directory, or <code>add_subdirectory()</code> the vendored GSL project with tests and install disabled. Store upstream commit, license, patch manifest and file hashes in your dependency inventory. A fetch at CMake configure time is still a network dependency even though the linked library is header-only.</p>
+<div class="note"><p><strong>Dependency boundary:</strong> “header-only” means no separately linked GSL runtime library. It does not mean the compiler emits no code or that headers cannot introduce exception/termination dependencies. Check map files and symbols under your target toolchain.</p></div>
+</section>
+
+<section id="usecases">
+<h2>09 / Specific experiments worth running</h2>
+<div class="table-wrap"><table><thead><tr><th>Suggested integration</th><th>Concrete experiment</th><th>Go/no-go evidence</th></tr></thead><tbody>
+<tr><td>RISCue active-object event handoff</td><td>Wrap caller-owned event storage in <code>gsl::span</code>; prevalidate event count before scheduling.</td><td>No allocator calls; predictable dispatch latency; malformed event path never terminates unexpectedly.</td></tr>
+<tr><td>Deterministic simulator state snapshots</td><td>Expose non-owning views over stable arrays; use typed spans for state vectors and trace sinks.</td><td>Same event/state trace under randomized seeds; no dangling view under rollback or reallocation.</td></tr>
+<tr><td>MMIO and hardware interfaces</td><td>Use <code>not_null</code> for mandatory control-block references, with explicit device-lifetime contract.</td><td>ABI and volatile semantics reviewed; no accidental copy, synchronization gaps or unexpected codegen.</td></tr>
+<tr><td>Protocol parsing and telemetry</td><td>Use checked spans after explicit packet-length validation.</td><td>Fuzz corpus returns statuses on all malformed lengths, with no termination or OOB access.</td></tr>
+<tr><td>Native AOT managed/native interop</td><td>Keep GSL in the C++ boundary layer; map errors to explicit C ABI status values for .NET.</td><td>No C++ exception or termination crosses an FFI boundary; lifetime pinning documented and tested.</td></tr>
+</tbody></table></div>
+<p><strong>Adoption classification:</strong> all five are <em>proposed evaluations</em>. No source inspected for this report demonstrates an existing RISCue, VeloSim or SharpHDL dependency on Microsoft GSL.</p>
+</section>
+
+<section id="tradeoffs">
+<h2>10 / Tradeoffs, alternatives, and hidden costs</h2>
+<div class="table-wrap"><table><thead><tr><th>Alternative</th><th>Prefer when…</th><th>Primary caveat</th></tr></thead><tbody>
+<tr><td><code>std::span</code> (C++20)</td><td>Standard-only API, selected toolchain hardening, and reviewed caller invariants are sufficient.</td><td>C++20 does not universally guarantee checked indexing/iterators.</td></tr>
+<tr><td>Microsoft <code>gsl::span</code></td><td>Consistent checked element/iterator contracts are valuable.</td><td>Violation terminates and checks have a cost to qualify.</td></tr>
+<tr><td><code>std::array&lt;T,N&gt;</code></td><td>Storage capacity and lifetime should be owned directly in the object.</td><td>Array alone does not provide size-aware view semantics for subranges.</td></tr>
+<tr><td>Fixed-capacity container</td><td>You need mutable logical size with static capacity.</td><td>Separate choice: GSL views do not supply container storage or full policies.</td></tr>
+<tr><td>Hand-rolled range-check + status</td><td>Malformed input must be recoverable and error codes deterministic.</td><td>More validation code and proof obligation; pair with a checked view internally if useful.</td></tr>
+</tbody></table></div>
+<p><strong>Memory:</strong> a non-owning <code>gsl::span</code> does not allocate backing storage; <code>gsl::dyn_array</code> does with its default allocator. <strong>Timing:</strong> check instructions and branch patterns may change per compiler and target. <strong>Safety:</strong> termination is often more appropriate for impossible internal states than for hostile or corrupted traffic. <strong>Portability:</strong> header-only integration is straightforward, but no-exceptions, bare-metal and freestanding support are target-dependent, not guaranteed by this report.</p>
+</section>
+
+<section id="qualification">
+<h2>11 / A reproducible qualification campaign</h2>
+<ol>
+<li><strong>Pin and inventory:</strong> record version 5.0.1, commit <code>fbd20b8…</code>, license and hashes; vendor the source used in CI.</li>
+<li><strong>Compile matrices:</strong> GCC/Clang/MSVC C++20, plus the exact embedded cross-compiler with and without exceptions; isolate which GSL headers can build in each profile.</li>
+<li><strong>Positive contracts:</strong> construct spans from <code>std::array</code>, test valid begin/end/subspan access, non-null pointer construction, and cleanup semantics.</li>
+<li><strong>Death tests:</strong> in separate processes, assert expected termination on out-of-range span access, invalid iterator operations, null <code>not_null</code> construction and failed <code>Expects</code>. Never run death tests inside the control-loop process.</li>
+<li><strong>Malformed input:</strong> fuzz all packet lengths, offset overflows and truncated records; verify they return status before a contract violation can occur.</li>
+<li><strong>Allocation tracing:</strong> instrument global new/delete or the platform allocator during steady-state event processing; exclude <code>dyn_array</code> from hard no-heap paths.</li>
+<li><strong>Code generation:</strong> measure ROM/RAM, branch counts and interrupt-path latency against a <code>std::span</code> baseline under release and LTO flags.</li>
+<li><strong>Lifetime and concurrency:</strong> run ASan/UBSan/TSan where supported, then review pool reuse, view invalidation and synchronization by inspection.</li>
+<li><strong>WCET evidence:</strong> analyze actual worst-case loops, branch paths and target interrupts; microbenchmark throughput alone is not WCET proof.</li>
+<li><strong>Traceability:</strong> connect each contract assertion and rejection status to a requirement, test identifier, outcome and retained compiler artifact.</li>
+</ol>
+<div class="note warn"><p><strong>Today's verification boundary:</strong> primary upstream README, API reference, CMake, license, release notes and representative headers were inspected. A local clone failed because this execution environment could not resolve <code>github.com</code>; consequently the exact GSL examples and CMake integration have <strong>not</strong> been compiled, fuzzed, benchmarked, or run on embedded hardware here. Treat the proposed campaign as work to do, not evidence already obtained.</p></div>
+</section>
+
+<section id="adoption">
+<h2>12 / Adoption evidence, license, and fit</h2>
+<p><span class="pill">Verified upstream</span> Microsoft maintains and releases this public implementation of the C++ Core Guidelines Support Library. Its README, documentation, tests and releases establish project maintenance and feature availability. They do <strong>not</strong>, by themselves, prove use within any particular flight, spacecraft, RTOS or automotive software product. The suggested integrations above are explicitly not adoption claims.</p>
+<p><strong>License:</strong> MIT, as verified in the upstream <code>LICENSE</code> file at v5.0.1. Preserve the copyright/license notice in distributions or substantial copies. Google's test framework is used by the upstream test suite; consult <code>ThirdPartyNotices.txt</code> if redistributing tests. This is engineering integration information, not legal advice. [<a href="#ref11">11</a>]</p>
+<p><strong>Recommendation:</strong> begin with <code>&lt;gsl/span&gt;</code>, <code>&lt;gsl/pointers&gt;</code> and <code>&lt;gsl/assert&gt;</code> in a bounded packet-decoder prototype. Favor explicit recoverable validation at ingress, use contract fail-stop only after invariants are established, and keep the new <code>dyn_array</code> outside a strict no-allocation path unless an audited allocator and initialization phase justify it.</p>
+</section>
+
+<section id="sources">
+<h2>13 / Primary references and provenance</h2>
+<ol class="refs">
+<li id="ref1"><a href="https://github.com/microsoft/GSL/tree/v5.0.1">Microsoft/GSL source repository, v5.0.1</a>. Official README, feature matrix and project provenance.</li>
+<li id="ref2"><a href="https://github.com/microsoft/GSL/blob/v5.0.1/docs/headers.md">Official API reference</a>. <code>span</code>, <code>not_null</code>, <code>owner</code>, <code>narrow</code>, <code>dyn_array</code> and contract semantics.</li>
+<li id="ref3"><a href="https://github.com/microsoft/GSL/blob/v5.0.1/include/gsl/span">The <code>gsl/span</code> header</a>. Runtime bounds-checking implementation and iterator internals.</li>
+<li id="ref4"><a href="https://github.com/microsoft/GSL/blob/v5.0.1/include/gsl/pointers">The <code>gsl/pointers</code> header</a>. <code>not_null</code> and <code>owner</code>.</li>
+<li id="ref5"><a href="https://github.com/microsoft/GSL/blob/v5.0.1/include/gsl/assert">The <code>gsl/assert</code> header</a>. <code>Expects</code>, <code>Ensures</code> and termination behavior.</li>
+<li id="ref6"><a href="https://github.com/microsoft/GSL/releases/tag/v5.0.1">GSL 5.0.1 release</a>, published 22 September 2026; iterator corrections.</li>
+<li id="ref7"><a href="https://github.com/microsoft/GSL/releases/tag/v5.0.0">GSL 5.0.0 release</a>, published 26 August 2026; <code>dyn_array</code> and additional corrections.</li>
+<li id="ref8"><a href="https://devblogs.microsoft.com/cppblog/announcing-guidelines-support-library-v4-2-0/">Microsoft C++ Team, GSL 4.2.0</a>, 6 March 2025; span-iterator performance discussion, not independent WCET evidence.</li>
+<li id="ref9"><a href="https://github.com/microsoft/GSL/blob/v5.0.1/include/gsl/dyn_array">The <code>gsl/dyn_array</code> header</a>. Allocator calls and construction handling.</li>
+<li id="ref10"><a href="https://github.com/microsoft/GSL/blob/v5.0.1/CMakeLists.txt">Upstream <code>CMakeLists.txt</code></a>. Exported interface target, options, language requirements.</li>
+<li id="ref11"><a href="https://github.com/microsoft/GSL/blob/v5.0.1/LICENSE">MIT license</a> and <a href="https://github.com/microsoft/GSL/blob/v5.0.1/ThirdPartyNotices.txt">third-party notices</a>.</li>
+<li id="ref12"><a href="https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#s-gsl">C++ Core Guidelines — GSL section</a>. The guidance that Microsoft GSL implements.</li>
+</ol>
+<p class="muted">Research cut-off: 19 November 2026. Version and tag SHA read through GitHub's official repository API. No project-specific adoption, real-time timing guarantee, or target hardware qualification inferred from a library README.</p>
+</section>
+<footer>
+<strong>Deep Dives / Engineering Library Research</strong> · 19 November 2026<br>
+Independent technical survey for C++20 bounded systems, deterministic simulation, and Native AOT boundaries. Self-contained HTML: no remote scripts, fonts or assets required to read offline.
+</footer>
+</article></main>
+</div>
+</body>
+</html>
