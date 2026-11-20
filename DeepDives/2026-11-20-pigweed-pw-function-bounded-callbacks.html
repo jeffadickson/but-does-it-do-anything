@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="November 20 2026 engineering deep dive into Pigweed pw_function: bounded callbacks, FunctionRef lifetimes, InlineFunction, one-shot completion, RISCue RTOS design, CMake/Ninja, evidence, and licensing.">
+<title>Pigweed pw_function: The Callback Has a Budget — Deep Dive, 20 November 2026</title>
+<style>
+:root{--ink:#172e37;--muted:#526a74;--bg:#f2f6f5;--paper:#fff;--navy:#102b38;--dark:#0d2431;--teal:#0d7176;--aqua:#caece5;--gold:#f2ba72;--line:#d9e4e4;--max:1190px;color-scheme:light}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#066c71;text-underline-offset:3px}a:hover{color:#084a55}a:focus-visible{outline:3px solid #e6a34a;outline-offset:3px;border-radius:2px}
+.skip{position:absolute;left:-10000px;top:12px;padding:10px;background:white;color:#172e37;z-index:10}.skip:focus{left:12px}
+.hero{background:radial-gradient(ellipse at 88% 15%,#235f65 0,transparent 50%),linear-gradient(127deg,#102a38,#18444b);color:white;padding:56px 24px 52px;overflow:hidden}
+.hero-inner{max-width:var(--max);margin:auto}.eyebrow{color:#c8e9e6;text-transform:uppercase;font-weight:800;font-size:.76rem;letter-spacing:.16em}
+.hero h1{font-size:clamp(2.45rem,5.8vw,4.6rem);line-height:1.055;letter-spacing:-.055em;max-width:960px;margin:15px 0 19px}.hero h1 em{font-style:normal;color:var(--gold)}.deck{font-size:clamp(1.07rem,2.1vw,1.36rem);max-width:900px;line-height:1.55;color:#dcefeb}
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:25px}.chips span{border:1px solid #668f94;border-radius:999px;color:#eef7f4;font-size:.8rem;padding:5px 12px;font-weight:650}
+.layout{max-width:var(--max);margin:auto;padding:38px 24px 75px;display:grid;grid-template-columns:226px minmax(0,1fr);gap:40px;align-items:start}
+.toc{position:sticky;top:18px;max-height:calc(100vh - 38px);overflow:auto;border-left:2px solid #bdd6d4;padding:5px 4px 14px 17px}.toc strong{font-size:.75rem;text-transform:uppercase;letter-spacing:.11em;color:#536d74}.toc a{display:block;font-size:.84rem;line-height:1.42;text-decoration:none;padding:6px 0;color:#39545f}.toc a:hover{text-decoration:underline}
+main{min-width:0}section{margin:0 0 47px;scroll-margin-top:22px}h2{font-size:clamp(1.53rem,2.9vw,2.06rem);letter-spacing:-.037em;line-height:1.22;border-bottom:1px solid var(--line);padding:0 0 11px;margin:0 0 19px}h3{font-size:1.12rem;margin:27px 0 7px;line-height:1.35}
+p{margin:0 0 15px}.lead{font-size:1.12rem;color:#334f5b}.intro{border:1px solid var(--line);border-radius:16px;background:white;padding:27px 29px;box-shadow:0 12px 32px #122f380a}.intro h2{border:0;padding:0;margin:0 0 12px}.kicker{color:var(--teal);font-size:.75rem;letter-spacing:.13em;font-weight:850;text-transform:uppercase}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:21px}.stat{padding:15px;border-radius:10px;border:1px solid #d7e9e5;background:#eef8f6}.stat b{display:block;color:#165e61;font-size:1.08rem}.stat small{display:block;line-height:1.45;margin-top:5px;color:#526a73;font-size:.8rem}
+.note{border-left:4px solid #138185;background:#eaf6f4;padding:15px 18px;border-radius:0 10px 10px 0;margin:19px 0}.note.warn{border-color:#c1853f;background:#fff5e6}.note.danger{border-color:#bd5749;background:#fff1ed}.note p:last-child{margin-bottom:0}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:white;margin:19px 0 24px}table{width:100%;border-collapse:collapse;min-width:615px;font-size:.91rem;line-height:1.52}th{text-align:left;background:#e7f2f0;color:#214953;font-size:.81rem}th,td{padding:12px 14px;border-bottom:1px solid #e5ecec;vertical-align:top}tr:last-child td{border-bottom:0}td:first-child{font-weight:650}
+code{font:.88em ui-monospace,SFMono-Regular,Consolas,monospace;background:#e7f0ef;border-radius:3px;padding:.07em .25em;overflow-wrap:anywhere}
+figure.code{margin:21px 0 26px;background:#112c38;border:1px solid #25434d;border-radius:12px;overflow:hidden}figure.code figcaption{display:flex;justify-content:space-between;gap:9px;background:#203e49;color:#d2eae5;padding:9px 17px;letter-spacing:.05em;text-transform:uppercase;font-size:.75rem;font-weight:780}.lang{color:#a7c9c4;font-weight:500}figure.code pre{margin:0;padding:18px 19px;color:#e7f3ef;overflow:auto;tab-size:2;font:13px/1.64 ui-monospace,SFMono-Regular,Consolas,monospace}figure.code code{background:none;color:inherit;padding:0;font:inherit;overflow-wrap:normal}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:20px 0}.card{border:1px solid var(--line);background:white;border-radius:11px;border-top:4px solid #1a8080;padding:17px}.card h3{margin:0 0 8px;font-size:1.05rem}.card p{font-size:.9rem;color:#4e6570;line-height:1.52;margin:0}
+.diagram{background:#fff;border:1px solid var(--line);border-radius:13px;padding:20px;margin:20px 0}.diagram svg{display:block;width:100%;height:auto}.diagram figcaption{font-size:.84rem;color:#526b72;margin-top:12px}
+.stamp{font-size:.76rem;color:#205850;text-transform:uppercase;letter-spacing:.08em;font-weight:800}.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.refs{padding-left:1.35rem}.refs li{padding:0 0 11px;overflow-wrap:anywhere}.refs a{font-weight:700}.refs small{display:block;color:#5c737b;line-height:1.5}
+ul,ol{padding-left:1.35rem;margin:10px 0 18px}li{padding-bottom:5px}footer{border-top:2px solid var(--line);margin-top:45px;padding-top:18px;color:#567077;font-size:.85rem}
+@media(max-width:910px){.layout{display:block;padding:28px 19px 67px}.toc{position:static;max-height:none;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:34px}.toc a{display:inline-block;margin-right:13px}.cards,.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:630px){.hero{padding:43px 20px}.intro{padding:20px 17px}.cards,.stats{grid-template-columns:1fr}figure.code pre{font-size:12px;padding:14px}figure.code figcaption{display:block}.lang{display:block;font-size:.68rem;margin-top:3px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:#fff;font-size:10.5pt}.hero{padding:10px 0 19px;background:white!important;color:#183642!important}.hero h1 em,.hero .deck,.hero .eyebrow,.chips span{color:#25515a!important}.chips span{border-color:#adbdbd}.layout{display:block;padding:0}.toc,.skip{display:none}.intro{box-shadow:none}.diagram,figure.code,.card{break-inside:avoid}figure.code pre{white-space:pre-wrap;background:#edf2f2;color:#183642}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to article</a>
+<header class="hero"><div class="hero-inner">
+<div class="eyebrow">Engineering Library Deep Dive · Friday, 20 November 2026</div>
+<h1>Pigweed <span class="mono">pw_function</span>.<br><em>The callback has a budget.</em></h1>
+<p class="deck">Owning, borrowing, and consuming C++ callables without a surprise heap allocation—what that really means for RISCue, active objects, ISR handoffs, and reproducible simulation.</p>
+<div class="chips"><span>C++20 application</span><span>Pigweed stable C++ module</span><span>Compile-time storage bounds</span><span>Apache-2.0 + third-party review</span><span>Source / documentation reviewed</span></div>
+</div></header>
+<div class="layout"><aside class="toc" aria-label="Table of contents"><strong>On this page</strong><nav aria-label="Contents"><a href="#brief">Engineering verdict</a><a href="#context">What it solves</a><a href="#types">Choose the wrapper</a><a href="#diagram">Ownership and budget</a><a href="#sync">Example: synchronous observer</a><a href="#stored">Example: bounded stored callback</a><a href="#once">Example: one-shot completion</a><a href="#rtos">RISCue and RTOS patterns</a><a href="#failure">Failure boundaries</a><a href="#config">CMake / Ninja integration</a><a href="#trace">Deterministic trace design</a><a href="#adoption">Verified adoption vs proposals</a><a href="#alternatives">Trade-offs and alternatives</a><a href="#verify">Qualification plan</a><a href="#license">Licensing and provenance</a><a href="#sources">Primary references</a></nav></aside>
+<main id="main"><article>
+<section class="intro" id="brief">
+<p class="kicker">The engineering decision</p>
+<h2>Use an inline-owning callable when work must survive the caller; borrow only within one synchronous call.</h2>
+<p class="lead">Pigweed's <strong>pw_function</strong> makes a common embedded design trade explicit: a callback is not merely a function address. It may <em>own captured state</em>, borrow someone else's state, or represent a single-use completion. Each choice has a different lifetime contract, storage bound, and failure mode.</p>
+<div class="stats"><div class="stat"><b>0 heap allocations*</b><small>For <code>pw::InlineFunction</code> / <code>InlineCallback</code> storage themselves; captured objects can still allocate internally.</small></div><div class="stat"><b>3 lifetime patterns</b><small>Borrow synchronously; own for later; consume exactly once.</small></div><div class="stat"><b>Not an event loop</b><small>Neither queue capacity nor scheduling order follows from the callable wrapper.</small></div></div>
+<div class="note warn"><p><strong>Recommendation:</strong> Use <code>pw::FunctionRef</code> for non-retained visitors, <code>pw::InlineFunction&lt;Signature, N&gt;</code> for stored deterministic callbacks, and <code>pw::InlineCallback</code> for a completion that is consumed once. Reserve <code>pw::DynamicFunction</code> for explicitly permitted allocation domains. This is a <em>candidate</em> design for RISCue, not a claim it has been adopted there.</p></div>
+</section>
+<section id="context"><h2>01 · Why callbacks are an embedded-systems problem</h2>
+<p>A plain function pointer is compact and predictable but cannot natively own a capturing lambda. <code>std::function</code> offers convenient type erasure but its capacity and spill-to-heap behavior are not part of a portable application-level bound. Many systems therefore invent parallel callback signatures, context-pointer trampolines, and ad hoc ownership rules.</p>
+<p>Pigweed's design offers <em>separate semantic types</em> rather than relying on hope: <code>FunctionRef</code> borrows; <code>InlineFunction</code> owns in fixed internal storage; <code>Callback</code> consumes a callable; and <code>DynamicFunction</code> explicitly permits dynamic backing allocation. The precise distinctions matter more than a generic claim of “zero overhead.” <a href="#sources">[1–4]</a></p>
+<p>In a deterministic RTOS or simulation engine, the key questions are: Can a callback outlive the producer's stack? Is capture size checked during compilation? Does a full work queue return a status or fail fast? Who records event order? What happens on a second completion? The wrapper answers only some of these.</p></section>
+<section id="types"><h2>02 · Pick the right wrapper</h2>
+<div class="tablewrap"><table><thead><tr><th>API</th><th>Ownership and use</th><th>Allocation contract</th><th>Critical hazard</th></tr></thead><tbody>
+<tr><td><code>pw::FunctionRef&lt;R(Args...)&gt;</code></td><td>Non-owning, normally passed into synchronous visitor functions</td><td>The wrapper does not take ownership or allocate backing storage</td><td>Dangling reference if retained after the callable dies</td></tr>
+<tr><td><code>pw::InlineFunction&lt;Sig, N&gt;</code></td><td>Move-only, owns a callable; invoke repeatedly while non-null</td><td>Callable must fit the explicit inline storage (compile-time rejection otherwise)</td><td>Owning a lambda does not extend the life of objects it captures <em>by reference</em></td></tr>
+<tr><td><code>pw::InlineCallback&lt;Sig, N&gt;</code></td><td>Owns a completion that is consumed on invocation</td><td>Inline-only, no spill-to-heap for callable storage</td><td>Calling again after consumption is invalid / crashes</td></tr>
+<tr><td><code>pw::Function&lt;Sig&gt;</code></td><td>Move-only owned callable; Pigweed default uses inline storage</td><td>Default one-pointer inline target; configuration can enable heap fallback</td><td>Host/device configuration drift; not an unconditional no-heap promise</td></tr>
+<tr><td><code>pw::DynamicFunction&lt;Sig, N&gt;</code></td><td>Owned callable with configurable spill allocation</td><td>Can dynamically allocate</td><td>Timing, allocation failure, fragmentation and allocator policy</td></tr>
+</tbody></table></div>
+<p>The API reference defines <code>InlineFunction</code> and <code>InlineCallback</code> as aliases of the Fuchsia <code>fit</code> inline implementations. The default <code>pw::Function</code> inline capacity is generally one pointer, not “any small object.” Compile the real project configuration to establish it. <a href="#sources">[1, 2]</a></p>
+<div class="note"><p><strong>2026 update:</strong> <code>pw::FunctionRef</code> appeared in the April 2026 Pigweed changelog. May 2026 added lifetime-bound annotations so Clang can identify some temporaries that would dangle. An analyzer warning is useful evidence, not a replacement for a lifetime proof. <a href="#sources">[3, 4]</a></p></div></section>
+<section id="diagram"><h2>03 · Visual model: lifetime, ownership, and storage</h2>
+<figure class="diagram"><svg viewBox="0 0 800 235" role="img" aria-label="Three paths: FunctionRef borrows a caller-owned lambda; InlineFunction moves a fitting lambda into bounded storage; InlineCallback owns bounded storage but destroys its target on first call.">
+<rect x="8" y="18" width="245" height="196" rx="11" fill="#ecf6f5" stroke="#accfcd"/><rect x="278" y="18" width="245" height="196" rx="11" fill="#e8f2f5" stroke="#a8c8d0"/><rect x="548" y="18" width="244" height="196" rx="11" fill="#fff2e4" stroke="#dfc6a4"/>
+<text x="26" y="52" fill="#175c61" font-size="17" font-weight="700">FunctionRef</text><text x="296" y="52" fill="#175164" font-size="17" font-weight="700">InlineFunction</text><text x="566" y="52" fill="#8c5a27" font-size="17" font-weight="700">InlineCallback</text>
+<rect x="27" y="80" width="95" height="41" rx="6" fill="white" stroke="#8caeab"/><text x="41" y="104" font-size="13" fill="#304c53">Caller state</text><path d="M124 100 H204" stroke="#117b7b" stroke-width="2.5" stroke-dasharray="5 4"/><path d="M195 95 L204 100 L195 105" fill="none" stroke="#117b7b" stroke-width="2"/><text x="134" y="87" font-size="11" fill="#436b6d">borrows</text>
+<rect x="297" y="78" width="203" height="58" rx="7" fill="white" stroke="#7ca3b2"/><text x="312" y="99" font-size="13" fill="#264a55">Inline budget N bytes</text><rect x="313" y="108" width="154" height="13" rx="3" fill="#208483"/><rect x="468" y="108" width="16" height="13" rx="3" fill="#c9dddd"/>
+<rect x="567" y="78" width="200" height="58" rx="7" fill="white" stroke="#c8a77c"/><text x="581" y="99" font-size="13" fill="#78512d">Inline budget N bytes</text><rect x="582" y="108" width="152" height="13" rx="3" fill="#d68b40"/><rect x="735" y="108" width="16" height="13" rx="3" fill="#ead6bc"/>
+<text x="27" y="156" fill="#375d62" font-size="12">No lifetime extension</text><text x="27" y="179" fill="#375d62" font-size="12">Do not retain</text>
+<text x="297" y="156" fill="#375d62" font-size="12">Move-only ownership</text><text x="297" y="179" fill="#375d62" font-size="12">Repeat while non-null</text>
+<text x="567" y="156" fill="#855a36" font-size="12">Consumed on first call</text><text x="567" y="179" fill="#855a36" font-size="12">Second call invalid</text>
+</svg><figcaption>Conceptual diagram, not a measured memory layout. N budgets callable target storage; actual wrapper size also includes metadata, padding and alignment.</figcaption></figure>
+<p>Small-buffer optimization is not the same as bounded total system memory. The lambda itself might contain a pointer to heap memory, an owning container, or a reference to a short-lived stack object. A bounded callable only bounds <em>where the callable object is stored</em>.</p></section>
+<section id="sync"><h2>04 · Example: a synchronous observer with no ownership transfer</h2>
+<p>Suppose a deterministic simulator walks a fixed event trace and offers a hook to count selected records. The visitor runs before <code>Visit</code> returns. That is a good <code>FunctionRef</code> boundary.</p>
+<figure class="code"><figcaption><span>A bounded synchronous event visitor</span><span class="lang">C++20 · source-reviewed example</span></figcaption><pre><code>#include &lt;array&gt;
+#include &lt;cstdint&gt;
+#include "pw_function/function_ref.h"
+
+struct Event {
+  std::uint32_t tick;
+  std::uint8_t kind;
+};
+
+void Visit(const std::array&lt;Event, 3&gt;&amp; events,
+           pw::FunctionRef&lt;void(const Event&amp;)&gt; visitor) {
+  for (const Event&amp; event : events) {
+    visitor(event);  // Synchronous; reference is not stored.
+  }
+}
+
+int main() {
+  constexpr std::array&lt;Event, 3&gt; trace{{
+      {3, 1}, {5, 2}, {5, 1},
+  }};
+  std::uint32_t matches = 0;
+  Visit(trace, [&amp;matches](const Event&amp; e) {
+    if (e.kind == 1) { ++matches; }
+  });
+  return matches == 2 ? 0 : 1;
+}</code></pre></figure>
+<p>The temporary capturing lambda remains alive for the full function call. Its reference to <code>matches</code> is also valid throughout that call. <strong>Do not store a <code>FunctionRef</code> in an asynchronous task or active object's pending-work record</strong> unless the program separately proves the referenced callable outlives that storage.</p>
+<div class="note warn"><p><strong>Scheduling caveat:</strong> A visitor is just a synchronous call. It does not establish real-time safety if the visitor blocks, allocates, takes a mutex, throws, or mutates state with nondeterministic side effects.</p></div></section>
+<section id="stored"><h2>05 · Example: store an owned callback with a compile-time bound</h2>
+<p>For a long-lived timer service, a stored callback is appropriate. The example below captures a pointer-sized reference to caller-owned state, but the state itself must outlive the timer. Set the byte budget deliberately and let oversized captures fail compilation.</p>
+<figure class="code"><figcaption><span>A single registered timer callback</span><span class="lang">C++20 · source-reviewed example</span></figcaption><pre><code>#include &lt;cstdint&gt;
+#include "pw_function/function.h"
+
+class TickObserver {
+ public:
+  using Handler = pw::InlineFunction&lt;void(std::uint32_t), 24&gt;;
+
+  explicit TickObserver(Handler&amp;&amp; handler)
+      : handler_(std::move(handler)) {}
+
+  void Fire(std::uint32_t delta) {
+    if (handler_ != nullptr) {
+      handler_(delta);
+    }
+  }
+
+ private:
+  Handler handler_;
+};
+
+// In a scope where 'counter' outlives 'observer':
+// std::uint32_t counter = 0;
+// TickObserver observer{[&amp;counter](std::uint32_t n) { counter += n; }};
+// observer.Fire(3);</code></pre></figure>
+<p><strong>Review note:</strong> Add <code>#include &lt;utility&gt;</code> for <code>std::move</code> in a standalone translation unit. The sample is intentionally a small class illustrating the API, not an ISR-safe timer driver, a queue implementation, or a guarantee of 24-byte object size. Capturing <code>counter</code> by reference is safe only under the explicitly stated lifetime assumption.</p>
+<figure class="code"><figcaption><span>A negative compile-time sizing test</span><span class="lang">C++20 · source-reviewed example</span></figcaption><pre><code>#include &lt;cstdint&gt;
+#include "pw_function/function.h"
+
+struct BigCapture {
+  std::uint64_t payload[16]{};
+  void operator()() const {}
+};
+
+// Deliberately reject a 128-byte target in a 16-byte budget:
+// pw::InlineFunction&lt;void(), 16&gt; too_large = BigCapture{};
+
+// Change the budget or design; do not silently spill to heap.</code></pre></figure>
+<p>Use compile-time negative tests for capacity contracts in a dedicated fixture, not a permanently broken production build. Also test target alignment on the actual embedded ABI and compiler.</p></section>
+<section id="once"><h2>06 · Example: single-use completion</h2>
+<p>Completions are often semantically different from subscriptions. A one-shot callback consumes its target after the first invocation, making accidental repeat completion visible as an invalid operation.</p>
+<figure class="code"><figcaption><span>Completion is consumed, not reset for reuse</span><span class="lang">C++20 · source-reviewed example</span></figcaption><pre><code>#include "pw_function/function.h"
+
+pw::InlineCallback&lt;void(int), 24&gt; done(
+    [](int status) { (void)status; });
+
+// Worker has completed; consume the closure:
+if (done != nullptr) {
+  done(0);
+}
+
+// On this same callback object:
+// done(0);  // Invalid: already consumed; do not call again.</code></pre></figure>
+<p>Null checks are essential where control flow may retry, cancel, or double-complete. A single-use wrapper <em>does not itself</em> resolve concurrent races: two threads can still observe a non-null object without a separately designed synchronization protocol. Nor is callback consumption equivalent to a requirements-level guarantee of exactly-once delivery under crashes or power loss.</p></section>
+<section id="rtos"><h2>07 · Application patterns for RISCue and active objects</h2>
+<div class="cards"><div class="card"><h3>Active-object events</h3><p>Keep the event queue typed and fixed-capacity; use bounded callbacks at adapter boundaries rather than allocating a closure for each message. Define producer backpressure explicitly.</p></div>
+<div class="card"><h3>Hierarchical state machines</h3><p>Prefer explicit event/state transition tables for core semantics. Use inline callables for replaceable entry/exit hooks or test seams when their lifetime is controlled.</p></div>
+<div class="card"><h3>Deterministic simulation</h3><p>Use FunctionRef for in-step observers, InlineFunction for owned scheduled hooks, and record ordering separately. Same callback ≠ same replay across architectures.</p></div></div>
+<h3>Proven Pigweed integration: work queue</h3>
+<p>The <code>pw_work_queue</code> module actually queues <code>pw_function::Closure</code> for execution by a worker thread. Its official examples use <code>WorkQueueWithBuffer&lt;10&gt;</code>. The API offers <code>PushWork</code>, which returns <code>RESOURCE_EXHAUSTED</code> when full, and <code>CheckPushWork</code>, which crashes when the work cannot be queued. That is a real integration and a particularly useful contrast for RISCue. <a href="#sources">[5, 6]</a></p>
+<figure class="code"><figcaption><span>Documented Pigweed work-queue shape (excerpt)</span><span class="lang">C++20 · source-reviewed example</span></figcaption><pre><code>#include "pw_work_queue/work_queue.h"
+
+// Requires the relevant Pigweed thread backend and startup.
+// Fixed queue depth does NOT mean unbounded callbacks fit.
+pw::work_queue::WorkQueueWithBuffer&lt;10&gt; work_queue;
+
+// For a recoverable producer, use PushWork() and handle Status;
+// do not default to CheckPushWork() when saturation is routine.
+// See official work_queue docs for the thread lifecycle.</code></pre></figure>
+<div class="note danger"><p><strong>Do not assume ISR eligibility from this article.</strong> The official work-queue documentation provides an interrupt-handler illustration and states thread/interrupt-safe APIs; practical ISR behavior still depends on the chosen Pigweed thread/notification backend, priorities, interrupt masking, object placement, and target architecture. Do not call ordinary stored lambdas from an ISR without reviewing their bodies.</p></div>
+<p>For a RISCue event dispatcher, define queue capacity independently of callable capacity and attach trace IDs to typed events rather than to opaque callback addresses. A pointer address is not a portable or stable event identity.</p></section>
+<section id="failure"><h2>08 · Contracts that can terminate, dangle, or allocate</h2>
+<div class="tablewrap"><table><thead><tr><th>Situation</th><th>Expected behavior</th><th>Engineering response</th></tr></thead><tbody>
+<tr><td>Capture exceeds <code>InlineFunction</code> budget</td><td>Compilation fails</td><td>Measure target capture, redesign state, or increase deliberate capacity</td></tr>
+<tr><td>Calling empty <code>pw::Function</code></td><td>Fail-fast / crash, not an error result</td><td>Use explicit nullable state check; enforce lifecycle invariants</td></tr>
+<tr><td>Calling consumed callback again</td><td>Invalid operation / crash</td><td>Track completion state; synchronize across threads</td></tr>
+<tr><td>Storing borrowed <code>FunctionRef</code></td><td>Potential dangling reference and undefined behavior</td><td>Forbid storage; add compiler lifetime diagnostics and tests</td></tr>
+<tr><td>Moving a lambda that captures a reference</td><td>Moves reference/pointer, not referenced object's lifetime</td><td>Use clearly owned durable state or prove lifetime</td></tr>
+<tr><td>Default <code>Function</code> with heap enabled</td><td>Oversized capture may allocate; host and device can differ</td><td>Use explicit inline aliases in no-heap domain and pin config</td></tr>
+<tr><td><code>PushWork</code> on full queue</td><td>Returns <code>RESOURCE_EXHAUSTED</code></td><td>Specify retry/drop/fault policy; instrument watermarks</td></tr>
+</tbody></table></div>
+<p>The wrapper gives <em>storage</em> and <em>lifetime</em> semantics. It does not guarantee bounded execution time, absence of global allocator activity inside the callback, reentrancy, thread safety, or deterministic callback order.</p></section>
+<section id="config"><h2>09 · Integration: pin source, configure CMake, build with Ninja</h2>
+<p>Official Pigweed instructions show linking the <code>pw_function</code> CMake target. Pigweed's build documentation reports <strong>full Bazel support and partial CMake support</strong>; treat CMake as a qualifying integration, not as an automatically trivial header drop-in. Pin a revision rather than tracking a moving development branch. <a href="#sources">[1, 7, 8]</a></p>
+<figure class="code"><figcaption><span>CMakeLists.txt: after Pigweed has been integrated</span><span class="lang">C++20 · source-reviewed example</span></figcaption><pre><code>cmake_minimum_required(VERSION 3.24)
+project(riscue_callback_probe LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Follow Pigweed's documented CMake setup/toolchain/backends.
+# The exact subdirectory wiring is project- and revision-specific.
+set(pw_unit_test_ENABLE_PW_ADD_TEST OFF)
+add_subdirectory(third_party/pigweed pigweed)
+
+add_executable(callback_probe main.cc)
+target_link_libraries(callback_probe PRIVATE pw_function)</code></pre></figure>
+<figure class="code"><figcaption><span>Host build commands (only after toolchain setup)</span><span class="lang">C++20 · source-reviewed example</span></figcaption><pre><code># Record the exact Pigweed commit SHA in the project lockfile.
+git -C third_party/pigweed rev-parse HEAD
+cmake -S . -B build/host -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build/host --target callback_probe
+./build/host/callback_probe</code></pre></figure>
+<p>This is <strong>illustrative integration wiring, not a verified build recipe for every Pigweed revision</strong>. The full upstream setup can require dependencies/backends and a compatible toolchain before CMake configuration succeeds. For device builds, use a separate build tree and board toolchain. Record <code>CMAKE_CXX_COMPILER_ID</code>, version, target ABI, linker flags, and Pigweed SHA.</p>
+<h3>Configuration coherency is part of correctness</h3>
+<p>Pigweed documents build-time configurable inline storage and optional allocation. The April 2026 changelog introduces a <code>PW_FUNCTION_CONFIG_HEADER</code> override facility; verify the selected revision's exact config macro names and inclusion path. Do not combine separately compiled components with different callback type configurations: aliased template types and binary interfaces may become incompatible. <a href="#sources">[1–3]</a></p>
+<figure class="code"><figcaption><span>Optional config-header concept (verify pinned revision)</span><span class="lang">C++20 · source-reviewed example</span></figcaption><pre><code>// my_project/pw_function_config.h
+#pragma once
+// As documented in Pigweed's April 2026 changelog:
+#define PW_FUNCTION_INLINE_CALLABLE_SIZE_BYTES 32
+
+// Arrange PW_FUNCTION_CONFIG_HEADER propagation according to
+// the chosen Pigweed revision and build-system integration.
+// Prefer explicit InlineFunction&lt;Sig, N&gt; at bounded APIs.</code></pre></figure>
+</section>
+<section id="trace"><h2>10 · Designing a reproducible callback trace</h2>
+<p>A good simulation trace should not serialize callback storage or unstable addresses. Instead record explicit event identity, logical timestamp, sequence number, producer, and outcome. During replay, invoke the registered handler for that typed event. Handler registration and ordering become audited inputs to the experiment.</p>
+<figure class="code"><figcaption><span>Portable trace metadata, not serialized callables</span><span class="lang">C++20 · source-reviewed example</span></figcaption><pre><code>#include &lt;cstdint&gt;
+
+enum class TraceKind : std::uint8_t {
+  kTick = 1,
+  kTimeout = 2,
+  kMessage = 3,
+};
+
+struct TraceEntry {
+  std::uint64_t logical_tick;
+  std::uint64_t sequence;
+  std::uint32_t active_object_id;
+  TraceKind kind;
+  std::uint32_t payload_id;
+};
+
+// Serialize field by field with defined width/endian/order.
+// Do not fwrite() raw structs: padding and layout vary.
+// Do not serialize a pw::InlineFunction or its captures.</code></pre></figure>
+<p>To qualify reproducibility, run a golden trace on the host and target using normalized serialized fields, then check bytewise equality (or an explicitly documented architecture-normalized comparison). Include simultaneous timestamps and multiple event producers; assert tie-break rules explicitly.</p></section>
+<section id="adoption"><h2>11 · What is actually adopted?</h2>
+<div class="tablewrap"><table><thead><tr><th>Statement</th><th>Evidence level</th><th>Conclusion</th></tr></thead><tbody>
+<tr><td>Pigweed exposes <code>pw::Function</code>, <code>FunctionRef</code>, <code>Callback</code> and explicit inline aliases</td><td>Direct official module documentation and generated API</td><td><strong>Verified API</strong></td></tr>
+<tr><td>Pigweed <code>pw_work_queue</code> uses <code>pw_function::Closure</code> as its queued work item</td><td>Official Pigweed module and API documentation</td><td><strong>Verified internal usage</strong></td></tr>
+<tr><td>The owning implementation is based on Fuchsia <code>fit::function_impl</code>/<code>callback_impl</code></td><td>Official Pigweed design note</td><td><strong>Verified provenance</strong>, not proof of any external deployment</td></tr>
+<tr><td>RISCue or another named personal repository currently integrates this library</td><td>No repository-specific inspection performed</td><td><strong>Not established</strong></td></tr>
+<tr><td>It will reduce worst-case latency or flash footprint on a given MCU</td><td>No device measurements performed</td><td><strong>Hypothesis awaiting measurement</strong></td></tr>
+</tbody></table></div>
+<p>Claiming that “Google uses it in embedded products” based solely on project authorship would be an unjustified leap. This analysis asserts only observable project integration and published design contracts.</p></section>
+<section id="alternatives"><h2>12 · Trade-offs and alternatives</h2>
+<div class="tablewrap"><table><thead><tr><th>Option</th><th>Why choose it</th><th>Why hesitate</th></tr></thead><tbody>
+<tr><td>Function pointer + <code>void*</code> context</td><td>Simple C ABI, explicit storage, static dispatch possible</td><td>Hand-written trampolines, type casts, and context lifetime burden</td></tr>
+<tr><td>Templated callable parameter</td><td>Potential inlining, no type-erasure storage for direct calls</td><td>Type propagates into APIs; code bloat, cannot easily store heterogeneous targets</td></tr>
+<tr><td><code>std::function</code></td><td>Standard, familiar, copyable</td><td>Standard does not expose fixed target capacity or guarantee no dynamic allocation</td></tr>
+<tr><td><code>pw::FunctionRef</code></td><td>Excellent synchronous callback parameter</td><td>Unsafe for retained tasks unless lifetime separately guaranteed</td></tr>
+<tr><td><code>pw::InlineFunction</code></td><td>Owned move-only callback, explicitly bounded target storage</td><td>Object-size overhead, dependency ecosystem, runtime dispatch, target-specific qualification</td></tr>
+<tr><td>Typed event + switch/state table</td><td>Simple auditable deterministic state-machine semantics</td><td>Less flexible dynamic registration; may require generated dispatch</td></tr>
+</tbody></table></div>
+<p>Compared with yesterday's Microsoft GSL report, this is not primarily a bounds-checking library: it is a <em>callable lifetime and storage policy</em>. Compared with the earlier Boost.Intrusive or SPSC queue reports, it is not a data structure: choosing it does not answer producer/consumer synchronization or overflow behavior.</p></section>
+<section id="verify"><h2>13 · Qualification campaign: what a green build must actually prove</h2>
+<ol>
+<li><strong>Pin source:</strong> record upstream SHA and all vendored/submodule revisions; review the actual <code>fit</code> implementation and license inventory.</li>
+<li><strong>Positive and negative compile tests:</strong> exact-fit and oversized capture; over-aligned captures; move-only captures; no-copy guarantees; host and device compiler flags.</li>
+<li><strong>Allocation instrumentation:</strong> override or intercept allocation entry points in controlled test binaries, warm up static initialization, invoke construction/move/call/destruction, and count allocations from captured object behavior separately.</li>
+<li><strong>Lifetime checks:</strong> exercise by-reference captures with ASan/UBSan on host; enable Clang lifetime warnings; prohibit retained <code>FunctionRef</code> via review and static analysis.</li>
+<li><strong>Failure contracts:</strong> death-test empty invocation and second invocation of a consumed callback. Do not run these death cases inside the primary long-lived simulator process.</li>
+<li><strong>Concurrency:</strong> single-thread vs. multicore, callback reentrancy, ownership transfer, cancellations, and double-completion races; add TSAN tests where supported.</li>
+<li><strong>Queue saturation:</strong> integrate <code>PushWork</code> with bounded queue size and assert <code>RESOURCE_EXHAUSTED</code> without silent loss; measure maximum queue depth.</li>
+<li><strong>Timing and memory:</strong> compare function pointer, template, <code>FunctionRef</code>, and <code>InlineFunction</code> at <code>-O2/-Os</code> with LTO on selected targets. Record binary sections, object sizes, cycles distributions, and compiler disassembly. Do not label percentile timing a WCET bound.</li>
+<li><strong>Replay:</strong> run the same fixed trace across different optimization levels and architecture targets; compare normalized event order and outcomes rather than pointer representations.</li>
+<li><strong>Reproducibility:</strong> run CMake/Ninja from clean build directories; capture toolchain hashes and per-target Pigweed config. Disallow host-only heap fallback from hiding device compilation failures.</li>
+</ol>
+<div class="note"><p><strong>Exit criteria:</strong> no unexpected allocation in designated paths; every stored callback's capacity is compile-time bounded; lifetimes are explicit; callback-induced scheduling and failure modes are tested; no open critical difference between host and device behavior. A local compilation and hardware benchmark are <strong>not</strong> claimed in this article.</p></div>
+</section>
+<section id="license"><h2>14 · Licensing, origin, and deployment decision</h2>
+<p>Pigweed's primary source tree identifies <strong>Apache License 2.0</strong>, not MIT. Apache-2.0 generally permits modification, redistribution and commercial use subject to attribution, license inclusion, notice handling and other conditions, and includes an express patent license subject to its terms. Source files carry Apache headers. Because <code>pw_function</code> relies on Fuchsia <code>fit</code> code, assess the <strong>actual checked-out third-party files</strong>, license/NOTICE material and transitive dependency inventory before distributing firmware or a library package. Do not assume the entire combined tree is under one license merely because the top-level Pigweed project is Apache-2.0. <a href="#sources">[9–11]</a></p>
+<p>For allocation-free C++20 systems the benefit is compelling, but this is a <strong>conditional adoption</strong>: first prototype with <code>FunctionRef</code> at synchronous boundaries and explicit <code>InlineFunction</code> for one owner-managed callback. Move to generic work queues only after capacity, ISR, ordering, and shutdown semantics are specified.</p></section>
+<section id="sources"><h2>15 · Primary references and reproducibility notes</h2>
+<p>Sources were consulted on <strong>20 November 2026</strong>. The public Pigweed documentation is continuously updated; dates mentioned above refer to the authors' April/May 2026 changelogs, not a claimed release tag. Copying an example here is not evidence that it builds with every repository revision. References intentionally favor upstream documentation, source and license text.</p>
+<ol class="refs"><li><a href="https://pigweed.dev/pw_function/" rel="noopener noreferrer">1. Pigweed pw_function module</a><small>Public API, move semantics, storage limits, CMake target, and failure behavior.</small></li><li><a href="https://pigweed.dev/api/cc/group__pw__function.html" rel="noopener noreferrer">2. Pigweed pw_function API reference</a><small>InlineFunction, InlineCallback, DynamicFunction, and configuration defaults.</small></li><li><a href="https://pigweed.dev/changelog/2026/04.html" rel="noopener noreferrer">3. Pigweed April 2026 changelog</a><small>Introduction of FunctionRef and config-header support.</small></li><li><a href="https://pigweed.dev/changelog/2026/05.html" rel="noopener noreferrer">4. Pigweed May 2026 changelog</a><small>Lifetime-bound annotations and Clang diagnostics.</small></li><li><a href="https://pigweed.dev/pw_work_queue/" rel="noopener noreferrer">5. Pigweed pw_work_queue documentation</a><small>Actual Pigweed integration using closure work items.</small></li><li><a href="https://pigweed.dev/api/cc/group__pw__work__queue.html" rel="noopener noreferrer">6. Pigweed work queue API reference</a><small>PushWork statuses, CheckPushWork crash contract.</small></li><li><a href="https://pigweed.dev/build/cmake/integration/" rel="noopener noreferrer">7. Pigweed CMake integration</a><small>Toolchains, backends, CMake cache, and sandboxing.</small></li><li><a href="https://pigweed.dev/build/" rel="noopener noreferrer">8. Pigweed CMake build guidance</a><small>Build-system support and limitations.</small></li><li><a href="https://pigweed.googlesource.com/pigweed/pigweed/" rel="noopener noreferrer">9. Pigweed upstream source tree</a><small>Pin a revision; inspect pw_function and third-party Fuchsia implementation.</small></li><li><a href="https://pigweed.googlesource.com/pigweed/pigweed/+/refs/heads/main/LICENSE" rel="noopener noreferrer">10. Pigweed Apache-2.0 license</a><small>Top-level licensing; inspect vendored third-party notices separately.</small></li><li><a href="https://pigweed.googlesource.com/pigweed/pigweed/+/refs/heads/main/CONTRIBUTING.md" rel="noopener noreferrer">11. Pigweed contribution licensing policy</a><small>License headers and upstream development process.</small></li></ol>
+<footer><strong>Library Deep Dive · 20 November 2026.</strong> Standalone responsive HTML; no CDNs, analytics, fonts, scripts or external image dependencies. API and engineering contracts were reviewed against public upstream documentation. Examples were not compiled or benchmarked for this publication; integration and platform-dependent performance remain validation work.</footer>
+</section>
+</article></main></div>
+</body></html>
