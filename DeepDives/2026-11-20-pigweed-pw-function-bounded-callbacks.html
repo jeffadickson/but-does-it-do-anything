@@ -110,7 +110,8 @@ int main() {
 <div class="note warn"><p><strong>Scheduling caveat:</strong> A visitor is just a synchronous call. It does not establish real-time safety if the visitor blocks, allocates, takes a mutex, throws, or mutates state with nondeterministic side effects.</p></div></section>
 <section id="stored"><h2>05 · Example: store an owned callback with a compile-time bound</h2>
 <p>For a long-lived timer service, a stored callback is appropriate. The example below captures a pointer-sized reference to caller-owned state, but the state itself must outlive the timer. Set the byte budget deliberately and let oversized captures fail compilation.</p>
-<figure class="code"><figcaption><span>A single registered timer callback</span><span class="lang">C++20 · source-reviewed example</span></figcaption><pre><code>#include &lt;cstdint&gt;
+<figure class="code"><figcaption><span>A single registered timer callback</span><span class="lang">C++20 · source-reviewed example</span></figcaption><pre><code>#include &lt;utility&gt;
+#include &lt;cstdint&gt;
 #include "pw_function/function.h"
 
 class TickObserver {
@@ -134,7 +135,7 @@ class TickObserver {
 // std::uint32_t counter = 0;
 // TickObserver observer{[&amp;counter](std::uint32_t n) { counter += n; }};
 // observer.Fire(3);</code></pre></figure>
-<p><strong>Review note:</strong> Add <code>#include &lt;utility&gt;</code> for <code>std::move</code> in a standalone translation unit. The sample is intentionally a small class illustrating the API, not an ISR-safe timer driver, a queue implementation, or a guarantee of 24-byte object size. Capturing <code>counter</code> by reference is safe only under the explicitly stated lifetime assumption.</p>
+<p><strong>Review note:</strong> The sample is intentionally a small class illustrating the API, not an ISR-safe timer driver, a queue implementation, or a guarantee of 24-byte object size. Capturing <code>counter</code> by reference is safe only under the explicitly stated lifetime assumption.</p>
 <figure class="code"><figcaption><span>A negative compile-time sizing test</span><span class="lang">C++20 · source-reviewed example</span></figcaption><pre><code>#include &lt;cstdint&gt;
 #include "pw_function/function.h"
 
