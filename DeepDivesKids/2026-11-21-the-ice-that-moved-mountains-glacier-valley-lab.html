@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#142f49">
+<meta name="description" content="A colorful, offline glacier detective adventure for kids: explore Yosemite Valley, discover how moving ice shapes mountains, run an interactive valley lab, and try a safe abrasion experiment.">
+<title>The Ice That Moved Mountains! | DeepDivesKids | November 21, 2026</title>
+<style>
+:root{color-scheme:light;--night:#142f49;--ink:#19334d;--muted:#476176;--paper:#fff;--snow:#f3faff;--blue:#155d9c;--teal:#076f72;--gold:#ffd873;--line:#b9d6e4;--cream:#fff7e4}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:var(--ink);background:radial-gradient(circle at 3% 18%,#dcf9ff,transparent 33rem),linear-gradient(145deg,#fff9eb,#f1faff 48%,#ecf8f1);font:1.06rem/1.66 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:#075e9d;text-decoration-thickness:2px;text-underline-offset:3px}a:hover{text-decoration-thickness:3px}
+:focus-visible{outline:4px solid #db5b24;outline-offset:4px;border-radius:5px}
+.skip{position:absolute;top:-10rem;left:1rem;background:var(--gold);color:var(--night);padding:.6rem 1rem;z-index:20;font-weight:800}.skip:focus{top:1rem}
+.wrap{width:min(1100px,calc(100% - 2rem));margin-inline:auto}
+h1,h2,h3{line-height:1.13;letter-spacing:-.035em}h1{font-size:clamp(3.2rem,7vw,6rem);margin:.55rem 0 1rem}h2{font-size:clamp(1.75rem,3.5vw,2.55rem);margin:0 0 .85rem}h3{font-size:1.24rem;margin:0 0 .5rem}
+p{margin:.65rem 0 1rem}section{margin:3rem 0;scroll-margin-top:1.1rem}
+.hero{background:radial-gradient(circle at 87% 15%,#1c6482,transparent 34rem),radial-gradient(circle at 5% 95%,#27466d,transparent 24rem),var(--night);color:#fff;padding:3.2rem 0 3.5rem;overflow:hidden}
+.heroGrid{display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:2rem}
+.eyebrow{display:inline-block;background:var(--gold);color:#17334d;font-size:.76rem;font-weight:900;letter-spacing:.11em;text-transform:uppercase;padding:.28rem .7rem;border-radius:99px}
+.hero h1 span{color:var(--gold)}.hero .lead{font-size:clamp(1.13rem,2vw,1.37rem);color:#effaff;max-width:34rem}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}.chip{border:1px solid #9ac6d8;border-radius:99px;font-size:.83rem;padding:.22rem .7rem;color:#f5fbff}
+.heroArt{padding:1rem;background:#ffffff12;border:1px solid #94bed1;border-radius:1.3rem;box-shadow:0 18px 38px #071b3390;margin:0}
+.heroArt svg{width:100%;height:auto;display:block}.heroArt figcaption{color:#e0f5ff;font-size:.82rem;text-align:center;margin-top:.5rem}
+.toc,.card{background:var(--paper);border:1px solid var(--line);border-radius:1.2rem;padding:clamp(1.1rem,3vw,1.7rem);box-shadow:0 12px 26px #24446113}
+.toc{margin-top:2rem;border-width:2px}.toc h2{font-size:1.28rem}.toc ul{list-style:none;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.3rem 1rem;margin:.4rem 0}.toc a{display:block;padding:.25rem 0;font-weight:750}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.card{min-width:0}.mint{background:#e9fcf5}.peach{background:#fff0de}.lilac{background:#f0ecff}
+.tag{display:inline-block;background:#d8f6e9;color:#095840;border-radius:99px;font-size:.76rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;padding:.2rem .65rem;margin-bottom:.7rem}
+.tag.orange{background:#ffe9c1;color:#78500c}
+.note{border-left:5px solid var(--teal);background:#e4f8f6;padding:1rem 1.2rem;border-radius:0 .8rem .8rem 0}
+.warn{border-left-color:#c46a15;background:#fff2d8}
+.steps li{margin:.6rem 0}.steps{padding-left:1.5rem}
+.factnum{font-size:clamp(2.1rem,5vw,3rem);font-weight:950;color:#125f99;line-height:1.1}
+.lab{background:#fff;border:3px solid #418aac;border-radius:1.4rem;padding:clamp(1rem,3vw,2rem);box-shadow:0 18px 40px #1c58712b}
+.labHead{display:flex;justify-content:space-between;align-items:center;gap:.7rem;flex-wrap:wrap}
+.labHead .tag{margin:0}.controls{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.2rem 0}
+.control{background:#f1faff;border:1px solid #9fc4d6;border-radius:1rem;padding:1.1rem}
+.control label{display:block;font-weight:850}.control output{color:#096c70;font-weight:950}
+input[type=range]{display:block;width:100%;height:2.5rem;accent-color:#09747d}
+input[type=checkbox]{width:1.2rem;height:1.2rem;accent-color:#096d77;vertical-align:middle;margin-right:.35rem}
+.buttons{display:flex;flex-wrap:wrap;gap:.6rem;margin:1rem 0}
+button{min-height:46px;padding:.55rem 1rem;cursor:pointer;background:#16608d;color:#fff;border:2px solid #17456c;border-radius:.7rem;font:inherit;font-weight:800}
+button:hover{background:#084e77}.secondary{background:#f0faff;color:#16446d}.secondary:hover{background:#d7f0fc}
+button:disabled{opacity:.5;cursor:not-allowed}
+.stage{background:linear-gradient(160deg,#d6f6ff,#f6fbff);border:2px solid #a8cfdf;border-radius:1rem;overflow:hidden;margin:.8rem 0}
+.stage svg{display:block;width:100%;height:auto}.stage figcaption{padding:.5rem .8rem;color:#34556b;font-size:.88rem}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;margin:1rem 0}
+.stat{background:#eaf8f1;border:1px solid #a4d4c7;border-radius:.8rem;padding:.8rem}
+.stat small{display:block;color:#3c5f63;font-size:.77rem;font-weight:750}.stat b{display:block;font-size:clamp(1rem,2.4vw,1.35rem);color:#065e62;line-height:1.25}
+#labText{background:#fff5d7;border-left:5px solid #e4a530;border-radius:0 .6rem .6rem 0;padding:1rem;min-height:4.5rem;font-weight:650}
+.code{background:#152e46;color:#effaff;border-radius:.9rem;padding:1.1rem;overflow:auto;font: .9rem/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
+.quiz{background:#eeeaff;border:1px solid #b6a4e3;border-radius:1.1rem;padding:1.2rem}
+.quiz button{margin:.35rem .4rem .35rem 0}
+.quiz button[aria-pressed=true]{outline:3px solid #d58e18;outline-offset:2px}
+#feedback{min-height:3.2rem;color:#443475;font-weight:850}
+.sourcelist li{overflow-wrap:anywhere;margin:.7rem 0}
+footer{padding:2rem 0 3rem;border-top:1px solid var(--line);color:var(--muted)}
+.fine{font-size:.86rem;color:var(--muted)}
+@media(max-width:720px){.heroGrid,.grid2,.grid3,.controls{grid-template-columns:1fr}.toc ul{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}.hero{padding-top:2.4rem}}
+@media(max-width:430px){.toc ul,.stats{grid-template-columns:1fr}.wrap{width:min(100% - 1.2rem,1100px)}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
+@media print{body{background:#fff}.hero{background:#fff;color:#142f49}.hero .lead,.heroArt figcaption{color:#142f49}.chips .chip{color:#142f49;border-color:#142f49}.hero h1 span{color:#175d8d}.lab,.card,.toc{box-shadow:none}button{display:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the adventure</a>
+<header class="hero">
+<div class="wrap heroGrid">
+<div>
+<span class="eyebrow">DeepDivesKids · Saturday, November 21, 2026</span>
+<h1>The Ice That <span>Moved Mountains!</span> 🧊</h1>
+<p class="lead">Imagine a giant, slow-moving river made of ice. It does not race down a mountain. It <strong>creeps</strong>. Yet over a very long time it can help carve a valley wider than a hockey rink—and leave clues in rock!</p>
+<div class="chips"><span class="chip">🕵️ Geology detective</span><span class="chip">🏒 Hockey-ice connection</span><span class="chip">🏞️ Yosemite field mission</span><span class="chip">🛰️ Space lasers</span></div>
+</div>
+<figure class="heroArt">
+<svg viewBox="0 0 560 360" role="img" aria-labelledby="heroTitle heroDesc" xmlns="http://www.w3.org/2000/svg">
+<title id="heroTitle">An ice river carved a broad mountain valley</title><desc id="heroDesc">Snowy mountain peaks frame a wide U-shaped valley. A blue glacier flows through it, with small stones trapped near its base.</desc>
+<defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#143458"/><stop offset="1" stop-color="#277b93"/></linearGradient><linearGradient id="ice" x2="0" y2="1"><stop stop-color="#c7faff"/><stop offset="1" stop-color="#51b9e4"/></linearGradient></defs>
+<rect width="560" height="360" rx="16" fill="url(#sky)"/>
+<path d="M0 165 70 56 131 125 211 33 286 130 375 57 457 143 516 75 560 142V360H0Z" fill="#b3dce4"/>
+<path d="M0 165 70 56 103 97 70 83 44 126 0 184ZM160 86 211 33 258 100 220 79 197 64ZM351 85 375 57 407 98 377 82ZM494 104 516 75 550 120 518 102Z" fill="#fff"/>
+<path d="M0 100 106 228Q180 287 280 297Q392 287 460 229L560 100V360H0Z" fill="#537182"/>
+<path d="M75 199Q140 296 270 324Q394 316 474 197L461 209Q400 283 278 286Q151 276 97 206Z" fill="#a2c6bd" opacity=".75"/>
+<path d="M90 142Q155 241 280 253Q408 243 469 142Q435 240 386 274Q280 315 176 275Q122 245 90 142Z" fill="url(#ice)" opacity=".95"/>
+<g fill="#274961"><circle cx="189" cy="267" r="4"/><circle cx="243" cy="290" r="3.5"/><circle cx="357" cy="285" r="4.5"/><circle cx="395" cy="266" r="3"/></g>
+<path d="M160 234Q282 288 401 230M184 247Q270 278 367 254" fill="none" stroke="#e6fcff" stroke-width="3" opacity=".75"/>
+<text x="280" y="342" fill="#fff" font-family="system-ui,sans-serif" font-weight="800" text-anchor="middle" font-size="20">ICE + ROCK + TIME = CLUES</text>
+</svg>
+<figcaption>Original illustration, not a photograph or a scientific reconstruction.</figcaption>
+</figure>
+</div>
+</header>
+<main id="main" class="wrap">
+<nav class="toc" aria-label="Contents"><h2>🧭 Your explorer map</h2><ul>
+<li><a href="#mystery">1. The giant mystery</a></li>
+<li><a href="#how">2. How ice works</a></li>
+<li><a href="#lab">3. Valley Sculptor Lab</a></li>
+<li><a href="#evidence">4. Real evidence</a></li>
+<li><a href="#experiment">5. Kitchen-table test</a></li>
+<li><a href="#future">6. Space and imagination</a></li>
+<li><a href="#quiz">7. Detective challenge</a></li>
+<li><a href="#sources">8. Field notes & sources</a></li>
+</ul></nav>
+<section id="mystery">
+<span class="tag">Case file 01 · The mountain mystery</span>
+<h2>Why does Yosemite Valley look like a giant letter U?</h2>
+<p>Quinn and Reagan, picture standing among Yosemite's immense granite walls. If a small river cuts down into a mountain, it often leaves a narrow, <strong>V-shaped</strong> valley. But Yosemite Valley has especially steep sides and a broad floor. Something much bigger visited long ago: <strong>glaciers</strong>.</p>
+<div class="grid2">
+<article class="card peach"><h3>🌊 River: the V maker</h3><p>Flowing water can cut a narrow channel deeper over time. Look across the valley: the sides slope toward a pointed low spot, like <strong>V</strong>.</p></article>
+<article class="card mint"><h3>🧊 Glacier: the U maker</h3><p>Thick, moving ice can grind and pull rock from the floor <em>and</em> the sides, widening and deepening the valley. The profile can become more like a <strong>U</strong>.</p></article>
+</div>
+<p class="note"><strong>Evidence:</strong> The National Park Service identifies both Yosemite Valley and Lyell Canyon as U-shaped valleys shaped by glaciers. Streams had already carved valleys before ice widened and deepened them. <a href="https://www.nps.gov/yose/learn/nature/geology.htm">Read the park's geology explanation</a>.</p>
+</section>
+<section id="how">
+<span class="tag">Case file 02 · The mechanism</span><h2>How can frozen water move?</h2>
+<div class="grid3">
+<article class="card"><div class="factnum">01</div><h3>Snow piles up</h3><p>Year after year, deep snow can squash into ice. If the ice becomes thick enough, its own weight makes it deform and flow.</p></article>
+<article class="card"><div class="factnum">02</div><h3>Gravity pulls</h3><p>The ice slowly creeps downhill. Some glaciers also slide at their bases. This is not a giant ice cube skating in one piece!</p></article>
+<article class="card"><div class="factnum">03</div><h3>Rock does the scraping</h3><p>Rocks trapped in the bottom ice scratch the bedrock (<strong>abrasion</strong>). Ice can also lift loose chunks of rock (<strong>plucking</strong>).</p></article>
+</div>
+<p class="fine">Primary evidence: <a href="https://www.usgs.gov/water-science-school/science/glaciers-things-know">USGS: what makes glaciers move</a>; <a href="https://www.nps.gov/articles/howglacierchangethelandscape.htm">NPS: abrasion and plucking</a>.</p>
+</section>
+<section id="lab">
+<div class="lab">
+<div class="labHead"><div><span class="tag orange">Interactive · works offline</span><h2>🎛️ Valley Sculptor Lab</h2></div><strong>Mission: V → U</strong></div>
+<p>Move the <strong>story steps</strong> slider to explore a drawing of how a glacier might transform a valley cross-section. Press <strong>One step</strong> to progress like a scientist running an experiment. The blue shape represents ice; golden brown represents rock.</p>
+<div class="controls">
+<div class="control">
+<label for="stepsRange">How many imaginary glacier-work steps? <output id="stepValue" for="stepsRange">0 of 10</output></label>
+<input id="stepsRange" type="range" min="0" max="10" step="1" value="0">
+<p class="fine">These are story steps, <strong>not real years</strong> or measured erosion rates.</p>
+</div>
+<div class="control">
+<label for="showIce"><input id="showIce" type="checkbox" checked>Show the glacier on top</label>
+<p>Try hiding the ice to see the valley it leaves behind. Real erosion depends on rock, pressure, water, speed and time; this drawing is deliberately simple.</p>
+</div>
+</div>
+<figure class="stage">
+<svg id="valleySvg" viewBox="0 0 720 330" role="img" aria-labelledby="valleyTitle valleyDesc" xmlns="http://www.w3.org/2000/svg">
+<title id="valleyTitle">Interactive cross-section of a valley</title>
+<desc id="valleyDesc">The slider changes the rocky cross-section gradually from a narrow V to a broad U. An optional blue glacier lies over the rock.</desc>
+<defs><linearGradient id="rockGradient" x2="0" y2="1"><stop stop-color="#d3a06c"/><stop offset="1" stop-color="#945e4b"/></linearGradient><linearGradient id="glacierGradient" x2="0" y2="1"><stop stop-color="#d9fbff" stop-opacity=".92"/><stop offset="1" stop-color="#56b5e8" stop-opacity=".87"/></linearGradient></defs>
+<rect width="720" height="330" fill="#d9f5ff"/>
+<path d="M0 95 75 22 137 95 210 35 280 99 350 47 412 99 493 30 563 95 655 38 720 91V170H0Z" fill="#a4d4e7" opacity=".4"/>
+<path d="M0 150 105 28 187 144 251 62 315 151 402 30 485 142 570 57 660 144 720 62V290H0Z" fill="#aac7bf" opacity=".35"/>
+<path id="rockPath" d="M0 63 L360 240 L720 63 L720 330 L0 330Z" fill="url(#rockGradient)" stroke="#815c52" stroke-width="3"/>
+<path id="icePath" d="" fill="url(#glacierGradient)" stroke="#55b8e1" stroke-width="2"/>
+<g id="debris" fill="#245e78"><circle cx="238" cy="174" r="4"/><circle cx="292" cy="177" r="4"/><circle cx="384" cy="180" r="4"/><circle cx="452" cy="176" r="4"/></g>
+<path d="M0 310H720" stroke="#734d43" stroke-width="2" opacity=".5"/>
+<g font-family="system-ui,sans-serif" font-weight="800" font-size="20" text-anchor="middle"><text x="360" y="36" fill="#143b56">Mountain cross-section • side view</text><text x="361" y="320" fill="#fff">BEDROCK</text></g>
+</svg>
+<figcaption>Original geometric illustration. Rock movement is exaggerated so the change is easy to see.</figcaption>
+</figure>
+<div class="buttons"><button id="nextStep" type="button">➕ One step</button><button id="reset" class="secondary" type="button">↺ Start again</button><button id="finish" class="secondary" type="button">See the U valley</button></div>
+<div class="stats">
+<div class="stat"><small>Story progress</small><b id="progress">0 / 10</b></div>
+<div class="stat"><small>Shape now</small><b id="shape">V-shaped</b></div>
+<div class="stat"><small>What to notice</small><b id="change">Narrow floor</b></div>
+</div>
+<p id="labText" role="status" aria-live="polite">Start with a V-shaped valley. Watch how a broad, gently rounded bottom appears as you increase the steps.</p>
+<p class="fine"><strong>Model honesty:</strong> This is a visual geometry lesson, not a physics simulator, a reconstruction of Yosemite, or a prediction of how fast real granite erodes. Real glaciers are much more complicated.</p>
+</div>
+</section>
+<section id="evidence">
+<span class="tag">Case file 03 · Verified discoveries</span><h2>Three clues scientists actually use</h2>
+<div class="grid3">
+<article class="card"><h3>🏞️ Yosemite's giant U</h3><p>The National Park Service explains that glaciers widened and deepened older stream valleys. At the Tioga glaciation's maximum, about <strong>18,000 years ago</strong>, ice covered many high parts of Yosemite.</p><p class="fine"><a href="https://www.nps.gov/yose/learn/nature/geology.htm">NPS Yosemite geology</a></p></article>
+<article class="card"><h3>🪨 Scratches in rock</h3><p>Real scientists study straight scratches called <strong>striations</strong>. Their direction helps show which way ice moved. The scratches are evidence that the rock was scraped, not a treasure-map arrow!</p><p class="fine"><a href="https://www.nps.gov/articles/glacialstriations.htm">NPS glacial striations</a></p></article>
+<article class="card"><h3>🛰️ Space measures ice</h3><p>NASA's <strong>ICESat-2</strong>, launched in 2018, uses precisely timed green laser pulses to measure Earth's changing surface heights, including ice. Its laser fires <strong>10,000 pulses each second</strong>.</p><p class="fine"><a href="https://science.nasa.gov/mission/icesat-2/">NASA mission</a> · <a href="https://science.nasa.gov/missions/icesat-2/counting-on-nasas-icesat-2/">NASA instrument details</a></p></article>
+</div>
+<div class="card" style="margin-top:1rem">
+<h3>🔬 A real JPL investigation</h3>
+<p>In a study reported by JPL in <strong>December 2018</strong>, researchers compared almost two million satellite images and found that many high-mountain glaciers in Asia were flowing more slowly as they lost ice. This shows how photographs and careful measurements help test scientific ideas. <a href="https://www.jpl.nasa.gov/news/nasa-finds-asian-glaciers-slowed-by-ice-loss/">Read the original JPL report</a>.</p>
+</div>
+</section>
+<section id="experiment">
+<span class="tag orange">Hands-on · grown-up helper recommended</span><h2>🧪 The tiny glacier scratch test</h2>
+<p>Let's test <strong>one</strong> part of the glacier story: can gritty ice scrape a softer surface? This is a tabletop <em>analogy</em>, not an experiment that duplicates kilometers of glacial ice.</p>
+<div class="grid2">
+<div class="card mint"><h3>Gather</h3><p>Two ice cubes, a pinch of clean sand, a small washable slab of modeling clay, a tray, a towel and paper for your observations. Ask an adult to help freeze a little sand into one cube ahead of time.</p><p class="fine">Safety: Work on a tray, keep sand out of food and eyes, and wash hands afterward. Do not rub grit on furniture or natural park rocks.</p></div>
+<div class="card"><h3>Try it</h3><ol class="steps"><li>Flatten the clay into two equally smooth patches.</li><li>Slide the <strong>plain ice cube</strong> across patch A five times with gentle pressure.</li><li>Slide the <strong>sandy ice cube</strong> across patch B five times with about the same pressure.</li><li>Compare marks. Photograph or draw what you see, even if the results are surprising.</li></ol></div>
+</div>
+<p class="note"><strong>What would count as evidence?</strong> Record actual scratches and whether loose sand touched the clay. If both patches look the same, write that down! The NPS describes real glacial abrasion, but this little test only demonstrates what grit <em>might</em> do on clay; it does not measure how glaciers cut granite.</p>
+</section>
+<section id="future">
+<span class="tag">Reality check · Dream big, label it clearly</span><h2>Real engineering vs. invented ideas</h2>
+<div class="grid2">
+<div class="card"><h3>✅ Real technology</h3><p>ICESat-2 measures heights by timing tiny flashes of reflected light. Scientists also compare satellite images to estimate glacier motion. These are documented NASA/JPL uses, not pretend gadgets.</p></div>
+<div class="card lilac"><h3>💭 Imagine this</h3><p>Could you design a <strong>robot glacier detective</strong> that reads simulated rock scratches, guesses the old ice direction, then checks satellite maps? That's our invention idea—not a machine NASA says it uses.</p></div>
+</div>
+<div class="card" style="margin-top:1rem"><h3>🏒 From Tahoe ice to Dad's engineering desk</h3><p>At the hockey rink, Quinn skates on hard, prepared ice while Reagan guards the goal. A glacier is different: it is <strong>immensely thicker</strong>, moves because of gravity, and can carry rocks. Both stories ask you to notice motion and forces.</p><p>Dad's spacecraft projects use tests and measurements to check whether models match reality. Your Valley Sculptor is a simple model, like a first sketch in a simulator such as <strong>VeloSim</strong>. A real space mission needs measurements, checking and careful software—just as scientists cross-check glacier evidence.</p></div>
+</section>
+<section id="quiz">
+<span class="tag orange">Final mission · 30 seconds</span><h2>🧠 Detective challenge</h2>
+<div class="quiz">
+<p><strong>Which observation would best support the idea that a glacier once passed over a rock surface?</strong></p>
+<div id="quizAnswers"><button type="button" data-answer="wrong" aria-pressed="false">A cloud looks like a mountain</button><button type="button" data-answer="right" aria-pressed="false">Long scratches in bedrock aligned with ice flow</button><button type="button" data-answer="wrong" aria-pressed="false">The hockey rink is slippery</button></div>
+<p id="feedback" role="status" aria-live="polite">Choose your detective answer.</p>
+</div>
+</section>
+<section id="sources">
+<span class="tag">Field notebook · Evidence trail</span><h2>📚 Primary sources & trustworthy limits</h2>
+<p>These links lead to the organizations responsible for the park observations or spacecraft measurements. The explanations here are original summaries, not claims that our drawings came from those agencies.</p>
+<ol class="sourcelist">
+<li><a href="https://www.nps.gov/yose/learn/nature/geology.htm">National Park Service — Geology of Yosemite</a>. U-shaped valleys, Tioga glaciation and glacial landforms.</li>
+<li><a href="https://www.nps.gov/articles/howglacierchangethelandscape.htm">National Park Service — How Glaciers Change the Landscape</a>. Abrasion, plucking, deposits and moraines.</li>
+<li><a href="https://www.nps.gov/articles/glacialstriations.htm">National Park Service — Glacial Striations</a>. Scratches as evidence of past ice movement.</li>
+<li><a href="https://www.usgs.gov/water-science-school/science/glaciers-things-know">U.S. Geological Survey — Glaciers: Things to Know</a>. How glaciers form and move.</li>
+<li><a href="https://science.nasa.gov/mission/icesat-2/">NASA — ICESat-2 mission</a>; <a href="https://science.nasa.gov/missions/icesat-2/counting-on-nasas-icesat-2/">NASA — Counting on ICESat-2 (2018)</a>. Laser-altimeter design and its stated uses.</li>
+<li><a href="https://www.jpl.nasa.gov/news/nasa-finds-asian-glaciers-slowed-by-ice-loss/">NASA Jet Propulsion Laboratory — NASA Finds Asian Glaciers Slowed by Ice Loss (Dec. 13, 2018)</a>. Image-based glacier-motion study.</li>
+</ol>
+<h3>🧩 How this page is built</h3>
+<p>Just <strong>HTML + CSS + vanilla JavaScript + inline SVG</strong>. No external JavaScript libraries, fonts, images, network calls, API keys or accounts. Save this single HTML file and open it in a modern browser; the interactive valley should work offline.</p>
+<p><strong>Licensing &amp; integration:</strong> The code uses browser-native standards; it adds no third-party code with separate package license requirements. The original lesson drawings and text are not licensed by the government agencies linked above. Reuse of outside photographs or datasets would require checking their own terms. To integrate this page, simply link to the HTML or serve it as a static file; there is no npm install or build system.</p>
+<p><strong>Tradeoffs:</strong> Easy to run and inspect, but simplified graphics cannot solve real glaciology; it has no real elevation datasets, satellite processing or calibrated time scale. That limitation is part of being a good scientist.</p>
+</section>
+</main>
+<footer><div class="wrap"><strong>DeepDivesKids · November 21, 2026</strong><p>Curiosity is a superpower. The best explorers always ask: <em>What did we really observe—and what did we only imagine?</em></p><a href="#main">Back to the adventure ↑</a></div></footer>
+<script>
+"use strict";
+(function(){
+  const range=document.getElementById("stepsRange");
+  const showIce=document.getElementById("showIce");
+  const rock=document.getElementById("rockPath");
+  const ice=document.getElementById("icePath");
+  const debris=document.getElementById("debris");
+  const stepValue=document.getElementById("stepValue");
+  const progress=document.getElementById("progress");
+  const shape=document.getElementById("shape");
+  const change=document.getElementById("change");
+  const labText=document.getElementById("labText");
+  const next=document.getElementById("nextStep");
+  function groundY(x,p){
+    const distance=Math.abs(x-360);
+    const v=240-0.49*distance;
+    const u=274-0.0031*Math.pow(Math.max(0,distance-105),2);
+    return (1-p)*v+p*u;
+  }
+  function line(x0,x1,step,p,backward){
+    const coords=[];
+    if(backward){for(let x=x1;x>=x0;x-=step){coords.push([x,groundY(x,p)]);}if(coords[coords.length-1][0]!==x0)coords.push([x0,groundY(x0,p)]);}
+    else{for(let x=x0;x<=x1;x+=step){coords.push([x,groundY(x,p)]);}if(coords[coords.length-1][0]!==x1)coords.push([x1,groundY(x1,p)]);}
+    return coords.map((c,i)=>(i===0?"M":"L")+c[0].toFixed(1)+" "+c[1].toFixed(1)).join(" ");
+  }
+  function update(){
+    const n=Number(range.value);
+    const p=n/10;
+    rock.setAttribute("d",line(0,720,8,p,false)+" L720 330 L0 330 Z");
+    ice.setAttribute("d","M160 113 L560 113 "+line(160,560,8,p,true).replace(/^M/,"L")+" Z");
+    ice.style.display=showIce.checked?"":"none";
+    debris.style.display=showIce.checked?"":"none";
+    stepValue.textContent=n+" of 10";
+    progress.textContent=n+" / 10";
+    shape.textContent=n===0?"V-shaped":n===10?"U-shaped":"Changing";
+    change.textContent=n===0?"Narrow floor":n===10?"Broad floor":"Growing wider";
+    next.disabled=n===10;
+    if(n===0)labText.textContent="At the start, this drawing has a narrow V-shaped valley, like one a stream can cut.";
+    else if(n===10)labText.textContent="Now the drawing has a broader, deeper, U-like floor. Real glaciers can reshape valleys, but our steps do not represent years or measured rock loss.";
+    else labText.textContent="Observe the valley floor growing wider. A real glacier can erode both floor and walls; this drawing exaggerates the change so you can spot it.";
+  }
+  range.addEventListener("input",update);
+  showIce.addEventListener("change",update);
+  next.addEventListener("click",function(){range.value=String(Math.min(10,Number(range.value)+1));update();});
+  document.getElementById("reset").addEventListener("click",function(){range.value="0";update();});
+  document.getElementById("finish").addEventListener("click",function(){range.value="10";update();});
+  document.querySelectorAll("#quizAnswers button").forEach(function(button){
+    button.addEventListener("click",function(){
+      document.querySelectorAll("#quizAnswers button").forEach(function(b){b.setAttribute("aria-pressed",String(b===button));});
+      document.getElementById("feedback").textContent=button.dataset.answer==="right"?"Correct! Scratches in bedrock can reveal the direction ancient ice traveled. Scientists use several kinds of evidence together.":"Good try! Look for a mark made by moving ice on the rock itself. Try another answer.";
+    });
+  });
+  update();
+})();
+</script>
+</body>
+</html>
