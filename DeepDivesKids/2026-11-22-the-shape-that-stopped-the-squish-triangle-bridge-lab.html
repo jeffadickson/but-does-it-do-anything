@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#12304a">
+<meta name="description" content="A colorful offline engineering adventure for kids: discover why triangular trusses resist wobbles, explore bridges and the space station, and run a real interactive geometry lab.">
+<title>The Shape That Stopped the Squish! | DeepDivesKids | November 22, 2026</title>
+<style>
+:root{color-scheme:light;--ink:#152c45;--quiet:#3c546d;--night:#102e4c;--teal:#08746d;--blue:#155da1;--orange:#e66b39;--gold:#ffd36a;--paper:#fff;--edge:#b5d1e1;--mint:#e8fcf4;--rose:#fff0e9;--lav:#f0edff}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(140deg,#eafaff 0%,#fffaf0 44%,#f1f6ff 100%);color:var(--ink);font:1.07rem/1.64 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:#075a9a;text-decoration-thickness:2px;text-underline-offset:3px}a:hover{text-decoration-thickness:3px}
+:focus-visible{outline:4px solid #dc5425;outline-offset:4px}
+button,input{font:inherit}button{cursor:pointer}
+.wrap{width:min(1110px,calc(100% - 2rem));margin-inline:auto}
+.skip{position:absolute;top:-10rem;left:1rem;z-index:20;padding:.65rem 1rem;background:var(--gold);color:#112e45;font-weight:800;border-radius:10px}.skip:focus{top:1rem}
+h1,h2,h3{line-height:1.14;letter-spacing:-.035em}h1{font-size:clamp(3rem,7.2vw,5.7rem);margin:.45rem 0 1rem}
+h2{font-size:clamp(1.7rem,3.7vw,2.5rem);margin:0 0 .75rem}h3{font-size:1.24rem;margin:.15rem 0 .5rem}
+p{margin:.65rem 0 1rem}section{margin:3.3rem 0;scroll-margin-top:1rem}
+.hero{background:radial-gradient(circle at 85% 25%,#207b87 0%,transparent 34rem),radial-gradient(circle at 15% 85%,#223970,transparent 30rem),var(--night);color:white;padding:3.3rem 0 4.1rem;overflow:hidden}
+.heroGrid{display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:2rem}
+.eyebrow{display:inline-block;border-radius:999px;padding:.28rem .85rem;background:var(--gold);color:#17314a;font-size:.76rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.hero h1 .pop{color:var(--gold)}.hero .lede{font-size:clamp(1.14rem,2vw,1.42rem);line-height:1.52;color:#effaff;max-width:39rem}
+.chips{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1rem}.chip{border:1px solid #b0dce2;color:#ecfbff;border-radius:999px;padding:.18rem .7rem;font-size:.87rem;font-weight:700}
+.poster{margin:0;background:#ffffff13;border:1px solid #9dc3d3;border-radius:24px;padding:1rem;box-shadow:0 16px 30px #051d3755}.poster svg{width:100%;height:auto;display:block}.poster figcaption{font-size:.84rem;text-align:center;color:#e3f7ff}
+.intro{font-size:1.17rem;max-width:78ch}
+.toc,.card,.lab,.quiz{background:#fff;border:1px solid var(--edge);border-radius:22px;box-shadow:0 10px 24px #274e6a13}
+.toc{padding:1.3rem 1.6rem;margin-top:2.2rem;border-width:2px}.toc h2{font-size:1.35rem}
+.toc ul{list-style:none;padding:0;margin:.4rem 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.4rem 1.1rem}.toc a{display:block;padding:.25rem 0;font-weight:800}
+.grid2,.grid3{display:grid;gap:1rem}.grid2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{padding:1.35rem;min-width:0}.card.mint{background:var(--mint)}.card.peach{background:var(--rose)}.card.lav{background:var(--lav)}.card p:last-child{margin-bottom:0}.bigicon{font-size:2.2rem;line-height:1.1;margin-bottom:.5rem;display:block}
+.note{border-left:6px solid var(--teal);padding:1rem 1.3rem;background:#e5f8f3;border-radius:0 14px 14px 0;margin:1.1rem 0}.note.warn{border-color:#c16b15;background:#fff4de}
+.lab{padding:clamp(1rem,3vw,2rem);border:2px solid #90c5d9}.labHeading{display:flex;align-items:start;justify-content:space-between;gap:1rem;flex-wrap:wrap}.labHeading p{max-width:66ch}.lab h3{font-size:1.7rem}
+.tag{display:inline-block;padding:.16rem .6rem;border-radius:999px;background:#dbf7e8;color:#18513c;font-size:.78rem;font-weight:850;text-transform:uppercase;letter-spacing:.07em}
+.controlbox{background:#ecf7fd;border:1px solid #b9d5e6;padding:1.1rem;border-radius:16px;margin:1rem 0}.controlbox label{display:block;font-weight:850;margin-bottom:.4rem}
+input[type=range]{width:100%;accent-color:#007971;cursor:pointer;min-height:35px}.readout{font-size:1.05rem;font-weight:800;font-variant-numeric:tabular-nums;margin:.4rem 0}
+.btnbar{display:flex;flex-wrap:wrap;gap:.6rem;margin:.9rem 0 0}.btn{min-height:44px;border:2px solid #215578;border-radius:12px;background:#fff;color:#194263;padding:.45rem .9rem;font-weight:800}.btn.primary{color:#fff;background:#126e72;border-color:#126e72}.btn:hover{filter:brightness(.95)}
+.diagramGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-top:1.1rem}.diagram{background:#f5faff;border:1px solid #b2ccdf;border-radius:17px;padding:.8rem}.diagram.good{background:#edfcf4;border-color:#94d1be}.diagram h4{font-size:1.13rem;margin:.2rem 0 .3rem}.diagram p{font-size:.91rem;color:#38516b;margin:.15rem 0 .5rem}.diagram svg{display:block;width:100%;height:auto;max-height:250px}
+.bar{stroke:#326795;stroke-width:12;stroke-linecap:round;stroke-linejoin:round;fill:none}.brace{stroke:#078273;stroke-width:10;stroke-linecap:round}.ghostBrace{stroke:#db6b36;stroke-width:4;stroke-dasharray:9 9}.joint{fill:#ffdb70;stroke:#163f63;stroke-width:3}.floor{stroke:#819aad;stroke-width:3;stroke-linecap:round}.svgTxt{font:800 16px system-ui,sans-serif;fill:#163954}
+.status{background:#103851;color:#fff;border-radius:14px;padding:.85rem 1rem;margin-top:1rem}.status strong{color:#ffda75}
+.statrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;margin:.9rem 0}.stat{background:#eaf2fc;border-radius:13px;padding:.65rem .85rem}.stat span{display:block;font-size:.82rem;font-weight:700;color:#365271}.stat strong{display:block;font-size:clamp(1.1rem,2.7vw,1.55rem);line-height:1.35;font-variant-numeric:tabular-nums}
+.code{background:#102746;color:#f0f8ff;padding:1.15rem 1.3rem;border-radius:17px;overflow-x:auto;font-size:.94rem;line-height:1.58}pre,code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code:not(pre code){background:#e7f0f6;color:#123551;padding:.06rem .25rem;border-radius:4px}.steps{padding-left:1.55rem}.steps li{margin:.65rem 0;padding-left:.2rem}
+.evidence{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.evidence article{padding:1.35rem;background:#e9f8f2;border:2px solid #95d2be;border-radius:19px}.evidence article:nth-child(2){background:#fff5e5;border-color:#e8c890}
+.tablewrap{overflow-x:auto;border-radius:16px;border:1px solid var(--edge)}table{border-collapse:collapse;width:100%;min-width:530px;background:white}th,td{padding:.85rem .95rem;text-align:left;vertical-align:top;border-bottom:1px solid #dae8f0}th{background:#164568;color:white}tr:last-child td{border-bottom:none}
+.quiz{padding:1.2rem 1.5rem;background:#fff9ea;border-color:#e9c580}.quiz details{padding:.75rem 0;border-bottom:1px solid #ebd5aa}.quiz details:last-child{border-bottom:0}.quiz summary{cursor:pointer;font-weight:800}
+.refs{padding-left:1.45rem}.refs li{margin:.65rem 0;overflow-wrap:anywhere}footer{padding:2.2rem 0 3rem;background:#10304c;color:#e6f7ff}footer a{color:#bdefff}.small{font-size:.88rem;color:var(--quiet)}footer .small{color:#c0d7e8}
+@media(max-width:800px){.heroGrid{grid-template-columns:1fr}.poster{max-width:560px}.toc ul{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}}
+@media(max-width:610px){.toc ul,.diagramGrid,.evidence,.statrow{grid-template-columns:1fr}.hero{padding:2rem 0 2.8rem}.diagram svg{max-height:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:#fff;color:#111}.hero,footer{background:#fff;color:#111}.hero .lede,.hero .chip,.hero .pop{color:#111}.toc,.card,.lab,.quiz{box-shadow:none}a{color:#124d72}.btnbar{display:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the adventure</a>
+<header class="hero"><div class="wrap heroGrid">
+<div>
+<span class="eyebrow">DeepDivesKids • Sunday, November 22, 2026</span>
+<h1>The Shape That <span class="pop">Stopped the Squish!</span></h1>
+<p class="lede">Four sticks make a wobbly square. One clever diagonal can change everything. Today, you're a bridge designer, a space-station builder, and a geometry detective.</p>
+<div class="chips"><span class="chip">🏗️ Engineering</span><span class="chip">📐 Geometry</span><span class="chip">🧪 Hands-on</span><span class="chip">💻 Offline coding lab</span><span class="chip">Ages 8–11</span></div>
+</div>
+<figure class="poster">
+<svg viewBox="0 0 440 295" aria-hidden="true" focusable="false">
+<defs><linearGradient id="bridgeBg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2c7e9b"/><stop offset="1" stop-color="#18456d"/></linearGradient></defs>
+<rect x="8" y="8" width="424" height="279" rx="20" fill="url(#bridgeBg)"/>
+<path d="M15 246 Q80 229 143 246 T270 247 T424 245" stroke="#b7f2f6" stroke-width="3" fill="none" opacity=".7"/>
+<path d="M35 227H405M55 227V91H385V227" stroke="#e8f3f6" stroke-width="10" fill="none" stroke-linecap="round"/>
+<path d="M55 91L110 227L165 91L220 227L275 91L330 227L385 91M55 91H385" stroke="#ffd776" stroke-width="9" fill="none" stroke-linejoin="round"/>
+<path d="M34 232H407" stroke="#a8e8e3" stroke-width="12" stroke-linecap="round"/>
+<circle cx="55" cy="91" r="8" fill="#fff"/><circle cx="165" cy="91" r="8" fill="#fff"/><circle cx="275" cy="91" r="8" fill="#fff"/><circle cx="385" cy="91" r="8" fill="#fff"/>
+<text x="220" y="55" font-family="system-ui,sans-serif" font-size="20" font-weight="900" fill="white" text-anchor="middle">TRIANGLE POWER!</text>
+<text x="220" y="274" font-family="system-ui,sans-serif" font-size="13" fill="#ecfbff" text-anchor="middle">Original diagram • not a real bridge design</text>
+</svg>
+<figcaption>Triangles make a strong-looking bridge—but how does the geometry work?</figcaption>
+</figure>
+</div></header>
+<main id="main" class="wrap">
+<nav class="toc" aria-label="On this page">
+<h2>🗺️ Choose your mission</h2>
+<ul>
+<li><a href="#mystery">1. The wobbly mystery</a></li>
+<li><a href="#how">2. How triangles help</a></li>
+<li><a href="#lab">3. Interactive Squish Lab</a></li>
+<li><a href="#real">4. Actual engineering</a></li>
+<li><a href="#build">5. Build one yourself</a></li>
+<li><a href="#code">6. Peek inside the code</a></li>
+<li><a href="#ideas">7. Facts vs. inventions</a></li>
+<li><a href="#quiz">8. Brain-boost quiz</a></li>
+<li><a href="#sources">9. Science sources</a></li>
+</ul>
+</nav>
+<section id="mystery">
+<h2>😲 The wobbly mystery</h2>
+<p class="intro">Picture four drinking straws joined end to end into a square. Give the top a gentle sideways push. <strong>Squish!</strong> It can lean into a diamond-like shape without snapping a straw. Now connect opposite corners with one diagonal straw. Suddenly, that same move becomes much harder.</p>
+<div class="grid3">
+<article class="card peach"><span class="bigicon" aria-hidden="true">🟦</span><h3>The square</h3><p>With loose corner joints, four equal-length bars can swivel into many different shapes.</p></article>
+<article class="card mint"><span class="bigicon" aria-hidden="true">🔺</span><h3>The triangle</h3><p>Fix the lengths of three stiff sides, and you fix the triangle's shape too, in a flat plane.</p></article>
+<article class="card lav"><span class="bigicon" aria-hidden="true">🦾</span><h3>The engineer</h3><p>Uses braces, strong joints, suitable materials, and testing to make useful structures.</p></article>
+</div>
+<div class="note"><strong>New vocabulary:</strong> <em>tension</em> is a pulling force. <em>Compression</em> is a squeezing force. A <em>truss</em> is a framework of connected members that carries loads. Real truss bars can experience either pulling or squeezing depending on the design and the load.</div>
+</section>
+<section id="how">
+<h2>📐 Why does the diagonal matter?</h2>
+<div class="grid2">
+<div class="card"><h3>Four bars aren't quite enough</h3><p>Imagine ideal hinges at the corners. A square can lean sideways while keeping all four bar lengths exactly the same. Engineers call this kind of shape-changing motion <strong>racking</strong>.</p><p>Think of a folding picture frame with loose corners.</p></div>
+<div class="card"><h3>A fifth bar makes triangles</h3><p>Attach a stiff diagonal corner-to-corner. Now the frame has two triangles. To lean sideways, at least one member would have to stretch, squash, bend, or disconnect. That is why bracing can make a frame harder to rack.</p><p>Geometry does not make the material unbreakable!</p></div>
+</div>
+</section>
+<section id="lab">
+<div class="lab">
+<div class="labHeading">
+<div><span class="tag">Mission 03 • Real working interaction</span><h2 style="margin-top:.5rem">The Squish Lab</h2><p>Move the slider to tilt an <strong>unbraced</strong> frame. Watch its four sides stay the same length. The green braced frame refuses to change shape in our idealized model.</p></div>
+<span aria-hidden="true" style="font-size:3rem">🧰</span>
+</div>
+<div class="controlbox">
+<label for="angle">Sideways hinge angle (degrees): <output id="angleOutput" for="angle">0°</output></label>
+<input id="angle" type="range" min="-30" max="30" step="1" value="0" aria-describedby="angleHelp">
+<p class="small" id="angleHelp">Try negative angles to lean left and positive angles to lean right. You are setting an angle, not a force.</p>
+<div class="btnbar"><button class="btn" type="button" data-angle="-25">↖ Lean left</button><button class="btn primary" type="button" data-angle="0">Reset</button><button class="btn" type="button" data-angle="25">Lean right ↗</button></div>
+</div>
+<div class="diagramGrid">
+<div class="diagram"><h4>🟠 No diagonal: free to lean</h4><p>Orange dashed line = the diagonal you would need at this angle.</p>
+<svg viewBox="0 0 260 250" role="img" aria-labelledby="freeTitle freeDesc">
+<title id="freeTitle">Unbraced hinged square</title><desc id="freeDesc">Interactive geometry diagram. Its four sides always measure 100 diagram units, but its upper edge moves sideways when the slider changes.</desc>
+<path class="floor" d="M21 206H243"/><path id="freeBars" class="bar" d="M70 195 L170 195 L170 95 L70 95 Z"/>
+<line id="freeDiag" class="ghostBrace" x1="70" y1="195" x2="170" y2="95"/>
+<circle class="joint" cx="70" cy="195" r="9"/><circle class="joint" cx="170" cy="195" r="9"/>
+<circle id="freeTopLeft" class="joint" cx="70" cy="95" r="9"/><circle id="freeTopRight" class="joint" cx="170" cy="95" r="9"/>
+<text class="svgTxt" x="130" y="238" text-anchor="middle">Hinge frame</text>
+</svg></div>
+<div class="diagram good"><h4>🟢 Diagonal attached: shape held</h4><p>The green brace keeps its original length in this ideal model.</p>
+<svg viewBox="0 0 260 250" role="img" aria-labelledby="bracedTitle bracedDesc">
+<title id="bracedTitle">Diagonal-braced square</title><desc id="bracedDesc">A square of four stiff bars with an added diagonal bar. Its corners and diagonal remain in the original positions.</desc>
+<path class="floor" d="M21 206H243"/><path class="bar" d="M70 195 L170 195 L170 95 L70 95 Z"/>
+<line class="brace" x1="70" y1="195" x2="170" y2="95"/>
+<circle class="joint" cx="70" cy="195" r="9"/><circle class="joint" cx="170" cy="195" r="9"/><circle class="joint" cx="70" cy="95" r="9"/><circle class="joint" cx="170" cy="95" r="9"/>
+<text class="svgTxt" x="130" y="238" text-anchor="middle">Braced frame</text>
+</svg></div>
+</div>
+<div class="statrow" aria-label="Geometry calculations">
+<div class="stat"><span>Each side (both frames)</span><strong>100 units</strong></div>
+<div class="stat"><span>Diagonal needed to tilt</span><strong id="needed">141.4 units</strong></div>
+<div class="stat"><span>Change from original diagonal</span><strong id="change">0.0 units</strong></div>
+</div>
+<p class="status" id="explain" aria-live="polite" aria-atomic="true"><strong>At 0°:</strong> Both frames line up. The diagonal is about 141.4 units long.</p>
+<p class="small">“Units” here are imaginary distances on our diagram, not centimeters, weights, or measurements of bridge strength. In this model, every bar is perfectly stiff and each joint is an ideal hinge. The green frame is shown stationary, not as a measured response to a push.</p>
+</div></section>
+<section id="real">
+<h2>🌍 Yes, engineers actually use trusses!</h2>
+<div class="grid2">
+<article class="card"><span class="bigicon" aria-hidden="true">🌉</span><h3>Real use #1: Bridges</h3>
+<p>The U.S. Federal Highway Administration describes bridge trusses with top and bottom chords and diagonal or vertical members that transfer loads. Some members are in tension; others are in compression. <a href="https://www.fhwa.dot.gov/publications/research/infrastructure/structures/04098/02.cfm">Read the FHWA bridge manual</a>.</p>
+<p>The American Society of Civil Engineers documents the <strong>Whipple Bowstring Truss Bridge</strong>, designed from a patent dated 1841 and completed in 1855. Its designer worked out how forces travel through members. <a href="https://www.asce.org/about-civil-engineering/history-and-heritage/historic-landmarks/whipple-truss-bridge/">Explore the ASCE history</a>.</p></article>
+<article class="card"><span class="bigicon" aria-hidden="true">🛰️</span><h3>Real use #2: A giant space skeleton</h3>
+<p>NASA's <strong>International Space Station Integrated Truss Structure</strong> is a backbone that supports solar arrays, heat-releasing radiators and outside equipment. It also carries utility lines and rails. <a href="https://www.nasa.gov/international-space-station/integrated-truss-structure/">See NASA's official station guide</a>.</p>
+<p>NASA reports 11 integrated truss segments plus a separate Z1 element. The whole station is not just “one enormous triangle”; it is a highly engineered structure with many components, connections and safety checks.</p></article>
+</div>
+<div class="note warn"><strong>Important distinction:</strong> Our browser toy demonstrates a geometric reason to use diagonal bracing. It does <strong>not</strong> calculate a bridge's safe load, steel stress, bending, buckling, or earthquake performance. Real engineers check far more than shape.</div>
+</section>
+<section id="build">
+<h2>🧪 Make a real squish tester</h2>
+<p>You'll need paper or lightweight cardboard strips, a ruler, a pencil, a hole punch, five paper fasteners (brads), and a grown-up to help make holes. Skip sharp tools and never test a structure by climbing on it.</p>
+<div class="card mint"><ol class="steps">
+<li>Make <strong>four strips</strong> with hole centers <strong>12 cm</strong> apart. Join their ends into a loose square with four brads. Gently nudge the top; watch the shape lean.</li>
+<li>Make a <strong>fifth strip</strong> with hole centers about <strong>17 cm</strong> apart (the diagonal of a 12 cm square is about 16.97 cm). Attach it from one corner to the opposite corner.</li>
+<li>Try the same gentle nudge. Does it resist racking? Record the difference. If your strips bend or brad holes tear, explain why the real materials differ from our stiff-bar model.</li>
+</ol></div>
+<div class="grid2">
+<div class="card peach"><h3>Prediction</h3><p>Which will be easier to push into a slanted shape: the square with four loose joints, or the square with a diagonal? Why?</p></div>
+<div class="card lav"><h3>Keep an evidence notebook</h3><p>Draw <em>before</em> and <em>after</em> shapes. Write what you actually saw, including surprising failures. A messy test is still useful data!</p></div>
+</div></section>
+<section id="code">
+<h2>💻 The secret math powering our lab</h2>
+<p>You don't need to install anything. Your browser already knows <code>Math.sin</code>, <code>Math.cos</code>, <code>Math.hypot</code> and <code>Math.PI</code>. This little JavaScript experiment calculates the corner positions and the diagonal's length.</p>
+<pre class="code"><code>// Four bars, each 100 imaginary distance units long.
+const side = 100;
+const angleDegrees = 25;
+const angleRadians = angleDegrees * Math.PI / 180;
+
+// The top corners move; the bar lengths do not.
+const sideways = side * Math.sin(angleRadians);
+const upward = side * Math.cos(angleRadians);
+
+// Diagonal from bottom-left to top-right.
+const diagonal = Math.hypot(side + sideways, upward);
+console.log(diagonal.toFixed(1)); // about 168.7
+</code></pre>
+<p>Try replacing <code>25</code> with <code>-25</code> or <code>0</code> in a browser console. Check your answer against the slider. A <em>negative</em> angle makes this particular diagonal shorter; a positive angle makes it longer.</p>
+<div class="note"><strong>How to integrate this idea:</strong> Save this HTML page, double-click it, and the experiment works offline in a modern browser. The project uses built-in JavaScript and inline SVG—<strong>no npm packages, external scripts, images or third-party library dependencies</strong>. The built-in browser APIs need no extra package license. This page declares no separate redistribution license; check the containing repository's license and permissions before republishing.</div>
+</section>
+<section id="ideas">
+<h2>🏒 Hockey, spacecraft and imagination</h2>
+<div class="grid3">
+<article class="card"><span class="bigicon" aria-hidden="true">🥅</span><h3>A hockey challenge</h3><p>Imagine Quinn and Reagan designing a lightweight practice target for shooting and goalie drills. Could bracing stop its frame from twisting? That is a <strong>design question to test</strong>, not a fact about any specific hockey net.</p></article>
+<article class="card"><span class="bigicon" aria-hidden="true">🧑‍🚀</span><h3>A spacecraft challenge</h3><p>Your dad works on engineering projects that use models, testing and careful rules. The browser lab is a tiny <em>model</em>, just as VeloSim studies computer representations of systems. A real flight design needs much deeper analysis.</p></article>
+<article class="card"><span class="bigicon" aria-hidden="true">🎨</span><h3>An art challenge</h3><p>Draw a futuristic arena or Mars observatory using triangles. Make it beautiful, then label which braces are real engineering ideas and which are just cool inventions.</p></article>
+</div>
+<h3 style="margin-top:1.4rem">A scientist labels the evidence</h3>
+<div class="tablewrap"><table>
+<thead><tr><th scope="col">Claim</th><th scope="col">What kind?</th><th scope="col">How do we know?</th></tr></thead>
+<tbody>
+<tr><td>Bridge trusses transfer loads through members in tension and compression.</td><td><strong>Documented fact</strong></td><td>FHWA's bridge engineering manual</td></tr>
+<tr><td>Space station trusses support solar arrays, radiators and outside equipment.</td><td><strong>Documented fact</strong></td><td>NASA's ISS truss documentation</td></tr>
+<tr><td>An ideal square made of rigid bars with hinges can lean without stretching the four sides.</td><td><strong>Geometry result</strong></td><td>Try the browser lab and derive it from sine and cosine</td></tr>
+<tr><td>Our imaginary Mars hockey arena uses diagonal braces in its roof.</td><td><strong>Invented design</strong></td><td>We made it up; it has not been built or tested</td></tr>
+</tbody></table></div>
+</section>
+<section id="quiz"><h2>🧠 Three detective questions</h2>
+<div class="quiz">
+<details><summary>1. If all four sides of our square keep their lengths, why can it still lean?</summary><p>Its corners are hinges! The angles can change. Four side lengths do not completely fix the shape of a quadrilateral.</p></details>
+<details><summary>2. Is every diagonal bar always being pulled?</summary><p>No. Depending on the load and design, a member may be pulled (tension) or squeezed (compression). Engineers have to calculate which and how much.</p></details>
+<details><summary>3. If the green model does not bend, does that prove a real bridge can carry a truck?</summary><p>Definitely not. Our diagram checks one geometry idea only. Real load capacity depends on materials, joints, member sizes, buckling, supports, safety factors and more.</p></details>
+</div></section>
+<section id="sources">
+<h2>📚 The grown-up source shelf</h2>
+<p>These are primary sources from engineering and space organizations, not invented citations. Links need internet, but the entire lesson and Squish Lab do not.</p>
+<ol class="refs">
+<li><strong>U.S. Federal Highway Administration</strong>, <a href="https://www.fhwa.dot.gov/publications/research/infrastructure/structures/04098/02.cfm">Covered Bridge Manual, Chapter 2: Form, Use, and Terminology</a> (2005). Truss members, axial forces, chords, tension and compression.</li>
+<li><strong>American Society of Civil Engineers</strong>, <a href="https://www.asce.org/about-civil-engineering/history-and-heritage/historic-landmarks/whipple-truss-bridge/">Historic Civil Engineering Landmark: Whipple Truss Bridge</a>. Design history, structural-force calculations, completion in 1855.</li>
+<li><strong>NASA</strong>, <a href="https://www.nasa.gov/international-space-station/integrated-truss-structure/">Integrated Truss Structure</a>. What the ISS truss attaches and carries; segment count.</li>
+<li><strong>NASA</strong>, <a href="https://www.nasa.gov/image-article/integrated-truss-structure-diagram/">Integrated Truss Structure Diagram</a> (October 25, 2018). An actual space structure diagram and its function.</li>
+<li><strong>MDN Web Docs</strong>, <a href="https://developer.mozilla.org/en-US/docs/Web/SVG">SVG: Scalable Vector Graphics</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/hypot">JavaScript Math.hypot</a>. Browser technology used in this page.</li>
+</ol></section>
+</main>
+<footer><div class="wrap">
+<p><strong>⭐ Today's engineer's motto:</strong> “A strong idea needs a good model, a real test, and an honest notebook.”</p>
+<p>DeepDivesKids • Original, self-contained learning adventure • November 22, 2026</p>
+<p class="small">The drawings are original teaching illustrations; they are not construction plans. Study together, experiment gently, and never climb on homemade structures.</p>
+<p><a href="#main">Back to the adventure ↑</a></p>
+</div></footer>
+<script>
+"use strict";
+(function () {
+  const slider = document.getElementById("angle");
+  const output = document.getElementById("angleOutput");
+  const freeBars = document.getElementById("freeBars");
+  const freeDiag = document.getElementById("freeDiag");
+  const topLeft = document.getElementById("freeTopLeft");
+  const topRight = document.getElementById("freeTopRight");
+  const needed = document.getElementById("needed");
+  const change = document.getElementById("change");
+  const explain = document.getElementById("explain");
+  const side = 100;
+  const initialDiagonal = Math.hypot(side, side);
+  function setPoint(circle, x, y) {
+    circle.setAttribute("cx", String(x));
+    circle.setAttribute("cy", String(y));
+  }
+  function render() {
+    const degrees = Number(slider.value);
+    const radians = degrees * Math.PI / 180;
+    const shiftX = side * Math.sin(radians);
+    const riseY = side * Math.cos(radians);
+    const x1 = 70 + shiftX;
+    const x2 = 170 + shiftX;
+    const topY = 195 - riseY;
+    const diagonal = Math.hypot(side + shiftX, riseY);
+    const delta = diagonal - initialDiagonal;
+    freeBars.setAttribute("d", "M70 195 L170 195 L" + x2 + " " + topY + " L" + x1 + " " + topY + " Z");
+    freeDiag.setAttribute("x2", String(x2));
+    freeDiag.setAttribute("y2", String(topY));
+    setPoint(topLeft, x1, topY);
+    setPoint(topRight, x2, topY);
+    output.textContent = (degrees > 0 ? "+" : "") + degrees + "°";
+    needed.textContent = diagonal.toFixed(1) + " units";
+    change.textContent = (delta > 0 ? "+" : "") + delta.toFixed(1) + " units";
+    const direction = degrees > 0 ? "right" : "left";
+    const description = degrees === 0
+      ? "Both frames line up. A diagonal across a 100-by-100 square measures about 141.4 units."
+      : "The loose square leans " + direction + " while all four sides remain 100 units long. Its diagonal would need to " + (delta > 0 ? "grow" : "shrink") + " by about " + Math.abs(delta).toFixed(1) + " units, so a stiff brace resists this motion.";
+    explain.textContent = "At " + degrees + "°: " + description;
+  }
+  slider.addEventListener("input", render);
+  document.querySelectorAll("[data-angle]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      slider.value = button.getAttribute("data-angle");
+      render();
+      slider.focus();
+    });
+  });
+  render();
+}());
+</script>
+</body>
+</html>
