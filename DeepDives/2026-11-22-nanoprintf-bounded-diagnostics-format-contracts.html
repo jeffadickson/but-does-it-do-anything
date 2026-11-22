@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="November 22, 2026 DeepDive: nanoprintf v0.8.1 for C++20 allocation-free embedded diagnostics, format safety and RISCue trace integration.">
+<title>nanoprintf: The format string is a contract · DeepDives · 2026-11-22</title>
+<style>
+:root{--ink:#1b333d;--muted:#526772;--teal:#126b6c;--bg:#f7faf8;--card:#fff;--line:#d5e3e0;--code:#112c36;--cream:#fff4dd}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.68 system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--teal);text-underline-offset:3px}a:focus-visible{outline:3px solid #eaaf46;outline-offset:3px}p,li{max-width:77ch}h1,h2,h3{line-height:1.2;letter-spacing:-.028em}h2{font-size:clamp(1.55rem,2.6vw,2rem);margin:1.5em 0 .6em}h3{font-size:1.1rem;margin:1.35em 0 .5em}p{margin:.3em 0 1.13em}.hero{background:linear-gradient(120deg,#0a2a35,#0d4a53 70%,#13696d);color:#fff;padding:42px max(24px,calc((100vw - 1100px)/2)) 48px}.kicker{text-transform:uppercase;letter-spacing:.15em;color:#b4eadf;font-weight:800;font-size:.77rem}.hero h1{font-size:clamp(2.35rem,5.5vw,4.7rem);max-width:14ch;margin:14px 0 18px;letter-spacing:-.055em}.hero .dek{max-width:64ch;color:#ddf0ed;font-size:clamp(1.08rem,2vw,1.31rem);line-height:1.5}.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}.chip{padding:6px 12px;border:1px solid #9ad6d172;border-radius:999px;background:#ffffff13;font-size:.79rem;font-weight:750}.hero a{color:#b7fbe6}.layout{max-width:1100px;display:grid;grid-template-columns:235px minmax(0,1fr);gap:36px;margin:auto;padding:32px 24px 95px}.toc{position:sticky;top:20px;align-self:start;padding:18px 20px;border:1px solid var(--line);border-radius:15px;background:var(--card)}.toc strong{font-size:.82rem;text-transform:uppercase;letter-spacing:.13em}.toc ol{padding:0;margin:12px 0 0;list-style:none}.toc li{font-size:.86rem;line-height:1.45;margin:7px 0}.toc a{text-decoration:none;color:var(--muted)}.toc a:hover{text-decoration:underline;color:var(--teal)}article{min-width:0}section{scroll-margin-top:16px}article code:not(pre code){background:#e4efed;border-radius:4px;padding:.13em .3em;font-size:.9em;overflow-wrap:anywhere}.lead{font-size:1.19rem;line-height:1.55}.callout{background:#e8f5f1;border-left:4px solid #169480;padding:17px 20px;margin:22px 0;border-radius:0 12px 12px 0}.callout.warn{background:var(--cream);border-color:#cf8b29}.callout p:last-child{margin-bottom:0}.statgrid,.twocol{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:22px 0}.stat,.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}.stat b{display:block;color:var(--teal);font-size:1.3rem}.stat small{display:block;font-size:.8rem;line-height:1.4;color:var(--muted);margin-top:7px}.twocol{grid-template-columns:repeat(2,minmax(0,1fr))}.panel h3{margin:0 0 7px}.panel p{font-size:.92rem;color:var(--muted);margin:0}.diagram{background:#e6f2ef;padding:18px;border:1px solid #c2dfd8;border-radius:14px;margin:24px 0}.flow{display:flex;gap:9px;align-items:center}.node{flex:1;min-width:0;padding:13px 9px;text-align:center;border-radius:10px;border:1px solid #afcec8;background:white;font-size:.8rem;line-height:1.45}.node b{display:block;color:#116366;font-size:.9rem}.node.special{background:#104853;color:#d9f7f0}.node.special b{color:#a2f2dc}.arrow{color:#217d80;font-size:1.4rem;font-weight:900}.diagram figcaption{font-size:.8rem;color:#486b72;margin-top:10px}pre{background:var(--code);color:#e8f5ed;border:1px solid #355b63;border-radius:13px;padding:18px 20px;overflow:auto;line-height:1.56;font: .83rem/1.6 "Cascadia Code",Consolas,Menlo,monospace;tab-size:2}pre code{font:inherit}.code-label{font-size:.79rem;letter-spacing:.07em;font-weight:800;text-transform:uppercase;color:var(--teal);margin:18px 0 -7px}.tablewrap{overflow-x:auto}table{border-collapse:collapse;width:100%;margin:17px 0 25px;font-size:.92rem}th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid var(--line)}th{background:#e2f0ed}tr:nth-child(even) td{background:#fff8}ul,ol{padding-left:1.25em}li{margin:.35em 0}footer{margin:38px 0 0;border-top:1px solid var(--line);padding:20px 0;font-size:.84rem;color:var(--muted)}.sources li{overflow-wrap:anywhere}.state{font-weight:800;color:#096c61}.pending{font-weight:800;color:#875418}
+@media(max-width:820px){.layout{display:block;padding:24px 18px 70px}.toc{position:static;margin-bottom:24px}.toc ol{columns:2}.hero{padding:34px 20px 38px}}@media(max-width:580px){.statgrid,.twocol{grid-template-columns:1fr}.toc ol{columns:1}.flow{flex-direction:column}.node{width:100%}.arrow{transform:rotate(90deg)}pre{font-size:.74rem;padding:14px}th,td{padding:8px}.hero h1{font-size:2.5rem}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}@media print{.layout{display:block}.toc{position:static;page-break-after:always}pre{white-space:pre-wrap;overflow-wrap:anywhere}body{background:white}}@media(prefers-color-scheme:dark){:root{--bg:#101e25;--card:#192f35;--ink:#e4f2ee;--muted:#b6cbd0;--line:#37555b;--teal:#8fdfd2;--cream:#413422}article code:not(pre code){background:#2b4a50}.callout{background:#1c4037}.callout.warn{background:#3e3523}.stat b{color:#a2eadd}.panel p{color:#b8cbd0}.diagram{background:#1d393f;border-color:#406860}.node{background:#19333c;border-color:#49736a}.node b{color:#b0f2de}th{background:#254148}tr:nth-child(even) td{background:#ffffff08}}
+</style>
+</head>
+<body>
+<header class="hero">
+<p class="kicker">DeepDives · Sunday, November 22, 2026</p>
+<h1>nanoprintf: the format string is a contract</h1>
+<p class="dek">A near-minimal, allocation-free formatting library can be excellent for embedded diagnostics. It is not inherently a type-safe logger, a constant-time primitive, or a deterministic trace protocol.</p>
+<div class="chips"><span class="chip">v0.8.1 · Sep 25, 2026</span><span class="chip">C99 / C++20</span><span class="chip">Unlicense OR 0BSD</span><span class="chip">RISCue · Active Objects · Trace Replay</span></div>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Table of contents"><strong>Table of contents</strong><ol>
+<li><a href="#decision">01 / Engineering decision</a></li>
+<li><a href="#identity">02 / What nanoprintf is</a></li>
+<li><a href="#api">03 / API and memory path</a></li>
+<li><a href="#trap">04 / The critical format trap</a></li>
+<li><a href="#cpp">05 / C++20 bounded adapter</a></li>
+<li><a href="#profile">06 / Compile-time configuration</a></li>
+<li><a href="#build">07 / CMake + Ninja integration</a></li>
+<li><a href="#riscue">08 / RISCue/HSM applications</a></li>
+<li><a href="#replay">09 / Deterministic simulation</a></li>
+<li><a href="#tradeoffs">10 / Tradeoffs and limits</a></li>
+<li><a href="#evidence">11 / Adoption: facts vs ideas</a></li>
+<li><a href="#tests">12 / Qualification checklist</a></li>
+<li><a href="#license">13 / License and provenance</a></li>
+<li><a href="#refs">14 / Primary references</a></li>
+</ol></nav>
+<main><article>
+<section id="decision"><h2>01. Engineering decision</h2>
+<p class="lead"><strong>Recommended use:</strong> small, bounded conversion of validated integer fields into caller-owned buffers for a low-priority diagnostic actor. <strong>Do not</strong> embed text formatting in a hard-deadline scheduler transition or ISR and expect that the library's absence of heap allocation makes downstream I/O safe.</p>
+<div class="statgrid"><div class="stat"><b>Zero heap calls</b><small>Upstream claim for the formatter, not for user callbacks or the logging pipeline.</small></div><div class="stat"><b>480 bytes</b><small>Upstream reported minimum integer-only text size on Cortex-M0/M4 at -Os. Not measured here.</small></div><div class="stat"><b>Four APIs</b><small>snprintf/vsnprintf, pprintf/vpprintf. Format behavior is feature-configurable.</small></div></div>
+<div class="callout"><p><strong>Design rule:</strong> the authoritative trace is structured data. Its rendered text is disposable. Formatting overflow, UART latency, and diagnostics queue congestion must never affect state transitions.</p></div>
+<p>This report reviews <a href="https://github.com/charlesnicholson/nanoprintf/tree/v0.8.1">upstream v0.8.1</a>, released <time datetime="2026-09-25">September 25, 2026</time> (commit <code>bebaecbeaf430e36a2d30d31a2fed4e098388c93</code>). The release contains a useful explicit conformance inventory that makes the boundary of the implementation auditable. <a href="#ref-release">[1]</a> <a href="#ref-conformance">[3]</a></p></section>
+<section id="identity"><h2>02. What nanoprintf is—and isn't</h2>
+<p><a href="https://github.com/charlesnicholson/nanoprintf">Charles Nicholson's nanoprintf</a> is a single-header C99 formatting implementation usable from C++20. It supplies snprintf-style and callback-driven output with an unusually small embedded footprint. It does not own a queue, allocate a string, schedule a task, transport bytes, lock a shared sink, or implement a typed telemetry schema. The public header is installed in consumers; one translation unit defines <code>NANOPRINTF_IMPLEMENTATION</code>. <a href="#ref-readme">[2]</a> <a href="#ref-header">[5]</a></p>
+<div class="twocol"><div class="panel"><h3>Upstream documented</h3><p>Fixed feature switches; stack-only internal storage; no allocator calls; documented snprintf length/truncation semantics; C++ examples and tests.</p></div><div class="panel"><h3>Integrator must demonstrate</h3><p>Target stack watermark, timing bound, linker symbols, queue overload policy, ISR interaction, format-string inventory and replay equivalence.</p></div></div>
+<p>The repository offers an explicit choice of <strong>Unlicense or Zero-Clause BSD (0BSD)</strong>. It is <em>not</em> MIT-licensed. See section 13 for distribution guidance. <a href="#ref-license">[4]</a></p></section>
+<section id="api"><h2>03. The API and ownership path</h2>
+<figure class="diagram"><div class="flow" role="img" aria-label="Typed event to nanoprintf to fixed buffer to controlled trace sink">
+<div class="node"><b>Typed event</b>Tick · ID · payload</div><span class="arrow" aria-hidden="true">→</span>
+<div class="node special"><b>nanoprintf</b>Literal format + arguments</div><span class="arrow" aria-hidden="true">→</span>
+<div class="node"><b>Fixed buffer</b>Length + overflow status</div><span class="arrow" aria-hidden="true">→</span>
+<div class="node"><b>Sink actor</b>Capacity · backpressure</div></div><figcaption>Formatting and transport are separate design responsibilities. The callback variant does not automatically bound sink time.</figcaption></figure>
+<div class="tablewrap"><table><thead><tr><th>Function</th><th>Meaning</th><th>Typical application</th></tr></thead><tbody>
+<tr><td><code>npf_snprintf</code></td><td>Write at most the capacity; return chars required, excluding NUL</td><td>Bounded local text buffer</td></tr>
+<tr><td><code>npf_vsnprintf</code></td><td>Same with <code>va_list</code></td><td>Variadic wrapper</td></tr>
+<tr><td><code>npf_pprintf</code></td><td>Call a user-supplied function for each output character</td><td>Custom sink; caller owns synchronization and timing</td></tr>
+<tr><td><code>npf_vpprintf</code></td><td>Callback output via <code>va_list</code></td><td>Variadic sink adapter</td></tr>
+</tbody></table></div>
+<p>The snprintf variants report the count they <em>would have</em> written given sufficient space. At capacity <code>N &gt; 0</code>, default overflow terminates the clipped string in the last slot; a return value <code>&gt;= N</code> means truncation. <code>nullptr</code> with zero size can be used for a length-only query. An optional <code>NANOPRINTF_SNPRINTF_SAFE_EMPTY_STRING_ON_OVERFLOW</code> configuration empties the buffer on overflow. <a href="#ref-readme">[2]</a></p></section>
+<section id="trap"><h2>04. The critical format-specifier trap</h2>
+<div class="callout warn"><p><strong>High-impact finding:</strong> if a conversion family is compiled out, nanoprintf prints the unsupported specifier literally <em>without consuming its variadic argument</em>. The next conversion can therefore read an argument of the wrong type. The upstream README and conformance notes expressly describe this condition. It is not merely a cosmetic logging problem. <a href="#ref-readme">[2]</a> <a href="#ref-conformance">[3]</a></p></div>
+<p class="code-label">Anti-pattern — do not execute or rely on its output</p>
+<pre><code>// Float formatting has been disabled at compile time.
+// The %f argument is not consumed: the later %u reads incorrectly.
+npf_snprintf(buf, sizeof buf, "%f %u", 1.25, 7u);</code></pre>
+<p>Mitigation: restrict formats to reviewed literals; audit every specifier against the selected configuration; enable GCC/Clang format warnings; ban dynamic format strings; and prefer small, typed wrappers for critical records. Passing untrusted text as a <code>%s</code> argument is different from using that text as the format string. Type annotations cannot by themselves understand a nondefault nanoprintf feature profile.</p>
+<p>A second caution is floating point. Upstream's <a href="#ref-conformance">conformance inventory [3]</a> documents limited conversion buffers, rounding deviations, fixed rounding direction, and unsupported wide-character/locale cases. Golden text is not automatically portable or C11-exact.</p></section>
+<section id="cpp"><h2>05. A bounded C++20 adapter</h2><p>This deliberately narrow sample uses <code>%u</code> only, with matching <code>unsigned</code> arguments and inline storage. Failure publishes no partial string. <code>npf_port.h</code> is the project wrapper defined below.</p>
+<p class="code-label">src/trace_format.cpp — illustrative, source-reviewed example</p>
+<pre><code>#include &lt;array&gt;
+#include &lt;cstddef&gt;
+#include &lt;cstdint&gt;
+#include "npf_port.h"
+
+enum class TraceStatus : std::uint8_t { ok, overflow };
+
+struct TraceLine {
+    std::array&lt;char, 64&gt; bytes{};
+    std::size_t length = 0;
+    TraceStatus status = TraceStatus::ok;
+};
+
+[[nodiscard]] TraceLine format_event(
+    unsigned tick, unsigned event_id) noexcept
+{
+    TraceLine line{};
+    const int required = npf_snprintf(
+        line.bytes.data(), line.bytes.size(),
+        "tick=%u event=%u", tick, event_id);
+
+    if (required &lt; 0 ||
+        static_cast&lt;std::size_t&gt;(required) &gt;= line.bytes.size()) {
+        line.bytes[0] = '\0'; // Suppress partial messages.
+        line.status = TraceStatus::overflow;
+        return line;
+    }
+    line.length = static_cast&lt;std::size_t&gt;(required);
+    return line;
+}</code></pre>
+<p><strong>Why <code>&gt;=</code>?</strong> A buffer requires an extra byte for NUL. Exactly <code>capacity</code> non-NUL characters are already one byte too many. An empty valid message must not be confused with an overflow result. The status is the contract. This sample is proposed for integration; it was not compiled against upstream v0.8.1 or measured on a target in this run.</p></section>
+<section id="profile"><h2>06. A deliberately restricted feature profile</h2>
+<p>The upstream default includes floats and selected formatting features. An integer-only profile can reduce size and remove numeric conversion code, but it must be paired with a strictly audited format inventory. When <em>any</em> core feature flag is explicitly set, upstream requires the others to be set too. Optional scientific, hex float, fixed-width and division-free features default off. <a href="#ref-header">[5]</a></p>
+<p class="code-label">include/npf_config.h — example policy</p><pre><code>#pragma once
+#define NANOPRINTF_USE_FIELD_WIDTH_FORMAT_SPECIFIERS 0
+#define NANOPRINTF_USE_PRECISION_FORMAT_SPECIFIERS 0
+#define NANOPRINTF_USE_FLOAT_FORMAT_SPECIFIERS 0
+#define NANOPRINTF_USE_LARGE_FORMAT_SPECIFIERS 0
+#define NANOPRINTF_USE_SMALL_FORMAT_SPECIFIERS 0
+#define NANOPRINTF_USE_BINARY_FORMAT_SPECIFIERS 0
+#define NANOPRINTF_USE_WRITEBACK_FORMAT_SPECIFIERS 0
+#define NANOPRINTF_USE_ALT_FORM_FLAG 0
+#define NANOPRINTF_USE_FLOAT_SINGLE_PRECISION 0</code></pre>
+<p>This profile permits ordinary <code>%u</code>, <code>%d</code> and <code>%x</code> conversions (with appropriately typed arguments) but intentionally not <code>%f</code>, <code>%zu</code>, <code>%lld</code>, width or precision. Do <strong>not</strong> quietly enable those in one target without updating the source audit and golden trace configuration. Unsupported specifiers can desynchronize argument consumption.</p></section>
+<section id="build"><h2>07. CMake/Ninja: one implementation, one profile</h2>
+<p>Vendor the <a href="https://github.com/charlesnicholson/nanoprintf/releases/tag/v0.8.1">stamped v0.8.1 distribution header</a> into <code>third_party/nanoprintf/</code>, retain the upstream LICENSE, and pin the tag and commit in a third-party manifest. The release notes recommend the stamped asset rather than an autogenerated source archive's unstamped header. <a href="#ref-release">[1]</a></p>
+<p class="code-label">include/npf_port.h</p><pre><code>#pragma once
+#include "npf_config.h"
+#include "nanoprintf.h"</code></pre>
+<p class="code-label">src/npf_impl.cpp — the only implementation translation unit</p><pre><code>#define NANOPRINTF_IMPLEMENTATION
+#include "npf_port.h"</code></pre>
+<p class="code-label">CMakeLists.txt — Ninja-compatible, no network fetch</p>
+<pre><code>cmake_minimum_required(VERSION 3.22)
+project(riscue_trace_adapter LANGUAGES CXX)
+
+add_library(npf STATIC src/npf_impl.cpp)
+target_include_directories(npf PUBLIC
+    "include"
+    "third_party/nanoprintf")
+target_compile_features(npf PUBLIC cxx_std_20)
+
+add_library(trace_format STATIC src/trace_format.cpp)
+target_link_libraries(trace_format PUBLIC npf)
+
+# Configure with your actual target toolchain:
+# cmake -S . -B build -G Ninja
+# cmake --build build --verbose</code></pre>
+<p>All consumers include the same <code>npf_port.h</code> wrapper. Add your board toolchain, warning policy, no-exceptions rules if applicable, source hashes, map generation, and test executables in the platform build. The example intentionally avoids build-time network dependencies, but it is not an end-to-end freestanding toolchain qualification.</p></section>
+<section id="riscue"><h2>08. Proposed RISCue, HSM and active-object fit</h2>
+<div class="twocol"><div class="panel"><h3>Appropriate boundary</h3><p>A low-priority diagnostic actor consumes typed events from a bounded queue, formats a fixed allowlist of fields, checks overflow, and emits to a capacity-aware sink.</p></div><div class="panel"><h3>Inappropriate boundary</h3><p>An ISR or scheduling-critical transition formats strings synchronously, with a potentially blocking per-byte UART callback or a contested shared buffer.</p></div></div>
+<p>The queue's full policy must be explicit: reject and count, overwrite oldest under a documented lossy contract, or backpressure only where permitted. A log write must never change HSM scheduling or event dispatch. The formatter's internal lack of allocation does not establish the behavior of <code>npf_pprintf</code>'s callback.</p>
+<p><strong>Suggested requirements, not existing RISCue requirements:</strong> <code>RT-LOG-001</code>: no dynamic allocation in the adapter; <code>RT-LOG-002</code>: overflow yields explicit status and zero publishable bytes; <code>RT-LOG-003</code>: no formatting on ISR/critical dispatch path; <code>RT-LOG-004</code>: trace dropping cannot alter state transitions. Attach tests, map-file evidence, timing traces, and design reviews to each.</p></section>
+<section id="replay"><h2>09. Deterministic simulation and replay</h2>
+<p>Persist typed events and logical timestamps as the canonical record. Formatting is a derived view; a text-only golden trace can change with profile flags, compiler, integer widths, or a formatter upgrade. Freeze a versioned rendering profile where byte-for-byte text compatibility is a requirement.</p>
+<ul><li>Resolve order in the deterministic scheduler/recorder, not by arrival order at a shared output sink.</li><li>Use logical time; never introduce wall-clock sampling just to pretty-print an event.</li><li>Check exact output on zero, maximal integers, boundaries and truncation; use an independent host oracle for supported conversions.</li><li>Replay with logging enabled, disabled and intentionally overflowing and compare the same canonical state and event hashes.</li></ul>
+<p>These are <strong>proposed</strong> applications to RISCue and deterministic simulation. No upstream evidence supports a claim of existing RISCue/VeloSim integration.</p></section>
+<section id="tradeoffs"><h2>10. Engineering tradeoffs</h2>
+<div class="tablewrap"><table><thead><tr><th>Property</th><th>Strength</th><th>Qualification gap</th></tr></thead><tbody>
+<tr><td>Allocation</td><td>Formatter uses no heap</td><td>Sink and caller may; audit complete call path</td></tr>
+<tr><td>Code/stack size</td><td>Small upstream numbers</td><td>Measure target map, stack watermark, compiler helpers and LTO effects</td></tr>
+<tr><td>Timing</td><td>Synchronous direct conversion</td><td>Not constant-time: length, width, input values and callbacks vary</td></tr>
+<tr><td>Format safety</td><td>Compiler format attributes on supported compilers</td><td>Variadic calls remain weakly typed; compiled-out specifiers shift argument reads</td></tr>
+<tr><td>Truncation</td><td>snprintf-style buffer bound</td><td>Caller must inspect returned required count and handle failure</td></tr>
+<tr><td>Concurrency</td><td>Internal stack-local state</td><td>Shared buffers/callbacks still race or block</td></tr>
+<tr><td>Floating point</td><td>Optional and configurable</td><td>Precision/rounding deviations and finite conversion buffer; golden traces require tests</td></tr>
+<tr><td>Text semantics</td><td>ASCII-oriented firmware utility</td><td>No wide-character/locale transformations</td></tr>
+</tbody></table></div>
+<div class="callout warn"><p><strong>No heap ≠ bounded WCET.</strong> Code-size and stack figures published by upstream cannot be substituted for timing measurements on the actual RTOS, compiler and CPU. A UART sink may dominate everything the formatter saved.</p></div></section>
+<section id="evidence"><h2>11. Verifiable adoption versus suggested use</h2>
+<p><span class="state">Publicly verifiable:</span> upstream maintains C++ examples, tests and cross-platform builds. The <a href="https://android.googlesource.com/platform/external/nanoprintf/">Android Open Source Project's external/nanoprintf mirror</a> establishes downstream <em>source presence</em>. It does not, without a dependency/build investigation, establish that a particular device image links the library or that nanoprintf is active in production. <a href="#ref-aosp">[7]</a></p>
+<p><span class="pending">Not verified:</span> deployment in RISCue, VeloSim, flight software, JPL systems, or any particular production firmware. The actor, telemetry and simulator examples here are proposals. Public repo counts, stars and example code are not deployment evidence.</p></section>
+<section id="tests"><h2>12. A compact qualification campaign</h2><ol>
+<li><strong>Pin provenance:</strong> hash the v0.8.1 header; retain exact build flags, target triple, CMake/Ninja and compiler versions.</li>
+<li><strong>Audit format grammar:</strong> enumerate all literals and argument types; fail builds on mismatches and unsupported specifiers; enable <code>-Wformat=2</code> when supported.</li>
+<li><strong>Test buffers:</strong> capacities 0, 1, exact fit, one short and large; test null/zero length requests and explicit failure behavior.</li>
+<li><strong>Test integer values:</strong> signed extrema, unsigned maxima, zero, flags actually enabled and exact expected bytes.</li>
+<li><strong>Reject bad calls:</strong> static or analyzer checks catch disabled conversions and dynamic formats before execution; do not depend on undefined or shifted-varargs output.</li>
+<li><strong>Exercise concurrency:</strong> independent task-owned buffers, preemption, sink contention and full-output queue policies; measure callbacks separately.</li>
+<li><strong>Measure target:</strong> text/rodata, stack high-water, worst observed cycles and compiler helper symbols; include LTO and debug/release variants.</li>
+<li><strong>Assert replay invariance:</strong> identical canonical event/state hashes across disabled logging, enabled logging and loss/truncation conditions.</li></ol>
+<p><strong>Acceptance:</strong> zero unresolved format mismatches; target build and timing evidence; documented drop/overflow policy; and replay equivalence. The campaign is <em>recommended</em>, not claimed completed.</p></section>
+<section id="license"><h2>13. Licensing, maintenance and supply chain</h2>
+<p>Upstream <a href="https://github.com/charlesnicholson/nanoprintf/blob/v0.8.1/LICENSE">LICENSE</a> explicitly grants a choice of <strong>Unlicense</strong> (public-domain dedication plus fallback terms) and <strong>0BSD</strong> (a short permissive copyright license). It applies to library source, build code and tests. No MIT obligation attaches to nanoprintf itself. Preserving its license text, provenance and version is a sensible supply-chain policy. Dependencies obtained for upstream tests have their own terms; the runtime header does not require the upstream test bootstrap.</p>
+<p>For an organization that prefers a conventional permissive license over a public-domain dedication, evaluate using the 0BSD alternative. Legal adoption decisions remain the organization's responsibility.</p></section>
+<section id="refs"><h2>14. Official sources and review boundary</h2>
+<ol class="sources">
+<li id="ref-release"><a href="https://github.com/charlesnicholson/nanoprintf/releases/tag/v0.8.1">v0.8.1 release announcement and assets</a> — September 25, 2026; stamped header and updates.</li>
+<li id="ref-readme"><a href="https://github.com/charlesnicholson/nanoprintf/blob/v0.8.1/README.md">Upstream README</a> — API, sizing methodology, feature policy, truncation, threading and limitations.</li>
+<li id="ref-conformance"><a href="https://github.com/charlesnicholson/nanoprintf/blob/v0.8.1/CONFORMANCE.md">Upstream C11/C23 conformance analysis</a> — documented intentional deviations and configuration conditions.</li>
+<li id="ref-license"><a href="https://github.com/charlesnicholson/nanoprintf/blob/v0.8.1/LICENSE">Upstream LICENSE</a> — Unlicense/0BSD dual license.</li>
+<li id="ref-header"><a href="https://github.com/charlesnicholson/nanoprintf/blob/v0.8.1/nanoprintf.h">v0.8.1 implementation and API header</a> — feature macros, defaults and compilation model.</li>
+<li><a href="https://github.com/charlesnicholson/nanoprintf/tree/v0.8.1/examples/use_npf_directly">Upstream C++ example</a> — implementation translation-unit pattern.</li>
+<li id="ref-aosp"><a href="https://android.googlesource.com/platform/external/nanoprintf/">AOSP nanoprintf external source repository</a> — corroborated downstream code presence, not a device deployment claim.</li>
+<li><a href="https://github.com/charlesnicholson/nanoprintf/tree/v0.8.1/tests">Upstream tests</a> — relevant starting point for adapter tests.</li>
+</ol>
+<footer>
+<strong>Evidence statement · November 22, 2026.</strong> Source reviewed against upstream v0.8.1 README, public header, conformance inventory, example, release and LICENSE. The C++ and CMake examples were manually API-reviewed but not compiled against the upstream header, executed on hardware, or benchmarked during this preparation. Reported footprint numbers belong to upstream measurements. This HTML is fully self-contained with responsive embedded CSS, a table of contents and no externally loaded assets.
+<p>Part of <a href="https://jeffadickson.github.io/but-does-it-do-anything/DeepDives/">the DeepDives collection</a>.</p>
+</footer></section>
+</article></main></div></body></html>
