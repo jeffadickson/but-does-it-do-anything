@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="November 23 2026 engineering deep dive: libfixmath Q16.16, overflow sentinel, caches, fixed-point determinism, C++20 adapter, CMake Ninja and RISCue qualification.">
+<title>libfixmath: Fixed Point, Hidden State · DeepDives · 2026-11-23</title>
+<style>
+:root{--ink:#1b333d;--muted:#526772;--teal:#126b6c;--bg:#f7faf8;--card:#fff;--line:#d5e3e0;--code:#112c36;--cream:#fff4dd}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.68 system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--teal);text-underline-offset:3px}a:focus-visible{outline:3px solid #eaaf46;outline-offset:3px}p,li{max-width:77ch}h1,h2,h3{line-height:1.2;letter-spacing:-.028em}h2{font-size:clamp(1.55rem,2.6vw,2rem);margin:1.5em 0 .6em}h3{font-size:1.1rem;margin:1.35em 0 .5em}p{margin:.3em 0 1.13em}.hero{background:linear-gradient(120deg,#0a2a35,#0d4a53 70%,#13696d);color:#fff;padding:42px max(24px,calc((100vw - 1100px)/2)) 48px}.kicker{text-transform:uppercase;letter-spacing:.15em;color:#b4eadf;font-weight:800;font-size:.77rem}.hero h1{font-size:clamp(2.35rem,5.5vw,4.7rem);max-width:14ch;margin:14px 0 18px;letter-spacing:-.055em}.hero .dek{max-width:64ch;color:#ddf0ed;font-size:clamp(1.08rem,2vw,1.31rem);line-height:1.5}.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}.chip{padding:6px 12px;border:1px solid #9ad6d172;border-radius:999px;background:#ffffff13;font-size:.79rem;font-weight:750}.hero a{color:#b7fbe6}.layout{max-width:1100px;display:grid;grid-template-columns:235px minmax(0,1fr);gap:36px;margin:auto;padding:32px 24px 95px}.toc{position:sticky;top:20px;align-self:start;padding:18px 20px;border:1px solid var(--line);border-radius:15px;background:var(--card)}.toc strong{font-size:.82rem;text-transform:uppercase;letter-spacing:.13em}.toc ol{padding:0;margin:12px 0 0;list-style:none}.toc li{font-size:.86rem;line-height:1.45;margin:7px 0}.toc a{text-decoration:none;color:var(--muted)}.toc a:hover{text-decoration:underline;color:var(--teal)}article{min-width:0}section{scroll-margin-top:16px}article code:not(pre code){background:#e4efed;border-radius:4px;padding:.13em .3em;font-size:.9em;overflow-wrap:anywhere}.lead{font-size:1.19rem;line-height:1.55}.callout{background:#e8f5f1;border-left:4px solid #169480;padding:17px 20px;margin:22px 0;border-radius:0 12px 12px 0}.callout.warn{background:var(--cream);border-color:#cf8b29}.callout p:last-child{margin-bottom:0}.statgrid,.twocol{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:22px 0}.stat,.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}.stat b{display:block;color:var(--teal);font-size:1.3rem}.stat small{display:block;font-size:.8rem;line-height:1.4;color:var(--muted);margin-top:7px}.twocol{grid-template-columns:repeat(2,minmax(0,1fr))}.panel h3{margin:0 0 7px}.panel p{font-size:.92rem;color:var(--muted);margin:0}.diagram{background:#e6f2ef;padding:18px;border:1px solid #c2dfd8;border-radius:14px;margin:24px 0}.flow{display:flex;gap:9px;align-items:center}.node{flex:1;min-width:0;padding:13px 9px;text-align:center;border-radius:10px;border:1px solid #afcec8;background:white;font-size:.8rem;line-height:1.45}.node b{display:block;color:#116366;font-size:.9rem}.node.special{background:#104853;color:#d9f7f0}.node.special b{color:#a2f2dc}.arrow{color:#217d80;font-size:1.4rem;font-weight:900}.diagram figcaption{font-size:.8rem;color:#486b72;margin-top:10px}pre{background:var(--code);color:#e8f5ed;border:1px solid #355b63;border-radius:13px;padding:18px 20px;overflow:auto;line-height:1.56;font: .83rem/1.6 "Cascadia Code",Consolas,Menlo,monospace;tab-size:2}pre code{font:inherit}.code-label{font-size:.79rem;letter-spacing:.07em;font-weight:800;text-transform:uppercase;color:var(--teal);margin:18px 0 -7px}.tablewrap{overflow-x:auto}table{border-collapse:collapse;width:100%;margin:17px 0 25px;font-size:.92rem}th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid var(--line)}th{background:#e2f0ed}tr:nth-child(even) td{background:#fff8}ul,ol{padding-left:1.25em}li{margin:.35em 0}footer{margin:38px 0 0;border-top:1px solid var(--line);padding:20px 0;font-size:.84rem;color:var(--muted)}.sources li{overflow-wrap:anywhere}.state{font-weight:800;color:#096c61}.pending{font-weight:800;color:#875418}
+@media(max-width:820px){.layout{display:block;padding:24px 18px 70px}.toc{position:static;margin-bottom:24px}.toc ol{columns:2}.hero{padding:34px 20px 38px}}@media(max-width:580px){.statgrid,.twocol{grid-template-columns:1fr}.toc ol{columns:1}.flow{flex-direction:column}.node{width:100%}.arrow{transform:rotate(90deg)}pre{font-size:.74rem;padding:14px}th,td{padding:8px}.hero h1{font-size:2.5rem}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}@media print{.layout{display:block}.toc{position:static;page-break-after:always}pre{white-space:pre-wrap;overflow-wrap:anywhere}body{background:white}}@media(prefers-color-scheme:dark){:root{--bg:#101e25;--card:#192f35;--ink:#e4f2ee;--muted:#b6cbd0;--line:#37555b;--teal:#8fdfd2;--cream:#413422}article code:not(pre code){background:#2b4a50}.callout{background:#1c4037}.callout.warn{background:#3e3523}.stat b{color:#a2eadd}.panel p{color:#b8cbd0}.diagram{background:#1d393f;border-color:#406860}.node{background:#19333c;border-color:#49736a}.node b{color:#b0f2de}th{background:#254148}tr:nth-child(even) td{background:#ffffff08}}
+</style></head><body>
+<header class="hero"><p class="kicker">DeepDives · Monday, November 23, 2026</p>
+<h1>libfixmath: fixed point, hidden state</h1>
+<p class="dek">Q16.16 arithmetic can be a compact deterministic-simulation tool—but a shared overflow encoding, writable caches and data-dependent modulus loops demand an explicit engineering contract.</p>
+<div class="chips"><span class="chip">C / C++20</span><span class="chip">MIT license</span><span class="chip">Fixed-point &amp; RTOS</span><span class="chip">Pin aa19cbf9142c</span></div>
+</header><div class="layout"><nav class="toc" aria-label="Table of contents"><strong>Table of contents</strong><ol><li><a href="#decision">01 / Engineering decision</a></li><li><a href="#identity">02 / What libfixmath actually is</a></li><li><a href="#representation">03 / Q16.16, made concrete</a></li><li><a href="#architecture">04 / The safe integration boundary</a></li><li><a href="#api">05 / Arithmetic and compile-time policy</a></li><li><a href="#sentinel">06 / The sentinel and conversion hazards</a></li><li><a href="#cache">07 / Static storage is not the heap—but it is state</a></li><li><a href="#mod">08 / The November 19 modulus fix—and a remaining deadline risk</a></li><li><a href="#cpp">09 / C++20 fail-closed adapter</a></li><li><a href="#cmake">10 / Reproducible CMake + Ninja wiring</a></li><li><a href="#riscue">11 / Proposed RISCue and simulation applications</a></li><li><a href="#alternatives">12 / Tradeoffs and alternatives</a></li><li><a href="#qualification">13 / Practical qualification plan</a></li><li><a href="#license">14 / MIT license, maintenance and adoption evidence</a></li><li><a href="#sources">15 / Official primary references and review limits</a></li></ol></nav><article><section id="decision"><h2>Engineering decision</h2>
+<p class="lead"><strong>Recommendation:</strong> libfixmath is a credible candidate for a <em>bounded, tested</em> fixed-point kernel, not a drop-in safety-certified numeric type or a constant-time primitive. For RISCue and deterministic simulation, start with caches disabled, overflow checking enabled, a separately typed error channel, and a pinned source revision.</p>
+<div class="statgrid"><div class="stat"><b>Q16.16</b><small>16 fractional bits, 32-bit signed raw representation</small></div><div class="stat"><b>1/65,536</b><small>Smallest positive step ≈ 0.00001526</small></div><div class="stat"><b>MIT</b><small>Attribution and license notice required on redistribution</small></div></div>
+<div class="callout warn"><strong>Critical trap:</strong> the upstream header defines both <code>fix16_minimum</code> and <code>fix16_overflow</code> as <code>0x80000000</code>. The same raw word means the mathematical endpoint −32,768 <em>or</em> an error. You cannot resolve that ambiguity by inspecting the result alone.</div>
+<p>This deep dive evaluates upstream revision <a href="https://github.com/PetteriAimonen/libfixmath/commit/aa19cbf9142cc41344608bd2dec07fa12e35b55a"><code>aa19cbf9142c</code></a>, dated November 19, 2026, including a recent software-modulus repair. It does not claim actual deployment in RISCue, VeloSim, flight hardware or a safety-critical product.</p></section>
+<section id="identity"><h2>What libfixmath actually is</h2>
+<p><a href="https://github.com/PetteriAimonen/libfixmath">libfixmath</a> is a C fixed-point math library with a <code>fix16_t</code> raw integer type, checked arithmetic, saturating variants, trig, exponential/log functions, square root, formatting/parsing and an optional C++ wrapper. Its README describes the repository as a mirror of an older Google Code SVN project and says it is <em>not actively maintained</em>. A November 19, 2026 source commit is nevertheless observable; a recent patch is not a long-term maintenance guarantee.</p>
+<p>Official sources inspected for this article include <a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/libfixmath/fix16.h">the public header</a>, <a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/libfixmath/fix16.c">arithmetic implementation</a>, <a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/libfixmath/fix16_exp.c">exponential cache</a>, <a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/libfixmath/fix16_trig.c">trigonometry implementation</a>, <a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/tests/tests.cmake">test configurations</a>, the <a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/CMakeLists.txt">build files</a> and <a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/LICENSE">MIT license</a>.</p>
+<div class="twocol"><div class="panel"><h3>Supplied</h3><p>C99-style math API, multiple CPU-specific implementation branches, configurable rounding/overflow behavior, CMake static library, upstream test sources.</p></div><div class="panel"><h3>Not supplied</h3><p>Strong engineering units, a separate success/error return type, WCET certification, per-task cache instances, formal proof or a RISCue-specific adapter.</p></div></div></section>
+<section id="representation"><h2>Q16.16, made concrete</h2>
+<p>Interpret a signed 32-bit integer as <strong>real value = raw / 65,536</strong>. <code>fix16_one</code> is 65,536; <code>0x00018000</code> means 1.5. Multiplication needs a wider intermediate or a multiword algorithm; a 32-bit product alone cannot generally preserve both the integer and fractional parts. The range is approximately −32,768 to +32,767.9999847.</p>
+<div class="tablewrap"><table><thead><tr><th>Value</th><th>Raw hex</th><th>Why it matters</th></tr></thead><tbody>
+<tr><td>0</td><td><code>0x00000000</code></td><td>Zero</td></tr>
+<tr><td>1.0</td><td><code>0x00010000</code></td><td>Base scale</td></tr>
+<tr><td>1.5</td><td><code>0x00018000</code></td><td>Exactly representable</td></tr>
+<tr><td>Smallest step</td><td><code>0x00000001</code></td><td>One part in 65,536</td></tr>
+<tr><td>Maximum</td><td><code>0x7FFFFFFF</code></td><td>≈ +32,767.999985</td></tr>
+<tr><td>Minimum / overflow</td><td><code>0x80000000</code></td><td>Identical encodings in this API</td></tr>
+</tbody></table></div>
+<p>Fixed-point eliminates several sources of floating-point variability but does not automatically establish cross-platform bit-for-bit behavior, correct rounding, physical-unit validity or bounded execution time. Shift semantics, signed overflow and compile definitions still matter.</p></section>
+<section id="architecture"><h2>The safe integration boundary</h2>
+<figure class="diagram"><div class="flow"><div class="node"><b>ADC / wire / trace</b>Raw input + declared scale</div><span class="arrow">→</span><div class="node special"><b>Admission gate</b>range / sentinel / divisor checks</div><span class="arrow">→</span><div class="node"><b>libfixmath</b>Fixed configuration and bounds</div><span class="arrow">→</span><div class="node special"><b>Typed result</b>value + explicit failure status</div></div><figcaption>Recommended application architecture. The admission and result gates are <em>not</em> part of upstream's plain <code>fix16_t</code> API.</figcaption></figure>
+<p>Do not allow arbitrary Q16.16 raw words to cross an active-object boundary without a documented domain and scale. Treat a representation plus unit, range, rounding mode and fault policy as the full numeric contract. Version that contract with the logged trace format.</p></section>
+<section id="api"><h2>Arithmetic and compile-time policy</h2>
+<div class="tablewrap"><table><thead><tr><th>Upstream interface</th><th>Observed behavior</th><th>Qualification consequence</th></tr></thead><tbody>
+<tr><td><code>fix16_add/sub/mul/div</code></td><td>Arithmetic with optional overflow signaling</td><td>Validate inputs, check output, define negative rounding</td></tr>
+<tr><td><code>fix16_sadd/ssub/smul/sdiv</code></td><td>Saturating variants when overflow checking is enabled</td><td>Only use where saturation is an approved policy</td></tr>
+<tr><td><code>FIXMATH_NO_OVERFLOW</code></td><td>Removes overflow protection and changes header-inline add/sub</td><td>Do not enable without range proofs; C signed overflow can be UB</td></tr>
+<tr><td><code>FIXMATH_NO_ROUNDING</code></td><td>Changes numeric outputs</td><td>Separate golden-trace and property-test profile</td></tr>
+<tr><td><code>FIXMATH_NO_64BIT</code></td><td>Alternate multiword multiply path</td><td>Validate on 32/64-bit toolchains independently</td></tr>
+<tr><td><code>FIXMATH_OPTIMIZE_8BIT</code></td><td>Byte-oriented implementation; implies no-hard-division</td><td>8-bit MCU-specific timing and overflow verification</td></tr>
+<tr><td><code>FIXMATH_NO_CACHE</code></td><td>Disables source-visible writable math caches</td><td>Preferred concurrency/replay profile</td></tr>
+<tr><td><code>FIXMATH_FAST_SIN</code></td><td>Switches sine approximation</td><td>Numerical error vs cycles tradeoff; remeasure</td></tr>
+</tbody></table></div>
+<p>The README describes roughly 2.1% and 2.3% sine accuracy figures for the two sine modes. Those are <em>upstream descriptive numbers</em>, not a verified uniform relative/absolute error bound; do not translate them directly into a control-system requirement.</p></section>
+<section id="sentinel"><h2>The sentinel and conversion hazards</h2>
+<p>Consider two calls: <code>fix16_add(fix16_minimum, 0)</code> mathematically produces −32,768; <code>fix16_add(fix16_maximum, fix16_one)</code> overflows. In the default interface both can yield the same raw sentinel. This is a design-level ambiguity, not something a test for <code>== fix16_overflow</code> can repair after the fact.</p>
+<p>For a safety-oriented bounded domain, reject that endpoint at ingress, make range limits much narrower than numeric limits, and return an independent error enum. If the complete signed range is essential, use a different error protocol or a separate audited implementation. Do not assume that every saturating operation is a validity proof.</p>
+<div class="callout warn"><strong>Conversion trap:</strong> the header implements <code>fix16_from_int</code> as an unchecked multiplication by <code>fix16_one</code>; float/double conversion paths cast scaled values to <code>int32_t</code>. Perform explicit range/finite checks <em>before</em> calling conversion functions. The <code>F16(x)</code> macro is documented for constant expressions and may evaluate <code>x</code> more than once.</div>
+<p>Always test division by zero yourself; the raw sentinel channel alone is insufficient for safe ingress. Specify behavior for invalid negative square roots, logarithms of nonpositive values, and the bounds of transcendental approximations.</p></section>
+<section id="cache"><h2>Static storage is not the heap—but it is state</h2>
+<p>In the examined math sources, no dynamic allocator is called on the ordinary arithmetic paths. However, the default build includes writable static lookup caches. The README attributes about <strong>32 KB</strong> to exponential caching and <strong>80 KB</strong> to trigonometric caching. These are substantial for a small MCU, even if the linker can discard unused objects.</p>
+<p>The source shows arrays such as <code>_fix16_exp_cache_index[4096]</code> and sine/atan cache arrays. They are mutated without visible locks or atomics. Shared use across preemptive tasks therefore raises a data-race issue, and cache hits can change execution time based on prior calls. <code>FIXMATH_NO_CACHE</code> removes those caches from their guarded code paths.</p>
+<div class="twocol"><div class="panel"><h3>Default cached path</h3><p>Potential repeated-call savings, but global writable state, concurrency exposure and input-history timing variance.</p></div><div class="panel"><h3>Cache disabled</h3><p>No cache-derived shared mutations or RAM cost; still not automatically constant-time or WCET-qualified.</p></div></div>
+<p>Use the actual embedded link map, not the README's sum, to determine flash, BSS and stack consumption after dead-code elimination. Audit any remaining library-global state before multi-core or interrupt-level use.</p></section>
+<section id="mod"><h2>The November 19 modulus fix—and a remaining deadline risk</h2>
+<p>The inspected <a href="https://github.com/PetteriAimonen/libfixmath/commit/aa19cbf9142cc41344608bd2dec07fa12e35b55a">November 19, 2026 commit</a> repairs <code>fix16_mod()</code> in <code>FIXMATH_NO_HARD_DIVISION</code> mode for negative divisors. The old repeated-subtraction logic could iterate in the wrong direction; the patch normalizes divisor magnitude and adds a regression comparison to <code>fmod()</code>.</p>
+<div class="callout warn"><strong>Still important:</strong> this software modulus path uses repeated subtraction, so execution time can scale with the quotient magnitude. A tiny nonzero divisor can produce an enormous iteration count. An input divisor of zero is invalid in both hardware-remainder and repeated-subtraction modes; the latter can fail to terminate. Validate a <em>nonzero minimum divisor magnitude</em> and bound the quotient, or avoid this routine on a hard-deadline path.</div>
+<p>Ring-buffer indices are often better served by power-of-two masking or standard bounded integer remainder after explicit checks. A fixed-size value type does not imply a fixed-time algorithm.</p></section>
+<section id="cpp"><h2>C++20 fail-closed adapter</h2>
+<p>The following original example restricts ingress to ±100 units, uses an exactly representable gain (1.5), and exposes a separate status. It avoids runtime floating-point conversion, heap allocation, and silently propagating a raw sentinel.</p>
+<div class="code-label">Complete main.cpp · C++20</div><pre><code>#include &lt;cstdint&gt;
+#include "libfixmath/fix16.h"
+
+enum class Fault : std::uint8_t {
+    None, InvalidEncoding, OutsideDomain, Overflow
+};
+
+struct [[nodiscard]] Result {
+    fix16_t raw{};
+    Fault fault{Fault::None};
+    [[nodiscard]] constexpr bool ok() const noexcept {
+        return fault == Fault::None;
+    }
+};
+
+[[nodiscard]] Result apply_gain(fix16_t input) noexcept {
+    constexpr fix16_t limit = 100 * 65536; // +/-100.0
+    constexpr fix16_t gain  = 0x00018000;   // 1.5
+
+    if (input == fix16_overflow)
+        return {0, Fault::InvalidEncoding};
+    if (input &lt; -limit || input &gt; limit)
+        return {0, Fault::OutsideDomain};
+
+    const fix16_t result = fix16_mul(input, gain);
+    if (result == fix16_overflow)
+        return {0, Fault::Overflow};
+    return {result, Fault::None};
+}
+
+int main() {
+    constexpr fix16_t sample = 60 * 65536;
+    const Result r = apply_gain(sample);
+    return r.ok() &amp;&amp; r.raw == 90 * 65536 ? 0 : 1;
+}</code></pre>
+<p>Expected exit code is <code>0</code> for 60 × 1.5 = 90. The enum and admission gate are application-level C++20 code, not features of upstream. They are intentionally conservative: an input with the minimum raw encoding is rejected, even though it could represent a mathematical endpoint.</p></section>
+<section id="cmake"><h2>Reproducible CMake + Ninja wiring</h2>
+<p>Upstream supplies a static target named <code>libfixmath</code> and recommends <code>FetchContent</code>. Pin the inspected commit instead of tracking a branch. Scope compile definitions carefully: macros such as <code>FIXMATH_NO_OVERFLOW</code> change header-inline implementations and must not disagree between the compiled C library and its C++ consumer.</p>
+<div class="code-label">CMakeLists.txt · CMake</div><pre><code>cmake_minimum_required(VERSION 3.24)
+project(q16_trial LANGUAGES C CXX)
+include(FetchContent)
+
+FetchContent_Declare(libfixmath
+  GIT_REPOSITORY https://github.com/PetteriAimonen/libfixmath.git
+  GIT_TAG aa19cbf9142cc41344608bd2dec07fa12e35b55a
+)
+FetchContent_MakeAvailable(libfixmath)
+
+# PUBLIC keeps consumer/header and library profiles aligned.
+# Overflow checking and rounding stay at upstream defaults.
+target_compile_definitions(libfixmath PUBLIC FIXMATH_NO_CACHE)
+
+add_executable(q16_demo main.cpp)
+target_compile_features(q16_demo PRIVATE cxx_std_20)
+target_link_libraries(q16_demo PRIVATE libfixmath)</code></pre>
+<div class="code-label">Suggested host verification commands · shell</div><pre><code>cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build --verbose
+./build/q16_demo</code></pre>
+<p>The upstream top-level build sets global C/C++ flags and standards; review those effects before adding it to a larger engineering superbuild. Initial FetchContent configure needs network or a prepopulated/offline source mirror. Pin your vendored tree, document compiler options, inspect the target link map, and retain the MIT notice.</p></section>
+<section id="riscue"><h2>Proposed RISCue and simulation applications</h2>
+<div class="twocol"><div class="panel"><h3>RISCue active-object calibration</h3><p>Bounded ADC gain, threshold or rate computations where every input and intermediate fits the contract. Convert faults to explicit reject/error events.</p></div><div class="panel"><h3>Deterministic simulation</h3><p>Compare serialized raw-bit model outputs across x86-64 and target builds; log pin SHA, compiler flags, rounding and no-cache profile.</p></div><div class="panel"><h3>HSM transition guards</h3><p>Use validated values and simple operations for guard conditions. Keep variable-cost divide/trig/modulus out of hard-deadline guards unless measured.</p></div><div class="panel"><h3>Trace and interoperability</h3><p>Represent the wire format as signed raw 32-bit value, fixed scale, physical unit, schema version and independent fault status—not just four undocumented bytes.</p></div></div>
+<p>These are <strong>suggested use cases</strong>. No RISCue/VeloSim/SharpUnits/Native AOT integration has been verified. A .NET 10 Native AOT caller could in principle use a small C ABI over fixed-width integers; that is a design opportunity, not reported existing work.</p></section>
+<section id="alternatives"><h2>Tradeoffs and alternatives</h2>
+<div class="tablewrap"><table><thead><tr><th>Approach</th><th>What it gets right</th><th>Decision boundary</th></tr></thead><tbody>
+<tr><td>Raw scaled integers</td><td>Smallest dependency, explicit semantics</td><td>Prefer for one or two bounded operations if you can prove the math</td></tr>
+<tr><td><strong>libfixmath</strong></td><td>Broad C Q16.16 operations, 8/32/64-bit paths</td><td>Needs sentinel policy, cache control, accuracy and WCET validation</td></tr>
+<tr><td>Hardware <code>float</code>/<code>double</code></td><td>Broader exponent range; often fast on FPU targets</td><td>Define NaN, Inf, rounding, reproducibility and compiler FP options</td></tr>
+<tr><td>Strong domain-specific C++20 type</td><td>Can statically encode units, bounds and result types</td><td>Higher implementation and qualification cost</td></tr>
+<tr><td>Boost.SafeNumerics (previously covered)</td><td>Checked integer arithmetic contracts</td><td>Not a direct Q16.16 transcendental library</td></tr>
+</tbody></table></div>
+<p>The optional upstream <code>Fix16</code> C++ wrapper improves syntactic ergonomics but does not add physical units or a separately typed failure state. A narrow application adapter gives clearer failure semantics for active objects.</p></section>
+<section id="qualification"><h2>Practical qualification plan</h2>
+<div class="tablewrap"><table><thead><tr><th>Priority</th><th>Campaign</th><th>Evidence required</th></tr></thead><tbody>
+<tr><td>P0</td><td>Boundary/reference oracle</td><td>Compare add/sub/mul/div against wide-integer exact arithmetic with explicit rounding rules; retain failing cases</td></tr>
+<tr><td>P0</td><td>Sentinel, zero divisor and conversions</td><td>Ingress and result test all invalid encodings, finite range boundaries, and negative half ties</td></tr>
+<tr><td>P0</td><td>Software-modulus worst cases</td><td>Negative divisor, zero rejection, smallest permitted divisor, largest bounded numerator and measured cycles</td></tr>
+<tr><td>P0</td><td>Concurrency with cache off</td><td>Instrument memory and races; check global writes and replay equivalence on tasks/cores</td></tr>
+<tr><td>P1</td><td>Compile profile matrix</td><td>With/without 64-bit arithmetic, 8-bit optimization, rounding, fast sine, optimization and compilers</td></tr>
+<tr><td>P1</td><td>Transcendental accuracy</td><td>Dense sqrt, sin, cos, exp, log sweeps vs high-precision oracle; near-zero absolute error limits</td></tr>
+<tr><td>P1</td><td>Memory and execution</td><td>Target link map, stack watermark, alloc traps, cold/warm cycles and deadlines with margin</td></tr>
+<tr><td>P1</td><td>Deterministic trace</td><td>Raw-word golden traces on host and target; versioned format + configuration hash</td></tr>
+<tr><td>P2</td><td>Fuzzing and mutations</td><td>Fuzz ingress; mutate error guards; retain seed and minimized counterexamples</td></tr>
+</tbody></table></div>
+<div class="callout"><strong>Proposed gate:</strong> no unexplained sanitizer findings, zero allocations on exercised hot paths, all invalid inputs reported via status, no unexplained raw-bit discrepancies, and documented cycle/stack/flash margins on the actual MCU. This report does <em>not</em> claim those gates were passed.</div></section>
+<section id="license"><h2>MIT license, maintenance and adoption evidence</h2>
+<p><strong>MIT:</strong> the upstream <a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/LICENSE">license</a> permits commercial or private use and redistribution with the copyright and permission notice retained in copies or substantial portions; there is no warranty. The notice names Flatmush, Petteri Aimonen and other contributors. Include the complete license file with vendored sources and binary distribution notices.</p>
+<p><strong>Maintenance:</strong> the README says not actively maintained. A recent November 2026 bug-fix commit is verifiable but should not be treated as a support SLA. Pin for reproducibility and own your security/defect triage. <strong>Adoption:</strong> source repository, tests and CMake target are verified artifacts; production/flight/RISCue adoption was not established. The four integration sketches above are proposals.</p></section>
+<section id="sources"><h2>Official primary references and review limits</h2>
+<ol class="sources"><li><a href="https://github.com/PetteriAimonen/libfixmath">Official repo / README</a> — scope, cache and option descriptions, maintenance statement, FetchContent example.</li>
+<li><a href="https://github.com/PetteriAimonen/libfixmath/commit/aa19cbf9142cc41344608bd2dec07fa12e35b55a">Pinned November 19, 2026 commit</a> — negative-divisor modulus correction.</li>
+<li><a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/libfixmath/fix16.h">Public API header</a> — Q16.16 type, sentinel, conversions and compile macros.</li>
+<li><a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/libfixmath/fix16.c">Arithmetic implementation</a> — checked/saturating operations, software modulus and CPU-specific paths.</li>
+<li><a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/libfixmath/fix16_exp.c">Exponential implementation</a> and <a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/libfixmath/fix16_trig.c">trig implementation</a> — writable static caches.</li>
+<li><a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/libfixmath/fix16_sqrt.c">Square-root implementation</a> — integer algorithm and negative input behavior.</li>
+<li><a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/CMakeLists.txt">Build entry point</a>, <a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/libfixmath/libfixmath.cmake">library target</a> and <a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/tests/tests.cmake">test variants</a>.</li>
+<li><a href="https://github.com/PetteriAimonen/libfixmath/blob/aa19cbf9142cc41344608bd2dec07fa12e35b55a/LICENSE">MIT license</a> — copyright/notice obligations.</li>
+<li><a href="https://cmake.org/cmake/help/latest/module/FetchContent.html">Official CMake FetchContent documentation</a>.</li></ol>
+<p><strong>Verification disclosure:</strong> upstream public source and configuration were reviewed. The original example was inspected against the declared C API; no full upstream checkout, linked library build, sanitizer campaign, numerical benchmark, MCU WCET run or independent production-adoption verification was completed. A source review is not a certification claim.</p></section>
+<footer><strong>DeepDives · November 23, 2026.</strong> Original technically reviewed engineering analysis. Self-contained HTML, no external assets, keyboard-accessible anchors, mobile responsive layout, dark mode and print styles. <a href="#decision">Return to overview</a>.</footer>
+</article></div></body></html>
